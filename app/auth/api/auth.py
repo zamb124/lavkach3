@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Response
 
-from api.auth.request.auth import RefreshTokenRequest, VerifyTokenRequest
-from api.auth.response.auth import RefreshTokenResponse
+from .schemas import RefreshTokenRequest, VerifyTokenRequest, RefreshTokenResponse
 from app.auth.services.jwt import JwtService
 from app.user.schemas import ExceptionResponseSchema
 

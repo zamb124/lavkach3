@@ -5,8 +5,8 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from api import router
-from api.home.home import home_router
+from .routers import router
+from .home.home import home_router
 from core.config import config
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging

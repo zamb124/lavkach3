@@ -2,8 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Query
 
-from api.user.v1.request.user import LoginRequest
-from api.user.v1.response.user import LoginResponse
+from .schemas import LoginRequest
+from .schemas import LoginResponse
 from app.user.schemas import (
     ExceptionResponseSchema,
     GetUserListResponseSchema,

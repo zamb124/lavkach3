@@ -12,6 +12,13 @@ class BaseRepo(Generic[ModelType]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
+    @classmethod
+    async def get_all(cls, limit: int) -> Optional[ModelType]:
+        print(cls.__str__)
+        query = select(cls.Config.model).limit(limit)
+        result = await session.execute(query)
+        return result.scalars().all()
+
     async def get_by_id(self, id: int) -> Optional[ModelType]:
         query = select(self.model).where(self.model.id == id)
         return await session.execute(query).scalars().first()
