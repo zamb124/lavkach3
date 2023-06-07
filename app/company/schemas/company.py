@@ -1,10 +1,16 @@
+import uuid
+
 from pydantic import BaseModel, Field, UUID4
 from core.repository.base import BaseRepo
 from app.company.models import Company
+from typing import Optional
 
 
-class CompanyResponseSchema(BaseModel, BaseRepo):
-    id: UUID4 = Field(..., description="ID")
+class CompanySchema(BaseModel, BaseRepo):
+    """
+    Упрощенный вид схема, когда подходит в целом и для работы и для API
+    """
+    id: Optional[UUID4] = Field(description="ID", default_factory=uuid.uuid4)
     title: str = Field(..., description="Email")
     lang: str = Field(..., description="Nickname")
     country: str = Field(..., description="Nickname")
@@ -12,4 +18,4 @@ class CompanyResponseSchema(BaseModel, BaseRepo):
 
     class Config:
         orm_mode = True
-        model = Company
+        model = Company # Данная штука служит как бы для обращения к ORM

@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Query
 from app.company.schemas import (
-    CompanyResponseSchema,
+    CompanySchema,
     ExceptionResponseSchema
 )
 from app.company.services import CompanyService
@@ -11,12 +11,19 @@ company_router = APIRouter()
 
 @company_router.get(
     "",
-    response_model=list[CompanyResponseSchema],
+    response_model=list[CompanySchema],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def get_company_list(
-    limit: int = Query(10, description="Limit")
-):
+async def get_company_list(limit: int = Query(10, description="Limit")):
     print('lol')
-    a= await CompanyResponseSchema.get_all(limit=limit)
+    a= await CompanySchema.get_all(limit=limit)
     return a
+
+@company_router.post(
+    "",
+    response_model=CompanySchema,
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def create_company(request: CompanySchema):
+    res = await request.create()
+    return await request.get_by_id(res)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, func, UUID
+from sqlalchemy import Column, DateTime, func, UUID, BigInteger, ForeignKey, Sequence
 from sqlalchemy.ext.declarative import declared_attr
 import uuid
 
@@ -19,10 +19,23 @@ class TimestampMixin:
 
 class CompanyMixin:
     @declared_attr
-    def company_id(cls):
+    def company_id(cls): #company_id = Column(UUID, ForeignKey("companies.id"))
         return Column(
-            UUID(as_uuid=True),
-            primary_key=True,
+            UUID,
+            ForeignKey("companies.id"),
+            index=True
+        )
+
+class LsnMixin:
+    @declared_attr
+    def lsn_seq(cls):
+        return Sequence(
+            f'{cls.__tablename__}_lsn_seq'
+        )
+    @declared_attr
+    def lsn(cls):
+        return Column(
+            BigInteger,
             index=True,
-            default=uuid.uuid4
+            server_onupdate=getattr(cls, 'lsn_seq').next_value(),
         )

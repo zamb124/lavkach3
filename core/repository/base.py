@@ -1,9 +1,11 @@
+import uuid
 from typing import TypeVar, Type, Optional, Generic
 
 from sqlalchemy import select, update, delete
 
 from core.db.session import Base, session
 from core.repository.enum import SynchronizeSessionEnum
+from core.db import Transactional, Propagation
 
 ModelType = TypeVar("ModelType", bound=Base)
 
@@ -19,26 +21,26 @@ class BaseRepo(Generic[ModelType]):
         result = await session.execute(query)
         return result.scalars().all()
 
-    async def get_by_id(self, id: int) -> Optional[ModelType]:
-        query = select(self.model).where(self.model.id == id)
-        return await session.execute(query).scalars().first()
-
-    async def update_by_id(
+    @classmethod
+    async def get_by_id(cls, id: uuid.UUID) -> Optional[ModelType]:
+        query = select(cls.Config.model).where(cls.Config.model.id == id.__str__())
+        result = await session.execute(query)
+        return result.scalars().first()
+    async def save(
         self,
-        id: int,
         params: dict,
         synchronize_session: SynchronizeSessionEnum = False,
     ) -> None:
         query = (
-            update(self.model)
-            .where(self.model.id == id)
+            update(self.Config.model)
+            .where(self.Config.model.id == self.id)
             .values(**params)
             .execution_options(synchronize_session=synchronize_session)
         )
         await session.execute(query)
 
-    async def delete(self, model: ModelType) -> None:
-        await session.delete(model)
+    async def delete(self) -> None:
+        await session.delete(self.Config.model)
 
     async def delete_by_id(
         self,
@@ -46,12 +48,15 @@ class BaseRepo(Generic[ModelType]):
         synchronize_session: SynchronizeSessionEnum = False,
     ) -> None:
         query = (
-            delete(self.model)
-            .where(self.model.id == id)
+            delete(self.Config.model)
+            .where(self.Config.model.id == id)
             .execution_options(synchronize_session=synchronize_session)
         )
         await session.execute(query)
 
-    async def save(self, model: ModelType) -> ModelType:
-        saved = await session.add(model)
-        return saved
+    @Transactional(propagation=Propagation.REQUIRED)
+    async def create(self) -> ModelType:
+        entity = self.Config.model(**self.dict())
+        saved = session.add(entity)
+        return self.id
+
