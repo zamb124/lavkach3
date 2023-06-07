@@ -9,7 +9,7 @@ class Config(BaseSettings):
     ENV: str = "development"
     DEBUG: bool = True
     APP_HOST: str = "0.0.0.0"
-    APP_PORT: int = 8000
+    APP_PORT: int = 9000
     WRITER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/fastapi"
     READER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/fastapi"
     JWT_SECRET_KEY: str = "fastapi"
@@ -42,8 +42,9 @@ class ProductionConfig(Config):
 def get_config():
     env = os.getenv("ENV", "local")
     for name, value in os.environ.items():
-        logging.info("{0}: {1}".format(name, value))
-        print("{0}: {1}".format(name, value))
+        #logging.info("{0}: {1}".format(name, value))
+        #print("{0}: {1}".format(name, value))
+        pass
     config_type = {
         "dev": DevelopmentConfig(),
         "local": LocalConfig(),
