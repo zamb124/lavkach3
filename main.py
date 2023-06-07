@@ -29,6 +29,5 @@ def main(env: str, debug: bool):
         workers=1,
     )
 
-
 if __name__ == "__main__":
     main()

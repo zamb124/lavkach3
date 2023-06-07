@@ -20,25 +20,26 @@ class Config(BaseSettings):
 
 
 class DevelopmentConfig(Config):
-    WRITER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/lavkach"
-    READER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/lavkach"
+    WRITER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
+    READER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379
 
 
 class LocalConfig(Config):
-    WRITER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/lavkach"
-    READER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/lavkach"
+    WRITER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
+    READER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
 
 
 class ProductionConfig(Config):
     DEBUG: str = False
-    WRITER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/lavkach"
-    READER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/lavkach"
+    WRITER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
+    READER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
 
 
 def get_config():
     env = os.getenv("ENV", "local")
+    print(env)
     config_type = {
         "dev": DevelopmentConfig(),
         "local": LocalConfig(),

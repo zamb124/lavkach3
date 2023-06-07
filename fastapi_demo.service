@@ -1,0 +1,14 @@
+[Unit]
+Description=Lavkach
+After=network.target
+
+[Service]
+User=viktor-shved
+Group=www-data
+WorkingDirectory=/home/viktor-shved/lavkach
+Environment="PATH=/home/viktor-shved/lavkach/venv/bin"
+Environment="DB_PASSWORD=Angel-15111990"
+ExecStart=/home/viktor-shved/lavkach/venv/bin/gunicorn -c gunicorn_conf.py app:server:app
+
+[Install]
+WantedBy=multi-user.target
