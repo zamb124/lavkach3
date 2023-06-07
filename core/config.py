@@ -1,7 +1,9 @@
+import logging
 import os
 
 from pydantic import BaseSettings
-
+import logging
+logging.basicConfig(level=logging.INFO)
 
 class Config(BaseSettings):
     ENV: str = "development"
@@ -40,6 +42,7 @@ class ProductionConfig(Config):
 def get_config():
     env = os.getenv("ENV", "local")
     for name, value in os.environ.items():
+        logging.info("{0}: {1}".format(name, value))
         print("{0}: {1}".format(name, value))
     config_type = {
         "dev": DevelopmentConfig(),
