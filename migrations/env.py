@@ -30,6 +30,7 @@ fileConfig(config.config_file_name)
 from core.config import config
 from app.user.models import *
 from app.company.models import *
+from app.store.models import *
 
 target_metadata = Base.metadata
 

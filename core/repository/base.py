@@ -15,7 +15,7 @@ class BaseRepo(Generic[ModelType]):
         self.model = model
 
     @classmethod
-    async def get_all(cls, limit: int) -> Optional[ModelType]:
+    async def get_all(cls, limit: int=100) -> Optional[ModelType]:
         print(cls.__str__)
         query = select(cls.Config.model).limit(limit)
         result = await session.execute(query)

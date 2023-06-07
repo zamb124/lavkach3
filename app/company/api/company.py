@@ -5,7 +5,6 @@ from app.company.schemas import (
     CompanySchema,
     ExceptionResponseSchema
 )
-from app.company.services import CompanyService
 
 company_router = APIRouter()
 

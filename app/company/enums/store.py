@@ -1,5 +1,5 @@
 from . import BaseEnum
 
 
-class CompanyEnum(BaseEnum):
+class StoreEnum(BaseEnum):
     pass

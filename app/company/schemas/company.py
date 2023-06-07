@@ -12,9 +12,10 @@ class CompanySchema(BaseModel, BaseRepo):
     """
     id: Optional[UUID4] = Field(description="ID", default_factory=uuid.uuid4)
     title: str = Field(..., description="Email")
-    lang: str = Field(..., description="Nickname")
-    country: str = Field(..., description="Nickname")
-    currency: str = Field(..., description="Nickname")
+    external_id: str = Field(..., description="External ID")
+    lang: str = Field(..., description="lang")
+    country: str = Field(..., description="Country")
+    currency: str = Field(..., description="Currency")
 
     class Config:
         orm_mode = True

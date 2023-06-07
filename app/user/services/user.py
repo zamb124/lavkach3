@@ -70,7 +70,7 @@ class UserService:
             raise UserNotFoundException
 
         response = LoginResponseSchema(
-            token=TokenHelper.encode(payload={"user_id": user.id}),
+            token=TokenHelper.encode(payload={"user_id": user.id.__str__()}),
             refresh_token=TokenHelper.encode(payload={"sub": "refresh"}),
         )
         return response
