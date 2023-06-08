@@ -23,7 +23,8 @@ class CompanyMixin:
         return Column(
             UUID,
             ForeignKey("companies.id"),
-            index=True
+            index=True,
+            nullable=False
         )
 
 class LsnMixin:

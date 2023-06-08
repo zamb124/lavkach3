@@ -26,34 +26,39 @@ class BaseRepo(Generic[ModelType]):
         query = select(cls.Config.model).where(cls.Config.model.id == id.__str__())
         result = await session.execute(query)
         return result.scalars().first()
-    async def save(
+    async def update(
         self,
-        params: dict,
+        id: uuid.UUID,
         synchronize_session: SynchronizeSessionEnum = False,
     ) -> None:
         query = (
             update(self.Config.model)
-            .where(self.Config.model.id == self.id)
-            .values(**params)
+            .where(self.Config.model.id == id.__str__())
+            .values(**self.dict())
             .execution_options(synchronize_session=synchronize_session)
         )
+        print(query)
         await session.execute(query)
-
+        await session.commit()
+        #await session.refresh(entity)
+        entity = await self.get_by_id(id.__str__())
+        return entity
     async def delete(self) -> None:
         await session.delete(self.Config.model)
 
+    @classmethod
     async def delete_by_id(
-        self,
-        id: int,
+        cls,
+        id: uuid.UUID,
         synchronize_session: SynchronizeSessionEnum = False,
     ) -> None:
         query = (
-            delete(self.Config.model)
-            .where(self.Config.model.id == id)
+            delete(cls.Config.model)
+            .where(cls.Config.model.id == id.__str__())
             .execution_options(synchronize_session=synchronize_session)
         )
         await session.execute(query)
-
+        await session.commit()
     #@Transactional(propagation=Propagation.REQUIRED)
     async def create(self) -> ModelType:
         entity = self.Config.model(**self.dict())
