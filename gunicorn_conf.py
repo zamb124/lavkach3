@@ -9,5 +9,5 @@ worker_class = 'uvicorn.workers.UvicornWorker'
 
 # Logging Options
 loglevel = 'debug'
-accesslog = '/home/viktor-shved/lavkach/access_log'
-errorlog = '/home/viktor-shved/lavkach/error_log'
+#accesslog = '/home/viktor-shved/lavkach/access_log'
+#errorlog = '/home/viktor-shved/lavkach/error_log'
