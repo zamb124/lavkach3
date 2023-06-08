@@ -4,28 +4,27 @@ import uuid
 from pydantic import BaseModel, Field, HttpUrl, conint
 from pydantic.types import UUID4, condecimal, constr
 from app.to_camel import to_camel
-from app.maintenance.models import Model
+from app.maintenance.models import AssetType, Type, SourceType
 from core.repository.base import BaseRepo
-from app.maintenance.schemas.manufacturer import ManufacturerScheme
 
-class ModelBaseScheme(BaseModel, BaseRepo):
+class AssetTypeBaseScheme(BaseModel, BaseRepo):
     title: str = Field(description="Title")
     company_id: UUID4
-    manufacturer_id: UUID4
+    type: Type
+    source: SourceType
+    serial_required: Optional[bool]
     class Config:
-        model = Model
-class ModelUpdateScheme(ModelBaseScheme):
+        model = AssetType
+class AssetTypeUpdateScheme(AssetTypeBaseScheme):
     pass
-class ModelCreateScheme(ModelBaseScheme):
-
+class AssetTypeCreateScheme(AssetTypeBaseScheme):
     class Config:
-        model = Model
-class ModelScheme(ModelCreateScheme):
+        model = AssetType
+class AssetTypeScheme(AssetTypeCreateScheme):
     id: UUID4
     lsn: int
-    manufacturer: ManufacturerScheme
     class Config:
-        model = Model
+        model = AssetType
         orm_mode = True
         #alias_generator = to_camel
         #allow_population_by_field_name = True

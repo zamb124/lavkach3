@@ -39,6 +39,7 @@ class Manufacturer(Base, TimestampMixin, CompanyMixin):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     #models = relationship("Model", backref='manufacturer', lazy='selectin')
+
 class Model(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "models"
     lsn_seq = Sequence(f'models_lsn_seq')
@@ -82,10 +83,15 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     asset_type_id = Column(UUID, ForeignKey("assettypes.id"), index=True, nullable=True)
+    asset_type = relationship("AssetType", backref='assets', lazy='selectin')
     manufacturer_id = Column(UUID, ForeignKey("manufacturers.id"), index=True, nullable=True)
+    manufacturer = relationship("Manufacturer", backref='assets', lazy='selectin')
     store_id = Column(UUID, ForeignKey("stores.id"), index=True, nullable=True)
+    store = relationship("Store", backref='assets', lazy='selectin')
     model_id = Column(UUID, ForeignKey("models.id"), index=True, nullable=True)
+    model = relationship("Model", backref='assets', lazy='selectin')
     status = Column(Unicode(20), nullable=False, index=True, default=SourceType.INTERNAL)
     serial = Column(Unicode(255), nullable=True, index=True)
     at = Column(Unicode(255), nullable=True)
-    owner = Column(UUID, ForeignKey("users.id"), nullable=True)
+    user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
+    user = relationship("User", backref='assets', lazy='selectin')

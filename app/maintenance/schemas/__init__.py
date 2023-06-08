@@ -2,6 +2,8 @@ from .contractor import *
 from .service_supplier import *
 from .manufacturer import *
 from .model import *
+from .asset_type import *
+from .asset import *
 
 
 class ExceptionResponseSchema(BaseModel):
