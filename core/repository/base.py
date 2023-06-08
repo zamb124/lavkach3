@@ -74,5 +74,7 @@ class BaseRepo(Generic[ModelType]):
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
             else:
                 raise e
+        except Exception as e:
+            raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         return entity
 

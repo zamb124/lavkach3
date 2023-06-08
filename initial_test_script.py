@@ -1,6 +1,7 @@
 import requests
 import uuid
-user_id = "cf144389-410c-4c06-b2de-18dc37432858"
+import json
+user_id = "1589dcf6-12fc-471d-9539-bdb3caddce27"
 #url = 'http://158.160.53.137:8080/'
 url = 'http://0.0.0.0:8080'
 user = {
@@ -157,7 +158,7 @@ for i, m in enumerate(manuls):
   "serial": f"2312312312{i}",
   "at": f"Htoto {i}",
   "user_id": user_id,
-  "barcode": uuid.uuid4(),
+  "barcode": uuid.uuid4().__str__(),
 }
 
   responce = requests.post('http://158.160.53.137:8080/api/asset/create', json=asset)
