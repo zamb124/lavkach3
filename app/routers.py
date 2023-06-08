@@ -10,6 +10,7 @@ from .maintenance.api.manufacturer import manufacturer_router
 from .maintenance.api.asset_type import assets_type_router
 from .maintenance.api.asset import assets_router
 from .maintenance.api.model import model_router
+from app.maintenance.api.order import order_router
 
 router = APIRouter()
 router.include_router(user_router, prefix="/api/users", tags=["User"])
@@ -22,6 +23,7 @@ router.include_router(manufacturer_router, prefix="/api/manufacturer", tags=["Ma
 router.include_router(model_router, prefix="/api/model", tags=["Model"])
 router.include_router(assets_type_router, prefix="/api/assets_type", tags=["AssetType"])
 router.include_router(assets_router, prefix="/api/asset", tags=["Asset"])
+router.include_router(order_router, prefix="/api/order", tags=["Order"])
 
 
 __all__ = ["router"]

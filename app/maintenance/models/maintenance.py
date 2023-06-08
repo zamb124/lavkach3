@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, Sequence
+from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, Sequence, Text, Integer, Numeric
 
 from core.db import Base
 from core.db.mixins import TimestampMixin, LsnMixin, CompanyMixin
@@ -28,6 +28,8 @@ class ServiceSupplier(Base, TimestampMixin, CompanyMixin):
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
+    store_id = Column(UUID, ForeignKey("stores.id"), index=True, nullable=True)
+    store = relationship("Store", backref='supplier_store', lazy='selectin')
     external_id = Column(Unicode(255), nullable=True, unique=True)
     contractor_id = Column(UUID,ForeignKey("contractors.id"), index=True, nullable=True)
     contractor = relationship("Contractor", backref='servicesuppliers',lazy='selectin')
@@ -94,4 +96,45 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     serial = Column(Unicode(255), nullable=True, index=True)
     at = Column(Unicode(255), nullable=True)
     user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
-    user = relationship("User", backref='assets', lazy='selectin')
+    user = relationship("User", lazy='selectin')
+
+
+class OrderStatus(str, Enum):
+    DRAFT = 'draft'
+    FREE = 'free'
+    TAKEN = 'taken'
+    IN_PROGRESS = 'in_progress'
+    FINISHING = 'finishing'
+    DONE = 'done'
+
+class Order(Base, TimestampMixin, CompanyMixin):
+    __tablename__ = "orders"
+
+    lsn_seq = Sequence(f'orders_lsn_seq')
+    number_seq = Sequence(f'orders_number_seq')
+    lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    number = Column(BigInteger, number_seq, default=number_seq.next_value(), index=True)
+    description = Column(Text, nullable=True)
+    supplier_id = Column(UUID, index=True, nullable=True)
+    status = Column(Unicode(30), nullable=False, index=True, default=OrderStatus.DRAFT)
+    asset_id = Column(UUID, index=True, nullable=False)
+    store_id = Column(UUID, ForeignKey("stores.id"), index=True, nullable=True)
+    store = relationship("Store", backref='order_store', lazy='selectin')
+    user_created_id = Column(UUID, ForeignKey("users.id"), nullable=True)
+    user_created = relationship("User", lazy='selectin', foreign_keys=[user_created_id])
+    supplier_user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
+    supplier_user = relationship("User", lazy='selectin', foreign_keys=[supplier_user_id])
+
+class OrderLine(Base, TimestampMixin):
+    __tablename__ = "orders_lines"
+
+    lsn_seq = Sequence(f'orders_lines_lsn_seq')
+    lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    title = Column(Unicode(255), nullable=False)
+    description = Column(Text, nullable=True)
+    order_id = Column(UUID, ForeignKey("orders.id"), index=True, nullable=True)
+    order = relationship("User", backref='order_lines', lazy='selectin')
+    quantity = Column(Integer, nullable=False, default=1)
+    cost = Column(Numeric(12, 2), default=0.0)
