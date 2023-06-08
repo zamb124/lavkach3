@@ -54,9 +54,12 @@ class BaseRepo(Generic[ModelType]):
         )
         await session.execute(query)
 
-    @Transactional(propagation=Propagation.REQUIRED)
+    #@Transactional(propagation=Propagation.REQUIRED)
     async def create(self) -> ModelType:
         entity = self.Config.model(**self.dict())
-        saved = session.add(entity)
-        return self.id
+        #entity.id = uuid.uuid4()
+        session.add(entity)
+        await session.commit()
+        await session.refresh(entity)
+        return entity
 

@@ -31,6 +31,7 @@ from core.config import config
 from app.user.models import *
 from app.company.models import *
 from app.store.models import *
+from app.maintenance.models import *
 
 target_metadata = Base.metadata
 
