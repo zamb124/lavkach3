@@ -2,7 +2,8 @@ import uuid
 from typing import TypeVar, Type, Optional, Generic
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select, update, delete
-
+from starlette.exceptions import HTTPException
+from sqlalchemy.exc import IntegrityError
 from core.db.session import Base, session
 from core.repository.enum import SynchronizeSessionEnum
 from core.db import Transactional, Propagation
@@ -64,7 +65,14 @@ class BaseRepo(Generic[ModelType]):
         entity = self.Config.model(**self.dict())
         #entity.id = uuid.uuid4()
         session.add(entity)
-        await session.commit()
-        await session.refresh(entity)
+        try:
+            await session.commit()
+            await session.refresh(entity)
+        except IntegrityError as e:
+            await session.rollback()
+            if "duplicate key" in str(e):
+                raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
+            else:
+                raise e
         return entity
 

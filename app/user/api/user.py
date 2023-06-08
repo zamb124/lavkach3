@@ -24,7 +24,7 @@ user_router = APIRouter()
     response_model=List[GetUserListResponseSchema],
     response_model_exclude={"id"},
     responses={"400": {"model": ExceptionResponseSchema}},
-    dependencies=[Depends(PermissionDependency([IsAdmin]))],
+    #dependencies=[Depends(PermissionDependency([IsAdmin]))],
 )
 async def get_user_list(
     limit: int = Query(10, description="Limit"),

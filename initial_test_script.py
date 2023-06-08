@@ -1,5 +1,7 @@
 import requests
 
+user_id = None
+
 user = {
   "email": "loh@loh2.ru",
   "password1": "1402",
@@ -7,6 +9,7 @@ user = {
   "nickname": "loh2"
 }
 responce = requests.post('http://127.0.0.1:8080/api/users', json=user)
+user_id = responce.json().get('')
 print(responce.status_code)
 
 company = {
@@ -61,5 +64,85 @@ responce2 = requests.post('http://127.0.0.1:8080/api/contractor/create', json=co
 contractor1_id = responce1.json().get('id')
 contractor2_id = responce2.json().get('id')
 
+#83dca62d-eba3-4c60-a073-94df92b04cd6
+supplier1 = {
+  "title": "Supplier 1 ",
+  "external_id": "1",
+  "contractor_id": contractor1_id
+}
 
+#3a7335cf-0be8-4360-bc9b-625973db0a1
+supplier2 = {
+  "title": "Supplier 2 ",
+  "external_id": "2",
+  "contractor_id": contractor2_id
+}
 
+responce1 = requests.post('http://127.0.0.1:8080/api/supplier/create', json=supplier1)
+responce2 = requests.post('http://127.0.0.1:8080/api/supplier/create', json=supplier2)
+
+supplier1_id = responce1.json().get('id')
+supplier2_id = responce2.json().get('id')
+
+#7e7aa833-9c7b-493b-9b79-1bf11431b767
+manufact1 = {
+  "title": "Manufacturer 1",
+  "company_id": company_id
+}
+#6498c629-f4d0-49de-816c-66ba3ee977b1
+manufact2 = {
+  "title": "Manufacturer 2",
+  "company_id": company_id
+}
+#cd479362-c5a2-4152-949c-30684125adb2
+manufact3 = {
+  "title": "Manufacturer 3",
+  "company_id": company_id
+}
+#b2bb550c-b450-45a2-a122-e22b2a141de5
+manufact4 = {
+  "title": "Manufacturer 4",
+  "company_id": company_id
+}
+
+responce1 = requests.post('http://127.0.0.1:8080/api/manufacturer/create', json=manufact1)
+responce2 = requests.post('http://127.0.0.1:8080/api/manufacturer/create', json=manufact2)
+responce3 = requests.post('http://127.0.0.1:8080/api/manufacturer/create', json=manufact3)
+responce4 = requests.post('http://127.0.0.1:8080/api/manufacturer/create', json=manufact4)
+
+manufact1 = responce1.json().get('id')
+manufact2 = responce2.json().get('id')
+manufact3 = responce1.json().get('id')
+manufact4 = responce2.json().get('id')
+manuls = (manufact1, manufact2, manufact3, manufact4)
+for i, m in enumerate(manuls):
+  body = {
+  "title": f"Model {i}",
+  "manufacturer_id": m
+}
+  responce = requests.post('http://127.0.0.1:8080/api/model/create', json=body)
+  model = responce.json().get('id')
+
+  #95484185-385d-4f63-8565-bb779bef1177
+  asset_type = {
+  "title": f"Asset Type {i}",
+  "company_id": company_id,
+  "type": "storable",
+  "source": "internal",
+  "serial_required": True
+}
+  responce = requests.post('http://127.0.0.1:8080/api/assets_type/create', json=asset_type)
+  asset_type_id = responce.json().get('id')
+
+  asset = {
+  "title": f"Asset {i}",
+  "company_id": company_id,
+  "asset_type_id": asset_type_id,
+  "manufacturer_id": manufact1,
+  "store_id": store1_id,
+  "model_id": model,
+  "status": "draft",
+  "serial": f"2312312312{i}",
+  "at": f"Htoto {i}",
+  "user_id": user_id
+}

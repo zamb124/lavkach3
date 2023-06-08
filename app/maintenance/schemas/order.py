@@ -63,7 +63,7 @@ class OrderScheme(OrderCreateScheme):
     store: StoreSchema
     user_created: GetUserListResponseSchema
     supplier_user: GetUserListResponseSchema
-    order_lines: OrderLineScheme
+    order_lines: List[OrderLineScheme]
     class Config:
         model = Order
         orm_mode = True
