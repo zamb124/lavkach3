@@ -1,5 +1,5 @@
 import uuid
-from typing import TypeVar, Type, Optional, Generic
+from typing import TypeVar, Type, Optional, Generic, Union
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select, update, delete
 from starlette.exceptions import HTTPException

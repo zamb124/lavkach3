@@ -1,12 +1,12 @@
 import uuid
 import typing
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Query, HTTPException
 from app.store.schemas import (
     StoreSchema,
-    ExceptionResponseSchema
+    ExceptionResponseSchema,
 )
-from core.repository.base import BaseRepo
+from core.integration.wms import ClientWMS
 
 store_router = APIRouter()
 
@@ -36,3 +36,28 @@ async def create_store(request: StoreSchema):
 )
 async def load_store(store_id: uuid.UUID) -> typing.Union[None, StoreSchema]:
     return await StoreSchema.get_by_id(id=store_id)
+
+
+@store_router.post(
+    "/sync",
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def sync_stores(token):
+    response = await ClientWMS.req(cursor=None, path='/api/external/stores/v1/list', token=token)
+
+    if response is None:
+        raise HTTPException(status_code=403, detail='Wrong token')
+
+    for store in response['stores']:
+        store = StoreSchema(
+            title=store['title'],
+            external_id=store['store_id'],
+            address=store['address'] or 'no adress',
+            source='wms',
+        )
+        try:
+            await store.create()
+        except Exception:
+            continue
+
+    return {'code': 'OK'}
