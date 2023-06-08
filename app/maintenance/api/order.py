@@ -56,7 +56,7 @@ async def delete_order(order_id: uuid.UUID):
 
 #############################################
 @order_router.get(
-    "",
+    "/line",
     response_model=List[OrderLineScheme],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
@@ -64,13 +64,13 @@ async def get_order_line_list(limit: int = Query(10, description="Limit")):
     return await OrderLineScheme.get_all(limit=limit)
 
 @order_router.get(
-    "/{order_line_id}",
+    "/line/{order_line_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def load_assets(order_line_id: uuid.UUID) -> Union[None, OrderLineScheme]:
     return await OrderLineScheme.get_by_id(id=order_line_id)
 @order_router.post(
-    "/create",
+    "/line/create",
     response_model=OrderLineScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
@@ -79,7 +79,7 @@ async def create_order_line(request: OrderLineCreateScheme):
     return entity
 
 @order_router.put(
-    "/{order_line_id}",
+    "/line/{order_line_id}",
     response_model=OrderLineScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
@@ -88,7 +88,7 @@ async def update_order_line(order_line_id: uuid.UUID, request: OrderLineUpdateSc
     return entity
 
 @order_router.put(
-    "/{order_line_id}",
+    "/line/{order_line_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def delete_order_line(order_line_id: uuid.UUID):
