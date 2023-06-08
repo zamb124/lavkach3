@@ -99,7 +99,7 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     user = relationship("User", lazy='selectin')
 
 class AssetLog(Base, TimestampMixin):
-    __tablename__ = "assets"
+    __tablename__ = "assets_log"
     lsn_seq = Sequence(f'assets_log_lsn_seq')
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
