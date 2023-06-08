@@ -20,7 +20,7 @@ class Contractor(Base, TimestampMixin, CompanyMixin):
     #servicesuppliers = relationship("ServiceSupplier", backref='contractor', lazy='selectin')
     #suppliers: List["ServiceSupplier"] = relationship("ServiceSupplier", backref="contractor", sa_relationship_kwargs={'lazy': 'selectin'})
 
-class ServiceSupplier(Base, TimestampMixin, CompanyMixin):
+class ServiceSupplier(Base, TimestampMixin):
     __tablename__ = "servicesuppliers"
     __allow_unmapped__ = True
 

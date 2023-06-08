@@ -11,7 +11,6 @@ from app.maintenance.schemas.contractor import ContractorScheme
 class ServiceSupplierBaseScheme(BaseModel, BaseRepo):
     title: str = Field(description="Title")
     external_id: str = Field(description="External ID")
-    company_id: UUID4
     contractor_id: UUID4
     class Config:
         model = ServiceSupplier
