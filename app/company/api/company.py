@@ -9,7 +9,7 @@ from app.company.schemas import (
 
 company_router = APIRouter()
 
-@company_router.get(
+@company_router.post(
     "",
     response_model=list[CompanySchema],
     responses={"400": {"model": ExceptionResponseSchema}},
