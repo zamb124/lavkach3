@@ -98,6 +98,18 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
     user = relationship("User", lazy='selectin')
 
+class AssetLog(Base, TimestampMixin):
+    __tablename__ = "assets"
+    lsn_seq = Sequence(f'assets_log_lsn_seq')
+    lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    asset_id = Column(UUID, index=True, nullable=False)
+    asset = relationship("Asset", backref='asset_log', lazy='selectin')
+    serial = Column(Unicode(255), nullable=True, index=True)
+    at = Column(Unicode(255), nullable=True)
+    store_id = Column(UUID, ForeignKey("stores.id"), index=True, nullable=True)
+    store = relationship("Store",lazy='selectin')
+    status = Column(Unicode(20), nullable=False, index=True, default=SourceType.INTERNAL)
 
 class OrderStatus(str, Enum):
     DRAFT = 'draft'
@@ -119,6 +131,7 @@ class Order(Base, TimestampMixin, CompanyMixin):
     supplier_id = Column(UUID, index=True, nullable=True)
     status = Column(Unicode(30), nullable=False, index=True, default=OrderStatus.DRAFT)
     asset_id = Column(UUID, index=True, nullable=False)
+    asset = relationship("Asset", backref='asset', lazy='selectin')
     store_id = Column(UUID, ForeignKey("stores.id"), index=True, nullable=True)
     store = relationship("Store", backref='order_store', lazy='selectin')
     user_created_id = Column(UUID, ForeignKey("users.id"), nullable=True)
