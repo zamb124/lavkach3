@@ -22,3 +22,16 @@ class ClientWMS():
             return None
         response = response.json()
         return response
+
+    @classmethod
+    async def assign_device(cls, barcode, path):
+        response = requests.post(
+            WMS_URL['production'] + path,
+            json={'barcode': barcode, 'device': '14fc3a62-10f6-11ea-8fac-8fd23d4204eb'},
+            headers={'Content-Type': 'application/json'},
+            timeout=3,
+        )
+        if response.status_code != 200:
+            return response.status_code
+        response = response.json()
+        return response
