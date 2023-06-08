@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List, Optional
 import uuid
-from pydantic import BaseModel, Field, HttpUrl, conint
-from pydantic.types import UUID4, condecimal, constr, Decimal
+from pydantic import BaseModel, Field, HttpUrl
+from pydantic.types import UUID4, condecimal, constr, condecimal
 from app.maintenance.models import Order, OrderLine, OrderStatus
 from core.repository.base import BaseRepo
 from app.store.schemas import StoreSchema
@@ -14,7 +14,7 @@ class OrderLineBaseScheme(BaseModel, BaseRepo):
     description:str
     order_id: UUID4
     quantity: Optional[int]
-    cost = Decimal
+    cost = condecimal(decimal_places=2)
 
     class Config:
         model = OrderLine
@@ -29,9 +29,6 @@ class OrderLineCreateScheme(OrderLineBaseScheme):
 class OrderLineScheme(OrderLineCreateScheme):
     id: UUID4
     lsn: int
-    store: StoreSchema
-    user_created: GetUserListResponseSchema
-    supplier_user: GetUserListResponseSchema
 
     class Config:
         model = OrderLine
@@ -41,6 +38,7 @@ class OrderLineScheme(OrderLineCreateScheme):
 
 ##############################################################################################################
 class OrderBaseScheme(BaseModel, BaseRepo):
+    company_id: UUID4
     description: str
     supplier_id: UUID4
     status: OrderStatus
@@ -56,6 +54,7 @@ class OrderCreateScheme(OrderBaseScheme):
     class Config:
         model = Order
 
+
 class OrderScheme(OrderCreateScheme):
     id: UUID4
     lsn: int
@@ -69,3 +68,7 @@ class OrderScheme(OrderCreateScheme):
         orm_mode = True
         #alias_generator = to_camel
         #allow_population_by_field_name = True
+
+class OrderLineInlineScheme(OrderLineCreateScheme):
+    id: UUID4
+    lsn: int

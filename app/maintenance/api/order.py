@@ -8,7 +8,8 @@ from app.maintenance.schemas import (
     OrderUpdateScheme,
     OrderLineCreateScheme,
     OrderLineScheme,
-    OrderLineUpdateScheme
+    OrderLineUpdateScheme,
+    OrderLineInlineScheme
 )
 
 order_router = APIRouter()
