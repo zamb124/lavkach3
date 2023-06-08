@@ -26,6 +26,7 @@ class ContractorScheme(ContractorCreateScheme):
     lsn: int
 
     class Config:
+        model = Contractor
         orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True

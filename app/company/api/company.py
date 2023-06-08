@@ -24,8 +24,8 @@ async def get_company_list(limit: int = Query(10, description="Limit")):
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def create_company(request: CompanySchema):
-    res = await request.create()
-    return await request.get_by_id(res)
+    entity = await request.create()
+    return entity
 
 
 @company_router.get(
