@@ -19,7 +19,7 @@ async def get_company_list(limit: int = Query(10, description="Limit")):
     return a
 
 @company_router.post(
-    "",
+    "/create",
     response_model=CompanySchema,
     responses={"400": {"model": ExceptionResponseSchema}},
 )

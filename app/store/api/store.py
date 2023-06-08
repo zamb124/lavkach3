@@ -21,7 +21,7 @@ async def get_store_list(limit: int = Query(10, description="Limit")):
 
 
 @store_router.post(
-    "",
+    "/create",
     response_model=StoreSchema,
     responses={"400": {"model": ExceptionResponseSchema}},
 )

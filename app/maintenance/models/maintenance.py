@@ -17,7 +17,7 @@ class Contractor(Base, TimestampMixin, CompanyMixin):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     external_id = Column(Unicode(255), nullable=True, unique=True)
-    servicesuppliers = relationship("ServiceSupplier", backref='contractor', lazy='selectin')
+    #servicesuppliers = relationship("ServiceSupplier", backref='contractor', lazy='selectin')
     #suppliers: List["ServiceSupplier"] = relationship("ServiceSupplier", backref="contractor", sa_relationship_kwargs={'lazy': 'selectin'})
 
 class ServiceSupplier(Base, TimestampMixin, CompanyMixin):
@@ -30,7 +30,7 @@ class ServiceSupplier(Base, TimestampMixin, CompanyMixin):
     title = Column(Unicode(255), nullable=False)
     external_id = Column(Unicode(255), nullable=True, unique=True)
     contractor_id = Column(UUID,ForeignKey("contractors.id"), index=True, nullable=True)
-    contractor = relationship("Contractor", backref='servicesupplier',lazy='selectin')
+    contractor = relationship("Contractor", backref='servicesuppliers',lazy='selectin')
 
 class Manufacturer(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "manufacturers"
@@ -38,7 +38,7 @@ class Manufacturer(Base, TimestampMixin, CompanyMixin):
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
-    models = relationship("Model", backref='manufacturer', lazy='selectin')
+    #models = relationship("Model", backref='manufacturer', lazy='selectin')
 class Model(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "models"
     lsn_seq = Sequence(f'models_lsn_seq')
@@ -46,7 +46,7 @@ class Model(Base, TimestampMixin, CompanyMixin):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     manufacturer_id = Column(UUID, ForeignKey("manufacturers.id"), index=True, nullable=True)
-    manufacturer = relationship("Model", backref='models', lazy='selectin')
+    manufacturer = relationship("Manufacturer", backref='models', lazy='selectin')
 
 class Type(str, Enum):
     STORABLE: str = 'storable'
