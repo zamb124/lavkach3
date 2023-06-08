@@ -27,6 +27,12 @@ def upgrade():
     op.execute("create sequence models_lsn_seq")
     op.execute("create sequence assets_lsn_seq")
 
+    op.execute("create sequence assets_log_lsn_seq")
+    op.execute("create sequence orders_lsn_seq")
+    op.execute("create sequence orders_number_seq")
+    op.execute("create sequence orders_lines_lsn_seq")
+
+
     # ### end Alembic commands ###
 
 
@@ -41,3 +47,8 @@ def downgrade():
     op.execute("drop sequence assettypes_lsn_seq")
     op.execute("drop sequence models_lsn_seq")
     op.execute("drop sequence assets_lsn_seq")
+
+    op.execute("drop sequence assets_log_lsn_seq")
+    op.execute("drop sequence orders_lsn_seq")
+    op.execute("drop sequence orders_number_seq")
+    op.execute("drop sequence orders_lines_lsn_seq")

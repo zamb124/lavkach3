@@ -148,6 +148,6 @@ class OrderLine(Base, TimestampMixin):
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=True)
     order_id = Column(UUID, ForeignKey("orders.id"), index=True, nullable=True)
-    order = relationship("User", backref='order_lines', lazy='selectin')
+    order = relationship("Order", backref='order_lines', lazy='selectin')
     quantity = Column(Integer, nullable=False, default=1)
     cost = Column(Numeric(12, 2), default=0.0)
