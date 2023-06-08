@@ -1,4 +1,5 @@
-from typing import List
+import uuid
+import typing
 
 from fastapi import APIRouter, Depends, Query
 from app.company.schemas import (
@@ -14,8 +15,7 @@ company_router = APIRouter()
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def get_company_list(limit: int = Query(10, description="Limit")):
-    print('lol')
-    a= await CompanySchema.get_all(limit=limit)
+    a = await CompanySchema.get_all(limit=limit)
     return a
 
 @company_router.post(
@@ -26,3 +26,11 @@ async def get_company_list(limit: int = Query(10, description="Limit")):
 async def create_company(request: CompanySchema):
     res = await request.create()
     return await request.get_by_id(res)
+
+
+@company_router.get(
+    "/{company_id}",
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def load_store(company_id: uuid.UUID) -> typing.Union[None, CompanySchema]:
+    return await CompanySchema.get_by_id(id=company_id)
