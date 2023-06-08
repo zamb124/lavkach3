@@ -155,7 +155,8 @@ for i, m in enumerate(manuls):
   "status": "draft",
   "serial": f"2312312312{i}",
   "at": f"Htoto {i}",
-  "user_id": user_id
+  "user_id": user_id,
+  "barcode": uuid.uuid4(),
 }
 
   responce = requests.post('http://158.160.53.137:8080/api/asset/create', json=asset)

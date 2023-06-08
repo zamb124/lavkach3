@@ -96,6 +96,7 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     serial = Column(Unicode(255), nullable=True, index=True)
     at = Column(Unicode(255), nullable=True)
     user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
+    barcode = Column(UUID, nullable=False, index=True, unique=True)
     user = relationship("User", lazy='selectin')
 
 class AssetLog(Base, TimestampMixin):
