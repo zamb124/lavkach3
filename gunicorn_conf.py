@@ -8,6 +8,6 @@ workers = cpu_count() + 1
 worker_class = 'uvicorn.workers.UvicornWorker'
 
 # Logging Options
-loglevel = 'debug'
+loglevel = 'info'
 #accesslog = '/home/viktor-shved/lavkach/access_log'
 #errorlog = '/home/viktor-shved/lavkach/error_log'
