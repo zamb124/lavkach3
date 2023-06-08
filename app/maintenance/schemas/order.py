@@ -14,11 +14,10 @@ class OrderLineBaseScheme(BaseModel, BaseRepo):
     description:str
     order_id: UUID4
     quantity: Optional[int]
-    cost = Optional[condecimal(decimal_places=2)]
+    cost = Decimal
 
     class Config:
         model = OrderLine
-        arbitrary_types_allowed = True
 
 class OrderLineUpdateScheme(OrderLineBaseScheme):
     pass
@@ -54,7 +53,6 @@ class OrderBaseScheme(BaseModel, BaseRepo):
 class OrderUpdateScheme(OrderBaseScheme):
     pass
 class OrderCreateScheme(OrderBaseScheme):
-    order_lines: Optional[OrderLineScheme]
     class Config:
         model = Order
 
@@ -65,10 +63,9 @@ class OrderScheme(OrderCreateScheme):
     store: StoreSchema
     user_created: GetUserListResponseSchema
     supplier_user: GetUserListResponseSchema
-    #order_lines: OrderLineScheme
+    order_lines: OrderLineScheme
     class Config:
         model = Order
         orm_mode = True
-        arbitrary_types_allowed = True
         #alias_generator = to_camel
         #allow_population_by_field_name = True

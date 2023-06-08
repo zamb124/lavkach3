@@ -10,7 +10,7 @@ from .maintenance.api.manufacturer import manufacturer_router
 from .maintenance.api.asset_type import assets_type_router
 from .maintenance.api.asset import assets_router
 from .maintenance.api.model import model_router
-from app.maintenance.api.order import order_router
+from .maintenance.api.order import order_router
 
 router = APIRouter()
 router.include_router(user_router, prefix="/api/users", tags=["User"])

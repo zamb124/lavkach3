@@ -1,13 +1,13 @@
 from typing import List, Union
 import uuid
 from fastapi import APIRouter, Depends, Query
-from app.maintenance.schemas import ExceptionResponseSchema
-from app.maintenance.schemas.order import (
+from app.maintenance.schemas import (
     OrderCreateScheme,
-    OrderLineCreateScheme,
+    ExceptionResponseSchema,
     OrderScheme,
-    OrderLineScheme,
     OrderUpdateScheme,
+    OrderLineCreateScheme,
+    OrderLineScheme,
     OrderLineUpdateScheme
 )
 
@@ -45,19 +45,18 @@ async def update_order(order_id: uuid.UUID, request: OrderUpdateScheme):
     entity = await request.update(id=order_id)
     return entity
 
-@order_router.delete(
+@order_router.put(
     "/{order_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_order(order_id: uuid.UUID):
+async def delete_order(order_id: uuid.UUID):
     await OrderScheme.delete_by_id(id=order_id)
 
 
 
-############################################
-
+#############################################
 @order_router.get(
-    "/line",
+    "",
     response_model=List[OrderLineScheme],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
@@ -65,13 +64,13 @@ async def get_order_line_list(limit: int = Query(10, description="Limit")):
     return await OrderLineScheme.get_all(limit=limit)
 
 @order_router.get(
-    "/line/{order_line_id}",
+    "/{order_line_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def load_order_line(order_id: uuid.UUID) -> Union[None, OrderLineScheme]:
-    return await OrderLineScheme.get_by_id(id=order_id)
+async def load_assets(order_line_id: uuid.UUID) -> Union[None, OrderLineScheme]:
+    return await OrderLineScheme.get_by_id(id=order_line_id)
 @order_router.post(
-    "/line/create",
+    "/create",
     response_model=OrderLineScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
@@ -80,7 +79,7 @@ async def create_order_line(request: OrderLineCreateScheme):
     return entity
 
 @order_router.put(
-    "/line/{order_line_id}",
+    "/{order_line_id}",
     response_model=OrderLineScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
@@ -88,9 +87,9 @@ async def update_order_line(order_line_id: uuid.UUID, request: OrderLineUpdateSc
     entity = await request.update(id=order_line_id)
     return entity
 
-@order_router.delete(
-    "/line/{order_line_id}",
+@order_router.put(
+    "/{order_line_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_order_line(order_line_id: uuid.UUID):
+async def delete_order_line(order_line_id: uuid.UUID):
     await OrderLineScheme.delete_by_id(id=order_line_id)
