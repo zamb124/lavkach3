@@ -121,6 +121,7 @@ class OrderStatus(str, Enum):
 
 class Order(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "orders"
+    __allow_unmapped__ = True
 
     lsn_seq = Sequence(f'orders_lsn_seq')
     number_seq = Sequence(f'orders_number_seq')
@@ -138,9 +139,11 @@ class Order(Base, TimestampMixin, CompanyMixin):
     user_created = relationship("User", lazy='selectin', foreign_keys=[user_created_id])
     supplier_user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
     supplier_user = relationship("User", lazy='selectin', foreign_keys=[supplier_user_id])
+    order_lines = relationship("OrderLine", lazy='selectin')
 
 class OrderLine(Base, TimestampMixin):
     __tablename__ = "orders_lines"
+    __allow_unmapped__ = True
 
     lsn_seq = Sequence(f'orders_lines_lsn_seq')
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
@@ -148,6 +151,6 @@ class OrderLine(Base, TimestampMixin):
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=True)
     order_id = Column(UUID, ForeignKey("orders.id"), index=True, nullable=True)
-    order = relationship("Order", backref='order_lines', lazy='selectin')
+    order = relationship("Order",viewonly=True, lazy='joined')
     quantity = Column(Integer, nullable=False, default=1)
     cost = Column(Numeric(12, 2), default=0.0)

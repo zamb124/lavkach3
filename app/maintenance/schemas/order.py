@@ -41,6 +41,7 @@ class OrderLineScheme(OrderLineCreateScheme):
 
 ##############################################################################################################
 class OrderBaseScheme(BaseModel, BaseRepo):
+    company_id: UUID4
     description: str
     supplier_id: UUID4
     status: OrderStatus

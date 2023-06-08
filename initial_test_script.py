@@ -1,7 +1,8 @@
 import requests
 import uuid
 user_id = "cf144389-410c-4c06-b2de-18dc37432858"
-url = 'http://158.160.53.137:8080/'
+#url = 'http://158.160.53.137:8080/'
+url = 'http://0.0.0.0:8080'
 user = {
   "email": "loh@loh2.ru",
   "password1": "1402",
