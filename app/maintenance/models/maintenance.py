@@ -40,7 +40,7 @@ class Manufacturer(Base, TimestampMixin, CompanyMixin):
     title = Column(Unicode(255), nullable=False)
     #models = relationship("Model", backref='manufacturer', lazy='selectin')
 
-class Model(Base, TimestampMixin, CompanyMixin):
+class Model(Base, TimestampMixin):
     __tablename__ = "models"
     lsn_seq = Sequence(f'models_lsn_seq')
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)

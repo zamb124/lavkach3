@@ -10,7 +10,6 @@ from app.maintenance.schemas.manufacturer import ManufacturerScheme
 
 class ModelBaseScheme(BaseModel, BaseRepo):
     title: str = Field(description="Title")
-    company_id: UUID4
     manufacturer_id: UUID4
     class Config:
         model = Model

@@ -27,7 +27,7 @@ async def get_store_list(limit: int = Query(10, description="Limit")):
 )
 async def create_store(request: StoreSchema):
     res = await request.create()
-    return await request.get_by_id(res)
+    return res
 
 
 @store_router.get(
