@@ -6,12 +6,13 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
     async_scoped_session,
 )
+from sqlalchemy.orm import RelationshipProperty, registry, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.sql.expression import Update, Delete, Insert
 
 from core.config import config
-
+from sqlalchemy.orm.decl_api import DeclarativeMeta
 session_context: ContextVar[str] = ContextVar("session_context")
 
 
@@ -49,4 +50,11 @@ session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
     session_factory=async_session_factory,
     scopefunc=get_session_context,
 )
-Base = declarative_base()
+mapper_registry = registry()
+class Base(metaclass=DeclarativeMeta):
+    __abstract__ = True
+
+    registry = mapper_registry
+    metadata = mapper_registry.metadata
+
+    __init__ = mapper_registry.constructor

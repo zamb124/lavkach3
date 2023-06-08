@@ -1,6 +1,6 @@
 import uuid
 from typing import TypeVar, Type, Optional, Generic
-
+from sqlalchemy.orm import selectinload
 from sqlalchemy import select, update, delete
 
 from core.db.session import Base, session

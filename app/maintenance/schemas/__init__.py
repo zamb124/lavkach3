@@ -1,4 +1,5 @@
-from .maintenance import *
+from .contractor import *
+from .service_supplier import *
 
 
 class ExceptionResponseSchema(BaseModel):

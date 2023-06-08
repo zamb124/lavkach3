@@ -3,27 +3,34 @@ from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, S
 from core.db import Base
 from core.db.mixins import TimestampMixin, LsnMixin, CompanyMixin
 import uuid
-#from sqlalchemy.orm import relationship
+from sqlalchemy.orm import RelationshipProperty, registry, relationship
 from enum import Enum
-
+from typing import List, Optional
+from sqlalchemy.orm.decl_api import DeclarativeMeta
 
 class Contractor(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "contractors"
+    __allow_unmapped__ = True
+
     lsn_seq = Sequence(f'contractors_lsn_seq')
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     external_id = Column(Unicode(255), nullable=True, unique=True)
+    books = relationship("ServiceSupplier", backref='contractor', lazy='selectin')
+    #suppliers: List["ServiceSupplier"] = relationship("ServiceSupplier", backref="contractor", sa_relationship_kwargs={'lazy': 'selectin'})
 
 class ServiceSupplier(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "servicesuppliers"
+    __allow_unmapped__ = True
+
     lsn_seq = Sequence(f'servicesuppliers_lsn_seq')
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     external_id = Column(Unicode(255), nullable=True, unique=True)
-    #contractor_id = Column(UUID,ForeignKey("contractors.id"), index=True, nullable=True)
-    #contractor = relationship("Contractor", backref="suppliers")
+    contractor_id = Column(UUID,ForeignKey("contractors.id"), index=True, nullable=True)
+    books = relationship("Contractor", backref='servicesupplier',lazy='selectin')
 
 class Manufacturer(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "manufacturers"
