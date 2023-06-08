@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 class Config(BaseSettings):
     ENV: str = "development"
     DEBUG: bool = True
-    APP_HOST: str = "158.160.53.137"
+    APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
     WRITER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/fastapi"
     READER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/fastapi"
