@@ -5,7 +5,7 @@ from app.maintenance.schemas import ModelCreateScheme, ExceptionResponseSchema, 
 
 model_router = APIRouter()
 
-@model_router.post(
+@model_router.get(
     "",
     response_model=List[ModelScheme],
     responses={"400": {"model": ExceptionResponseSchema}},
