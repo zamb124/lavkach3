@@ -24,6 +24,7 @@ class AssetBaseScheme(BaseModel, BaseRepo):
     serial: str
     at:str
     user_id: UUID4
+    barcode: UUID4
 
     class Config:
         model = Asset
