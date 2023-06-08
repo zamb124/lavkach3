@@ -173,7 +173,7 @@ for i, m in enumerate(manuls):
   "supplier_user_id": user_id
 }
   responce1 = requests.post('http://158.160.53.137:8080/api/order/create', json=order1)
-  order_resp1 = responce.json().get('id')
+  order_resp1 = responce1.json().get('id')
   print('order', responce.status_code)
 
   order_line ={
@@ -183,7 +183,7 @@ for i, m in enumerate(manuls):
   "quantity": 0
 }
   responce_line1 = requests.post('http://158.160.53.137:8080/api/order/line/create', json=order_line)
-  order_line_resp1 = responce.json().get('id')
+  order_line_resp1 = responce_line1.json().get('id')
   print('order_line2', responce.status_code)
 
   order_line2 = {
@@ -193,7 +193,7 @@ for i, m in enumerate(manuls):
     "quantity": 2
   }
   responce_line2 = requests.post('http://158.160.53.137:8080/api/order/line/create', json=order_line2)
-  order_line_resp2 = responce.json().get('id')
+  order_line_resp2 = responce_line2.json().get('id')
   print('order_line2', responce.status_code)
 
 
@@ -208,7 +208,7 @@ for i, m in enumerate(manuls):
     "supplier_user_id": user_id
   }
   responce2 = requests.post('http://158.160.53.137:8080/api/order/create', json=order2)
-  order_resp2 = responce.json().get('id')
+  order_resp2 = responce2.json().get('id')
   print('order', responce.status_code)
 
   order_line3 = {
@@ -218,7 +218,7 @@ for i, m in enumerate(manuls):
     "quantity": 3
   }
   responce_line3 = requests.post('http://158.160.53.137:8080/api/order/line/create', json=order_line3)
-  order_line_resp3 = responce.json().get('id')
+  order_line_resp3 = responce_line3.json().get('id')
   print('order_line23', responce.status_code)
 
   order_line4 = {
@@ -228,5 +228,5 @@ for i, m in enumerate(manuls):
     "quantity": 4
   }
   responce_line4 = requests.post('http://158.160.53.137:8080/api/order/line/create', json=order_line4)
-  order_line_res44 = responce.json().get('id')
+  order_line_res44 = responce_line4.json().get('id')
   print('order_line4', responce.status_code)
