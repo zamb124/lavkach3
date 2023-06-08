@@ -170,7 +170,8 @@ for i, m in enumerate(manuls):
   "asset_id": asset,
   "store_id": store1_id,
   "user_created_id": user_id,
-  "supplier_user_id": user_id
+  "supplier_user_id": user_id,
+    "company_id": company_id
 }
   responce1 = requests.post('http://158.160.53.137:8080/api/order/create', json=order1)
   order_resp1 = responce1.json().get('id')
@@ -184,17 +185,18 @@ for i, m in enumerate(manuls):
 }
   responce_line1 = requests.post('http://158.160.53.137:8080/api/order/line/create', json=order_line)
   order_line_resp1 = responce_line1.json().get('id')
-  print('order_line2', responce.status_code)
+  print('order_line2', responce_line1.status_code)
 
   order_line2 = {
     "title": f"{uuid.uuid4().__str__()[:7]}",
     "description": f"{uuid.uuid4().__str__()[:7]}",
                                                "order_id": order_resp1,
-    "quantity": 2
+    "quantity": 2,
+    "company_id": company_id
   }
   responce_line2 = requests.post('http://158.160.53.137:8080/api/order/line/create', json=order_line2)
   order_line_resp2 = responce_line2.json().get('id')
-  print('order_line2', responce.status_code)
+  print('order_line2', responce_line2.status_code)
 
 
 
@@ -205,11 +207,12 @@ for i, m in enumerate(manuls):
     "asset_id": asset,
     "store_id": store1_id,
     "user_created_id": user_id,
-    "supplier_user_id": user_id
+    "supplier_user_id": user_id,
+    "company_id": company_id
   }
   responce2 = requests.post('http://158.160.53.137:8080/api/order/create', json=order2)
   order_resp2 = responce2.json().get('id')
-  print('order', responce.status_code)
+  print('order', responce2.status_code)
 
   order_line3 = {
     "title": f"{uuid.uuid4().__str__()[:7]}",
@@ -219,7 +222,7 @@ for i, m in enumerate(manuls):
   }
   responce_line3 = requests.post('http://158.160.53.137:8080/api/order/line/create', json=order_line3)
   order_line_resp3 = responce_line3.json().get('id')
-  print('order_line23', responce.status_code)
+  print('order_line23', responce_line3.status_code)
 
   order_line4 = {
     "title": f"{uuid.uuid4().__str__()[:7]}",
@@ -229,4 +232,4 @@ for i, m in enumerate(manuls):
   }
   responce_line4 = requests.post('http://158.160.53.137:8080/api/order/line/create', json=order_line4)
   order_line_res44 = responce_line4.json().get('id')
-  print('order_line4', responce.status_code)
+  print('order_line4', responce_line4.status_code)
