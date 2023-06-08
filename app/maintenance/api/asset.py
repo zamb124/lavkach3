@@ -7,7 +7,8 @@ from app.maintenance.schemas import (
     AssetScheme,
     AssetUpdateScheme
 )
-
+from sqlalchemy import select, update, delete
+from core.db.session import Base, session
 assets_router = APIRouter()
 
 @assets_router.get(
@@ -48,3 +49,17 @@ async def update_assets(asset_id: uuid.UUID, request: AssetUpdateScheme):
 )
 async def update_assets(asset_id: uuid.UUID):
     await AssetScheme.delete_by_id(id=asset_id)
+
+@assets_router.get(
+    "/uttils/{barcode}",
+    response_model=AssetScheme,
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def search_barcode(barcode: str) -> Union[None, AssetScheme]:
+    model = AssetScheme.Config.model
+    query = (
+        select(model)
+        .where(model.barcode == barcode)
+    )
+    result = await session.execute(query)
+    return result.scalars().first()
