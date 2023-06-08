@@ -11,7 +11,7 @@ from core.repository.base import BaseRepo
 store_router = APIRouter()
 
 
-@store_router.post(
+@store_router.get(
     "",
     response_model=list[StoreSchema],
     responses={"400": {"model": ExceptionResponseSchema}},

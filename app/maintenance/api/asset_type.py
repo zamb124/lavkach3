@@ -10,7 +10,7 @@ from app.maintenance.schemas import (
 
 assets_type_router = APIRouter()
 
-@assets_type_router.post(
+@assets_type_router.get(
     "",
     response_model=List[AssetTypeScheme],
     responses={"400": {"model": ExceptionResponseSchema}},

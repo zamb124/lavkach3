@@ -5,7 +5,7 @@ from app.maintenance.schemas import ContractorCreateScheme, ContractorScheme, Ex
 
 contractor_router = APIRouter()
 
-@contractor_router.post(
+@contractor_router.get(
     "",
     response_model=List[ContractorScheme],
     responses={"400": {"model": ExceptionResponseSchema}},
