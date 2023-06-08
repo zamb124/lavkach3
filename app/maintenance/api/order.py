@@ -6,11 +6,19 @@ from app.maintenance.schemas import (
     ExceptionResponseSchema,
     OrderScheme,
     OrderUpdateScheme,
+    OrderCreateByAssetScheme,
     OrderLineCreateScheme,
     OrderLineScheme,
     OrderLineUpdateScheme,
     OrderLineInlineScheme
+
 )
+from app.maintenance.models.maintenance import Asset
+from app.user.models import User
+from sqlalchemy import select, update, delete
+from core.db.session import Base, session
+from app.maintenance.schemas.asset import AssetScheme
+from app.maintenance.schemas.order import OrderCreateScheme
 
 order_router = APIRouter()
 
@@ -36,6 +44,33 @@ async def load_order(order_id: uuid.UUID) -> Union[None, OrderScheme]:
 async def create_order(request: OrderCreateScheme):
     entity = await request.create()
     return entity
+
+@order_router.post(
+    "/create_by_asset",
+    response_model=OrderScheme,
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def create_order(request: OrderCreateByAssetScheme):
+    query = (
+        select(Asset)
+        .where(Asset.id == request.asset_id.__str__())
+    )
+    result = await session.execute(query)
+    asset = result.scalars().first()
+    query = (
+        select(User)
+        .where(User.id == request.user_id.__str__())
+    )
+    result = await session.execute(query)
+    user = result.scalars().first()
+    order = OrderCreateScheme(
+        company_id=asset.company_id,
+        description=request.description,
+        asset_id=asset.id,
+        store_id=asset.store_id,
+        user_created_id=request.user_id
+    )
+    return await order.create()
 
 @order_router.put(
     "/{order_id}",

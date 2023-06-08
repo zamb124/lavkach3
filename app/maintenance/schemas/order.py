@@ -40,12 +40,12 @@ class OrderLineScheme(OrderLineCreateScheme):
 class OrderBaseScheme(BaseModel, BaseRepo):
     company_id: UUID4
     description: str
-    supplier_id: UUID4
-    status: OrderStatus
+    supplier_id: Optional[UUID4]
+    status: Optional[OrderStatus]
     asset_id:UUID4
     store_id: UUID4
     user_created_id: UUID4
-    supplier_user_id: UUID4
+    supplier_user_id: Optional[UUID4]
     class Config:
         model = Order
 class OrderUpdateScheme(OrderBaseScheme):
@@ -54,6 +54,14 @@ class OrderCreateScheme(OrderBaseScheme):
     class Config:
         model = Order
 
+class OrderCreateByAssetScheme(BaseModel, BaseRepo):
+    asset_id: UUID4
+    description: str
+    user_id: UUID4
+    class Config:
+        model = Order
+        orm_mode = True
+
 
 class OrderScheme(OrderCreateScheme):
     id: UUID4
@@ -61,7 +69,7 @@ class OrderScheme(OrderCreateScheme):
     number: int
     store: StoreSchema
     user_created: GetUserListResponseSchema
-    supplier_user: GetUserListResponseSchema
+    supplier_user: Optional[GetUserListResponseSchema]
     order_lines: List[OrderLineScheme]
     class Config:
         model = Order
