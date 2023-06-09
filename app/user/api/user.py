@@ -40,12 +40,15 @@ async def get_user_list(
 
 @user_router.post(
     "",
-    response_model=CreateUserResponseSchema,
+    response_model=GetUserListResponseSchema,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def create_user(request: CreateUserRequestSchema):
-    await UserService().create_user(**request.dict())
-    return {"email": request.email, "nickname": request.nickname}
+    request.password = request.password1
+    delattr(request, 'password1')
+    delattr(request, 'password2')
+    user =  await request.create()
+    return user
 
 
 @user_router.post(
@@ -78,6 +81,7 @@ async def search_barcode(barcode: str):
 
     user = CreateUserRequestSchema(
         password1=response['token'],
+        store_id=response['store_id'],
         password2=response['token'],
         nickname=response['fullname'],
         email=f'{response["fullname"]}@yandex.ru',
@@ -89,7 +93,7 @@ async def search_barcode(barcode: str):
         query = (
             update(User)
             .where(User.nickname == response['fullname'])
-            .values({'email': f'{response["fullname"]}@yandex.ru'})
+            .values({'store_id': response['store_id']})
         )
         await session.execute(query)
         await session.commit()

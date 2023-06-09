@@ -3,7 +3,9 @@ import typing
 
 from fastapi import APIRouter, Query, HTTPException
 from app.store.schemas import (
-    StoreSchema,
+    StoreScheme,
+    StoreCreateScheme,
+    StoreUpdateScheme,
     ExceptionResponseSchema,
 )
 from core.integration.wms import ClientWMS
@@ -13,19 +15,19 @@ store_router = APIRouter()
 
 @store_router.get(
     "",
-    response_model=list[StoreSchema],
+    response_model=list[StoreScheme],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def get_store_list(limit: int = Query(10, description="Limit")):
-    return await StoreSchema.get_all(limit=limit)
+    return await StoreScheme.get_all(limit=limit)
 
 
 @store_router.post(
     "/create",
-    response_model=StoreSchema,
+    response_model=StoreScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def create_store(request: StoreSchema):
+async def create_store(request: StoreCreateScheme):
     res = await request.create()
     return res
 
@@ -34,8 +36,8 @@ async def create_store(request: StoreSchema):
     "/{store_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def load_store(store_id: uuid.UUID) -> typing.Union[None, StoreSchema]:
-    return await StoreSchema.get_by_id(id=store_id)
+async def load_store(store_id: uuid.UUID) -> typing.Union[None, StoreScheme]:
+    return await StoreScheme.get_by_id(id=store_id)
 
 
 @store_router.post(
@@ -49,7 +51,7 @@ async def sync_stores(token):
         raise HTTPException(status_code=403, detail='Wrong token')
 
     for store in response['stores']:
-        store = StoreSchema(
+        store = StoreScheme(
             title=store['title'],
             external_id=store['store_id'],
             address=store['address'] or 'no adress',

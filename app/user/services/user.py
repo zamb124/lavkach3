@@ -1,4 +1,5 @@
 from typing import Optional, List
+import uuid
 
 from sqlalchemy import or_, select, and_
 
@@ -36,7 +37,7 @@ class UserService:
 
     @Transactional(propagation=Propagation.REQUIRED)
     async def create_user(
-        self, email: str, password1: str, password2: str, nickname: str
+        self, email: str, password1: str, password2: str, nickname: str, type:str, store_id: uuid.UUID
     ) -> None:
         if password1 != password2:
             raise PasswordDoesNotMatchException
@@ -59,7 +60,7 @@ class UserService:
         if user.is_admin is False:
             return False
 
-        return True
+        return user
 
     async def login(self, email: str, password: str) -> LoginResponseSchema:
         result = await session.execute(

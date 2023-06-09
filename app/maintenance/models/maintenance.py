@@ -98,9 +98,10 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     status = Column(Unicode(20), nullable=False, index=True, default=AssetStatus.DRAFT)
     serial = Column(Unicode(255), nullable=True, index=True)
     at_user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
-    user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
+    at_user = relationship("User", lazy='selectin', foreign_keys=[at_user_id])
+    user_created_id = Column(UUID, ForeignKey("users.id"), nullable=True)
     barcode = Column(Unicode(1000), nullable=False, index=True, unique=True)
-    user = relationship("User", lazy='selectin')
+    user_created = relationship("User", lazy='selectin', foreign_keys=[user_created_id])
     orders = relationship("Order", lazy='selectin')
     asset_logs = relationship("AssetLog", lazy='selectin')
 

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey
 
 from core.db import Base
+from sqlalchemy.orm import RelationshipProperty, registry, relationship
 from core.db.mixins import TimestampMixin, CompanyMixin
 import uuid
 from enum import Enum
@@ -18,4 +19,6 @@ class User(Base, TimestampMixin):
     email = Column(Unicode(255), nullable=False, unique=True)
     nickname = Column(Unicode(255), nullable=False, unique=True)
     is_admin = Column(Boolean, default=False)
-    #type = Column(Unicode(20), nullable=False, default=UserType.COMMON)
+    type = Column(Unicode(20), nullable=False, default=UserType.COMMON)
+    store_id = Column(UUID, ForeignKey("stores.id"), index=True, nullable=True)
+    store = relationship("Store", lazy='selectin')

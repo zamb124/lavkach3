@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, HttpUrl
 from pydantic.types import UUID4, condecimal, constr, condecimal
 from app.maintenance.models import Order, OrderLine, OrderStatus
 from core.repository.base import BaseRepo
-from app.store.schemas import StoreSchema
+from app.store.schemas import StoreScheme
 from app.user.schemas import GetUserListResponseSchema
 from pydantic import ConfigDict
 
@@ -67,7 +67,7 @@ class OrderScheme(OrderCreateScheme):
     id: UUID4
     lsn: int
     number: int
-    store: StoreSchema
+    store: StoreScheme
     user_created: GetUserListResponseSchema
     supplier_user: Optional[GetUserListResponseSchema]
     order_lines: List[OrderLineScheme]

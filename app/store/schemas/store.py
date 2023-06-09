@@ -1,21 +1,31 @@
+from datetime import datetime
+from typing import List, Optional
 import uuid
-
-from pydantic import BaseModel, Field, UUID4
+from pydantic import BaseModel, Field, HttpUrl, conint
+from pydantic.types import UUID4, condecimal, constr
+from app.to_camel import to_camel
+from app.store.models.store import Store, StoreType
 from core.repository.base import BaseRepo
-from app.store.models import Store, StoreType
-from typing import Optional
 
-
-class StoreSchema(BaseModel, BaseRepo):
-    """
-    Упрощенный вид схема, когда подходит в целом и для работы и для API
-    """
-    id: Optional[UUID4] = Field(description="ID", default_factory=uuid.uuid4)
-    title: str = Field(..., description="Title")
-    external_id: str = Field(..., description="External ID")
-    address: str = Field(..., description="Address")
-    source: StoreType = Field(..., description="Source")
+class StoreBaseScheme(BaseModel, BaseRepo):
+    title: str
+    external_id: str
+    address: Optional[str]
+    source: Optional[StoreType]
 
     class Config:
+        model = Store
+class StoreUpdateScheme(StoreBaseScheme):
+    pass
+class StoreCreateScheme(StoreBaseScheme):
+
+    class Config:
+        model = Store
+class StoreScheme(StoreCreateScheme):
+    lsn: int
+    id:UUID4
+    class Config:
+        model = Store
         orm_mode = True
-        model = Store # Данная штука служит как бы для обращения к ORM
+        #alias_generator = to_camel
+        #allow_population_by_field_name = True

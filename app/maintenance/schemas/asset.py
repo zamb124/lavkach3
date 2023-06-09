@@ -13,7 +13,7 @@ from app.maintenance.schemas.asset_type import AssetTypeScheme
 from app.maintenance.schemas.manufacturer import ManufacturerScheme
 from app.maintenance.schemas.model import ModelScheme
 from app.user.schemas import GetUserListResponseSchema
-from app.store.schemas import StoreSchema
+from app.store.schemas import StoreScheme
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 from app.maintenance.models.maintenance import AssetLog
@@ -124,9 +124,10 @@ class AssetScheme(AssetCreateScheme):
     lsn: int
     asset_type: AssetTypeScheme
     manufacturer: ManufacturerScheme
-    store: StoreSchema
+    store: StoreScheme
     model: ModelScheme
-    user: GetUserListResponseSchema
+    user_created: GetUserListResponseSchema
+    at_user: GetUserListResponseSchema
     orders: List[OrderScheme]
     asset_logs: List[AssetLogBaseScheme]
     class Config:

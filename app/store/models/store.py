@@ -4,7 +4,7 @@ from core.db import Base
 from core.db.mixins import TimestampMixin, LsnMixin
 import uuid
 from enum import Enum
-
+from sqlalchemy.orm import RelationshipProperty, registry, relationship
 class StoreType(str, Enum):
     INTERNAL: str = 'internal'
     WMS: str = 'wms'
@@ -18,3 +18,4 @@ class Store(Base, TimestampMixin):
     external_id = Column(Unicode(255), nullable=True, unique=True)
     address = Column(Unicode(255), nullable=False)
     source = Column(Unicode(20), nullable=False, default=StoreType.INTERNAL)
+    store_users = relationship("User", lazy='selectin')
