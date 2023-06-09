@@ -17,6 +17,7 @@ from app.store.schemas import StoreSchema
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 from app.maintenance.schemas.asset_log import AssetLogBaseScheme
+from app.maintenance.models.maintenance import AssetLog
 from core.db import Transactional
 
 
@@ -40,7 +41,7 @@ class AssetLo(BaseRepo):
         except Exception as e:
             raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         else:
-            log = AssetLogBaseScheme(
+            log = AssetLog(
                 asset_id=entity.id,
                 action='init',
                 from_=None,
@@ -48,6 +49,7 @@ class AssetLo(BaseRepo):
             )
             session.add(log)
             await session.commit()
+            await session.refresh(entity)
 
         return entity
 
@@ -107,7 +109,7 @@ class AssetBaseScheme(BaseModel, AssetLo):
     serial: str
     at:dict
     user_id: UUID4
-    barcode: UUID4
+    barcode: str
 
     class Config:
         model = Asset

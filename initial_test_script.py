@@ -1,7 +1,7 @@
 import requests
 import uuid
 import json
-user_id = "61605236-8e43-46ed-a1d3-02e09ebdc7c8"
+user_id = "fbfa8ad4-3809-44e6-a360-68785d87a9ca"
 #url = 'http://158.160.53.137:8080/'
 url = 'http://0.0.0.0:8080'
 user = {
