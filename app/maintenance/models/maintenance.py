@@ -97,7 +97,7 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     model = relationship("Model", backref='assets', lazy='selectin')
     status = Column(Unicode(20), nullable=False, index=True, default=SourceType.INTERNAL)
     serial = Column(Unicode(255), nullable=True, index=True)
-    at = Column(JSON, nullable=False, default={})
+    at_user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
     user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
     barcode = Column(Unicode(1000), nullable=False, index=True, unique=True)
     user = relationship("User", lazy='selectin')
@@ -105,7 +105,7 @@ class Asset(Base, TimestampMixin, CompanyMixin):
 
 class AssetLogAction(str, Enum):
     STORE_ID: str = 'store_id'
-    COURIER_ID: str = 'at.courier_id'
+    COURIER_ID: str = 'at_user_id'
     STATUS: str = 'status'
     INIT: str = 'init'
     ORDER_LINE: str = 'order_line'

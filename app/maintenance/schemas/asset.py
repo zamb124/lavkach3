@@ -83,15 +83,14 @@ class AssetLo(BaseRepo):
                 to=str(changes['status']),
             )
             session.add(log)
-        if 'at' in changes and entity.at != changes['at']:
-            if 'entry' in entity.at and entity.at['entry'] == 'courier':
-                log = AssetLog(
-                    asset_id=id,
-                    action='at.courier',
-                    from_=str(entity.at.get('id')),
-                    to=str(changes['at'].get('id')),
-                )
-                session.add(log)
+        if 'at_user_id' in changes and entity.at_user_id != changes['at_user_id']:
+            log = AssetLog(
+                asset_id=id,
+                action='at_user_id',
+                from_=str(entity.at_user_id),
+                to=str(changes['at_user_id']),
+            )
+            session.add(log)
         await session.commit()
         #await session.refresh(entity)
         entity = await self.get_by_id(id.__str__())
@@ -107,7 +106,7 @@ class AssetBaseScheme(BaseModel, AssetLo):
     model_id: UUID4
     status: AssetStatus
     serial: str
-    at:dict
+    at_user_id: UUID4
     user_id: UUID4
     barcode: str
 
