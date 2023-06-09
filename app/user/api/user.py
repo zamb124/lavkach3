@@ -18,7 +18,7 @@ from app.user.services import UserService
 from core.integration.wms import ClientWMS
 from core.fastapi.dependencies import (
     PermissionDependency,
-    IsAdmin,
+    IsAuthenticated,
 )
 
 user_router = APIRouter()
@@ -29,7 +29,7 @@ user_router = APIRouter()
     response_model=List[GetUserListResponseSchema],
     response_model_exclude={"id"},
     responses={"400": {"model": ExceptionResponseSchema}},
-    # dependencies=[Depends(PermissionDependency([IsAdmin]))],
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
 )
 async def get_user_list(
         limit: int = Query(10, description="Limit"),
