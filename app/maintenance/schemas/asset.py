@@ -3,7 +3,7 @@ from core.repository.enum import SynchronizeSessionEnum
 import uuid
 from typing import TypeVar
 from pydantic import BaseModel, Field, HttpUrl, conint
-from pydantic.types import UUID4, condecimal, constr
+from pydantic.types import UUID4, condecimal, constr, List
 from app.to_camel import to_camel
 from core.db.session import Base, session
 from sqlalchemy import update
@@ -19,7 +19,7 @@ from starlette.exceptions import HTTPException
 from app.maintenance.schemas.asset_log import AssetLogBaseScheme
 from app.maintenance.models.maintenance import AssetLog
 from core.db import Transactional
-
+from app.maintenance.schemas.order import OrderScheme
 
 ModelType = TypeVar("ModelType", bound=Base)
 
@@ -127,6 +127,7 @@ class AssetScheme(AssetCreateScheme):
     store: StoreSchema
     model: ModelScheme
     user: GetUserListResponseSchema
+    orders: List[OrderScheme]
     class Config:
         model = Asset
         orm_mode = True

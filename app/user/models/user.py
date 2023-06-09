@@ -18,4 +18,4 @@ class User(Base, TimestampMixin):
     email = Column(Unicode(255), nullable=False, unique=True)
     nickname = Column(Unicode(255), nullable=False, unique=True)
     is_admin = Column(Boolean, default=False)
-    type = Column(Unicode(20), nullable=False, default=UserType.COMMON)
+    #type = Column(Unicode(20), nullable=False, default=UserType.COMMON)

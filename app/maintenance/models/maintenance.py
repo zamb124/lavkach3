@@ -101,7 +101,7 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
     barcode = Column(Unicode(1000), nullable=False, index=True, unique=True)
     user = relationship("User", lazy='selectin')
-
+    orders = relationship("Order", lazy='selectin')
 
 class AssetLogAction(str, Enum):
     STORE_ID: str = 'store_id'
@@ -142,7 +142,7 @@ class Order(Base, TimestampMixin, CompanyMixin):
     supplier_id = Column(UUID, index=True, nullable=True)
     status = Column(Unicode(30), nullable=False, index=True, default=OrderStatus.DRAFT)
     asset_id = Column(UUID, ForeignKey("assets.id"), index=True, nullable=False)
-    asset = relationship("Asset", backref='asset_orders', lazy='selectin')
+
     store_id = Column(UUID, ForeignKey("stores.id"), index=True, nullable=True)
     store = relationship("Store", backref='order_store', lazy='selectin')
     user_created_id = Column(UUID, ForeignKey("users.id"), nullable=True)
