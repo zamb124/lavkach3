@@ -1,7 +1,7 @@
 import requests
 import uuid
 import json
-user_id = "fbfa8ad4-3809-44e6-a360-68785d87a9ca"
+user_id = "47d6a3d4-bfd6-4a3f-9f97-ff007505e017"
 #url = 'http://158.160.53.137:8080/'
 url = 'http://0.0.0.0:8080'
 user = {
@@ -156,8 +156,8 @@ for i, m in enumerate(manuls):
   "model_id": model,
   "status": "draft",
   "serial": f"2312312312{i}",
-  "at": {1:1},
-  "user_id": user_id,
+  "at_user_id": user_id,
+  "user_created_id": user_id,
   "barcode": uuid.uuid4().__str__(),
 }
 

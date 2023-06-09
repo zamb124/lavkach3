@@ -109,7 +109,7 @@ class AssetBaseScheme(BaseModel, AssetLo):
     status: AssetStatus
     serial: str
     at_user_id: UUID4
-    user_id: UUID4
+    user_created_id: UUID4
     barcode: str
 
     class Config:
