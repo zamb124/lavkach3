@@ -81,7 +81,7 @@ async def update_order(order_id: uuid.UUID, request: OrderUpdateScheme):
     entity = await request.update(id=order_id)
     return entity
 
-@order_router.put(
+@order_router.delete(
     "/{order_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
@@ -123,7 +123,7 @@ async def update_order_line(order_line_id: uuid.UUID, request: OrderLineUpdateSc
     entity = await request.update(id=order_line_id)
     return entity
 
-@order_router.put(
+@order_router.delete(
     "/line/{order_line_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )

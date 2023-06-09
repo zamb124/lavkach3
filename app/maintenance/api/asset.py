@@ -47,7 +47,7 @@ async def update_assets(asset_id: uuid.UUID, request: AssetUpdateScheme):
     "/{asset_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_assets(asset_id: uuid.UUID):
+async def delete_assets(asset_id: uuid.UUID):
     await AssetScheme.delete_by_id(id=asset_id)
 
 @assets_router.get(

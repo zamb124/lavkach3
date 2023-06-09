@@ -92,7 +92,7 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     store = relationship("Store", backref='assets', lazy='selectin')
     model_id = Column(UUID, ForeignKey("models.id"), index=True, nullable=True)
     model = relationship("Model", backref='assets', lazy='selectin')
-    status = Column(Unicode(20), nullable=False, index=True, default=SourceType.INTERNAL)
+    status = Column(Unicode(20), nullable=False, index=True, default=AssetStatus.DRAFT)
     serial = Column(Unicode(255), nullable=True, index=True)
     at = Column(Unicode(255), nullable=True)
     user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
@@ -111,6 +111,7 @@ class AssetLog(Base, TimestampMixin):
     store_id = Column(UUID, ForeignKey("stores.id"), index=True, nullable=True)
     store = relationship("Store",lazy='selectin')
     status = Column(Unicode(20), nullable=False, index=True, default=SourceType.INTERNAL)
+    barcode = Column(UUID, nullable=False, index=True, unique=True)
 
 class OrderStatus(str, Enum):
     DRAFT = 'draft'
