@@ -5,7 +5,7 @@ from fastapi import APIRouter, Query, HTTPException
 from app.store.schemas import (
     StoreScheme,
     StoreCreateScheme,
-    StoreUpdateScheme,
+    StoreBaseScheme,
     ExceptionResponseSchema,
 )
 from core.integration.wms import ClientWMS
@@ -51,7 +51,7 @@ async def sync_stores(token):
         raise HTTPException(status_code=403, detail='Wrong token')
 
     for store in response['stores']:
-        store = StoreScheme(
+        store = StoreBaseScheme(
             title=store['title'],
             external_id=store['store_id'],
             address=store['address'] or 'no adress',
