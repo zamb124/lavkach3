@@ -95,7 +95,7 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     store = relationship("Store", backref='assets', lazy='selectin')
     model_id = Column(UUID, ForeignKey("models.id"), index=True, nullable=True)
     model = relationship("Model", backref='assets', lazy='selectin')
-    status = Column(Unicode(20), nullable=False, index=True, default=SourceType.INTERNAL)
+    status = Column(Unicode(20), nullable=False, index=True, default=AssetStatus.DRAFT)
     serial = Column(Unicode(255), nullable=True, index=True)
     at = Column(JSON, nullable=False, default={})
     user_id = Column(UUID, ForeignKey("users.id"), nullable=True)

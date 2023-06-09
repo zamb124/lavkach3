@@ -1,10 +1,13 @@
 from pydantic import BaseModel, Field
+from pydantic.types import Optional
+from app.user.models.user import UserType
 
 
 class GetUserListResponseSchema(BaseModel):
     id: int = Field(..., description="ID")
     email: str = Field(..., description="Email")
     nickname: str = Field(..., description="Nickname")
+    type: Optional[UserType]
 
     class Config:
         orm_mode = True
@@ -15,12 +18,11 @@ class CreateUserRequestSchema(BaseModel):
     password1: str = Field(..., description="Password1")
     password2: str = Field(..., description="Password2")
     nickname: str = Field(..., description="Nickname")
-
-
+    type: Optional[UserType]
 class CreateUserResponseSchema(BaseModel):
     email: str = Field(..., description="Email")
     nickname: str = Field(..., description="Nickname")
-
+    type: Optional[UserType]
     class Config:
         orm_mode = True
 

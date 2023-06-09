@@ -29,6 +29,7 @@ class AssetLo(BaseRepo):
         entity = self.Config.model(**self.dict())
         session.add(entity)
 
+
         try:
             await session.commit()
             await session.refresh(entity)
