@@ -23,7 +23,6 @@ from core.db import Transactional
 ModelType = TypeVar("ModelType", bound=Base)
 
 
-@Transactional()
 class AssetLo(BaseRepo):
     async def create(self) -> ModelType:
         entity = self.Config.model(**self.dict())
