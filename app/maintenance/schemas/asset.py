@@ -16,7 +16,6 @@ from app.user.schemas import GetUserListResponseSchema
 from app.store.schemas import StoreSchema
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
-from app.maintenance.schemas.asset_log import AssetLogBaseScheme
 from app.maintenance.models.maintenance import AssetLog
 from core.db import Transactional
 
@@ -68,29 +67,30 @@ class AssetLo(BaseRepo):
             .execution_options(synchronize_session=synchronize_session)
         )
         await session.execute(query)
-        if 'store_id' in self and entity.store_id != self['store_id']:
-            log = AssetLogBaseScheme(
+        changes = dict(self)
+        if 'store_id' in changes and entity.store_id != changes['store_id']:
+            log = AssetLog(
                 asset_id=id,
                 action='store_id',
-                from_=entity.store_id,
-                to=self['store_id'],
+                from_=str(entity.store_id),
+                to=str(changes['store_id']),
             )
             session.add(log)
-        if 'status' in self and entity.status != self['status']:
-            log = AssetLogBaseScheme(
+        if 'status' in changes and entity.status != changes['status']:
+            log = AssetLog(
                 asset_id=id,
                 action='status',
-                from_=entity.store_id,
-                to=self['status'],
+                from_=str(entity.store_id),
+                to=str(changes['status']),
             )
             session.add(log)
-        if 'at' in self and entity.at != self['at']:
+        if 'at' in changes and entity.at != changes['at']:
             if 'entry' in entity.at and entity.at['entry'] == 'courier':
-                log = AssetLogBaseScheme(
+                log = AssetLog(
                     asset_id=id,
                     action='at.courier',
-                    from_=entity.at.get('id'),
-                    to=self['at'].get('id'),
+                    from_=str(entity.at.get('id')),
+                    to=str(changes['at'].get('id')),
                 )
                 session.add(log)
         await session.commit()
