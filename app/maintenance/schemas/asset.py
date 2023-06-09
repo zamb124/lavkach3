@@ -19,6 +19,7 @@ from starlette.exceptions import HTTPException
 from app.maintenance.models.maintenance import AssetLog
 from core.db import Transactional
 from app.maintenance.schemas.order import OrderScheme
+from app.maintenance.schemas.asset_log import AssetLogBaseScheme
 
 ModelType = TypeVar("ModelType", bound=Base)
 
@@ -128,6 +129,7 @@ class AssetScheme(AssetCreateScheme):
     model: ModelScheme
     user: GetUserListResponseSchema
     orders: List[OrderScheme]
+    asset_logs: List[AssetLogBaseScheme]
     class Config:
         model = Asset
         orm_mode = True

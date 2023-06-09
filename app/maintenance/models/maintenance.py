@@ -102,6 +102,7 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     barcode = Column(Unicode(1000), nullable=False, index=True, unique=True)
     user = relationship("User", lazy='selectin')
     orders = relationship("Order", lazy='selectin')
+    asset_logs = relationship("AssetLog", lazy='selectin')
 
 class AssetLogAction(str, Enum):
     STORE_ID: str = 'store_id'
