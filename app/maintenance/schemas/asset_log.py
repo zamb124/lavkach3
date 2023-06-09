@@ -1,34 +1,15 @@
-
+from core.repository.base import BaseRepo
+from app.maintenance.models import AssetLog
 from pydantic import BaseModel
 from pydantic.types import UUID4
-from app.maintenance.models import AssetLog, AssetStatus
-#from app.maintenance.schemas.asset import AssetScheme
-from core.repository.base import BaseRepo
-from app.store.schemas import StoreSchema
+from app.maintenance.models import AssetLogAction
 
 
 class AssetLogBaseScheme(BaseModel, BaseRepo):
-    asset_id:UUID4
-    serial: str
-    at: str
-    store_id: UUID4
-    status: AssetStatus
-    barcode: UUID4
+    asset_id: UUID4
+    action: AssetLogAction
+    from_: str
+    to: str
 
     class Config:
         model = AssetLog
-class AssetLogUpdateScheme(AssetLogBaseScheme):
-    pass
-class AssetLogCreateScheme(AssetLogBaseScheme):
-    class Config:
-        model = AssetLog
-class AssetLogScheme(AssetLogCreateScheme):
-    id: UUID4
-    lsn: int
-    store: StoreSchema
-    #asset: AssetScheme
-    class Config:
-        model = AssetLog
-        orm_mode = True
-        #alias_generator = to_camel
-        #allow_population_by_field_name = True

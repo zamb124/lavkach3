@@ -1,4 +1,7 @@
-from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, Sequence, Text, Integer, Numeric
+from sqlalchemy import (
+    Column, Unicode, BigInteger, Boolean, func, PickleType, JSON,
+    UUID, ForeignKey, Sequence, Text, Integer, Numeric, DateTime
+)
 
 from core.db import Base
 from core.db.mixins import TimestampMixin, LsnMixin, CompanyMixin
@@ -92,26 +95,31 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     store = relationship("Store", backref='assets', lazy='selectin')
     model_id = Column(UUID, ForeignKey("models.id"), index=True, nullable=True)
     model = relationship("Model", backref='assets', lazy='selectin')
-    status = Column(Unicode(20), nullable=False, index=True, default=AssetStatus.DRAFT)
+    status = Column(Unicode(20), nullable=False, index=True, default=SourceType.INTERNAL)
     serial = Column(Unicode(255), nullable=True, index=True)
-    at = Column(Unicode(255), nullable=True)
+    at = Column(JSON, nullable=False, default={})
     user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
-    barcode = Column(Unicode(255), nullable=False, index=True, unique=True)
+    barcode = Column(UUID, nullable=False, index=True, unique=True)
     user = relationship("User", lazy='selectin')
+
+
+class AssetLogAction(str, Enum):
+    STORE_ID: str = 'store_id'
+    COURIER_ID: str = 'at.courier_id'
+    STATUS: str = 'status'
+    INIT: str = 'init'
+    ORDER_LINE: str = 'order_line'
+
 
 class AssetLog(Base, TimestampMixin):
     __tablename__ = "assets_log"
-    lsn_seq = Sequence(f'assets_log_lsn_seq')
-    lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    serial = Column(Integer, primary_key=True, index=True)
+    created = Column(DateTime, default=func.now(), nullable=False)
     asset_id = Column(UUID, ForeignKey("assets.id"), index=True, nullable=False)
-    asset = relationship("Asset", backref='asset_log', lazy='selectin')
-    serial = Column(Unicode(255), nullable=True, index=True)
-    at = Column(Unicode(255), nullable=True)
-    store_id = Column(UUID, ForeignKey("stores.id"), index=True, nullable=True)
-    store = relationship("Store",lazy='selectin')
-    status = Column(Unicode(20), nullable=False, index=True, default=SourceType.INTERNAL)
-    barcode = Column(Unicode(255), nullable=False, index=True, unique=True)
+    action = Column(Unicode(30), nullable=False)
+    from_ = Column(Unicode(255), nullable=True)
+    to = Column(Unicode(255), nullable=True)
+
 
 class OrderStatus(str, Enum):
     DRAFT = 'draft'

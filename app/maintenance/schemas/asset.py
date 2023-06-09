@@ -105,9 +105,9 @@ class AssetBaseScheme(BaseModel, AssetLo):
     model_id: UUID4
     status: AssetStatus
     serial: str
-    at:str
+    at:dict
     user_id: UUID4
-    barcode: str
+    barcode: UUID4
 
     class Config:
         model = Asset
