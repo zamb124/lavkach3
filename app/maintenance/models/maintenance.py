@@ -96,7 +96,6 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     model_id = Column(UUID, ForeignKey("models.id"), index=True, nullable=True)
     model = relationship("Model", backref='assets', lazy='selectin')
     status = Column(Unicode(20), nullable=False, index=True, default=AssetStatus.DRAFT)
-    serial = Column(Unicode(255), nullable=True, index=True)
     at_user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
     at_user = relationship("User", lazy='selectin', foreign_keys=[at_user_id])
     user_created_id = Column(UUID, ForeignKey("users.id"), nullable=True)

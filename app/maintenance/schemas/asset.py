@@ -106,7 +106,6 @@ class AssetBaseScheme(AssetLo):
     store_id: UUID4
     model_id: UUID4
     status: AssetStatus
-    serial: str
     at_user_id: UUID4
     user_created_id: UUID4
     barcode: str
