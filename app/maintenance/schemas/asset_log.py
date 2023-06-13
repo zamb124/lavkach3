@@ -1,4 +1,3 @@
-from app.maintenance.models import AssetLog
 from pydantic import BaseModel
 from pydantic.types import UUID4, Optional
 from app.maintenance.models import AssetLogAction
@@ -11,15 +10,15 @@ class AssetLogBaseScheme(BaseModel):
     to: Optional[str]
 
 
-class AssetTypeUpdateScheme(AssetLogBaseScheme):
+class AssetLogUpdateScheme(AssetLogBaseScheme):
     pass
 
 
-class AssetTypeCreateScheme(AssetLogBaseScheme):
+class AssetLogCreateScheme(AssetLogBaseScheme):
     pass
 
 
-class AssetTypeScheme(AssetTypeCreateScheme, TimeStampScheme):
+class AssetTypeScheme(AssetLogCreateScheme, TimeStampScheme):
     id: UUID4
     lsn: int
 

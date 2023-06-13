@@ -15,7 +15,7 @@ from app.maintenance.schemas.manufacturer import ManufacturerCreateScheme, Manuf
 from app.maintenance.schemas.model import ModelCreateScheme, ModelUpdateScheme
 from app.maintenance.schemas.asset_type import AssetTypeCreateScheme, AssetTypeUpdateScheme
 from app.maintenance.schemas.asset import AssetCreateScheme, AssetUpdateScheme
-from app.maintenance.schemas.asset_log import AssetTypeCreateScheme, AssetTypeUpdateScheme
+from app.maintenance.schemas.asset_log import AssetLogCreateScheme, AssetLogUpdateScheme
 from app.maintenance.schemas.order import OrderCreateScheme, OrderUpdateScheme, OrderLineCreateScheme, \
     OrderLineUpdateScheme
 from core.db.session import session
@@ -52,7 +52,7 @@ class AssetService(BaseService[Asset, AssetCreateScheme, AssetUpdateScheme]):
         super(AssetService, self).__init__(Asset, db_session)
 
 
-class AssetLogService(BaseService[AssetLog, AssetTypeCreateScheme, AssetTypeUpdateScheme]):
+class AssetLogService(BaseService[AssetLog, AssetLogCreateScheme, AssetLogUpdateScheme]):
     def __init__(self, db_session: session = session):
         super(AssetLogService, self).__init__(AssetLog, db_session)
 

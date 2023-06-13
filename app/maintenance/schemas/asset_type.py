@@ -6,6 +6,7 @@ from pydantic.types import UUID4, condecimal, constr
 from app.to_camel import to_camel
 from app.maintenance.models import AssetType, Type, SourceType
 from core.schemas.timestamps import TimeStampScheme
+
 class AssetTypeBaseScheme(BaseModel):
     title: str = Field(description="Title")
     company_id: UUID4
