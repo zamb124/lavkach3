@@ -1,32 +1,45 @@
-from typing import List, Union
 import uuid
-from fastapi import APIRouter, Depends, Query
-from app.maintenance.schemas import ModelCreateScheme, ExceptionResponseSchema, ModelScheme, ModelUpdateScheme
+import typing
+from fastapi import APIRouter, Query
+from app.maintenance.schemas import (
+    ModelScheme,
+    ModelCreateScheme,
+    ModelUpdateScheme,
+    ExceptionResponseSchema
+)
+from app.maintenance.services.maintenance import ModelService
 
 model_router = APIRouter()
 
-@model_router.get(
-    "",
-    response_model=List[ModelScheme],
-    responses={"400": {"model": ExceptionResponseSchema}},
-)
-async def get_model_list(limit: int = Query(10, description="Limit")):
-    return await ModelScheme.get_all(limit=limit)
 
 @model_router.get(
-    "/{model_id}",
+    "",
+    response_model=list[ModelScheme],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def load_model(model_id: uuid.UUID) -> Union[None, ModelScheme]:
-    return await ModelScheme.get_by_id(id=model_id)
+async def model_list(
+        limit: int = Query(10, description="Limit"),
+        cursor: int = Query(0, description="Prev LSN"),
+):
+    return await ModelService().list(limit, cursor)
+
+
 @model_router.post(
     "/create",
     response_model=ModelScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def create_model(request: ModelCreateScheme):
-    entity = await request.create()
-    return entity
+    return await ModelService().create(obj=request)
+
+
+@model_router.get(
+    "/{model_id}",
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def load_model(model_id: uuid.UUID) -> typing.Union[None, ModelScheme]:
+    return await ModelService().get(id=model_id)
+
 
 @model_router.put(
     "/{model_id}",
@@ -34,12 +47,12 @@ async def create_model(request: ModelCreateScheme):
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_model(model_id: uuid.UUID, request: ModelUpdateScheme):
-    entity = await request.update(id=model_id)
-    return entity
+    return await ModelService().update(id=model_id, obj=request)
+
 
 @model_router.delete(
     "/{model_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_model(model_id: uuid.UUID):
-    await ModelScheme.delete_by_id(id=model_id)
+async def delete_model(model_id: uuid.UUID):
+    await ModelService().delete(id=model_id)

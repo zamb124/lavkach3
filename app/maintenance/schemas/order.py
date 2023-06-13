@@ -4,40 +4,37 @@ import uuid
 from pydantic import BaseModel, Field, HttpUrl
 from pydantic.types import UUID4, condecimal, constr, condecimal
 from app.maintenance.models import Order, OrderLine, OrderStatus
-from core.repository.base import BaseRepo
 from app.store.schemas import StoreScheme
 from app.user.schemas import GetUserListResponseSchema
 from pydantic import ConfigDict
+from core.schemas.timestamps import TimeStampScheme
 
-class OrderLineBaseScheme(BaseModel, BaseRepo):
+class OrderLineBaseScheme(BaseModel):
     title: str
     description:str
     order_id: UUID4
     quantity: Optional[int]
     cost = condecimal(decimal_places=2)
 
-    class Config:
-        model = OrderLine
+
 
 class OrderLineUpdateScheme(OrderLineBaseScheme):
     pass
 
 class OrderLineCreateScheme(OrderLineBaseScheme):
-    class Config:
-        model = OrderLine
+    pass
 
-class OrderLineScheme(OrderLineCreateScheme):
+class OrderLineScheme(OrderLineCreateScheme, TimeStampScheme):
     id: UUID4
     lsn: int
 
     class Config:
-        model = OrderLine
         orm_mode = True
         # alias_generator = to_camel
         # allow_population_by_field_name = True
 
 ##############################################################################################################
-class OrderBaseScheme(BaseModel, BaseRepo):
+class OrderBaseScheme(BaseModel):
     company_id: UUID4
     description: str
     supplier_id: Optional[UUID4]
@@ -51,19 +48,15 @@ class OrderBaseScheme(BaseModel, BaseRepo):
 class OrderUpdateScheme(OrderBaseScheme):
     pass
 class OrderCreateScheme(OrderBaseScheme):
-    class Config:
-        model = Order
+    pass
 
-class OrderCreateByAssetScheme(BaseModel, BaseRepo):
+class OrderCreateByAssetScheme(BaseModel):
     asset_id: UUID4
     description: str
     user_id: UUID4
-    class Config:
-        model = Order
-        orm_mode = True
 
 
-class OrderScheme(OrderCreateScheme):
+class OrderScheme(OrderCreateScheme, TimeStampScheme):
     id: UUID4
     lsn: int
     number: int
@@ -72,7 +65,6 @@ class OrderScheme(OrderCreateScheme):
     supplier_user: Optional[GetUserListResponseSchema]
     order_lines: List[OrderLineScheme]
     class Config:
-        model = Order
         orm_mode = True
         #alias_generator = to_camel
         #allow_population_by_field_name = True

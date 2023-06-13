@@ -1,1 +1,1 @@
-from .store import *
+from .company import *

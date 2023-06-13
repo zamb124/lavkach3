@@ -1,14 +1,13 @@
 import uuid
 import typing
-
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query
 from app.store.schemas import (
     StoreScheme,
     StoreCreateScheme,
     StoreUpdateScheme,
-    ExceptionResponseSchema,
+    ExceptionResponseSchema
 )
-from core.integration.wms import ClientWMS
+from app.store.services import StoreService
 
 store_router = APIRouter()
 
@@ -18,8 +17,11 @@ store_router = APIRouter()
     response_model=list[StoreScheme],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def get_store_list(limit: int = Query(10, description="Limit")):
-    return await StoreScheme.get_all(limit=limit)
+async def get_store_list(
+        limit: int = Query(10, description="Limit"),
+        cursor: int = Query(0, description="Prev LSN"),
+):
+    return await StoreService().list(limit, cursor)
 
 
 @store_router.post(
@@ -28,8 +30,7 @@ async def get_store_list(limit: int = Query(10, description="Limit")):
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def create_store(request: StoreCreateScheme):
-    res = await request.create()
-    return res
+    return await StoreService().create(obj=request)
 
 
 @store_router.get(
@@ -37,29 +38,21 @@ async def create_store(request: StoreCreateScheme):
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def load_store(store_id: uuid.UUID) -> typing.Union[None, StoreScheme]:
-    return await StoreScheme.get_by_id(id=store_id)
+    return await StoreService().get(id=store_id)
 
 
-@store_router.post(
-    "/sync",
+@store_router.put(
+    "/{store_id}",
+    response_model=StoreScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def sync_stores(token):
-    response = await ClientWMS.req(cursor=None, path='/api/external/stores/v1/list', token=token)
+async def update_store(store_id: uuid.UUID, request: StoreUpdateScheme):
+    return await StoreService().update(id=store_id, obj=request)
 
-    if response is None:
-        raise HTTPException(status_code=403, detail='Wrong token')
 
-    for store in response['stores']:
-        store = StoreScheme(
-            title=store['title'],
-            external_id=store['store_id'],
-            address=store['address'] or 'no adress',
-            source='wms',
-        )
-        try:
-            await store.create()
-        except Exception:
-            continue
-
-    return {'code': 'OK'}
+@store_router.delete(
+    "/{store_id}",
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def delete_store(store_id: uuid.UUID):
+    await StoreService().delete(id=store_id)

@@ -1,65 +1,58 @@
-from typing import List, Union
 import uuid
-from fastapi import APIRouter, Depends, Query
+import typing
+from fastapi import APIRouter, Query
 from app.maintenance.schemas import (
-    AssetCreateScheme,
-    ExceptionResponseSchema,
     AssetScheme,
-    AssetUpdateScheme
+    AssetCreateScheme,
+    AssetUpdateScheme,
+    ExceptionResponseSchema
 )
-from sqlalchemy import select, update, delete
-from core.db.session import Base, session
-assets_router = APIRouter()
+from app.maintenance.services.maintenance import AssetService
 
-@assets_router.get(
+asset_router = APIRouter()
+
+
+@asset_router.get(
     "",
-    response_model=List[AssetScheme],
+    response_model=list[AssetScheme],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def get_assets_list(limit: int = Query(10, description="Limit")):
-    return await AssetScheme.get_all(limit=limit)
+async def asset_list(
+        limit: int = Query(10, description="Limit"),
+        cursor: int = Query(0, description="Prev LSN"),
+):
+    return await AssetService().list(limit, cursor)
 
-@assets_router.get(
-    "/{asset_id}",
-    responses={"400": {"model": ExceptionResponseSchema}},
-)
-async def load_assets(asset_id: uuid.UUID) -> Union[None, AssetScheme]:
-    return await AssetScheme.get_by_id(id=asset_id)
-@assets_router.post(
+
+@asset_router.post(
     "/create",
     response_model=AssetScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def create_assets(request: AssetCreateScheme):
-    entity = await request.create()
-    return entity
+async def create_asset(request: AssetCreateScheme):
+    return await AssetService().create(obj=request)
 
-@assets_router.put(
+
+@asset_router.get(
+    "/{asset_id}",
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def load_asset(asset_id: uuid.UUID) -> typing.Union[None, AssetScheme]:
+    return await AssetService().get(id=asset_id)
+
+
+@asset_router.put(
     "/{asset_id}",
     response_model=AssetScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def update_assets(asset_id: uuid.UUID, request: AssetUpdateScheme):
-    entity = await request.update(id=asset_id)
-    return entity
+async def update_asset(asset_id: uuid.UUID, request: AssetUpdateScheme):
+    return await AssetService().update(id=asset_id, obj=request)
 
-@assets_router.delete(
+
+@asset_router.delete(
     "/{asset_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def delete_assets(asset_id: uuid.UUID):
-    await AssetScheme.delete_by_id(id=asset_id)
-
-@assets_router.get(
-    "/uttils/{barcode}",
-    response_model=AssetScheme,
-    responses={"400": {"model": ExceptionResponseSchema}},
-)
-async def search_barcode(barcode: str) -> Union[None, AssetScheme]:
-    model = AssetScheme.Config.model
-    query = (
-        select(model)
-        .where(model.barcode == barcode)
-    )
-    result = await session.execute(query)
-    return result.scalars().first()
+async def delete_asset(asset_id: uuid.UUID):
+    await AssetService().delete(id=asset_id)

@@ -115,8 +115,9 @@ class AssetLogAction(str, Enum):
 
 class AssetLog(Base, TimestampMixin):
     __tablename__ = "assets_log"
-    serial = Column(Integer, primary_key=True, index=True)
-    created = Column(DateTime, default=func.now(), nullable=False)
+    lsn_seq = Sequence(f'asset_log_lsn_seq')
+    lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     asset_id = Column(UUID, ForeignKey("assets.id"), index=True, nullable=False)
     action = Column(Unicode(30), nullable=False)
     from_ = Column(Unicode(255), nullable=True)

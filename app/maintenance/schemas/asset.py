@@ -1,5 +1,5 @@
 from datetime import datetime
-from core.repository.enum import SynchronizeSessionEnum
+from core.service.enum import SynchronizeSessionEnum
 import uuid
 from typing import TypeVar
 from pydantic import BaseModel, Field, HttpUrl, conint
@@ -8,7 +8,6 @@ from app.to_camel import to_camel
 from core.db.session import Base, session
 from sqlalchemy import update
 from app.maintenance.models import Asset, Type, SourceType, AssetStatus
-from core.repository.base import BaseRepo
 from app.maintenance.schemas.asset_type import AssetTypeScheme
 from app.maintenance.schemas.manufacturer import ManufacturerScheme
 from app.maintenance.schemas.model import ModelScheme
@@ -22,9 +21,9 @@ from app.maintenance.schemas.order import OrderScheme
 from app.maintenance.schemas.asset_log import AssetLogBaseScheme
 
 ModelType = TypeVar("ModelType", bound=Base)
+from core.schemas.timestamps import TimeStampScheme
 
-
-class AssetLo(BaseRepo):
+class AssetLo(BaseModel):
     async def create(self) -> ModelType:
         entity = self.Config.model(**self.dict())
         session.add(entity)
@@ -99,7 +98,7 @@ class AssetLo(BaseRepo):
         return entity
 
 
-class AssetBaseScheme(BaseModel, AssetLo):
+class AssetBaseScheme(AssetLo):
     title: str = Field(description="Title")
     company_id: UUID4
     asset_type_id: UUID4
@@ -112,14 +111,11 @@ class AssetBaseScheme(BaseModel, AssetLo):
     user_created_id: UUID4
     barcode: str
 
-    class Config:
-        model = Asset
 class AssetUpdateScheme(AssetBaseScheme):
     pass
 class AssetCreateScheme(AssetBaseScheme):
-    class Config:
-        model = Asset
-class AssetScheme(AssetCreateScheme):
+    pass
+class AssetScheme(AssetCreateScheme, TimeStampScheme):
     id: UUID4
     lsn: int
     asset_type: AssetTypeScheme
@@ -131,7 +127,4 @@ class AssetScheme(AssetCreateScheme):
     orders: List[OrderScheme]
     asset_logs: List[AssetLogBaseScheme]
     class Config:
-        model = Asset
         orm_mode = True
-        #alias_generator = to_camel
-        #allow_population_by_field_name = True

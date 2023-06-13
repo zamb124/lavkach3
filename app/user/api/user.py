@@ -45,9 +45,15 @@ async def get_user_list(
 )
 async def create_user(request: CreateUserRequestSchema):
     request.password = request.password1
-    delattr(request, 'password1')
-    delattr(request, 'password2')
-    user =  await request.create()
+    #delattr(request, 'password1')
+    #delattr(request, 'password2')
+    user =  await UserService().create_user(
+        email = request.email,
+        password1=request.password1,
+        password2=request.password2,
+        nickname=request.nickname,
+        store_id = 'f4704c92-7e14-498c-836a-72dfb3d7c6ec'
+    )
     return user
 
 

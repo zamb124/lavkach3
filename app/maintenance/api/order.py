@@ -1,76 +1,50 @@
-from typing import List, Union
 import uuid
-from fastapi import APIRouter, Depends, Query
+import typing
+from fastapi import APIRouter, Query
 from app.maintenance.schemas import (
-    OrderCreateScheme,
-    ExceptionResponseSchema,
     OrderScheme,
+    OrderCreateScheme,
     OrderUpdateScheme,
-    OrderCreateByAssetScheme,
-    OrderLineCreateScheme,
-    OrderLineScheme,
-    OrderLineUpdateScheme,
-    OrderLineInlineScheme
+    ExceptionResponseSchema,
 
+    OrderLineScheme,
+    OrderLineCreateScheme,
+    OrderLineUpdateScheme
 )
-from app.maintenance.models.maintenance import Asset
-from app.user.models import User
-from sqlalchemy import select, update, delete
-from core.db.session import Base, session
-from app.maintenance.schemas.asset import AssetScheme
-from app.maintenance.schemas.order import OrderCreateScheme
+from app.maintenance.services.maintenance import OrderService
+from app.maintenance.services.maintenance import OrderLineService
 
 order_router = APIRouter()
 
-@order_router.get(
-    "",
-    response_model=List[OrderScheme],
-    responses={"400": {"model": ExceptionResponseSchema}},
-)
-async def get_order_list(limit: int = Query(10, description="Limit")):
-    return await OrderScheme.get_all(limit=limit)
 
 @order_router.get(
-    "/{order_id}",
+    "",
+    response_model=list[OrderScheme],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def load_order(order_id: uuid.UUID) -> Union[None, OrderScheme]:
-    return await OrderScheme.get_by_id(id=order_id)
+async def asset_order(
+        limit: int = Query(10, description="Limit"),
+        cursor: int = Query(0, description="Prev LSN"),
+):
+    return await OrderService().list(limit, cursor)
+
+
 @order_router.post(
     "/create",
     response_model=OrderScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def create_order(request: OrderCreateScheme):
-    entity = await request.create()
-    return entity
+    return await OrderService().create(obj=request)
 
-@order_router.post(
-    "/create_by_asset",
-    response_model=OrderScheme,
+
+@order_router.get(
+    "/{order_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def create_order(request: OrderCreateByAssetScheme):
-    query = (
-        select(Asset)
-        .where(Asset.id == request.asset_id.__str__())
-    )
-    result = await session.execute(query)
-    asset = result.scalars().first()
-    query = (
-        select(User)
-        .where(User.id == request.user_id.__str__())
-    )
-    result = await session.execute(query)
-    user = result.scalars().first()
-    order = OrderCreateScheme(
-        company_id=asset.company_id,
-        description=request.description,
-        asset_id=asset.id,
-        store_id=asset.store_id,
-        user_created_id=request.user_id
-    )
-    return await order.create()
+async def load_order(order_id: uuid.UUID) -> typing.Union[None, OrderScheme]:
+    return await OrderService().get(id=order_id)
+
 
 @order_router.put(
     "/{order_id}",
@@ -78,41 +52,47 @@ async def create_order(request: OrderCreateByAssetScheme):
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_order(order_id: uuid.UUID, request: OrderUpdateScheme):
-    entity = await request.update(id=order_id)
-    return entity
+    return await OrderService().update(id=order_id, obj=request)
+
 
 @order_router.delete(
     "/{order_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def delete_order(order_id: uuid.UUID):
-    await OrderScheme.delete_by_id(id=order_id)
+    await OrderService().delete(id=order_id)
 
 
+#########################################
 
-#############################################
 @order_router.get(
     "/line",
-    response_model=List[OrderLineScheme],
+    response_model=list[OrderLineScheme],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def get_order_line_list(limit: int = Query(10, description="Limit")):
-    return await OrderLineScheme.get_all(limit=limit)
+async def asset_order_line(
+        limit: int = Query(10, description="Limit"),
+        cursor: int = Query(0, description="Prev LSN"),
+):
+    return await OrderLineService().list(limit, cursor)
 
-@order_router.get(
-    "/line/{order_line_id}",
-    responses={"400": {"model": ExceptionResponseSchema}},
-)
-async def load_assets(order_line_id: uuid.UUID) -> Union[None, OrderLineScheme]:
-    return await OrderLineScheme.get_by_id(id=order_line_id)
+
 @order_router.post(
     "/line/create",
     response_model=OrderLineScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def create_order_line(request: OrderLineCreateScheme):
-    entity = await request.create()
-    return entity
+    return await OrderLineService().create(obj=request)
+
+
+@order_router.get(
+    "/line/{order_line_id}",
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def load_order_line(order_line_id: uuid.UUID) -> typing.Union[None, OrderLineScheme]:
+    return await OrderLineService().get(id=order_line_id)
+
 
 @order_router.put(
     "/line/{order_line_id}",
@@ -120,12 +100,13 @@ async def create_order_line(request: OrderLineCreateScheme):
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def update_order_line(order_line_id: uuid.UUID, request: OrderLineUpdateScheme):
-    entity = await request.update(id=order_line_id)
-    return entity
+    return await OrderLineService().update(id=order_line_id, obj=request)
+
 
 @order_router.delete(
     "/line/{order_line_id}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def delete_order_line(order_line_id: uuid.UUID):
-    await OrderLineScheme.delete_by_id(id=order_line_id)
+    await OrderLineService().delete(id=order_line_id)
+
