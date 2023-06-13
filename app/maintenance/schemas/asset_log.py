@@ -18,7 +18,7 @@ class AssetLogCreateScheme(AssetLogBaseScheme):
     pass
 
 
-class AssetTypeScheme(AssetLogCreateScheme, TimeStampScheme):
+class AssetLogScheme(AssetLogCreateScheme, TimeStampScheme):
     id: UUID4
     lsn: int
 
