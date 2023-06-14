@@ -14,7 +14,7 @@ from core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 
 store_router = APIRouter(
     dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
@@ -23,7 +23,8 @@ store_router = APIRouter(
 
 
 @store_router.get("", response_model=list[StoreScheme])
-async def get_store_list(limit: int = Query(10, description="Limit"), cursor: int = Query(0, description="Prev LSN"), ):
+async def get_store_list(request: Request, limit: int = Query(10, description="Limit"), cursor: int = Query(0, description="Cursor")):
+    user = await request.user.get_user_data()
     return await StoreService().list(limit, cursor)
 
 
