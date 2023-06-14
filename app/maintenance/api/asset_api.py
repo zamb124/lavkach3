@@ -7,7 +7,7 @@ from app.maintenance.schemas import (
     AssetUpdateScheme,
     ExceptionResponseSchema
 )
-from app.maintenance.services.maintenance import AssetService
+from app.maintenance.services.maintenance_service import AssetService
 
 asset_router = APIRouter()
 

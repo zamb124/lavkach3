@@ -1,4 +1,4 @@
-from app.maintenance.models.maintenance import (
+from app.maintenance.models.maintenance_models import (
     Contractor,
     ServiceSupplier,
     Manufacturer,
@@ -9,14 +9,14 @@ from app.maintenance.models.maintenance import (
     Order,
     OrderLine
 )
-from app.maintenance.schemas.contractor import ContractorCreateScheme, ContractorUpdateScheme
-from app.maintenance.schemas.service_supplier import ServiceSupplierCreateScheme, ServiceSupplierUpdateScheme
-from app.maintenance.schemas.manufacturer import ManufacturerCreateScheme, ManufacturerUpdateScheme
-from app.maintenance.schemas.model import ModelCreateScheme, ModelUpdateScheme
-from app.maintenance.schemas.asset_type import AssetTypeCreateScheme, AssetTypeUpdateScheme
-from app.maintenance.schemas.asset import AssetCreateScheme, AssetUpdateScheme
-from app.maintenance.schemas.asset_log import AssetLogCreateScheme, AssetLogUpdateScheme
-from app.maintenance.schemas.order import OrderCreateScheme, OrderUpdateScheme, OrderLineCreateScheme, \
+from app.maintenance.schemas.contractor_schemas import ContractorCreateScheme, ContractorUpdateScheme
+from app.maintenance.schemas.service_supplier_schemas import ServiceSupplierCreateScheme, ServiceSupplierUpdateScheme
+from app.maintenance.schemas.manufacturer_schemas import ManufacturerCreateScheme, ManufacturerUpdateScheme
+from app.maintenance.schemas.model_schemas import ModelCreateScheme, ModelUpdateScheme
+from app.maintenance.schemas.asset_type_schemas import AssetTypeCreateScheme, AssetTypeUpdateScheme
+from app.maintenance.schemas.asset_schemas import AssetCreateScheme, AssetUpdateScheme
+from app.maintenance.schemas.asset_log_schemas import AssetLogCreateScheme, AssetLogUpdateScheme
+from app.maintenance.schemas.order_schemas import OrderCreateScheme, OrderUpdateScheme, OrderLineCreateScheme, \
     OrderLineUpdateScheme
 from core.db.session import session
 from core.service.base import BaseService

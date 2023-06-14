@@ -1,17 +1,17 @@
 from fastapi import APIRouter
 
-from .user.api.user import user_router
+from .user.api.user_api import user_router
 from .auth.api.auth import auth_router
-from .company.api.company import company_router
-from .store.api.store import store_router
-from .maintenance.api.contractor import contractor_router
-from .maintenance.api.service_supplier import supplier_router
-from .maintenance.api.manufacturer import manufacturer_router
-from .maintenance.api.asset_log import asset_log_router
-from .maintenance.api.asset_type import asset_type_router
-from .maintenance.api.asset import asset_router
-from .maintenance.api.model import model_router
-from .maintenance.api.order import order_router
+from .company.api.company_api import company_router
+from .store.api.store_api import store_router
+from .maintenance.api.contractor_api import contractor_router
+from .maintenance.api.service_supplier_api import supplier_router
+from .maintenance.api.manufacturer_api import manufacturer_router
+from .maintenance.api.asset_log_api import asset_log_router
+from .maintenance.api.asset_type_api import asset_type_router
+from .maintenance.api.asset_api import asset_router
+from .maintenance.api.model_api import model_router
+from .maintenance.api.order_api import order_router
 
 router = APIRouter()
 router.include_router(user_router, prefix="/api/users", tags=["User"])

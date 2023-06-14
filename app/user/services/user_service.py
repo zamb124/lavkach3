@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy import or_, select, and_
 
 from app.user.models import User
-from app.user.schemas.user import LoginResponseSchema
+from app.user.schemas.user_schemas import LoginResponseSchema
 from core.db import Transactional, Propagation, session
 from core.exceptions import (
     PasswordDoesNotMatchException,
@@ -15,8 +15,8 @@ from core.utils.token_helper import TokenHelper
 
 
 
-from app.user.models.user import User
-from app.user.schemas.user import UserCreateScheme, UserUpdateScheme
+from app.user.models.user_models import User
+from app.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme
 from core.db.session import session
 from core.service.base import BaseService
 from typing import Any, Generic, List, Optional, Type, TypeVar

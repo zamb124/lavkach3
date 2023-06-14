@@ -7,7 +7,7 @@ from app.maintenance.schemas import (
     ContractorUpdateScheme,
     ExceptionResponseSchema
 )
-from app.maintenance.services.maintenance import ContractorService
+from app.maintenance.services.maintenance_service import ContractorService
 
 contractor_router = APIRouter()
 

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
-from app.maintenance.schemas.contractor import ContractorScheme
+from app.maintenance.schemas.contractor_schemas import ContractorScheme
 from core.schemas.timestamps import TimeStampScheme
 
 

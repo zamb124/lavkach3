@@ -1,4 +1,4 @@
-from .store import *
+from .store_schemas import *
 
 
 class ExceptionResponseSchema(BaseModel):

@@ -1,11 +1,11 @@
-from .contractor import *
-from .service_supplier import *
-from .manufacturer import *
-from .model import *
-from .asset_type import *
-from .asset import *
-from .asset_log import *
-from .order import *
+from .contractor_schemas import *
+from .service_supplier_schemas import *
+from .manufacturer_schemas import *
+from .model_schemas import *
+from .asset_type_schemas import *
+from .asset_schemas import *
+from .asset_log_schemas import *
+from .order_schemas import *
 
 
 class ExceptionResponseSchema(BaseModel):

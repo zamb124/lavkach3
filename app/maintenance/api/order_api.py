@@ -11,8 +11,8 @@ from app.maintenance.schemas import (
     OrderLineCreateScheme,
     OrderLineUpdateScheme
 )
-from app.maintenance.services.maintenance import OrderService
-from app.maintenance.services.maintenance import OrderLineService
+from app.maintenance.services.maintenance_service import OrderService
+from app.maintenance.services.maintenance_service import OrderLineService
 
 order_router = APIRouter()
 

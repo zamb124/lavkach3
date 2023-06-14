@@ -8,12 +8,12 @@ from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 
 from app.maintenance.models import AssetStatus
-from app.maintenance.models.maintenance import AssetLog
-from app.maintenance.schemas.asset_log import AssetLogBaseScheme
-from app.maintenance.schemas.asset_type import AssetTypeScheme
-from app.maintenance.schemas.manufacturer import ManufacturerScheme
-from app.maintenance.schemas.model import ModelScheme
-from app.maintenance.schemas.order import OrderScheme
+from app.maintenance.models.maintenance_models import AssetLog
+from app.maintenance.schemas.asset_log_schemas import AssetLogBaseScheme
+from app.maintenance.schemas.asset_type_schemas import AssetTypeScheme
+from app.maintenance.schemas.manufacturer_schemas import ManufacturerScheme
+from app.maintenance.schemas.model_schemas import ModelScheme
+from app.maintenance.schemas.order_schemas import OrderScheme
 from app.store.schemas import StoreScheme
 from app.user.schemas import GetUserListResponseSchema
 from core.db.session import Base, session

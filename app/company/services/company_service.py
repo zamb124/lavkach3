@@ -1,5 +1,5 @@
-from app.company.models.company import Company
-from app.company.schemas.company import CompanyCreateScheme, CompanyUpdateScheme
+from app.company.models.company_models import Company
+from app.company.schemas.company_schemas import CompanyCreateScheme, CompanyUpdateScheme
 from core.db.session import session
 from core.service.base import BaseService
 

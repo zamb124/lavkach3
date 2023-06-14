@@ -1,10 +1,10 @@
 from pydantic import BaseModel, Field, UUID4, Json
 from pydantic.types import Optional
-from app.user.models.user import UserType
+from app.user.models.user_models import UserType
 from sqlalchemy_utils.types.phone_number import PhoneNumber
-from app.user.models.user import User
-from app.store.schemas.store import StoreScheme
-from app.company.schemas.company import CompanyScheme
+from app.user.models.user_models import User
+from app.store.schemas.store_schemas import StoreScheme
+from app.company.schemas.company_schemas import CompanyScheme
 from core.types.types import *
 class GetUserListResponseSchema(BaseModel):
     id: UUID4 = Field(..., description="ID")

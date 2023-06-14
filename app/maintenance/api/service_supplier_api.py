@@ -7,7 +7,7 @@ from app.maintenance.schemas import (
     ServiceSupplierUpdateScheme,
     ExceptionResponseSchema
 )
-from app.maintenance.services.maintenance import ServiceSupplierService
+from app.maintenance.services.maintenance_service import ServiceSupplierService
 
 supplier_router = APIRouter()
 

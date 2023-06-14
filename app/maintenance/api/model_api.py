@@ -7,7 +7,7 @@ from app.maintenance.schemas import (
     ModelUpdateScheme,
     ExceptionResponseSchema
 )
-from app.maintenance.services.maintenance import ModelService
+from app.maintenance.services.maintenance_service import ModelService
 
 model_router = APIRouter()
 

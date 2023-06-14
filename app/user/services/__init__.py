@@ -1,1 +1,1 @@
-from .user import *
+from .user_service import *

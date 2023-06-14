@@ -1,5 +1,5 @@
-from app.store.models.store import Store
-from app.store.schemas.store import StoreCreateScheme, StoreUpdateScheme
+from app.store.models.store_models import Store
+from app.store.schemas.store_schemas import StoreCreateScheme, StoreUpdateScheme
 from core.db.session import session
 from core.service.base import BaseService
 

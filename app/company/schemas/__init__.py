@@ -1,4 +1,4 @@
-from .company import *
+from .company_schemas import *
 
 
 class ExceptionResponseSchema(BaseModel):

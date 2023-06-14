@@ -19,3 +19,4 @@ class Store(Base, AllMixin):
     address = Column(Unicode(255), nullable=False)
     source = Column(Unicode(20), nullable=False, default=StoreType.INTERNAL)
     store_users = relationship("User", lazy='selectin')
+    company = relationship("Company", lazy='selectin')
