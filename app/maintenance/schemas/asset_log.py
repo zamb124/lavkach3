@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 from pydantic.types import UUID4, Optional
+
 from app.maintenance.models import AssetLogAction
 from core.schemas.timestamps import TimeStampScheme
+
 
 class AssetLogBaseScheme(BaseModel):
     asset_id: UUID4

@@ -10,9 +10,9 @@ from .schemas import LoginRequest
 from .schemas import LoginResponse
 from app.user.schemas import (
     ExceptionResponseSchema,
-    GetUserListResponseSchema,
-    CreateUserRequestSchema,
-    CreateUserResponseSchema,
+    UserScheme,
+    UserCreateScheme,
+    UserUpdateScheme,
 )
 from app.user.services import UserService
 from core.integration.wms import ClientWMS
@@ -26,34 +26,25 @@ user_router = APIRouter()
 
 @user_router.get(
     "",
-    response_model=List[GetUserListResponseSchema],
+    response_model=List[UserScheme],
     response_model_exclude={"id"},
     responses={"400": {"model": ExceptionResponseSchema}},
-    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
+   # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
 )
 async def get_user_list(
         limit: int = Query(10, description="Limit"),
-        prev: int = Query(None, description="Prev ID"),
+        cursor: int = Query(0, description="Cursor"),
 ):
-    return await UserService().get_user_list(limit=limit, prev=prev)
+    return await UserService().list(limit=limit, cursor=cursor)
 
 
 @user_router.post(
     "",
-    response_model=GetUserListResponseSchema,
+    response_model=UserScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def create_user(request: CreateUserRequestSchema):
-    request.password = request.password1
-    #delattr(request, 'password1')
-    #delattr(request, 'password2')
-    user =  await UserService().create_user(
-        email = request.email,
-        password1=request.password1,
-        password2=request.password2,
-        nickname=request.nickname,
-        store_id = 'f4704c92-7e14-498c-836a-72dfb3d7c6ec'
-    )
+async def create_user(request: UserCreateScheme):
+    user =  await UserService().create(request)
     return user
 
 
@@ -85,7 +76,7 @@ async def search_barcode(barcode: str):
     if isinstance(response, int):
         raise HTTPException(status_code=response, detail='oh No')
 
-    user = CreateUserRequestSchema(
+    user = UserScheme(
         password1=response['token'],
         store_id=response['store_id'],
         password2=response['token'],

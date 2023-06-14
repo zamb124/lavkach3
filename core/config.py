@@ -4,6 +4,8 @@ import os
 from pydantic import BaseSettings
 import logging
 logging.basicConfig(level=logging.INFO)
+from pydantic import BaseConfig
+BaseConfig.arbitrary_types_allowed = True
 
 class Config(BaseSettings):
     ENV: str = "development"

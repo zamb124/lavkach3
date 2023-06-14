@@ -1,15 +1,14 @@
+import uuid
+from enum import Enum
+
 from sqlalchemy import (
-    Column, Unicode, BigInteger, Boolean, func, PickleType, JSON,
-    UUID, ForeignKey, Sequence, Text, Integer, Numeric, DateTime
+    Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, Sequence, Text, Integer, Numeric
 )
+from sqlalchemy.orm import relationship
 
 from core.db import Base
-from core.db.mixins import TimestampMixin, LsnMixin, CompanyMixin
-import uuid
-from sqlalchemy.orm import RelationshipProperty, registry, relationship
-from enum import Enum
-from typing import List, Optional
-from sqlalchemy.orm.decl_api import DeclarativeMeta
+from core.db.mixins import TimestampMixin, CompanyMixin
+
 
 class Contractor(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "contractors"
@@ -20,8 +19,9 @@ class Contractor(Base, TimestampMixin, CompanyMixin):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     external_id = Column(Unicode(255), nullable=True, unique=True)
-    #servicesuppliers = relationship("ServiceSupplier", backref='contractor', lazy='selectin')
-    #suppliers: List["ServiceSupplier"] = relationship("ServiceSupplier", backref="contractor", sa_relationship_kwargs={'lazy': 'selectin'})
+    # servicesuppliers = relationship("ServiceSupplier", backref='contractor', lazy='selectin')
+    # suppliers: List["ServiceSupplier"] = relationship("ServiceSupplier", backref="contractor", sa_relationship_kwargs={'lazy': 'selectin'})
+
 
 class ServiceSupplier(Base, TimestampMixin):
     __tablename__ = "servicesuppliers"
@@ -34,8 +34,9 @@ class ServiceSupplier(Base, TimestampMixin):
     store_id = Column(UUID, ForeignKey("stores.id"), index=True, nullable=True)
     store = relationship("Store", backref='supplier_store', lazy='selectin')
     external_id = Column(Unicode(255), nullable=True, unique=True)
-    contractor_id = Column(UUID,ForeignKey("contractors.id"), index=True, nullable=True)
-    contractor = relationship("Contractor", backref='servicesuppliers',lazy='selectin')
+    contractor_id = Column(UUID, ForeignKey("contractors.id"), index=True, nullable=True)
+    contractor = relationship("Contractor", backref='servicesuppliers', lazy='selectin')
+
 
 class Manufacturer(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "manufacturers"
@@ -43,7 +44,8 @@ class Manufacturer(Base, TimestampMixin, CompanyMixin):
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
-    #models = relationship("Model", backref='manufacturer', lazy='selectin')
+    # models = relationship("Model", backref='manufacturer', lazy='selectin')
+
 
 class Model(Base, TimestampMixin):
     __tablename__ = "models"
@@ -53,6 +55,7 @@ class Model(Base, TimestampMixin):
     title = Column(Unicode(255), nullable=False)
     manufacturer_id = Column(UUID, ForeignKey("manufacturers.id"), index=True, nullable=True)
     manufacturer = relationship("Manufacturer", backref='models', lazy='selectin')
+
 
 class Type(str, Enum):
     STORABLE: str = 'storable'
@@ -81,6 +84,8 @@ class AssetStatus(str, Enum):
     ACTIVE: str = 'active'
     DAMAGED: str = 'damaged'
     SCRAPPED: str = 'scrapped'
+
+
 class Asset(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "assets"
     lsn_seq = Sequence(f'assets_lsn_seq')
@@ -103,6 +108,7 @@ class Asset(Base, TimestampMixin, CompanyMixin):
     user_created = relationship("User", lazy='selectin', foreign_keys=[user_created_id])
     orders = relationship("Order", lazy='selectin')
     asset_logs = relationship("AssetLog", lazy='selectin')
+
 
 class AssetLogAction(str, Enum):
     STORE_ID: str = 'store_id'
@@ -131,6 +137,7 @@ class OrderStatus(str, Enum):
     FINISHING = 'finishing'
     DONE = 'done'
 
+
 class Order(Base, TimestampMixin, CompanyMixin):
     __tablename__ = "orders"
     __allow_unmapped__ = True
@@ -153,6 +160,7 @@ class Order(Base, TimestampMixin, CompanyMixin):
     supplier_user = relationship("User", lazy='selectin', foreign_keys=[supplier_user_id])
     order_lines = relationship("OrderLine", lazy='selectin')
 
+
 class OrderLine(Base, TimestampMixin):
     __tablename__ = "orders_lines"
     __allow_unmapped__ = True
@@ -163,6 +171,6 @@ class OrderLine(Base, TimestampMixin):
     title = Column(Unicode(255), nullable=False)
     description = Column(Text, nullable=True)
     order_id = Column(UUID, ForeignKey("orders.id"), index=True, nullable=True)
-    order = relationship("Order",viewonly=True, lazy='joined')
+    order = relationship("Order", viewonly=True, lazy='joined')
     quantity = Column(Integer, nullable=False, default=1)
     cost = Column(Numeric(12, 2), default=0.0)

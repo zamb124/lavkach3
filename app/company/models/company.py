@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, Sequence
+from sqlalchemy_utils import CurrencyType, Currency, CountryType, LocaleType
 
 from core.db import Base
 from core.db.mixins import TimestampMixin, LsnMixin
@@ -12,6 +13,6 @@ class Company(Base, TimestampMixin):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     external_id = Column(Unicode(255), nullable=True, unique=True)
-    lang = Column(Unicode(255), nullable=False)
-    country = Column(Unicode(255), nullable=False)
-    currency = Column(Unicode(255), nullable=False)
+    country = Column(CountryType, default='RU')
+    locale = Column(LocaleType, default='en_US')
+    currency = Column(CurrencyType, nullable=False)

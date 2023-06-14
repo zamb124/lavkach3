@@ -1,24 +1,23 @@
-from datetime import datetime
-from core.service.enum import SynchronizeSessionEnum
 import uuid
 from typing import TypeVar
-from pydantic import BaseModel, Field, HttpUrl, conint
-from pydantic.types import UUID4, condecimal, constr, List
-from app.to_camel import to_camel
-from core.db.session import Base, session
+
+from pydantic import BaseModel, Field
+from pydantic.types import UUID4, List
 from sqlalchemy import update
-from app.maintenance.models import Asset, Type, SourceType, AssetStatus
+from sqlalchemy.exc import IntegrityError
+from starlette.exceptions import HTTPException
+
+from app.maintenance.models import AssetStatus
+from app.maintenance.models.maintenance import AssetLog
+from app.maintenance.schemas.asset_log import AssetLogBaseScheme
 from app.maintenance.schemas.asset_type import AssetTypeScheme
 from app.maintenance.schemas.manufacturer import ManufacturerScheme
 from app.maintenance.schemas.model import ModelScheme
-from app.user.schemas import GetUserListResponseSchema
-from app.store.schemas import StoreScheme
-from sqlalchemy.exc import IntegrityError
-from starlette.exceptions import HTTPException
-from app.maintenance.models.maintenance import AssetLog
-from core.db import Transactional
 from app.maintenance.schemas.order import OrderScheme
-from app.maintenance.schemas.asset_log import AssetLogBaseScheme
+from app.store.schemas import StoreScheme
+from app.user.schemas import GetUserListResponseSchema
+from core.db.session import Base, session
+from core.service.enum import SynchronizeSessionEnum
 
 ModelType = TypeVar("ModelType", bound=Base)
 from core.schemas.timestamps import TimeStampScheme

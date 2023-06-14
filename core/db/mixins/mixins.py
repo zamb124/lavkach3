@@ -1,9 +1,17 @@
 from sqlalchemy import Column, DateTime, func, UUID, BigInteger, ForeignKey, Sequence
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy_utils.types import  JSONType
 import pytz
-import datetime
-import uuid
 
+
+
+class VarsMixin:
+    @declared_attr
+    def vars(cls): #company_id = Column(UUID, ForeignKey("companies.id"))
+        return Column(
+            JSONType,
+            nullable=True
+        )
 
 class TimestampMixin:
     @declared_attr
@@ -41,7 +49,9 @@ class LsnMixin:
     @declared_attr
     def lsn(cls):
         return Column(
-            BigInteger,
-            index=True,
-            server_onupdate=getattr(cls, 'lsn_seq').next_value(),
-        )
+                BigInteger,
+                getattr(cls, 'lsn_seq'),
+                onupdate=getattr(cls, 'lsn_seq').next_value(), index=True
+            )
+class AllMixin(LsnMixin, CompanyMixin,TimestampMixin,VarsMixin):
+    pass

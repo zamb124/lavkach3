@@ -1,13 +1,20 @@
-from datetime import datetime
 from typing import List, Optional
-import uuid
-from pydantic import BaseModel, Field, HttpUrl
-from pydantic.types import UUID4, condecimal, constr, condecimal
-from app.maintenance.models import Order, OrderLine, OrderStatus
+from pydantic import BaseModel
+from pydantic.types import UUID4, condecimal
+from app.maintenance.models import Order, OrderStatus
 from app.store.schemas import StoreScheme
 from app.user.schemas import GetUserListResponseSchema
-from pydantic import ConfigDict
 from core.schemas.timestamps import TimeStampScheme
+from typing import List, Optional
+
+from pydantic import BaseModel
+from pydantic.types import UUID4, condecimal
+
+from app.maintenance.models import Order, OrderStatus
+from app.store.schemas import StoreScheme
+from app.user.schemas import GetUserListResponseSchema
+from core.schemas.timestamps import TimeStampScheme
+
 
 class OrderLineBaseScheme(BaseModel):
     title: str

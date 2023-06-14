@@ -1,10 +1,6 @@
-from datetime import datetime
-from typing import List, Optional
-import uuid
-from pydantic import BaseModel, Field, HttpUrl, conint
-from pydantic.types import UUID4, condecimal, constr
-from app.to_camel import to_camel
-from app.maintenance.models import Model
+from pydantic import BaseModel, Field
+from pydantic.types import UUID4
+
 from app.maintenance.schemas.manufacturer import ManufacturerScheme
 from core.schemas.timestamps import TimeStampScheme
 
