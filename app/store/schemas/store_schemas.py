@@ -27,7 +27,7 @@ class StoreCreateScheme(StoreBaseScheme):
 class StoreScheme(StoreCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
-    company = CompanyScheme
+    company: CompanyScheme
 
     class Config:
         orm_mode = True
