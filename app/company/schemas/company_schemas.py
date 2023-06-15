@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, UUID4
 from pydantic.types import Optional
 from core.schemas.timestamps import TimeStampScheme
-from core.types.types import *
+from core.types.types import TypeCountry, TypePhone, TypeLocale,TypeCurrency
 
 
 class CompanyBaseScheme(BaseModel):

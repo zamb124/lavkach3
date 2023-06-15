@@ -15,7 +15,7 @@ services:
     depends_on:
       - db
     volumes:
-      - $PWD:/home
+      - $PWD:/base
   db:
     build:
       context: .

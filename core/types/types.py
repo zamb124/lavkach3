@@ -2,6 +2,7 @@ from sqlalchemy_utils.types.country import Country
 from sqlalchemy_utils.types.currency import Currency
 from sqlalchemy_utils.types.phone_number import PhoneNumber
 from babel import Locale
+from core.schemas.basic_schemes import CountrySchema, LocaleSchema, CurrencySchema, PhoneSchema
 
 class TypeCountry(Country):
     @classmethod
@@ -17,10 +18,10 @@ class TypeCountry(Country):
                 raise TypeError(str(ex))
             return v
         elif isinstance(v, Country):
-            return {
+            return CountrySchema(**{
                 'code': v.code,
                 'name': v.name
-            }
+            })
         raise TypeError("Type sqlalchemy_utils.types.country.Country or String")
 
     @classmethod
@@ -42,14 +43,14 @@ class TypeLocale(Locale):
                 raise TypeError(str(ex))
             return v
         elif isinstance(v, Locale):
-            return {
+            return LocaleSchema(**{
                 'language': v.language,
                 'territory': 'RU',
                 'display_name': v.display_name,
                 'english_name': v.english_name,
                 'language_name': v.language_name
 
-            }
+            })
         raise TypeError("Type babel.Locale or String")
     @classmethod
     def __modify_schema__(cls, field_schema):
@@ -69,10 +70,10 @@ class TypeCurrency(Currency):
                 raise TypeError(str(ex))
             return v
         elif isinstance(v, Currency):
-            return {
+            return CurrencySchema(**{
                 'code': v.code,
                 'name': v.name
-            }
+            })
         raise TypeError("Type sqlalchemy_utils.types.country.Country or String")
 
     @classmethod
@@ -89,14 +90,14 @@ class TypePhone(PhoneNumber):
         if isinstance(v, str):
             return v
         elif isinstance(v, PhoneNumber):
-            return {
+            return PhoneSchema(**{
                 'country_code': v.country_code,
                 'country_code_source': v.country_code_source,
                 'e164': v.e164,
                 'international': v.international,
                 'national': v.national,
                 'national_number': v.national_number
-            }
+            })
         raise TypeError("Type sqlalchemy_utils.types.country.Country or String")
 
     @classmethod

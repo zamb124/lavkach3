@@ -1,8 +1,6 @@
 import typing
 import uuid
 
-from fastapi import APIRouter, Depends, Query
-
 from app.store.schemas import (
     StoreScheme,
     StoreCreateScheme,

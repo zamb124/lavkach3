@@ -1,7 +1,7 @@
 from multiprocessing import cpu_count
 
 # Socket Path
-bind = 'unix:/home/viktor-shved/lavkach/gunicorn.sock'
+bind = 'unix:/base/viktor-shved/lavkach/gunicorn.sock'
 
 # Worker Options
 workers = cpu_count() + 1
@@ -9,5 +9,5 @@ worker_class = 'uvicorn.workers.UvicornWorker'
 
 # Logging Options
 loglevel = 'info'
-#accesslog = '/home/viktor-shved/lavkach/access_log'
-#errorlog = '/home/viktor-shved/lavkach/error_log'
+#accesslog = '/base/viktor-shved/lavkach/access_log'
+#errorlog = '/base/viktor-shved/lavkach/error_log'
