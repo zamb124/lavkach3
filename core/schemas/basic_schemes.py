@@ -13,7 +13,6 @@ class LocaleSchema(BaseModel):
     display_name: str
     english_name: str
     language_name: str
-    territory: str
 
 class CurrencySchema(BaseModel):
     name: str
