@@ -10,6 +10,7 @@ from core.fastapi.dependencies import (
 )
 from core.schemas.basic_schemes import CurrencySchema, CountrySchema, LocaleSchema
 from core.types.types import TypeLocale
+from babel.core import UnknownLocaleError
 
 
 class ExceptionResponseSchema(BaseModel):
@@ -30,7 +31,11 @@ async def health():
 @base_router.get("/countries", response_model=list[CountrySchema])
 async def countries(request: Request):
     user_data = await request.user.get_user_data()
-    currencies = [{'code': k, 'name': v} for k, v in user_data.locale.territories._data.items()]
+    currencies = [
+        {
+            'code': k, 'name': v
+        } for k, v in user_data.locale.territories._data.items()
+    ]
     return currencies
 
 
@@ -72,21 +77,21 @@ async def locales(request: Request):
     locales = [TypeLocale(i) for i in LOCALE_ALIASES]
     return [i.validate(i) for i in locales]
 
+
 @base_router.get("/locales/my", response_model=LocaleSchema)
 async def locales_my(request: Request):
     user = await request.user.get_user_data()
     locale = TypeLocale(str(user.locale))
     return locale.validate(locale)
 
+
 @base_router.get("/locales/{code}", response_model=LocaleSchema)
 async def locales_code(request: Request, code: str):
     try:
-        locale = TypeLocale(code)
-    except KeyError as ex:
+        locale = TypeLocale(code.lower())
+    except UnknownLocaleError as ex:
         raise HTTPException(
             status_code=404,
-            detail=f"Locale {str(ex)} not found"
+            detail=str(ex)
         )
     return locale.validate(locale)
-
-
