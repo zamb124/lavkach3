@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from core.db.session import set_session_context, reset_session_context, session
+from backend.core.db.session import set_session_context, reset_session_context, session
 
 
 class SQLAlchemyMiddleware:

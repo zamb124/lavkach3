@@ -3,14 +3,14 @@ import uuid
 
 from fastapi import APIRouter, Depends, Query
 
-from app.maintenance.schemas import (
+from backend.app.maintenance.schemas import (
     ManufacturerScheme,
     ManufacturerCreateScheme,
     ManufacturerUpdateScheme,
     ExceptionResponseSchema
 )
-from app.maintenance.services.maintenance_service import ManufacturerService
-from core.fastapi.dependencies import (
+from backend.app.maintenance.services.maintenance_service import ManufacturerService
+from backend.core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )

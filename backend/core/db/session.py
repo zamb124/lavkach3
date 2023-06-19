@@ -7,11 +7,10 @@ from sqlalchemy.ext.asyncio import (
     async_scoped_session,
 )
 from sqlalchemy.orm import RelationshipProperty, registry, relationship
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.sql.expression import Update, Delete, Insert
 
-from core.config import config
+from backend.core.config import config
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 session_context: ContextVar[str] = ContextVar("session_context")
 

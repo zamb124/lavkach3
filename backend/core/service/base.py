@@ -1,18 +1,16 @@
 from typing import Any, Generic, List, Optional, Type, TypeVar
 
-import sqlalchemy
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException
 
-from core.db.session import Base, session
-from sqlalchemy import select, update, delete
+from backend.core.db.session import Base, session
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
-from app.company.schemas.company_schemas import CompanyScheme
 
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: Type[ModelType], db_session: session):

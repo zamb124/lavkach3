@@ -1,14 +1,14 @@
 import typing
 import uuid
 
-from app.store.schemas import (
+from backend.app.store.schemas import (
     StoreScheme,
     StoreCreateScheme,
     StoreUpdateScheme,
     ExceptionResponseSchema
 )
-from app.store.services import StoreService
-from core.fastapi.dependencies import (
+from backend.app.store.services import StoreService
+from backend.core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )

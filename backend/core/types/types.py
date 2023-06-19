@@ -2,7 +2,7 @@ from sqlalchemy_utils.types.country import Country
 from sqlalchemy_utils.types.currency import Currency
 from sqlalchemy_utils.types.phone_number import PhoneNumber
 from babel import Locale
-from core.schemas.basic_schemes import CountrySchema, LocaleSchema, CurrencySchema, PhoneSchema
+from backend.core.schemas.basic_schemes import CountrySchema, LocaleSchema, CurrencySchema, PhoneSchema
 
 class TypeCountry(Country):
     @classmethod

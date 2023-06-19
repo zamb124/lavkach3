@@ -3,7 +3,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, Query
 
-from app.maintenance.schemas import (
+from backend.app.maintenance.schemas import (
     OrderScheme,
     OrderCreateScheme,
     OrderUpdateScheme,
@@ -13,9 +13,9 @@ from app.maintenance.schemas import (
     OrderLineCreateScheme,
     OrderLineUpdateScheme
 )
-from app.maintenance.services.maintenance_service import OrderLineService
-from app.maintenance.services.maintenance_service import OrderService
-from core.fastapi.dependencies import (
+from backend.app.maintenance.services.maintenance_service import OrderLineService
+from backend.app.maintenance.services.maintenance_service import OrderService
+from backend.core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )

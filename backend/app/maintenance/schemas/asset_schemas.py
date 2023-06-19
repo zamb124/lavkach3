@@ -7,20 +7,20 @@ from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 
-from app.maintenance.models import AssetStatus
-from app.maintenance.models.maintenance_models import AssetLog
-from app.maintenance.schemas.asset_log_schemas import AssetLogBaseScheme
-from app.maintenance.schemas.asset_type_schemas import AssetTypeScheme
-from app.maintenance.schemas.manufacturer_schemas import ManufacturerScheme
-from app.maintenance.schemas.model_schemas import ModelScheme
-from app.maintenance.schemas.order_schemas import OrderScheme
-from app.store.schemas import StoreScheme
-from app.user.schemas import GetUserListResponseSchema
-from core.db.session import Base, session
-from core.service.enum import SynchronizeSessionEnum
+from backend.app.maintenance.models import AssetStatus
+from backend.app.maintenance.models.maintenance_models import AssetLog
+from backend.app.maintenance.schemas.asset_log_schemas import AssetLogBaseScheme
+from backend.app.maintenance.schemas.asset_type_schemas import AssetTypeScheme
+from backend.app.maintenance.schemas.manufacturer_schemas import ManufacturerScheme
+from backend.app.maintenance.schemas.model_schemas import ModelScheme
+from backend.app.maintenance.schemas.order_schemas import OrderScheme
+from backend.app.store.schemas import StoreScheme
+from backend.app.user.schemas import GetUserListResponseSchema
+from backend.core.db.session import Base, session
+from backend.core.service.enum import SynchronizeSessionEnum
 
 ModelType = TypeVar("ModelType", bound=Base)
-from core.schemas.timestamps import TimeStampScheme
+from backend.core.schemas.timestamps import TimeStampScheme
 
 class AssetLo(BaseModel):
     async def create(self) -> ModelType:

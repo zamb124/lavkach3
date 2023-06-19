@@ -1,13 +1,13 @@
 import uuid
 import typing
-from app.company.schemas import (
+from backend.app.company.schemas import (
     CompanyScheme,
     CompanyCreateScheme,
     CompanyUpdateScheme,
     ExceptionResponseSchema
 )
-from app.company.services.company_service import CompanyService
-from core.fastapi.dependencies import (
+from backend.app.company.services.company_service import CompanyService
+from backend.core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )

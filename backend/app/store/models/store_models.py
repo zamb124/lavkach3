@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, Sequence, Enum
 
-from core.db import Base
-from core.db.mixins import TimestampMixin, LsnMixin, CompanyMixin, AllMixin
+from backend.core.db import Base
+from backend.core.db.mixins import TimestampMixin, LsnMixin, CompanyMixin, AllMixin
 import uuid
 from enum import Enum
 from sqlalchemy.orm import relationship

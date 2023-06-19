@@ -7,15 +7,16 @@ from fastapi.responses import JSONResponse
 
 from .routers import router
 from .base.base import base_router
-from core.config import config
-from core.exceptions import CustomException
-from core.fastapi.dependencies import Logging
-from core.fastapi.middlewares import (
+from backend.core.config import config
+from backend.core.exceptions import CustomException
+from backend.core.fastapi.dependencies import Logging
+from backend.core.fastapi.middlewares import (
     AuthenticationMiddleware,
     AuthBackend,
     SQLAlchemyMiddleware,
 )
-from core.helpers.cache import Cache, RedisBackend, CustomKeyMaker
+from backend.core.helpers.cache import Cache,CustomKeyMaker
+from backend.core.helpers.cache import RedisBackend
 
 
 def init_routers(app_: FastAPI) -> None:

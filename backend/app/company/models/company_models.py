@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, Sequence
 from sqlalchemy_utils import CurrencyType, Currency, CountryType, LocaleType
 
-from core.db import Base
-from core.db.mixins import TimestampMixin, LsnMixin
+from backend.core.db import Base
+from backend.core.db.mixins import TimestampMixin, LsnMixin
 import uuid
 
 
