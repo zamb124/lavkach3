@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field, UUID4, Json
 from pydantic.types import Optional
-from backend.app.user.models.user_models import UserType
-from backend.app.store.schemas.store_schemas import StoreScheme
-from backend.app.company.schemas.company_schemas import CompanyScheme
-from backend.core.types.types import *
+from app.user.models.user_models import UserType
+from app.store.schemas.store_schemas import StoreScheme
+from app.company.schemas.company_schemas import CompanyScheme
+from core.types.types import *
 class GetUserListResponseSchema(BaseModel):
     id: UUID4 = Field(..., description="ID")
     email: str = Field(..., description="Email")
@@ -38,7 +38,7 @@ class LoginResponseSchema(BaseModel):
 
 
 from pydantic import BaseModel, Field, UUID4
-from backend.core.schemas.timestamps import TimeStampScheme
+from core.schemas.timestamps import TimeStampScheme
 
 
 class UserBaseScheme(BaseModel):

@@ -1,18 +1,18 @@
 from sqlalchemy import or_, select, and_
-from backend.app.user.schemas.user_schemas import LoginResponseSchema
-from backend.core.exceptions import (
+from app.user.schemas.user_schemas import LoginResponseSchema
+from core.exceptions import (
     PasswordDoesNotMatchException,
     DuplicateEmailOrNicknameException,
     UserNotFoundException,
 )
-from backend.core.utils.token_helper import TokenHelper
+from core.utils.token_helper import TokenHelper
 
 
 
-from backend.app.user.models.user_models import User
-from backend.app.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme
-from backend.core.db.session import session
-from backend.core.service.base import BaseService
+from app.user.models.user_models import User
+from app.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme
+from core.db.session import session
+from core.service.base import BaseService
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 

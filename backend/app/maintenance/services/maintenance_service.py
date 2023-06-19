@@ -1,4 +1,4 @@
-from backend.app.maintenance.models.maintenance_models import (
+from app.maintenance.models.maintenance_models import (
     Contractor,
     ServiceSupplier,
     Manufacturer,
@@ -9,17 +9,17 @@ from backend.app.maintenance.models.maintenance_models import (
     Order,
     OrderLine
 )
-from backend.app.maintenance.schemas.contractor_schemas import ContractorCreateScheme, ContractorUpdateScheme
-from backend.app.maintenance.schemas.service_supplier_schemas import ServiceSupplierCreateScheme, ServiceSupplierUpdateScheme
-from backend.app.maintenance.schemas.manufacturer_schemas import ManufacturerCreateScheme, ManufacturerUpdateScheme
-from backend.app.maintenance.schemas.model_schemas import ModelCreateScheme, ModelUpdateScheme
-from backend.app.maintenance.schemas.asset_type_schemas import AssetTypeCreateScheme, AssetTypeUpdateScheme
-from backend.app.maintenance.schemas.asset_schemas import AssetCreateScheme, AssetUpdateScheme
-from backend.app.maintenance.schemas.asset_log_schemas import AssetLogCreateScheme, AssetLogUpdateScheme
-from backend.app.maintenance.schemas.order_schemas import OrderCreateScheme, OrderUpdateScheme, OrderLineCreateScheme, \
+from app.maintenance.schemas.contractor_schemas import ContractorCreateScheme, ContractorUpdateScheme
+from app.maintenance.schemas.service_supplier_schemas import ServiceSupplierCreateScheme, ServiceSupplierUpdateScheme
+from app.maintenance.schemas.manufacturer_schemas import ManufacturerCreateScheme, ManufacturerUpdateScheme
+from app.maintenance.schemas.model_schemas import ModelCreateScheme, ModelUpdateScheme
+from app.maintenance.schemas.asset_type_schemas import AssetTypeCreateScheme, AssetTypeUpdateScheme
+from app.maintenance.schemas.asset_schemas import AssetCreateScheme, AssetUpdateScheme
+from app.maintenance.schemas.asset_log_schemas import AssetLogCreateScheme, AssetLogUpdateScheme
+from app.maintenance.schemas.order_schemas import OrderCreateScheme, OrderUpdateScheme, OrderLineCreateScheme, \
     OrderLineUpdateScheme
-from backend.core.db.session import session
-from backend.core.service.base import BaseService
+from core.db.session import session
+from core.service.base import BaseService
 
 
 class ContractorService(BaseService[Contractor, ContractorCreateScheme, ContractorUpdateScheme]):

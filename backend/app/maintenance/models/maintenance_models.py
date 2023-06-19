@@ -6,8 +6,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from backend.core.db import Base
-from backend.core.db.mixins import TimestampMixin, CompanyMixin
+from core.db import Base
+from core.db.mixins import TimestampMixin, CompanyMixin
 
 
 class Contractor(Base, TimestampMixin, CompanyMixin):

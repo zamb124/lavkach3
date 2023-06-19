@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, UUID4
 from pydantic.typing import Optional
-from backend.app.user.services.user_service import UserService
+from app.user.services.user_service import UserService
 
 class CurrentUser(BaseModel):
     id: Optional[UUID4]

@@ -3,7 +3,7 @@ from typing import Any, Generic, List, Optional, Type, TypeVar
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException
 
-from backend.core.db.session import Base, session
+from core.db.session import Base, session
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 

@@ -25,12 +25,12 @@ class CacheManager:
                     function=function,
                     prefix=prefix if prefix else tag.value,
                 )
-                cached_response = await self.backend.get(key=key)
+                cached_response = await self.get(key=key)
                 if cached_response:
                     return cached_response
 
                 response = await function(*args, **kwargs)
-                await self.backend.set(response=response, key=key, ttl=ttl)
+                await self.set(response=response, key=key, ttl=ttl)
                 return response
 
             return __cached
@@ -38,10 +38,10 @@ class CacheManager:
         return _cached
 
     async def remove_by_tag(self, tag: CacheTag) -> None:
-        await self.backend.delete_startswith(value=tag.value)
+        await self.delete_startswith(value=tag.value)
 
     async def remove_by_prefix(self, prefix: str) -> None:
-        await self.backend.delete_startswith(value=prefix)
+        await self.delete_startswith(value=prefix)
 
 
 Cache = CacheManager()

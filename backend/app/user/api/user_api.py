@@ -2,21 +2,21 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import update, select
-from backend.app.user.models import User
-from backend.core.db import session
+from app.user.models import User
+from core.db import session
 
 from starlette.exceptions import HTTPException
 from .schemas import LoginRequest
 from .schemas import LoginResponse
-from backend.app.user.schemas import (
+from app.user.schemas import (
     ExceptionResponseSchema,
     UserScheme,
     UserCreateScheme,
     UserUpdateScheme,
 )
-from backend.app.user.services import UserService
-from backend.core.integration.wms import ClientWMS
-from backend.core.fastapi.dependencies import (
+from app.user.services import UserService
+from core.integration.wms import ClientWMS
+from core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )

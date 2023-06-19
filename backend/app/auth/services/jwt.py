@@ -1,6 +1,6 @@
-from backend.app.auth.schemas.jwt import RefreshTokenSchema
-from backend.core.exceptions.token import DecodeTokenException
-from backend.core.utils.token_helper import TokenHelper
+from app.auth.schemas.jwt import RefreshTokenSchema
+from core.exceptions.token import DecodeTokenException
+from core.utils.token_helper import TokenHelper
 
 
 class JwtService:

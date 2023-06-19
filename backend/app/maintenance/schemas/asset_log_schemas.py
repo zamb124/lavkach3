@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from pydantic.types import UUID4, Optional
 
-from backend.app.maintenance.models import AssetLogAction
-from backend.core.schemas.timestamps import TimeStampScheme
+from app.maintenance.models import AssetLogAction
+from core.schemas.timestamps import TimeStampScheme
 
 
 class AssetLogBaseScheme(BaseModel):

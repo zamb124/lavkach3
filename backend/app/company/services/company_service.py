@@ -1,7 +1,7 @@
-from backend.app.company.models.company_models import Company
-from backend.app.company.schemas.company_schemas import CompanyCreateScheme, CompanyUpdateScheme
-from backend.core.db.session import session
-from backend.core.service.base import BaseService
+from app.company.models.company_models import Company
+from app.company.schemas.company_schemas import CompanyCreateScheme, CompanyUpdateScheme
+from core.db.session import session
+from core.service.base import BaseService
 
 
 class CompanyService(BaseService[Company, CompanyCreateScheme, CompanyUpdateScheme]):

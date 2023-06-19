@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, Sequence
 from sqlalchemy_utils.types import PasswordType, EmailType, CountryType, ChoiceType, JSONType, LocaleType, PhoneNumber, PhoneNumberType
-from backend.core.db import Base
+from core.db import Base
 from sqlalchemy.orm import RelationshipProperty, registry, relationship, composite
-from backend.core.db.mixins import AllMixin
+from core.db.mixins import AllMixin
 import uuid
 from enum import Enum
 from fastapi_localization import lazy_gettext as _

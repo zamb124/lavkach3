@@ -3,13 +3,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Response, Request
 from pydantic import BaseModel
 
-from backend.core.fastapi.dependencies import AllowAll
-from backend.core.fastapi.dependencies import (
+from core.fastapi.dependencies import AllowAll
+from core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )
-from backend.core.schemas.basic_schemes import CurrencySchema, CountrySchema, LocaleSchema
-from backend.core.types.types import TypeLocale
+from core.schemas.basic_schemes import CurrencySchema, CountrySchema, LocaleSchema
+from core.types.types import TypeLocale
 from babel.core import UnknownLocaleError
 
 

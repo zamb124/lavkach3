@@ -3,10 +3,10 @@ from typing import List, Optional
 from pydantic import BaseModel
 from pydantic.types import UUID4, condecimal
 
-from backend.app.maintenance.models import Order, OrderStatus
-from backend.app.store.schemas import StoreScheme
-from backend.app.user.schemas import GetUserListResponseSchema
-from backend.core.schemas.timestamps import TimeStampScheme
+from app.maintenance.models import Order, OrderStatus
+from app.store.schemas import StoreScheme
+from app.user.schemas import GetUserListResponseSchema
+from core.schemas.timestamps import TimeStampScheme
 
 
 class OrderLineBaseScheme(BaseModel):
