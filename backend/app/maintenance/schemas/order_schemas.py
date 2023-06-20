@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from pydantic.types import UUID4, condecimal
 
 from app.maintenance.models import Order, OrderStatus
-from app.store.schemas import StoreScheme
-from app.user.schemas import GetUserListResponseSchema
+from app.basic.store.schemas import StoreScheme
+from app.basic.user.schemas import GetUserListResponseSchema
 from core.schemas.timestamps import TimeStampScheme
 
 

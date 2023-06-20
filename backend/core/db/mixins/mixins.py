@@ -35,7 +35,7 @@ class CompanyMixin:
     def company_id(cls): #company_id = Column(UUID, ForeignKey("companies.id"))
         return Column(
             UUID,
-            ForeignKey("companies.id"),
+            ForeignKey("company.id"),
             index=True,
             nullable=False
         )

@@ -14,8 +14,8 @@ from app.maintenance.schemas.asset_type_schemas import AssetTypeScheme
 from app.maintenance.schemas.manufacturer_schemas import ManufacturerScheme
 from app.maintenance.schemas.model_schemas import ModelScheme
 from app.maintenance.schemas.order_schemas import OrderScheme
-from app.store.schemas import StoreScheme
-from app.user.schemas import GetUserListResponseSchema
+from app.basic.store.schemas import StoreScheme
+from app.basic.user.schemas import GetUserListResponseSchema
 from core.db.session import Base, session
 from core.service.enum import SynchronizeSessionEnum
 
