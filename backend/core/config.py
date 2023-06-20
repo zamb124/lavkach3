@@ -1,45 +1,47 @@
 import logging
 import os
 
-from pydantic import BaseSettings
-import logging
-logging.basicConfig(level=logging.INFO)
+from dotenv import load_dotenv
 from pydantic import BaseConfig
+from pydantic import BaseSettings
+
 BaseConfig.arbitrary_types_allowed = True
+logging.basicConfig(level=logging.INFO)
+
+
+load_dotenv()
 
 class Config(BaseSettings):
-    ENV: str = "development"
-    DEBUG: bool = True
-    APP_HOST: str = "0.0.0.0"
-    APP_PORT: int = 8080
-    WRITER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/fastapi"
-    READER_DB_URL: str = f"postgresql+asyncpg://taxi:test@localhost:5432/fastapi"
-    JWT_SECRET_KEY: str = "fastapi"
-    JWT_ALGORITHM: str = "HS256"
-    SENTRY_SDN: str = None
+    ENV: str = os.environ.get("ENV") or 'local'
+    DEBUG: bool = os.environ.get("DEBUG") or True
+    APP_HOST: str = os.environ.get("APP_HOST") or 'localhost'
+    APP_PORT: int = os.environ.get("APP_PORT") or '8000'
+    DB_HOST: str = os.environ.get("DB_HOST") or 'localhost'
+    DB_PORT: str = os.environ.get("DB_PORT") or '5432'
+    DB_NAME: str = os.environ.get("DB_NAME") or 'lavkach'
+    DB_USER: str = os.environ.get("DB_USER") or 'taxi'
+    DB_PASS: str = os.environ.get("DB_PASS") or 'test'
+    WRITER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    READER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    JWT_SECRET_KEY: str = os.environ.get("JWT_SECRET_KEY") or 'secret'
+    JWT_ALGORITHM: str = os.environ.get("JWT_ALGORITHM") or 'HS256'
+    SENTRY_SDN: str = os.environ.get("SENTRY_SDN") or None
     CELERY_BROKER_URL: str = "amqp://user:bitnami@localhost:5672/"
     CELERY_BACKEND_URL: str = "redis://:password123@localhost:6379/0"
-    REDIS_HOST: str = "localhost"
-    REDIS_PORT: int = 6379
+    REDIS_HOST: str = os.environ.get("REDIS_HOST")
+    REDIS_PORT: int = os.environ.get("REDIS_PORT")
 
 
 class DevelopmentConfig(Config):
-    WRITER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
-    READER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
-    REDIS_HOST: str = "redis"
-    REDIS_PORT: int = 6379
+    ...
 
 
 class LocalConfig(Config):
-    WRITER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
-    READER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
+    ...
 
 
 class ProductionConfig(Config):
-    DEBUG: str = False
-    WRITER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
-    READER_DB_URL: str = f"postgresql+asyncpg://zambas:Angel-15111990@rc1b-gsgkmvrv04yanye2.mdb.yandexcloud.net:6432/lavkach"
-
+    ...
 
 def get_config():
     env = os.getenv("ENV", "local")

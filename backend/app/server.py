@@ -5,7 +5,7 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .routers import router
+from app.routers import router
 from .base.base import base_router
 from core.config import config
 from core.exceptions import CustomException
@@ -15,7 +15,7 @@ from core.fastapi.middlewares import (
     AuthBackend,
     SQLAlchemyMiddleware,
 )
-from core.helpers.cache import Cache,CustomKeyMaker
+from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
 
 

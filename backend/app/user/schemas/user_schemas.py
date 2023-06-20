@@ -42,7 +42,7 @@ from core.schemas.timestamps import TimeStampScheme
 
 
 class UserBaseScheme(BaseModel):
-    company_id: UUID4
+    company_id: Optional[UUID4]
     vars: Optional[dict]
     email: str = Field(description="Email")
     country: Optional[TypeCountry]

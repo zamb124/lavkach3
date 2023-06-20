@@ -14,7 +14,7 @@ from core.fastapi.dependencies import (
 from fastapi import APIRouter, Depends, Query
 
 company_router = APIRouter(
-    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
+    #dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 
