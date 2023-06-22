@@ -12,10 +12,6 @@ export default defineNuxtConfig({
      * with only your source code and no demo.
      */
     '../layers/tairo',
-
-    /**
-     * Uncomment the following line to add the Tairo Layout Sidebar layer
-     */
-    // '../layers/tairo-layout-sidebar',
+    '../layers/tairo-layout-sidebar',
   ],
 })
