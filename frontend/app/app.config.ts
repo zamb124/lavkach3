@@ -4,7 +4,7 @@
  * If you have the "Cannot find name 'defineAppConfig'.ts(2304)" error
  * update the root tsconfig.json file to include the following:
  *
- *  "extends": "./.app/.nuxt/tsconfig.json"
+ *  "extends": "./app/.nuxt/tsconfig.json"
  *
  */
 

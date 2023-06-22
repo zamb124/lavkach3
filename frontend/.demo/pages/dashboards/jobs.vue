@@ -635,7 +635,7 @@ const jobs = [
                   <div class="flex items-center justify-between">
                     <div>
                       <BaseAvatarGroup
-                        :avatars="job.applicants"
+                        :avatars="jobapplicants"
                         :limit="2"
                         size="xs"
                       />

@@ -68,7 +68,7 @@ importers:
         specifier: 1.6.5
         version: 1.6.5(typescript@5.0.4)
 
-  .app:
+  app:
     devDependencies:
       nuxt:
         specifier: 3.5.0

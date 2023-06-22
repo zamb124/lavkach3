@@ -298,7 +298,7 @@ onMounted(() => {
       loadingStyles()
     })
 
-    geocoderElement.value.appendChild(geocoder.value.onAdd(map.value))
+    geocoderElement.valueappendChild(geocoder.value.onAdd(map.value))
   })
 })
 

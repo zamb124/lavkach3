@@ -19,7 +19,7 @@
 <script setup lang="ts">
 const tree = [
   {
-    item: '.app',
+    item: 'app',
     children: [
       {
         item: 'index.ts',

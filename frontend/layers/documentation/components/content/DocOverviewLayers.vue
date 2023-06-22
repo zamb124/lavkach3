@@ -7,7 +7,7 @@ const props = defineProps<{
 const layerTree = [
   {
     item: {
-      name: '.app/',
+      name: 'app/',
       tooltip: 'Your app root folder',
     },
     open: true,

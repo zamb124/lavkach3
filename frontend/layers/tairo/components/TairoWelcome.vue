@@ -305,7 +305,7 @@ const codeTailwind = [
               />
               <p>
                 Enable a layout in
-                <code>.app/nuxt.config.ts</code>
+                <code>app/nuxt.config.ts</code>
               </p>
             </div>
             <pre><code>{{ nuxtConfig }}</code></pre>
@@ -322,7 +322,7 @@ const codeTailwind = [
               />
               <p>
                 Set default layout in
-                <code>.app/layouts/default.vue</code>
+                <code>app/layouts/default.vue</code>
               </p>
             </div>
             <pre><code>{{ codeLayout }}</code></pre>
@@ -339,7 +339,7 @@ const codeTailwind = [
               />
               <p>
                 Define your app settings in
-                <code>.app/app.config.ts</code>
+                <code>app/app.config.ts</code>
                 <small>(logo, name, sidebars, panels, ...)</small>
               </p>
             </div>
@@ -357,7 +357,7 @@ const codeTailwind = [
               />
               <p>
                 Create your first page
-                <code>.app/pages/index.vue</code>
+                <code>app/pages/index.vue</code>
               </p>
             </div>
             <pre><code>{{codePage}}</code></pre>
@@ -374,7 +374,7 @@ const codeTailwind = [
               />
               <p>
                 Customize tailwind settings in
-                <code>.app/tailwind.config.ts</code>
+                <code>app/tailwind.config.ts</code>
                 <small>(colors, fonts, ...)</small>
               </p>
             </div>
