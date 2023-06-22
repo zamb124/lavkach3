@@ -1,5 +1,4 @@
 import { withShurikenUI } from '@shuriken-ui/tailwind'
-import colors from 'tailwindcss/colors'
 
 /**
  * This is the Tailwind config file for the demo.
@@ -11,11 +10,6 @@ import colors from 'tailwindcss/colors'
 export default withShurikenUI({
   content: [],
   theme: {
-    extend: {
-      colors: {
-        primary: colors.red,
-        muted: colors.stone,
-      },
-    },
+    extend: {},
   },
 })
