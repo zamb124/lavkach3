@@ -49,9 +49,9 @@ export default withShurikenUI({
          * The <alpha-value> placeholder is replaced with the alpha value
          * @see https://tailwindcss.com/docs/customizing-colors#using-css-variables
          *
-         * @example .demo/assets/css/colors.css
-         * @example .demo/utils/colors-switcher.ts
-         * @example .demo/components/DemoAppLayoutSwitcher.vue
+         * @example demo/assets/css/colors.css
+         * @example demo/utils/colors-switcher.ts
+         * @example demo/components/DemoAppLayoutSwitcher.vue
          */
         primary: {
           50: 'rgb(var(--color-primary-50) / <alpha-value>)',

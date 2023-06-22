@@ -72,7 +72,7 @@ async function createProcessor(options: HighlighterOptions) {
   if (process.client) {
     // this allow to load shiki from /public/shiki/ folder instead of cdn
     // we need to first copy the shiki folder from node_modules to public
-    // this is done with prepare pnpm script (see .demo/package.json)
+    // this is done with prepare pnpm script (see demo/package.json)
     setCDN('/shiki/')
   }
 

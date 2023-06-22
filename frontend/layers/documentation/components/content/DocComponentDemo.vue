@@ -21,15 +21,15 @@ const props = withDefaults(
 const demoRE = /^#examples\/([\w-]+)\/([\w-]+).vue$/
 
 if (process.dev) {
-  if (props.demo && !demoRE.test(props.demo)) {
+  if (propsdemo && !demoRE.test(propsdemo)) {
     console.error(
-      `Invalid demo path: ${props.demo}. Expected format: #examples/<folder>/<file>.vue`,
+      `Invalid demo path: ${propsdemo}. Expected format: #examples/<folder>/<file>.vue`,
     )
   }
 }
 
 const info = computed(() => {
-  const [, folder, file] = props.demo?.match(demoRE) ?? []
+  const [, folder, file] = propsdemo?.match(demoRE) ?? []
   return { folder, file }
 })
 

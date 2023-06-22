@@ -66,18 +66,18 @@ useHead({
   <div>
     <!-- 
       Global app search modal
-      @see .demo/components/DemoAppSearch.vue
+      @see demo/components/DemoAppSearch.vue
     -->
     <DemoAppSearch />
     <!-- 
       Global app layout switcher
-      @see .demo/components/DemoAppLayoutSwitcher.vue
+      @see demo/components/DemoAppLayoutSwitcher.vue
     -->
     <DemoAppLayoutSwitcher />
 
     <!-- 
       Vue Axe Popup
-      @see .demo/plugins/vue-axe.client.ts
+      @see demo/plugins/vue-axe.client.ts
     -->
     <VueAxePopup />
 

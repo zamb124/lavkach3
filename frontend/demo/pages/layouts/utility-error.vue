@@ -11,7 +11,7 @@ const props = withDefaults(
       url: '/layouts/error-1',
       stack: [
         `Error`,
-        `    at default (/home/cssninja/tairo/.demo/pages/layouts/error-1.vue:33:14)`,
+        `    at default (/home/cssninja/tairo/demo/pages/layouts/error-1.vue:33:14)`,
         `    at resolvePropValue (/home/cssninja/tairo/node_modules/.pnpm/@vue+runtime-core@3.2.47/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:3944:63)`,
         `    at setFullProps (/home/cssninja/tairo/node_modules/.pnpm/@vue+runtime-core@3.2.47/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:3925:26)`,
         `    at initProps (/home/cssninja/tairo/node_modules/.pnpm/@vue+runtime-core@3.2.47/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js:3759:5)`,

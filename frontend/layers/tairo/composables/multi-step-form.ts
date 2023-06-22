@@ -31,7 +31,7 @@ export interface MultiStepFormConfig<
  * It allows you to create a multi-step form with rules and steps and
  * track the current step, the progress, the data, etc.
  *
- * @see .demo/pages/wizard.vue
+ * @see demo/pages/wizard.vue
  */
 export function createMultiStepForm<
   T extends Record<string, any>,
