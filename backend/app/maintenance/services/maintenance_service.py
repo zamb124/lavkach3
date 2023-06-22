@@ -1,6 +1,4 @@
 from app.maintenance.models.maintenance_models import (
-    Contractor,
-    ServiceSupplier,
     Manufacturer,
     Model,
     AssetType,
@@ -9,8 +7,6 @@ from app.maintenance.models.maintenance_models import (
     Order,
     OrderLine
 )
-from app.maintenance.schemas.contractor_schemas import ContractorCreateScheme, ContractorUpdateScheme
-from app.maintenance.schemas.service_supplier_schemas import ServiceSupplierCreateScheme, ServiceSupplierUpdateScheme
 from app.maintenance.schemas.manufacturer_schemas import ManufacturerCreateScheme, ManufacturerUpdateScheme
 from app.maintenance.schemas.model_schemas import ModelCreateScheme, ModelUpdateScheme
 from app.maintenance.schemas.asset_type_schemas import AssetTypeCreateScheme, AssetTypeUpdateScheme
@@ -20,16 +16,6 @@ from app.maintenance.schemas.order_schemas import OrderCreateScheme, OrderUpdate
     OrderLineUpdateScheme
 from core.db.session import session
 from core.service.base import BaseService
-
-
-class ContractorService(BaseService[Contractor, ContractorCreateScheme, ContractorUpdateScheme]):
-    def __init__(self, db_session: session = session):
-        super(ContractorService, self).__init__(Contractor, db_session)
-
-
-class ServiceSupplierService(BaseService[ServiceSupplier, ServiceSupplierCreateScheme, ServiceSupplierUpdateScheme]):
-    def __init__(self, db_session: session = session):
-        super(ServiceSupplierService, self).__init__(ServiceSupplier, db_session)
 
 
 class ManufacturerService(BaseService[Manufacturer, ManufacturerCreateScheme, ManufacturerUpdateScheme]):

@@ -120,7 +120,7 @@ class Order(Base, TimestampMixin, CompanyMixin):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
     number = Column(BigInteger, number_seq, default=number_seq.next_value(), index=True)
     description = Column(Text, nullable=True)
-    supplier_id = Column(UUID, index=True, nullable=True)
+    partner_id = Column(UUID, ForeignKey("partner.id"), index=True, nullable=True)
     status = Column(Unicode(30), nullable=False, index=True, default=OrderStatus.DRAFT)
     asset_id = Column(UUID, ForeignKey("asset.id"), index=True, nullable=False)
 
@@ -128,8 +128,8 @@ class Order(Base, TimestampMixin, CompanyMixin):
     store = relationship("Store", lazy='selectin')
     user_created_id = Column(UUID, ForeignKey("user.id"), nullable=True)
     user_created = relationship("User", lazy='selectin', foreign_keys=[user_created_id])
-    supplier_user_id = Column(UUID, ForeignKey("user.id"), nullable=True)
-    supplier_user = relationship("User", lazy='selectin', foreign_keys=[supplier_user_id])
+    partner_user_id = Column(UUID, ForeignKey("user.id"), nullable=True)
+    partner_user = relationship("User", lazy='selectin', foreign_keys=[partner_user_id])
     order_lines = relationship("OrderLine", lazy='selectin')
 
 

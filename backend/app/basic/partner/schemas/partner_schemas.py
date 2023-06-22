@@ -5,6 +5,7 @@ from core.types.types import TypeCountry, TypePhone, TypeLocale, TypeCurrency
 from app.basic.partner.models.partner_models import PartnerType
 
 class PartnerBaseScheme(BaseModel):
+    company_id: UUID4
     title: str = Field(description="Title")
     type: PartnerType
     external_id: Optional[str]

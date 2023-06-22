@@ -57,3 +57,4 @@ class Base(metaclass=DeclarativeMeta):
     metadata = mapper_registry.metadata
 
     __init__ = mapper_registry.constructor
+

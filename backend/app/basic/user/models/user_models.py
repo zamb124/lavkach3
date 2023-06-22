@@ -33,5 +33,5 @@ class User(Base, AllMixin):
     is_admin = Column(Boolean, default=False)
     type = Column(Unicode(255), nullable=False, default=UserType.COMMON)
     store_id = Column(UUID, ForeignKey("store.id"), index=True, nullable=True)
-    store = relationship("Store", lazy='selectin')
+    store = relationship("Store", back_populates='store_users', lazy='selectin')
     company = relationship("Company", lazy='selectin')
