@@ -6,7 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.routers import router
-from app.basic.fundamental.base import base_router
+from app.basic.basic_router import basic_router
+from app.basic.fundamental.base import fundamental_router
 from core.config import config
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
@@ -20,8 +21,11 @@ from core.helpers.cache import RedisBackend
 
 
 def init_routers(app_: FastAPI) -> None:
-    app_.include_router(base_router, prefix="/api/fundamental", tags=["Base"])
+    app_.include_router(fundamental_router, prefix="/api/fundamental", tags=["Base"])
+    app_.include_router(basic_router)
     app_.include_router(router)
+
+
 
 
 def init_listeners(app_: FastAPI) -> None:
