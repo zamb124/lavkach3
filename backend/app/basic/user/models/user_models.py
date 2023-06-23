@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, Sequence
+from sqlalchemy import Column, Unicode, BigInteger, Boolean, Uuid, ForeignKey, Sequence
 from sqlalchemy_utils.types import PasswordType, EmailType, CountryType, ChoiceType, JSONType, LocaleType, PhoneNumber, PhoneNumberType
 from core.db import Base
 from sqlalchemy.orm import RelationshipProperty, registry, relationship, composite
@@ -15,7 +15,7 @@ class UserType(str, Enum):
 class User(Base, AllMixin):
     __tablename__ = "user"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=False), primary_key=True, index=True, default=uuid.uuid4)
     lsn_seq = Sequence(f'user_lsn_seq')
     #lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
     password = Column(PasswordType(
@@ -32,6 +32,6 @@ class User(Base, AllMixin):
     nickname = Column(Unicode(255), nullable=False, unique=True)
     is_admin = Column(Boolean, default=False)
     type = Column(Unicode(255), nullable=False, default=UserType.COMMON)
-    store_id = Column(UUID, ForeignKey("store.id"), index=True, nullable=True)
+    store_id = Column(Uuid, ForeignKey("store.id"), index=True, nullable=True)
     store = relationship("Store", back_populates='store_users', lazy='selectin')
     company = relationship("Company", lazy='selectin')

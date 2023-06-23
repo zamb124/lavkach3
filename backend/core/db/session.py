@@ -1,5 +1,6 @@
 from contextvars import ContextVar, Token
 from typing import Union
+from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -50,6 +51,12 @@ session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
     session_factory=async_session_factory,
     scopefunc=get_session_context,
 )
+async def get_async_session():
+    print("Получение сессии")
+    session = "session"
+    yield session
+    print("Уничтожение сессии")
+
 mapper_registry = registry()
 class Base(metaclass=DeclarativeMeta):
     __abstract__ = True

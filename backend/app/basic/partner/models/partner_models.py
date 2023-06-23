@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Unicode, BigInteger, Boolean, UUID, ForeignKey, Sequence
+from sqlalchemy import Column, Unicode, BigInteger, Boolean, Uuid, ForeignKey, Sequence
 from sqlalchemy_utils.types import PasswordType, EmailType, CountryType, ChoiceType, JSONType, LocaleType, PhoneNumber, PhoneNumberType
 from sqlalchemy_utils import CurrencyType, Currency, CountryType, LocaleType
 from core.db import Base
@@ -19,18 +19,18 @@ class Partner(Base, TimestampMixin):
     __tablename__ = "partner"
     lsn_seq = Sequence(f'partner_lsn_seq')
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    id = Column(Uuid(as_uuid=False), primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     #
     type = Column(Unicode(30), nullable=False, default=PartnerType.PARTNER)
     external_id = Column(Unicode(255), nullable=True, unique=True)
-    parent_id = Column(UUID, ForeignKey("partner.id"), index=True, nullable=True)
+    parent_id = Column(Uuid, ForeignKey("partner.id"), index=True, nullable=True)
     parent = relationship("Partner", lazy='selectin')
     phone_number = Column(PhoneNumberType(), nullable=True)
     email = Column(EmailType, nullable=True)
     country = Column(CountryType, default='US')
     #
-    created_user_id = Column(UUID, ForeignKey("user.id"), index=True, nullable=False)
+    created_user_id = Column(Uuid, ForeignKey("user.id"), index=True, nullable=False)
     locale = Column(LocaleType, default='en_US')
     currency = Column(CurrencyType, nullable=False, default='USD')
     #

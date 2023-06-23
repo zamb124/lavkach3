@@ -5,6 +5,7 @@ from starlette.exceptions import HTTPException
 
 from core.db.session import Base, session
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -13,9 +14,9 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, model: Type[ModelType], db_session: session):
+    def __init__(self, model: Type[ModelType], db_session: AsyncSession):
         self.model = model
-        self.db_session = db_session
+        self.session = db_session
 
     async def get(self, id: Any) -> Optional[ModelType]:
         query = select(self.model).where(self.model.id == id)
@@ -28,7 +29,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             select(self.model)
             .where(self.model.lsn > cursor).limit(limit)
         )
-        result = await session.execute(query)
+        result = await self.session.execute(query)
         return result.scalars().all()
 
     async def create(self, obj: CreateSchemaType) -> ModelType:

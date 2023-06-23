@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, func, UUID, BigInteger, ForeignKey, Sequence
+from sqlalchemy import Column, DateTime, func, Uuid, BigInteger, ForeignKey, Sequence
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy_utils.types import  JSONType
 import pytz
@@ -34,7 +34,7 @@ class CompanyMixin:
     @declared_attr
     def company_id(cls): #company_id = Column(UUID, ForeignKey("companies.id"))
         return Column(
-            UUID,
+            Uuid,
             ForeignKey("company.id"),
             index=True,
             nullable=False
