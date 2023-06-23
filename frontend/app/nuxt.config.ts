@@ -14,4 +14,9 @@ export default defineNuxtConfig({
     '../layers/tairo',
     '../layers/tairo-layout-sidebar',
   ],
+  devtools: true,
+  // Используем всегда темную тему
+  colorMode: {
+    preference: 'dark',
+  },
 })

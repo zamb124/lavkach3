@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@iconify/json": "2.2.67",
+    "@nuxt/devtools": "^0.6.2",
     "@parcel/watcher": "2.1.0",
     "@types/fs-extra": "11.0.1",
     "@typescript-eslint/eslint-plugin": "5.59.6",
