@@ -19,4 +19,9 @@ export default defineNuxtConfig({
   colorMode: {
     preference: 'dark',
   },
+  runtimeConfig: {
+    public: {
+      apiUrl: process.env.BASE_URL ?? 'http://localhost:9999/api',
+    },
+  },
 })
