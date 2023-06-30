@@ -72,7 +72,7 @@ const wrapperClass = computed(() => {
 </script>
 
 <template>
-  <div class="bg-muted-100 dark:bg-muted-900 pb-20">
+  <div class="bg-muted-100 dark:bg-muted-900 box-border">
     <slot name="sidebar">
       <TairoSidebarNavigation
         v-if="sidebarEnabled"
