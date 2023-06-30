@@ -1,9 +1,10 @@
-from sqlalchemy import Column, Unicode, BigInteger, Boolean, Uuid, ForeignKey, Sequence
-from sqlalchemy_utils import CurrencyType, Currency, CountryType, LocaleType
+import uuid
+
+from sqlalchemy import Column, Unicode, BigInteger, Uuid, Sequence
+from sqlalchemy_utils import CurrencyType, CountryType, LocaleType
 
 from core.db import Base
-from core.db.mixins import TimestampMixin, LsnMixin
-import uuid
+from core.db.mixins import TimestampMixin
 
 
 class Company(Base, TimestampMixin):

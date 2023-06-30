@@ -1,30 +1,49 @@
+from typing import List, Dict, Any, Optional
+
 from sqlalchemy import select, and_
+from sqlalchemy.exc import IntegrityError
+from starlette.exceptions import HTTPException
+
+from app.basic.user.models.user_models import User
+from app.basic.user.models.role_models import Role
 from app.basic.user.schemas.user_schemas import LoginResponseSchema
+from app.basic.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme
+from core.db.session import session
 from core.exceptions import (
     PasswordDoesNotMatchException,
     DuplicateEmailOrNicknameException,
     UserNotFoundException,
 )
+from core.service.base import BaseService, ModelType
 from core.utils.token_helper import TokenHelper
-
-
-
-from app.basic.user.models.user_models import User
-from app.basic.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme
-from core.db.session import session
-from core.service.base import BaseService
-from sqlalchemy.exc import IntegrityError
-from starlette.exceptions import HTTPException
+from core.permissions.permissions import permit, permits
 
 
 class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme]):
-    def __init__(self, db_session: session=session):
-        super(UserService, self).__init__(User, db_session)
+    def __init__(self, request, db_session: session = session):
+        super(UserService, self).__init__(request, User, db_session)
 
+    async def get(self, id: Any) -> Optional[ModelType]:
+        query = select(self.model).where(self.model.id == id)
+        if self.request.user.is_admin:
+            query = select(self.model).where(self.model.id == id)
+        result = await session.execute(query)
+        return result.scalars().first()
+    @permit('user_list')
+    async def list(self, limit: int, cursor: int = 0) -> List[User]:
+        query = (
+            select(self.model)
+            .where(self.model.lsn > cursor).limit(limit).
+            filter(self.model.companies.contains(self.companies))
+        )
+        result = await self.session.execute(query)
+        return result.scalars().all()
+
+    # @permit('user_create')
     async def create(self, obj: UserCreateScheme) -> User:
         if obj.password1 != obj.password2:
             raise PasswordDoesNotMatchException
-        setattr(obj, 'password',obj.password1)
+        setattr(obj, 'password', obj.password1)
         delattr(obj, 'password1')
         delattr(obj, 'password2')
         entity = self.model(**obj.dict())
@@ -42,19 +61,43 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme]):
             raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         return entity
 
-    async def login(self, email: str, password: str) -> LoginResponseSchema:
-        result = await session.execute(
+    async def login(self, email: str, password: str):
+        # Получаем юзера из бд
+        result_user = await session.execute(
             select(User).where(and_(User.email == email, password == password))
         )
-        user = result.scalars().first()
+        user = result_user.scalars().first()
         if not user:
             raise UserNotFoundException
-
-        response = LoginResponseSchema(
-            token=TokenHelper.encode(payload={"user_id": user.id.__str__()}),
-            refresh_token=TokenHelper.encode(payload={"sub": "refresh"}),
+        # Получаем пермишены
+        result_roles = await session.execute(
+            select(Role).where(Role.id.in_(user.roles))
         )
-        return response
+        roles = result_roles.scalars().all()
+        permissions_list = []
+        for role in roles:
+            permissions_list += role.permissions_allow
+        permissions_cleaned = set(permissions_list)
+        permissions_list = []
+        for perm in permits:
+            if perm in permissions_cleaned:
+                permissions_list.append(perm)
+        companies = [i.__str__() for i in user.companies] if user.companies else []
+        return {
+            'token': TokenHelper.encode(payload={
+                "user_id": user.id.__str__(),
+                "companies": companies,
+                "roles": [i.id.__str__() for i in roles],
+                "is_admin": user.is_admin
+            }),
+            'refresh_token': TokenHelper.encode(payload={"sub": "refresh"}),
+            'companies': companies,
+            'nickname': user.nickname,
+            'permissions': permissions_list,
+            'store_id': user.store_id,
+            'roles': [i.title for i in roles],
+            'locale': user.locale
+        }
 
     async def is_admin(self, user_id: int) -> bool:
         result = await session.execute(select(User).where(User.id == user_id))
@@ -66,7 +109,6 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme]):
             return False
 
         return user
-
 
 # class UserService:
 #
@@ -85,7 +127,3 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme]):
 #
 #         user = User(email=email, password=password1, nickname=nickname)
 #         session.add(user)
-
-
-
-

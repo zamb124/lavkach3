@@ -1,0 +1,6 @@
+permits:
+  company_create: Может создавать компанию
+  company_edit: Может редактировать компанию
+  company_list: Может получать список компаний
+  company_delete: Может удалять компанию
+  company_get: Может смотреть на компанию
