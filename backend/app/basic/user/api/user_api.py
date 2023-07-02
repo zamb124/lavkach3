@@ -1,17 +1,22 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, Query
+from fastapi_filter import FilterDepends
 from sqlalchemy import update, select
+from starlette.requests import Request
+
 from app.basic.user.models import User
 from core.db import session
 
 from starlette.exceptions import HTTPException
 from .schemas import LoginRequest
-from .schemas import LoginResponse
 from app.basic.user.schemas import (
     ExceptionResponseSchema,
     UserScheme,
     UserCreateScheme,
+    LoginResponseSchema,
+    UserFilter,
+    UserListSchema
 )
 from app.basic.user.services import UserService
 from core.integration.wms import ClientWMS
@@ -22,49 +27,43 @@ from core.fastapi.dependencies import (
 
 user_router = APIRouter()
 
-
-@user_router.get(
-    "",
-    response_model=List[UserScheme],
-    response_model_exclude={"id"},
-    responses={"400": {"model": ExceptionResponseSchema}},
-    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
-)
-async def get_user_list(
-        limit: int = Query(10, description="Limit"),
-        cursor: int = Query(0, description="Cursor"),
+@user_router.get("", response_model=UserListSchema)
+async def company_list(
+        request: Request,
+        model_filter: UserFilter = FilterDepends(UserFilter),
+        size: int = Query(ge=1, le=100, default=100),
 ):
-    return await UserService().list(limit=limit, cursor=cursor)
-
+    data = await UserService(request).list(model_filter, size)
+    cursor = model_filter.lsn__gt
+    return {'size': len(data), 'cursor': cursor, 'data': data}
 
 @user_router.post(
     "",
     response_model=UserScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def create_user(request: UserCreateScheme):
-    user =  await UserService().create(request)
+async def create_user(request: Request, shema: UserCreateScheme):
+    user =  await UserService(request).create(shema)
     return user
 
 
 @user_router.post(
     "/login",
-    response_model=LoginResponse,
+    response_model=LoginResponseSchema,
     responses={"404": {"model": ExceptionResponseSchema}},
 )
-async def login(request: LoginRequest):
-    token = await UserService().login(
-        email=request.email,
-        password=request.password
+async def login(request: Request, obj: LoginRequest):
+    return await UserService(request).login(
+        email=obj.email,
+        password=obj.password,
     )
-    return {"token": token.token, "refresh_token": token.refresh_token}
 
 
 @user_router.get(
     "/{barcode}",
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def search_barcode(barcode: str):
+async def search_barcode(request:Request, barcode: str):
 
     response = await ClientWMS.assign_device(
         barcode=barcode,
@@ -83,7 +82,7 @@ async def search_barcode(barcode: str):
         email=f'{response["fullname"]}@yandex.ru',
     )
     try:
-        our_user = await UserService().create_user(**user.dict())
+        our_user = await UserService(request).create_user(**user.dict())
     except Exception:
         # TODO заменить здесь email на стор
         query = (

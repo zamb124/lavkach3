@@ -1,43 +1,51 @@
 import uuid
-import typing
+
+from fastapi import APIRouter, Query
+from fastapi_filter import FilterDepends
+from starlette.requests import Request
+
 from app.basic.company.schemas import (
     CompanyScheme,
     CompanyCreateScheme,
     CompanyUpdateScheme,
-    ExceptionResponseSchema
+    ExceptionResponseSchema,
+    CompanyListSchema,
+    CompanyFilter
 )
 from app.basic.company.services.company_service import CompanyService
-from fastapi import APIRouter, Query
 
 company_router = APIRouter(
-    #dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
+    # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 
 
-@company_router.get("",response_model=list[CompanyScheme])
-async def get_company_list(
-        limit: int = Query(10, description="Limit"),
-        cursor: int = Query(0, description="Cursor"),
+@company_router.get("", response_model=CompanyListSchema)
+async def company_list(
+        request: Request,
+        model_filter: CompanyFilter = FilterDepends(CompanyFilter),
+        size: int = Query(ge=1, le=100, default=100),
 ):
-    return await CompanyService().list(limit, cursor)
+    data = await CompanyService(request).list(model_filter, size)
+    cursor = model_filter.lsn__gt
+    return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@company_router.post("/create",response_model=CompanyScheme)
-async def create_company(request: CompanyCreateScheme):
-    return await CompanyService().create(obj=request)
+@company_router.post("/create", response_model=CompanyScheme)
+async def company_create(request: Request, schema: CompanyCreateScheme):
+    return await CompanyService(request).create(obj=schema)
 
 
 @company_router.get("/{company_id}")
-async def load_company(company_id: uuid.UUID) -> typing.Union[None, CompanyScheme]:
-    return await CompanyService().get(id=company_id)
+async def company_get(request: Request, company_id: uuid.UUID):
+    return await CompanyService(request).get(id=company_id)
 
 
-@company_router.put("/{company_id}",response_model=CompanyScheme)
-async def update_company(company_id: uuid.UUID, request: CompanyUpdateScheme):
-    return await CompanyService().update(id=company_id, obj=request)
+@company_router.put("/{company_id}", response_model=CompanyScheme)
+async def company_update(request: Request, company_id: uuid.UUID, schema: CompanyUpdateScheme):
+    return await CompanyService(request).update(id=company_id, obj=schema)
 
 
 @company_router.delete("/{company_id}")
-async def delete_company(company_id: uuid.UUID):
-    await CompanyService().delete(id=company_id)
+async def company_delete(request: Request, company_id: uuid.UUID):
+    await CompanyService(request).delete(id=company_id)
