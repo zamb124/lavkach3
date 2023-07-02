@@ -1,8 +1,9 @@
+from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
 from pydantic.types import Optional
 from core.schemas.timestamps import TimeStampScheme
 from core.types.types import TypeCountry, TypePhone, TypeLocale, TypeCurrency
-from app.basic.partner.models.partner_models import PartnerType
+from app.basic.partner.models.partner_models import PartnerType, Partner
 from app.basic.company.schemas.company_schemas import CompanyScheme
 class PartnerBaseScheme(BaseModel):
     company_id: UUID4
@@ -38,3 +39,12 @@ class PartnerScheme(PartnerParent, TimeStampScheme):
     class Config:
         orm_mode = True
         arbitrary_types_allowed = True
+
+class PartnerFilter(Filter):
+    lsn__gt: Optional[int]
+
+    class PartnerFilterSchema(Filter.Constants):
+        model = Partner
+        #ordering_field_name = "custom_order_by"
+        #search_field_name = "custom_search"
+        #search_model_fields = ["street", "country", "city"]

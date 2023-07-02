@@ -1,9 +1,13 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field, UUID4
 from pydantic.types import Optional, List
 
 from core.schemas.timestamps import TimeStampScheme
 from core.types.types import TypeCountry, TypeLocale, TypeCurrency
-from core.schemas.list_schema import BaseListSchame
+from fastapi_filter.contrib.sqlalchemy import Filter
+from app.basic.company.models.company_models import Company
+from core.schemas.list_schema import GenericListSchema
 
 
 class CompanyBaseScheme(BaseModel):
@@ -13,13 +17,6 @@ class CompanyBaseScheme(BaseModel):
     country: Optional[TypeCountry]
     currency: Optional[TypeCurrency]
 
-    def __acl__(self):
-        def __acl__(self):
-            return [
-                (Allow, Authenticated, "view"),
-                (Allow, "role:admin", "edit"),
-                (Allow, f"user:{self.owner}", "delete"),
-            ]
 
 class CompanyUpdateScheme(CompanyBaseScheme):
     pass
@@ -41,5 +38,29 @@ class CompanyScheme(CompanyCreateScheme, TimeStampScheme):
         arbitrary_types_allowed = True
 
 
-class CompanyListSchema(BaseListSchame):
-    data: List[CompanyScheme] = []
+class CompanyFilter(Filter):
+    lsn__gt: Optional[int] = Field(alias="cursor")
+    id__in: Optional[List[UUID4]] = Field(alias="id")
+    created_at_gte: Optional[datetime] = Field(description="bigger or equal created")
+    created_at_lt: Optional[datetime] = Field(description="less created")
+    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated")
+    updated_at_lt: Optional[datetime] = Field(description="less updated")
+    country__in: Optional[List[str]] = Field(alias="country")
+    currency__in: Optional[List[str]] = Field(alias="currency")
+    locale__in: Optional[List[str]] = Field(alias="locale")
+    order_by: Optional[List[str]]
+    search: Optional[str]
+
+
+    class Config:
+        allow_population_by_field_name = True
+
+    class Constants(Filter.Constants):
+        model = Company
+        ordering_field_name = "order_by"
+        search_field_name = "search"
+        search_model_fields = ["title", "external_id"]
+
+
+class CompanyListSchema(GenericListSchema):
+    data: Optional[List[CompanyScheme]]

@@ -7,7 +7,7 @@ from starlette.exceptions import HTTPException
 from app.basic.user.models.user_models import User
 from app.basic.user.models.role_models import Role
 from app.basic.user.schemas.user_schemas import LoginResponseSchema
-from app.basic.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme
+from app.basic.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme, UserFilter
 from core.db.session import session
 from core.exceptions import (
     PasswordDoesNotMatchException,
@@ -19,7 +19,7 @@ from core.utils.token_helper import TokenHelper
 from core.permissions.permissions import permit, permits
 
 
-class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme]):
+class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilter]):
     def __init__(self, request, db_session: session = session):
         super(UserService, self).__init__(request, User, db_session)
 
@@ -29,15 +29,6 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme]):
             query = select(self.model).where(self.model.id == id)
         result = await session.execute(query)
         return result.scalars().first()
-    @permit('user_list')
-    async def list(self, limit: int, cursor: int = 0) -> List[User]:
-        query = (
-            select(self.model)
-            .where(self.model.lsn > cursor).limit(limit).
-            filter(self.model.companies.contains(self.companies))
-        )
-        result = await self.session.execute(query)
-        return result.scalars().all()
 
     # @permit('user_create')
     async def create(self, obj: UserCreateScheme) -> User:

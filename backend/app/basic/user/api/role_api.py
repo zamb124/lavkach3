@@ -8,7 +8,6 @@ from app.basic.user.schemas import (
     RoleCreateScheme,
     RoleUpdateScheme,
     ExceptionResponseSchema,
-    RoleListSchema,
     PermissionListSchema,
     PermissionSchema
 )
@@ -19,18 +18,6 @@ role_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-
-
-@role_router.get(
-    "",
-    response_model=RoleListSchema,
-)
-async def role_list(
-        request: Request,
-        limit: int = Query(10, description="Limit"),
-        cursor: int = Query(0, description="Cursor"),
-):
-    return await RoleService(request).list(limit, cursor)
 
 
 @role_router.get("/permissions_filter", response_model=PermissionListSchema)

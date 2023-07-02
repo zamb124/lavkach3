@@ -1,8 +1,21 @@
 from typing import Any, Type
 
-from pydantic import BaseModel
-from pydantic.types import List
+from pydantic import BaseModel, validator, root_validator
+from pydantic.types import Optional, List
+from pydantic_computed import Computed, computed
 
+class GenericListSchema(BaseModel):
+    size: Optional[int]
+    cursor: Optional[int]
+
+    @classmethod
+    def validate(cls: Type['Model'], value: Any) -> 'Model':
+        if value and value.get('data') and value:
+            cursor = max([i.lsn for i in value['data']])
+            value.update({
+                'cursor': cursor
+            })
+        return super(GenericListSchema, cls).validate(value)
 
 class BaseListSchame(BaseModel):
     """

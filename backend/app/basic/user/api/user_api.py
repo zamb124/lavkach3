@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, Query
+from fastapi_filter import FilterDepends
 from sqlalchemy import update, select
 from starlette.requests import Request
 
@@ -14,6 +15,7 @@ from app.basic.user.schemas import (
     UserScheme,
     UserCreateScheme,
     LoginResponseSchema,
+    UserFilter,
     UserListSchema
 )
 from app.basic.user.services import UserService
@@ -25,19 +27,15 @@ from core.fastapi.dependencies import (
 
 user_router = APIRouter()
 
-
-@user_router.get(
-    "",
-    response_model=UserListSchema,
-    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
-)
-async def get_user_list(
+@user_router.get("", response_model=UserListSchema)
+async def company_list(
         request: Request,
-        limit: int = Query(10, description="Limit"),
-        cursor: int = Query(0, description="Cursor"),
+        model_filter: UserFilter = FilterDepends(UserFilter),
+        size: int = Query(ge=1, le=100, default=100),
 ):
-    return await UserService(request).list(limit=limit, cursor=cursor)
-
+    data = await UserService(request).list(model_filter, size)
+    cursor = model_filter.lsn__gt
+    return {'size': len(data), 'cursor': cursor, 'data': data}
 
 @user_router.post(
     "",

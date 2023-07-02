@@ -12,7 +12,7 @@ class Company(Base, TimestampMixin):
     lsn_seq = Sequence(f'company_lsn_seq')
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
     id = Column(Uuid(as_uuid=False), primary_key=True, index=True, default=uuid.uuid4)
-    title = Column(Unicode(255), nullable=False)
+    title = Column(Unicode(255), nullable=False, index=True)
     external_id = Column(Unicode(255), nullable=True, unique=True)
     country = Column(CountryType, default='RU')
     locale = Column(LocaleType, default='en_US')

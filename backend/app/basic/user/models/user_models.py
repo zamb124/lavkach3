@@ -23,6 +23,7 @@ class User(Base, TimestampMixin, VarsMixin, LsnMixin):
     __tablename__ = "user"
 
     id = Column(Uuid(as_uuid=False), primary_key=True, index=True, default=uuid.uuid4)
+    external_id = Column(Unicode(255), nullable=True, unique=True)
     lsn_seq = Sequence(f'user_lsn_seq')
     # lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
     password = Column(PasswordType(
