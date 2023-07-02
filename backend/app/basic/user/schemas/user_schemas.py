@@ -73,7 +73,8 @@ class UserBaseScheme(BaseModel):
 
 
 class UserUpdateScheme(UserBaseScheme):
-    pass
+    nickname: Optional[str]
+    email: Optional[str] = Field(description="Email")
 
 
 class UserCreateScheme(UserBaseScheme):

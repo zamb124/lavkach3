@@ -8,7 +8,7 @@ from core.types.types import TypeCountry, TypeLocale, TypeCurrency
 from fastapi_filter.contrib.sqlalchemy import Filter
 from app.basic.company.models.company_models import Company
 from core.schemas.list_schema import GenericListSchema
-
+from core.helpers.fastapi_filter_patch import BaseFilter
 
 class CompanyBaseScheme(BaseModel):
     title: str = Field(description="Title")
@@ -38,13 +38,14 @@ class CompanyScheme(CompanyCreateScheme, TimeStampScheme):
         arbitrary_types_allowed = True
 
 
-class CompanyFilter(Filter):
+class CompanyFilter(BaseFilter):
     lsn__gt: Optional[int] = Field(alias="cursor")
     id__in: Optional[List[UUID4]] = Field(alias="id")
     created_at_gte: Optional[datetime] = Field(description="bigger or equal created")
     created_at_lt: Optional[datetime] = Field(description="less created")
     updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated")
     updated_at_lt: Optional[datetime] = Field(description="less updated")
+    title__in: Optional[str] = Field(description="title")
     country__in: Optional[List[str]] = Field(alias="country")
     currency__in: Optional[List[str]] = Field(alias="currency")
     locale__in: Optional[List[str]] = Field(alias="locale")

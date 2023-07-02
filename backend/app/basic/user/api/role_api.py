@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Query
+from fastapi_filter import FilterDepends
 from starlette.requests import Request
 
 from app.basic.user.schemas import (
@@ -11,6 +12,7 @@ from app.basic.user.schemas import (
     PermissionListSchema,
     PermissionSchema
 )
+from app.basic.user.schemas.role_schemas import RoleListSchema, RoleFilter
 from app.basic.user.services.role_service import RoleService
 from core.permissions.permissions import permits
 
@@ -18,6 +20,17 @@ role_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
+
+
+@role_router.get("", response_model=RoleListSchema)
+async def role_list(
+        request: Request,
+        model_filter: RoleFilter = FilterDepends(RoleFilter),
+        size: int = Query(ge=1, le=100, default=100),
+):
+    data = await RoleService(request).list(model_filter, size)
+    cursor = model_filter.lsn__gt
+    return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
 @role_router.get("/permissions_filter", response_model=PermissionListSchema)

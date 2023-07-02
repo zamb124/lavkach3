@@ -19,7 +19,7 @@ class Partner(Base,AllMixin):
     __tablename__ = "partner"
     lsn_seq = Sequence(f'partner_lsn_seq')
     lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
-    id = Column(Uuid(as_uuid=False), primary_key=True, index=True, default=uuid.uuid4)
+    id = Column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     #
     type = Column(Unicode(30), nullable=False, default=PartnerType.PARTNER)

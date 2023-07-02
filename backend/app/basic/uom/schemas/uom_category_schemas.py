@@ -1,35 +1,29 @@
 from datetime import datetime
 
+from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
 from pydantic.types import Optional, List
-
-from core.schemas.timestamps import TimeStampScheme
-from core.types.types import TypeCountry, TypeLocale, TypeCurrency
-from fastapi_filter.contrib.sqlalchemy import Filter
-from app.basic.uom.models.uom_models import Uom, UomType
-from core.schemas.list_schema import GenericListSchema
+from app.basic.uom.models.uom_category_models import UomCategory
 from core.helpers.fastapi_filter_patch import BaseFilter
+from core.schemas.list_schema import GenericListSchema
+from core.schemas.timestamps import TimeStampScheme
 
 
-class UomBaseScheme(BaseModel):
+class UomCategoryBaseScheme(BaseModel):
     title: str = Field(description="Title")
     external_id: Optional[str]
-    category_id: UUID4
     company_id: UUID4
-    type: UomType
-    ratio: float
-    precision: float
 
 
-class UomUpdateScheme(UomBaseScheme):
+class UomCategoryUpdateScheme(UomCategoryBaseScheme):
     pass
 
 
-class UomCreateScheme(UomBaseScheme):
+class UomCategoryCreateScheme(UomCategoryBaseScheme):
     pass
 
 
-class UomScheme(UomCreateScheme, TimeStampScheme):
+class UomCategoryScheme(UomCategoryCreateScheme, TimeStampScheme):
     id: UUID4
     lsn: int
 
@@ -38,26 +32,24 @@ class UomScheme(UomCreateScheme, TimeStampScheme):
         arbitrary_types_allowed = True
 
 
-class UomFilter(BaseFilter):
+class UomCategoryFilter(BaseFilter):
     lsn__gt: Optional[int] = Field(alias="cursor")
     id__in: Optional[List[UUID4]] = Field(alias="id")
     created_at_gte: Optional[datetime] = Field(description="bigger or equal created")
     created_at_lt: Optional[datetime] = Field(description="less created")
     updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated")
     updated_at_lt: Optional[datetime] = Field(description="less updated")
-    title__in: Optional[List[str]] = Field(description="title")
-    category_id__in: Optional[List[str]] = Field(description="category_id")
-    type__in: Optional[List[str]] = Field(description="type")
+    title__in: Optional[str] = Field(description="title")
 
     class Config:
         allow_population_by_field_name = True
 
     class Constants(Filter.Constants):
-        model = Uom
+        model = UomCategory
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["title", ]
+        search_model_fields = ["title"]
 
 
-class UomListSchema(GenericListSchema):
-    data: Optional[List[UomScheme]]
+class UomCategoryListSchema(GenericListSchema):
+    data: Optional[List[UomCategoryScheme]]

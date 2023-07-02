@@ -1,3 +1,4 @@
+import uuid
 from typing import List
 
 from fastapi import APIRouter, Depends, Query
@@ -14,6 +15,7 @@ from app.basic.user.schemas import (
     ExceptionResponseSchema,
     UserScheme,
     UserCreateScheme,
+    UserUpdateScheme,
     LoginResponseSchema,
     UserFilter,
     UserListSchema
@@ -43,8 +45,23 @@ async def company_list(
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def create_user(request: Request, shema: UserCreateScheme):
-    user =  await UserService(request).create(shema)
+    user = await UserService(request).create(shema)
     return user
+
+@user_router.get("/{user_id}")
+async def user_get(request: Request, user_id: uuid.UUID):
+    return await UserService(request).get(id=user_id)
+
+
+@user_router.put("/{user_id}", response_model=UserScheme)
+async def user_update(request: Request, user_id: uuid.UUID, schema: UserUpdateScheme):
+    return await UserService(request).update(id=user_id, obj=schema)
+
+
+@user_router.delete("/{user_id}")
+async def user_delete(request: Request, user_id: uuid.UUID):
+    await UserService(request).delete(id=user_id)
+
 
 
 @user_router.post(
