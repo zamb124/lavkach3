@@ -1,16 +1,9 @@
 import uuid
-from typing import List
 
 from fastapi import APIRouter, Depends, Query
 from fastapi_filter import FilterDepends
-from sqlalchemy import update, select
 from starlette.requests import Request
 
-from app.basic.user.models import User
-from core.db import session
-
-from starlette.exceptions import HTTPException
-from .schemas import LoginRequest
 from app.basic.user.schemas import (
     ExceptionResponseSchema,
     UserScheme,
@@ -21,11 +14,11 @@ from app.basic.user.schemas import (
     UserListSchema
 )
 from app.basic.user.services import UserService
-from core.integration.wms import ClientWMS
 from core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )
+from .schemas import LoginRequest
 
 user_router = APIRouter()
 

@@ -2,7 +2,6 @@ from typing import Any, Optional
 
 from app.basic.partner.models import Partner
 from app.basic.partner.schemas import PartnerCreateScheme, PartnerUpdateScheme, PartnerFilter
-from app.purchase.services import StoreService
 from core.db.session import session
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
@@ -26,4 +25,4 @@ class PartnerService(BaseService[Partner, PartnerCreateScheme, PartnerUpdateSche
 
     @permit('partner_delete')
     async def delete(self, id: Any) -> None:
-        return await super(StoreService).delete(id)
+        return await super(PartnerService).delete(id)
