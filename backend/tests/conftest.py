@@ -139,8 +139,8 @@ async def roles(db_session: AsyncSession, companies, user_admin) -> User:
         'company_create','company_edit','company_list','company_get',
         'uom_create','uom_edit','uom_list','uom_delete','uom_get']
     role_admin = RoleCreateScheme(title="admin", permissions_allow=list(permits.keys()), company_id=companies[0].id)
-    role_support = RoleCreateScheme(title="support", permissions_allow=permission_allow, company_id=companies[0].id)
     role_admin_db = await RoleService(user_admin).create(role_admin)
+    role_support = RoleCreateScheme(title="support", permissions_allow=permission_allow, company_id=companies[0].id, parents=[role_admin_db.id])
     role_support_db = await RoleService(user_admin).create(role_support)
     yield {'admin': role_admin_db, 'support': role_support_db}
     await db_session.delete(role_admin_db)
@@ -196,7 +196,7 @@ async def headers(token) -> dict:
 
 
 @pytest.mark.asyncio
-async def test_health(async_client, user):
+async def test_health(async_client, users):
     response = await async_client.get("/api/fundamental/health")
     assert response.status_code == 200
     assert response.status_code == 200

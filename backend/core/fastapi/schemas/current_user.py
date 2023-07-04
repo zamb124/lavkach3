@@ -6,7 +6,7 @@ class CurrentUser(BaseModel):
     id: Optional[UUID4]
     companies: Optional[List[UUID4]] = []
     roles: Optional[List[str]] = []
-    is_admin: Optional[bool]
+    is_admin: Optional[bool] = False
 
     class Config:
         validate_assignment = True
