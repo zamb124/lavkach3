@@ -29,6 +29,7 @@ from core.fastapi.dependencies import (
 
 user_router = APIRouter()
 
+
 @user_router.get("", response_model=UserListSchema, dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def company_list(
         request: Request,
@@ -38,6 +39,7 @@ async def company_list(
     data = await UserService(request).list(model_filter, size)
     cursor = model_filter.lsn__gt
     return {'size': len(data), 'cursor': cursor, 'data': data}
+
 
 @user_router.post(
     "",
@@ -49,12 +51,14 @@ async def create_user(request: Request, shema: UserCreateScheme):
     user = await UserService(request).create(shema)
     return user
 
+
 @user_router.get("/{user_id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def user_get(request: Request, user_id: uuid.UUID):
     return await UserService(request).get(id=user_id)
 
 
-@user_router.put("/{user_id}", response_model=UserScheme, dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+@user_router.put("/{user_id}", response_model=UserScheme,
+                 dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def user_update(request: Request, user_id: uuid.UUID, schema: UserUpdateScheme):
     return await UserService(request).update(id=user_id, obj=schema)
 
@@ -62,7 +66,6 @@ async def user_update(request: Request, user_id: uuid.UUID, schema: UserUpdateSc
 @user_router.delete("/{user_id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def user_delete(request: Request, user_id: uuid.UUID):
     await UserService(request).delete(id=user_id)
-
 
 
 @user_router.post(
@@ -75,46 +78,3 @@ async def login(request: Request, obj: LoginRequest):
         email=obj.email,
         password=obj.password,
     )
-
-
-@user_router.get(
-    "/{barcode}",
-    responses={"400": {"model": ExceptionResponseSchema}},
-)
-async def search_barcode(request:Request, barcode: str):
-
-    response = await ClientWMS.assign_device(
-        barcode=barcode,
-        path='/api/tsd/user/assign_device',
-    )
-    if response is None:
-        raise HTTPException(status_code=429, detail='Try later')
-    if isinstance(response, int):
-        raise HTTPException(status_code=response, detail='oh No')
-
-    user = UserScheme(
-        password1=response['token'],
-        store_id=response['store_id'],
-        password2=response['token'],
-        nickname=response['fullname'],
-        email=f'{response["fullname"]}@yandex.ru',
-    )
-    try:
-        our_user = await UserService(request).create_user(**user.dict())
-    except Exception:
-        # TODO заменить здесь email на стор
-        query = (
-            update(User)
-            .where(User.nickname == response['fullname'])
-            .values({'store_id': response['store_id']})
-        )
-        await session.execute(query)
-        await session.commit()
-        query = (
-            select(User)
-            .where(User.nickname == response['fullname'])
-        )
-        result = await session.execute(query)
-        our_user = result.scalars().first()
-
-    return our_user
