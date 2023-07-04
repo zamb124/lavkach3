@@ -14,7 +14,7 @@ from core.exceptions import (
     DuplicateEmailOrNicknameException,
     UserNotFoundException,
 )
-from core.service.base import BaseService, ModelType
+from core.service.base import BaseService, ModelType, FilterSchemaType
 from core.utils.token_helper import TokenHelper
 from core.permissions.permissions import permit, permits
 
@@ -23,6 +23,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
     def __init__(self, request, db_session: session = session):
         super(UserService, self).__init__(request, User, db_session)
 
+    @permit('user_get')
     async def get(self, id: Any) -> Optional[ModelType]:
         query = select(self.model).where(self.model.id == id)
         if self.user.is_admin:
@@ -30,7 +31,15 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         result = await self.session.execute(query)
         return result.scalars().first()
 
-    # @permit('user_create')
+    @permit('user_list')
+    async def list(self, _filter: FilterSchemaType, size: int):
+        return await super(UserService).list(_filter, size)
+
+    @permit('user_delete')
+    async def delete(self, id: Any) -> None:
+        return await super(UserService).delete(id)
+
+    @permit('user_create')
     async def create(self, obj: UserCreateScheme) -> User:
         if obj.password1 != obj.password2:
             raise PasswordDoesNotMatchException

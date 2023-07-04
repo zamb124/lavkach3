@@ -23,5 +23,6 @@ class RoleService(BaseService[Role, RoleCreateScheme, RoleUpdateScheme, RoleFilt
     async def create(self, obj: CreateSchemaType) -> ModelType:
         return await super(RoleService, self).create(obj)
 
+    @permit('role_delete')
     async def delete(self, id: Any) -> None:
         return await super(RoleService).delete(id)

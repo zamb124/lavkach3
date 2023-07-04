@@ -49,7 +49,6 @@ class RoleFilter(BaseFilter):
     permissions_deny__contains: Optional[str] = Field(alias="permissions_deny")
     order_by: Optional[List[str]]
     search: Optional[str]
-
     class Config:
         allow_population_by_field_name = True
 
