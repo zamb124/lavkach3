@@ -18,6 +18,11 @@ class JwtService:
             raise DecodeTokenException
 
         return RefreshTokenSchema(
-            token=TokenHelper.encode(payload={"user_id": token.get("user_id")}),
+            token=TokenHelper.encode(payload={
+                "user_id": token.get("user_id"),
+                "companies": token.get('companies'),
+                "roles": token.get('roles'),
+                "is_admin": token.get('is_admin')
+            }),
             refresh_token=TokenHelper.encode(payload={"sub": "refresh"}),
         )

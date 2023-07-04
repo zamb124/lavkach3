@@ -20,7 +20,7 @@ router.include_router(fundamental_router, prefix="/api/fundamental", tags=["Base
 router.include_router(user_router, prefix="/api/user", tags=["User"])
 router.include_router(role_router, prefix="/api/role", tags=["Role"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 router.include_router(partner_router, prefix="/api/partner", tags=["Partner"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
-router.include_router(auth_router, prefix="/auth", tags=["Auth"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+router.include_router(auth_router, prefix="/auth", tags=["Auth"])
 router.include_router(company_router, prefix="/api/company", tags=["Company"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 router.include_router(store_router, prefix="/api/store", tags=["Store"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 router.include_router(uom_category_router, prefix="/api/uom/category", tags=["Uom", "Category"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])

@@ -29,7 +29,7 @@ from core.fastapi.dependencies import (
 
 user_router = APIRouter()
 
-@user_router.get("", response_model=UserListSchema)
+@user_router.get("", response_model=UserListSchema, dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def company_list(
         request: Request,
         model_filter: UserFilter = FilterDepends(UserFilter),
@@ -43,22 +43,23 @@ async def company_list(
     "",
     response_model=UserScheme,
     responses={"400": {"model": ExceptionResponseSchema}},
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))]
 )
 async def create_user(request: Request, shema: UserCreateScheme):
     user = await UserService(request).create(shema)
     return user
 
-@user_router.get("/{user_id}")
+@user_router.get("/{user_id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def user_get(request: Request, user_id: uuid.UUID):
     return await UserService(request).get(id=user_id)
 
 
-@user_router.put("/{user_id}", response_model=UserScheme)
+@user_router.put("/{user_id}", response_model=UserScheme, dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def user_update(request: Request, user_id: uuid.UUID, schema: UserUpdateScheme):
     return await UserService(request).update(id=user_id, obj=schema)
 
 
-@user_router.delete("/{user_id}")
+@user_router.delete("/{user_id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def user_delete(request: Request, user_id: uuid.UUID):
     await UserService(request).delete(id=user_id)
 
