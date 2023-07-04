@@ -1,0 +1,6 @@
+permits:
+  partner_create: Может создавать компанию
+  partner_edit: Может редактировать компанию
+  partner_list: Может получать список компаний
+  partner_delete: Может удалять компанию
+  partner_get: Может смотреть на компанию

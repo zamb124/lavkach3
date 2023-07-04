@@ -17,7 +17,6 @@ from core.fastapi.middlewares import (
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
-from core.db.session import session, get_async_session
 
 
 def init_routers(app_: FastAPI) -> None:

@@ -1,1 +1,1 @@
-from .company_service import *
+from .company_service import CompanyService

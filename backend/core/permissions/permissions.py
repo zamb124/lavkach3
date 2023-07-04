@@ -2,9 +2,12 @@ from typing import List, Dict, Tuple
 from enum import Enum
 import os
 import yaml
+from sqlalchemy import select
 from starlette.exceptions import HTTPException
 
+from app.basic.user.models import Role
 from core.service.base import BaseService
+
 Allow = 'ALLOW'
 Deny = 'Deny'
 
@@ -38,19 +41,31 @@ for path in paths:
         except yaml.YAMLError as exc:
             print(exc)
 
-def permit(arg):
+
+def permit(*arg):
     def inner_decorator(f):
-        def wrapped(*args, **kwargs):
+        async def wrapped(*args, **kwargs):
             service = None
             for a in args:
                 if isinstance(a, BaseService):
                     service = a
                     break
             if not service:
-                raise HTTPException(status_code=403, detail=f"The user ({service.request.user.id}) does not have permission to {arg}")
+                raise HTTPException(status_code=403, detail=f"User not found")
+            if service.user.is_admin:
+                pass
+            else:
+                roles = select(Role).where(Role.permissions_allow.contains(arg)).where(Role.id.in_(service.user.roles))
+                result = await service.session.execute(roles)
+                res = result.scalars().all
+                if not res:
+                    raise HTTPException(status_code=403,
+                                        detail=f"The user ({service.user.id}) does not have permission to {arg}")
             response = f(*args, **kwargs)
             print('после функции')
-            return response
+            return await response
+
         print('декорируем функцию', f, 'с аргументами', arg)
         return wrapped
+
     return inner_decorator

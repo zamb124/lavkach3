@@ -37,7 +37,7 @@ async def partner_create(request: Request, schema: PartnerCreateScheme):
 
 
 @partner_router.get("/{partner_id}")
-async def partner_get(request: Request, partner_id: uuid.UUID) -> Partner | None:
+async def partner_get(request: Request, partner_id: uuid.UUID):
     return await PartnerService(request).get(id=partner_id)
 
 

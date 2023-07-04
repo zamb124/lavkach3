@@ -1,14 +1,18 @@
 from typing import Any, Generic, List, Optional, Type, TypeVar, Dict, Sequence
 from functools import wraps
+from uuid import uuid4
+
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 
+from app.basic.user.schemas import UserCreateScheme
 from core.db.session import Base, session
 from sqlalchemy import select, Row, RowMapping
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from fastapi_filter.contrib.sqlalchemy import Filter
+from core.fastapi.middlewares.authentication import CurrentUser
 import math
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -19,15 +23,20 @@ before_fields = ['roles', 'companies', 'is_admin', 'store_id']
 
 
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterSchemaType]):
-    def __init__(self, request: Request, model: Type[ModelType], db_session: AsyncSession):
-        self.request = request
-        self.companies = request.user.companies or []
+    def __init__(self, request: Request | CurrentUser | None = None, model: Type[ModelType] = None, db_session: AsyncSession = session):
+        if isinstance(request, CurrentUser):
+            self.user = CurrentUser
+        elif isinstance(request, Request):
+            self.user = request.user
         self.model = model
         self.session = db_session
 
+    def sudo(self):
+        self.user = CurrentUser(id=uuid4(), is_admin=True)
+
     async def get(self, id: Any) -> Optional[ModelType]:
         query = select(self.model).where(self.model.id == id)
-        if self.request.user.is_admin:
+        if self.user.is_admin:
             query = select(self.model).where(self.model.id == id)
         result = await self.session.execute(query)
         return result.scalars().first()
@@ -39,12 +48,12 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def create(self, obj: CreateSchemaType) -> ModelType:
         entity = self.model(**obj.dict())
-        session.add(entity)
+        self.session.add(entity)
         try:
-            await session.commit()
-            await session.refresh(entity)
+            await self.session.commit()
+            await self.session.refresh(entity)
         except IntegrityError as e:
-            await session.rollback()
+            await self.session.rollback()
             if "duplicate key" in str(e):
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
             else:
@@ -57,14 +66,14 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         entity = await self.get(id)
         if not entity:
             raise HTTPException(status_code=404, detail=f"Not Found with id {id}")
-        session.add(entity)
+        self.session.add(entity)
         for column, value in obj.dict(exclude_unset=True).items():
             setattr(entity, column, value)
         try:
-            await session.commit()
-            await session.refresh(entity)
+            await self.session.commit()
+            await self.session.refresh(entity)
         except IntegrityError as e:
-            await session.rollback()
+            await self.session.rollback()
             if "duplicate key" in str(e):
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
             else:
@@ -75,11 +84,11 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def delete(self, id: Any) -> None:
         entity = await self.get(id)
-        await session.delete(entity)
+        await self.session.delete(entity)
         try:
-            await session.commit()
+            await self.session.commit()
         except IntegrityError as e:
-            await session.rollback()
+            await self.session.rollback()
             if "duplicate key" in str(e):
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
             else:

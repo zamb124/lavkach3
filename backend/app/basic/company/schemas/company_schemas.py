@@ -15,7 +15,7 @@ class CompanyBaseScheme(BaseModel):
     external_id: Optional[str]
     locale: Optional[TypeLocale]
     country: Optional[TypeCountry]
-    currency: Optional[TypeCurrency]
+    currency: TypeCurrency | str
 
 
 class CompanyUpdateScheme(CompanyBaseScheme):

@@ -25,9 +25,9 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
 
     async def get(self, id: Any) -> Optional[ModelType]:
         query = select(self.model).where(self.model.id == id)
-        if self.request.user.is_admin:
+        if self.user.is_admin:
             query = select(self.model).where(self.model.id == id)
-        result = await session.execute(query)
+        result = await self.session.execute(query)
         return result.scalars().first()
 
     # @permit('user_create')
@@ -38,12 +38,12 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         delattr(obj, 'password1')
         delattr(obj, 'password2')
         entity = self.model(**obj.dict())
-        session.add(entity)
+        self.session.add(entity)
         try:
-            await session.commit()
-            await session.refresh(entity)
+            await self.session.commit()
+            await self.session.refresh(entity)
         except IntegrityError as e:
-            await session.rollback()
+            await self.session.rollback()
             if "duplicate key" in str(e):
                 raise DuplicateEmailOrNicknameException
             else:
@@ -54,16 +54,21 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
 
     async def login(self, email: str, password: str):
         # Получаем юзера из бд
-        result_user = await session.execute(
+        result_user = await self.session.execute(
             select(User).where(and_(User.email == email, password == password))
         )
         user = result_user.scalars().first()
         if not user:
             raise UserNotFoundException
         # Получаем пермишены
-        result_roles = await session.execute(
-            select(Role).where(Role.id.in_(user.roles))
-        )
+        if not user.is_admin:
+            result_roles = await self.session.execute(
+                select(Role).where(Role.id.in_(user.roles))
+            )
+        else:
+            result_roles = await self.session.execute(
+                select(Role)
+            )
         roles = result_roles.scalars().all()
         permissions_list = []
         for role in roles:
@@ -78,7 +83,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             'token': TokenHelper.encode(payload={
                 "user_id": user.id.__str__(),
                 "companies": companies,
-                "roles": [i.id.__str__() for i in roles],
+                "roles": [i.id.__str__() for i in set(roles)],
                 "is_admin": user.is_admin
             }),
             'refresh_token': TokenHelper.encode(payload={"sub": "refresh"}),
@@ -86,12 +91,12 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             'nickname': user.nickname,
             'permissions': permissions_list,
             'store_id': user.store_id,
-            'roles': [i.title for i in roles],
+            'roles': [i.title for i in roles] if not user.is_admin else ['superadmin'],
             'locale': user.locale
         }
 
     async def is_admin(self, user_id: int) -> bool:
-        result = await session.execute(select(User).where(User.id == user_id))
+        result = await self.session.execute(select(User).where(User.id == user_id))
         user = result.scalars().first()
         if not user:
             return False

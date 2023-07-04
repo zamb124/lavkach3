@@ -12,17 +12,20 @@ from core.schemas.timestamps import TimeStampScheme
 
 class RoleBaseScheme(BaseModel):
     vars: Optional[dict]
-    title: str
+    title: Optional[str]
     permissions_allow: Optional[List[str]]
     permissions_deny: Optional[List[str]]
 
 
 class RoleUpdateScheme(RoleBaseScheme):
-    pass
+    parents: Optional[List[UUID4]]
+    title: Optional[str]
 
 
 class RoleCreateScheme(RoleBaseScheme):
+    title: str
     company_id: UUID4
+    parents: Optional[List[UUID4]]
 
 
 class RoleScheme(RoleCreateScheme, TimeStampScheme):

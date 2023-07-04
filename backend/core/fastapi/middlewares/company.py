@@ -7,8 +7,8 @@ class CompanyMidlleWare:
         self.name = name
 
     def __call__(self, request: Request):
-        if "companies" not in request.cookies:
-            raise HTTPException(status_code=403, detail="Запрещено")
+        #if "companies" not in request.cookies:
+            #raise HTTPException(status_code=403, detail="Запрещено")
         # проверяем что в куках есть инфа о наличии прав пользователя
         return True
 

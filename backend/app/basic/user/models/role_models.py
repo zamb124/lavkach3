@@ -10,14 +10,6 @@ from sqlalchemy.orm import relationship
 from core.db import Base
 from core.db.mixins import AllMixin
 
-roles_assotiation = Table(
-    "roles_assotiation",
-    Base.metadata,
-    Column('parent_role_id', Uuid, ForeignKey("role.id"), primary_key=True),
-    Column('child_role_id', Uuid, ForeignKey("role.id"), primary_key=True),
-    Column('active', Boolean, default=True)
-)
-
 
 class Role(Base, AllMixin):
     __tablename__ = "role"
@@ -25,13 +17,8 @@ class Role(Base, AllMixin):
     id = Column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     lsn_seq = Sequence(f'role_lsn_seq')
     title = Column(Unicode(255), nullable=False)
-    parents = relationship(
-        "Role",
-        secondary=roles_assotiation,
-        primaryjoin=roles_assotiation.c.parent_role_id == id,
-        secondaryjoin=roles_assotiation.c.child_role_id == id,
-        backref="childrens")
-    permissions_allow = Column(ARRAY(String), index=False, nullable=True)
+    parents = Column(ARRAY(Uuid), index=True, nullable=True)
+    permissions_allow = Column(ARRAY(String), index=True, nullable=True)
     permissions_deny = Column(ARRAY(String), index=False, nullable=True)
 
 

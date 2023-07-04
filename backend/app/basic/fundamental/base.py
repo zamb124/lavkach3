@@ -22,7 +22,10 @@ fundamental_router = APIRouter(
 )
 
 
-@fundamental_router.get("/health", dependencies=[Depends(PermissionDependency([AllowAll]))])
+@fundamental_router.get(
+    "/health",
+    #dependencies=[Depends(PermissionDependency([AllowAll]))]
+)
 async def health():
     return Response(status_code=200)
 
