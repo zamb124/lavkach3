@@ -1,13 +1,17 @@
+import base64
+
 from babel.core import LOCALE_ALIASES
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import Response, Request
 from pydantic import BaseModel
 
+from app.basic.fundamental.schemas.dundamental_shemas import Image
 from core.fastapi.dependencies import AllowAll
 from core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )
+from core.helpers.s3.s3 import s3_client
 from core.schemas.basic_schemes import CurrencySchema, CountrySchema, LocaleSchema
 from core.types.types import TypeLocale
 from babel.core import UnknownLocaleError
@@ -27,8 +31,17 @@ fundamental_router = APIRouter(
     #dependencies=[Depends(PermissionDependency([AllowAll]))]
 )
 async def health():
-    return Response(status_code=200)
+        f = await s3_client.upload_file('pyproject.toml')
+        a=1
+        return Response(status_code=200)
 
+@fundamental_router.post("/upload_image_test")
+def upload(request: Request, schema: Image):
+    image_as_bytes = str.encode(schema.file_data)  # convert string to bytes
+    img_recovered = base64.b64decode(image_as_bytes)  # decode base64string
+    with open("uploaded_" + schema.filename, "wb") as f:
+        f.write(img_recovered)
+    return {"message": f"Successfuly uploaded {schema.filename}"}
 
 @fundamental_router.get("/countries", response_model=list[CountrySchema])
 async def countries(request: Request):
