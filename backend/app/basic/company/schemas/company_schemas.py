@@ -19,7 +19,8 @@ class CompanyBaseScheme(BaseModel):
 
 
 class CompanyUpdateScheme(CompanyBaseScheme):
-    pass
+    currency: Optional[TypeCurrency | str]
+    title: Optional[str]
 
 
 class CompanyCreateScheme(CompanyBaseScheme):
