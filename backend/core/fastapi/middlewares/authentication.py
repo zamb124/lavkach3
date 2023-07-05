@@ -16,7 +16,7 @@ class AuthBackend(AuthenticationBackend):
         self, conn: HTTPConnection
     ) -> Tuple[bool, Optional[CurrentUser]]:
         current_user = CurrentUser()
-        authorization: str = conn.headers.get("Authorization")
+        authorization: str = conn.headers.get("Authorization") or conn.query_params.get('token')
         if not authorization:
             return False, current_user
         if not authorization:

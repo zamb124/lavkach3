@@ -12,7 +12,6 @@ class RedisBackend(BaseBackend):
         result = await redis.get(key)
         if not result:
             return
-
         try:
             return ujson.loads(result.decode("utf8"))
         except UnicodeDecodeError:
@@ -23,9 +22,11 @@ class RedisBackend(BaseBackend):
             response = ujson.dumps(response)
         elif isinstance(response, object):
             response = pickle.dumps(response)
-
         await redis.set(name=key, value=response, ex=ttl)
 
     async def delete_startswith(self, value: str) -> None:
         async for key in redis.scan_iter(f"{value}::*"):
             await redis.delete(key)
+
+    async def delete(self, key: str) -> None:
+        await redis.delete(key)

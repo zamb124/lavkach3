@@ -37,6 +37,9 @@ class Config(BaseSettings):
     CELERY_BACKEND_URL: str = "redis://:password123@localhost:6379/0"
     REDIS_HOST: str = os.environ.get("REDIS_HOST")
     REDIS_PORT: int = os.environ.get("REDIS_PORT")
+    REDIS_PASSWORD: str = os.environ.get("REDIS_PASSWORD")
+    REDIS_SSL: bool = os.environ.get("REDIS_SSL") or False
+    REDIS_CERT_PATH: str = os.environ.get("REDIS_CERT_PATH") or None
     AWS_DEFAULT_REGION: str = os.environ.get("AWS_DEFAULT_REGION") or 'us-east-1'
     AWS_ACCESS_KEY_ID: str = os.environ.get("AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY: str = os.environ.get("AWS_SECRET_ACCESS_KEY")
