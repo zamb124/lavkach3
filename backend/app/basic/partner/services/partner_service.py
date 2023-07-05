@@ -25,4 +25,4 @@ class PartnerService(BaseService[Partner, PartnerCreateScheme, PartnerUpdateSche
 
     @permit('partner_delete')
     async def delete(self, id: Any) -> None:
-        return await super(PartnerService).delete(id)
+        return await super(PartnerService, self).delete(id)

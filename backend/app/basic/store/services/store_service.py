@@ -27,4 +27,4 @@ class StoreService(BaseService[Store, StoreCreateScheme, StoreUpdateScheme, Stor
 
     @permit('store_delete')
     async def delete(self, id: Any) -> None:
-        return await super(StoreService).delete(id)
+        return await super(StoreService, self).delete(id)

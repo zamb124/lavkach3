@@ -28,11 +28,13 @@ class AuthBackend(AuthenticationBackend):
                 algorithms=[config.JWT_ALGORITHM],
             )
             user_id = payload.get("user_id")
+            is_admin = payload.get("is_admin")
             companies_ids = payload.get("companies")
             roles = payload.get("roles")
         except jwt.exceptions.PyJWTError:
             return False, current_user
 
+        current_user.is_admin = is_admin
         current_user.id = user_id
         current_user.companies = companies_ids
         current_user.roles = roles

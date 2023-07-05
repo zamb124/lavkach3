@@ -33,11 +33,11 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
 
     @permit('user_list')
     async def list(self, _filter: FilterSchemaType, size: int):
-        return await super(UserService).list(_filter, size)
+        return await super(UserService, self).list(_filter, size)
 
     @permit('user_delete')
     async def delete(self, id: Any) -> None:
-        return await super(UserService).delete(id)
+        return await super(UserService, self).delete(id)
 
     @permit('user_create')
     async def create(self, obj: UserCreateScheme) -> User:
