@@ -14,6 +14,9 @@ export default defineAppConfig({
           {
             component: 'SelecLanguage',
           },
+          {
+            component: 'ToolbarAccount',
+          },
         ],
       },
       navigation: {
