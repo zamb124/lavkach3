@@ -12,7 +12,7 @@ export default defineAppConfig({
             component: 'ThemeToggle',
           },
           {
-            component: 'PanelLanguage',
+            component: 'SelecLanguage',
           },
         ],
       },
@@ -29,6 +29,13 @@ export default defineAppConfig({
         items: [],
       },
     },
+    panels: [
+      {
+        name: 'language',
+        position: 'right',
+        component: 'PanelLanguage',
+      },
+    ],
   },
   title: 'Tairo Quick Starter',
   error: {
@@ -40,5 +47,4 @@ export default defineAppConfig({
       },
     },
   },
-  panels: [],
 })

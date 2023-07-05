@@ -1,8 +1,90 @@
+<script setup lang="ts">
+const { close } = usePanels()
+</script>
+
 <template>
-  <button
-    type="button"
-    class="border-muted-200 hover:ring-muted-200 dark:hover:ring-muted-700 dark:border-muted-700 dark:bg-muted-800 dark:ring-offset-muted-900 flex h-9 w-9 items-center justify-center rounded-full border bg-white ring-1 ring-transparent transition-all duration-300 hover:ring-offset-4"
+  <div
+    class="border-muted-200 dark:border-muted-700 dark:bg-muted-800 border bg-white"
   >
-    <Icon name="circle-flags:us" class="h-7 w-7" />
-  </button>
+    <div class="flex h-16 w-full items-center justify-between px-10">
+      <h2
+        class="font-heading text-muted-700 text-lg font-semibold dark:text-white"
+      >
+        Выбрать язык
+      </h2>
+      <button
+        type="button"
+        class="text-muted-400 hover:bg-muted-100 hover:text-muted-600 dark:hover:bg-muted-700 flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 dark:hover:text-white"
+        @click="close"
+      >
+        <Icon name="feather:chevron-right" class="h-6 w-6" />
+      </button>
+    </div>
+
+    <div class="relative h-[calc(100%_-_64px)] w-full px-10">
+      <div class="grid grid-cols-3 py-6">
+        <!-- Radio box -->
+        <div class="relative my-4 flex items-center justify-center">
+          <div class="relative">
+            <input
+              type="radio"
+              name="language_selection"
+              class="peer absolute start-0 top-0 z-20 h-full w-full cursor-pointer opacity-0"
+              checked
+            />
+            <div
+              class="border-muted-200 peer-checked:border-primary-500 dark:border-muted-600 flex h-14 w-14 items-center justify-center rounded-full border-2 shadow-lg transition-all duration-300"
+            >
+              <Icon class="h-10 w-10 rounded-full" name="circle-flags:ae" />
+            </div>
+            <div
+              class="bg-primary-500 dark:border-muted-800 absolute -end-1 -top-1 hidden h-7 w-7 items-center justify-center rounded-full border-4 border-white text-white peer-checked:flex"
+            >
+              <Icon name="feather:check" class="h-3 w-3" />
+            </div>
+          </div>
+        </div>
+        <!-- Radio box -->
+        <div class="relative my-4 flex items-center justify-center">
+          <div class="relative">
+            <input
+              type="radio"
+              name="language_selection"
+              class="peer absolute start-0 top-0 z-20 h-full w-full cursor-pointer opacity-0"
+            />
+            <div
+              class="border-muted-200 peer-checked:border-primary-500 dark:border-muted-600 flex h-14 w-14 items-center justify-center rounded-full border-2 shadow-lg transition-all duration-300"
+            >
+              <Icon class="h-10 w-10 rounded-full" name="circle-flags:us" />
+            </div>
+            <div
+              class="bg-primary-500 dark:border-muted-800 absolute -end-1 -top-1 hidden h-7 w-7 items-center justify-center rounded-full border-4 border-white text-white peer-checked:flex"
+            >
+              <Icon name="feather:check" class="h-3 w-3" />
+            </div>
+          </div>
+        </div>
+        <!-- Radio box -->
+        <div class="relative my-4 flex items-center justify-center">
+          <div class="relative">
+            <input
+              type="radio"
+              name="language_selection"
+              class="peer absolute start-0 top-0 z-20 h-full w-full cursor-pointer opacity-0"
+            />
+            <div
+              class="border-muted-200 peer-checked:border-primary-500 dark:border-muted-600 flex h-14 w-14 items-center justify-center rounded-full border-2 shadow-lg transition-all duration-300"
+            >
+              <Icon class="h-10 w-10 rounded-full" name="circle-flags:ru" />
+            </div>
+            <div
+              class="bg-primary-500 dark:border-muted-800 absolute -end-1 -top-1 hidden h-7 w-7 items-center justify-center rounded-full border-4 border-white text-white peer-checked:flex"
+            >
+              <Icon name="feather:check" class="h-3 w-3" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
