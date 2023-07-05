@@ -34,8 +34,6 @@ from app.basic.user.models import *
 from app.basic.partner.models import *
 from app.basic.uom.models import *
 
-from app.maintenance.models import *
-
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

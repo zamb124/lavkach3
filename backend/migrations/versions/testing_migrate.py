@@ -16,9 +16,9 @@ from datetime import datetime
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'
-down_revision = 'd4b17bf6e4a7'
+down_revision = 'f9e0bfba8d29'
 branch_labels = None
-depends_on = 'd4b17bf6e4a7'
+depends_on = 'f9e0bfba8d29'
 
 
 def upgrade():

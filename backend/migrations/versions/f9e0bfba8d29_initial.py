@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: d4b17bf6e4a7
+Revision ID: f9e0bfba8d29
 Revises: 
-Create Date: 2023-07-04 09:46:47.737839
+Create Date: 2023-07-05 17:55:30.292231
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 import sqlalchemy_utils
 
 # revision identifiers, used by Alembic.
-revision = 'd4b17bf6e4a7'
+revision = 'f9e0bfba8d29'
 down_revision = '1e8431842d98'
 branch_labels = None
 depends_on = '1e8431842d98'
@@ -35,35 +35,6 @@ def upgrade():
     op.create_index(op.f('ix_company_id'), 'company', ['id'], unique=False)
     op.create_index(op.f('ix_company_lsn'), 'company', ['lsn'], unique=False)
     op.create_index(op.f('ix_company_title'), 'company', ['title'], unique=False)
-    op.create_table('asset_type',
-                    sa.Column('lsn', sa.BigInteger(), nullable=True),
-                    sa.Column('id', sa.Uuid(as_uuid=False), nullable=False),
-                    sa.Column('title', sa.Unicode(length=255), nullable=False),
-                    sa.Column('type', sa.Unicode(length=20), nullable=False),
-                    sa.Column('source', sa.Unicode(length=20), nullable=False),
-                    sa.Column('serial_required', sa.Boolean(), nullable=True),
-                    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('company_id', sa.Uuid(), nullable=False),
-                    sa.ForeignKeyConstraint(['company_id'], ['company.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_index(op.f('ix_asset_type_company_id'), 'asset_type', ['company_id'], unique=False)
-    op.create_index(op.f('ix_asset_type_id'), 'asset_type', ['id'], unique=False)
-    op.create_index(op.f('ix_asset_type_lsn'), 'asset_type', ['lsn'], unique=False)
-    op.create_table('manufacturer',
-                    sa.Column('lsn', sa.BigInteger(), nullable=True),
-                    sa.Column('id', sa.Uuid(as_uuid=False), nullable=False),
-                    sa.Column('title', sa.Unicode(length=255), nullable=False),
-                    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('company_id', sa.Uuid(), nullable=False),
-                    sa.ForeignKeyConstraint(['company_id'], ['company.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_index(op.f('ix_manufacturer_company_id'), 'manufacturer', ['company_id'], unique=False)
-    op.create_index(op.f('ix_manufacturer_id'), 'manufacturer', ['id'], unique=False)
-    op.create_index(op.f('ix_manufacturer_lsn'), 'manufacturer', ['lsn'], unique=False)
     op.create_table('role',
                     sa.Column('id', sa.Uuid(), nullable=False),
                     sa.Column('title', sa.Unicode(length=255), nullable=False),
@@ -116,19 +87,6 @@ def upgrade():
     op.create_index(op.f('ix_uom_category_company_id'), 'uom_category', ['company_id'], unique=False)
     op.create_index(op.f('ix_uom_category_id'), 'uom_category', ['id'], unique=False)
     op.create_index(op.f('ix_uom_category_lsn'), 'uom_category', ['lsn'], unique=False)
-    op.create_table('model',
-                    sa.Column('lsn', sa.BigInteger(), nullable=True),
-                    sa.Column('id', sa.Uuid(as_uuid=False), nullable=False),
-                    sa.Column('title', sa.Unicode(length=255), nullable=False),
-                    sa.Column('manufacturer_id', sa.Uuid(), nullable=True),
-                    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.ForeignKeyConstraint(['manufacturer_id'], ['manufacturer.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_index(op.f('ix_model_id'), 'model', ['id'], unique=False)
-    op.create_index(op.f('ix_model_lsn'), 'model', ['lsn'], unique=False)
-    op.create_index(op.f('ix_model_manufacturer_id'), 'model', ['manufacturer_id'], unique=False)
     op.create_table('uom',
                     sa.Column('lsn', sa.BigInteger(), nullable=True),
                     sa.Column('id', sa.Uuid(), nullable=False),
@@ -178,39 +136,6 @@ def upgrade():
     op.create_index(op.f('ix_user_lsn'), 'user', ['lsn'], unique=False)
     op.create_index(op.f('ix_user_roles'), 'user', ['roles'], unique=False)
     op.create_index(op.f('ix_user_store_id'), 'user', ['store_id'], unique=False)
-    op.create_table('asset',
-                    sa.Column('lsn', sa.BigInteger(), nullable=True),
-                    sa.Column('id', sa.Uuid(as_uuid=False), nullable=False),
-                    sa.Column('title', sa.Unicode(length=255), nullable=False),
-                    sa.Column('asset_type_id', sa.Uuid(), nullable=True),
-                    sa.Column('manufacturer_id', sa.Uuid(), nullable=True),
-                    sa.Column('store_id', sa.Uuid(), nullable=True),
-                    sa.Column('model_id', sa.Uuid(), nullable=True),
-                    sa.Column('status', sa.Unicode(length=20), nullable=False),
-                    sa.Column('at_user_id', sa.Uuid(), nullable=True),
-                    sa.Column('user_created_id', sa.Uuid(), nullable=True),
-                    sa.Column('barcode', sa.Unicode(length=1000), nullable=False),
-                    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('company_id', sa.Uuid(), nullable=False),
-                    sa.ForeignKeyConstraint(['asset_type_id'], ['asset_type.id'], ),
-                    sa.ForeignKeyConstraint(['at_user_id'], ['user.id'], ),
-                    sa.ForeignKeyConstraint(['company_id'], ['company.id'], ),
-                    sa.ForeignKeyConstraint(['manufacturer_id'], ['manufacturer.id'], ),
-                    sa.ForeignKeyConstraint(['model_id'], ['model.id'], ),
-                    sa.ForeignKeyConstraint(['store_id'], ['store.id'], ),
-                    sa.ForeignKeyConstraint(['user_created_id'], ['user.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_index(op.f('ix_asset_asset_type_id'), 'asset', ['asset_type_id'], unique=False)
-    op.create_index(op.f('ix_asset_barcode'), 'asset', ['barcode'], unique=True)
-    op.create_index(op.f('ix_asset_company_id'), 'asset', ['company_id'], unique=False)
-    op.create_index(op.f('ix_asset_id'), 'asset', ['id'], unique=False)
-    op.create_index(op.f('ix_asset_lsn'), 'asset', ['lsn'], unique=False)
-    op.create_index(op.f('ix_asset_manufacturer_id'), 'asset', ['manufacturer_id'], unique=False)
-    op.create_index(op.f('ix_asset_model_id'), 'asset', ['model_id'], unique=False)
-    op.create_index(op.f('ix_asset_status'), 'asset', ['status'], unique=False)
-    op.create_index(op.f('ix_asset_store_id'), 'asset', ['store_id'], unique=False)
     op.create_table('partner',
                     sa.Column('lsn', sa.BigInteger(), nullable=True),
                     sa.Column('id', sa.Uuid(), nullable=False),
@@ -240,105 +165,17 @@ def upgrade():
     op.create_index(op.f('ix_partner_id'), 'partner', ['id'], unique=False)
     op.create_index(op.f('ix_partner_lsn'), 'partner', ['lsn'], unique=False)
     op.create_index(op.f('ix_partner_parent_id'), 'partner', ['parent_id'], unique=False)
-    op.create_table('asset_log',
-                    sa.Column('lsn', sa.BigInteger(), nullable=True),
-                    sa.Column('id', sa.Uuid(as_uuid=False), nullable=False),
-                    sa.Column('asset_id', sa.Uuid(), nullable=False),
-                    sa.Column('action', sa.Unicode(length=30), nullable=False),
-                    sa.Column('from_', sa.Unicode(length=255), nullable=True),
-                    sa.Column('to', sa.Unicode(length=255), nullable=True),
-                    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.ForeignKeyConstraint(['asset_id'], ['asset.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_index(op.f('ix_asset_log_asset_id'), 'asset_log', ['asset_id'], unique=False)
-    op.create_index(op.f('ix_asset_log_id'), 'asset_log', ['id'], unique=False)
-    op.create_index(op.f('ix_asset_log_lsn'), 'asset_log', ['lsn'], unique=False)
-    op.create_table('order',
-                    sa.Column('lsn', sa.BigInteger(), nullable=True),
-                    sa.Column('id', sa.Uuid(as_uuid=False), nullable=False),
-                    sa.Column('number', sa.BigInteger(), nullable=True),
-                    sa.Column('description', sa.Text(), nullable=True),
-                    sa.Column('partner_id', sa.Uuid(), nullable=True),
-                    sa.Column('status', sa.Unicode(length=30), nullable=False),
-                    sa.Column('asset_id', sa.Uuid(), nullable=False),
-                    sa.Column('store_id', sa.Uuid(), nullable=True),
-                    sa.Column('user_created_id', sa.Uuid(), nullable=True),
-                    sa.Column('partner_user_id', sa.Uuid(), nullable=True),
-                    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('company_id', sa.Uuid(), nullable=False),
-                    sa.ForeignKeyConstraint(['asset_id'], ['asset.id'], ),
-                    sa.ForeignKeyConstraint(['company_id'], ['company.id'], ),
-                    sa.ForeignKeyConstraint(['partner_id'], ['partner.id'], ),
-                    sa.ForeignKeyConstraint(['partner_user_id'], ['user.id'], ),
-                    sa.ForeignKeyConstraint(['store_id'], ['store.id'], ),
-                    sa.ForeignKeyConstraint(['user_created_id'], ['user.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_index(op.f('ix_order_asset_id'), 'order', ['asset_id'], unique=False)
-    op.create_index(op.f('ix_order_company_id'), 'order', ['company_id'], unique=False)
-    op.create_index(op.f('ix_order_id'), 'order', ['id'], unique=False)
-    op.create_index(op.f('ix_order_lsn'), 'order', ['lsn'], unique=False)
-    op.create_index(op.f('ix_order_number'), 'order', ['number'], unique=False)
-    op.create_index(op.f('ix_order_partner_id'), 'order', ['partner_id'], unique=False)
-    op.create_index(op.f('ix_order_status'), 'order', ['status'], unique=False)
-    op.create_index(op.f('ix_order_store_id'), 'order', ['store_id'], unique=False)
-    op.create_table('order_line',
-                    sa.Column('lsn', sa.BigInteger(), nullable=True),
-                    sa.Column('id', sa.Uuid(as_uuid=False), nullable=False),
-                    sa.Column('title', sa.Unicode(length=255), nullable=False),
-                    sa.Column('description', sa.Text(), nullable=True),
-                    sa.Column('order_id', sa.Uuid(), nullable=True),
-                    sa.Column('quantity', sa.Integer(), nullable=False),
-                    sa.Column('cost', sa.Numeric(precision=12, scale=2), nullable=True),
-                    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
-                    sa.ForeignKeyConstraint(['order_id'], ['order.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_index(op.f('ix_order_line_id'), 'order_line', ['id'], unique=False)
-    op.create_index(op.f('ix_order_line_lsn'), 'order_line', ['lsn'], unique=False)
-    op.create_index(op.f('ix_order_line_order_id'), 'order_line', ['order_id'], unique=False)
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_index(op.f('ix_order_line_order_id'), table_name='order_line')
-    op.drop_index(op.f('ix_order_line_lsn'), table_name='order_line')
-    op.drop_index(op.f('ix_order_line_id'), table_name='order_line')
-    op.drop_table('order_line')
-    op.drop_index(op.f('ix_order_store_id'), table_name='order')
-    op.drop_index(op.f('ix_order_status'), table_name='order')
-    op.drop_index(op.f('ix_order_partner_id'), table_name='order')
-    op.drop_index(op.f('ix_order_number'), table_name='order')
-    op.drop_index(op.f('ix_order_lsn'), table_name='order')
-    op.drop_index(op.f('ix_order_id'), table_name='order')
-    op.drop_index(op.f('ix_order_company_id'), table_name='order')
-    op.drop_index(op.f('ix_order_asset_id'), table_name='order')
-    op.drop_table('order')
-    op.drop_index(op.f('ix_asset_log_lsn'), table_name='asset_log')
-    op.drop_index(op.f('ix_asset_log_id'), table_name='asset_log')
-    op.drop_index(op.f('ix_asset_log_asset_id'), table_name='asset_log')
-    op.drop_table('asset_log')
     op.drop_index(op.f('ix_partner_parent_id'), table_name='partner')
     op.drop_index(op.f('ix_partner_lsn'), table_name='partner')
     op.drop_index(op.f('ix_partner_id'), table_name='partner')
     op.drop_index(op.f('ix_partner_created_user_id'), table_name='partner')
     op.drop_index(op.f('ix_partner_company_id'), table_name='partner')
     op.drop_table('partner')
-    op.drop_index(op.f('ix_asset_store_id'), table_name='asset')
-    op.drop_index(op.f('ix_asset_status'), table_name='asset')
-    op.drop_index(op.f('ix_asset_model_id'), table_name='asset')
-    op.drop_index(op.f('ix_asset_manufacturer_id'), table_name='asset')
-    op.drop_index(op.f('ix_asset_lsn'), table_name='asset')
-    op.drop_index(op.f('ix_asset_id'), table_name='asset')
-    op.drop_index(op.f('ix_asset_company_id'), table_name='asset')
-    op.drop_index(op.f('ix_asset_barcode'), table_name='asset')
-    op.drop_index(op.f('ix_asset_asset_type_id'), table_name='asset')
-    op.drop_table('asset')
     op.drop_index(op.f('ix_user_store_id'), table_name='user')
     op.drop_index(op.f('ix_user_roles'), table_name='user')
     op.drop_index(op.f('ix_user_lsn'), table_name='user')
@@ -350,10 +187,6 @@ def downgrade():
     op.drop_index(op.f('ix_uom_id'), table_name='uom')
     op.drop_index(op.f('ix_uom_company_id'), table_name='uom')
     op.drop_table('uom')
-    op.drop_index(op.f('ix_model_manufacturer_id'), table_name='model')
-    op.drop_index(op.f('ix_model_lsn'), table_name='model')
-    op.drop_index(op.f('ix_model_id'), table_name='model')
-    op.drop_table('model')
     op.drop_index(op.f('ix_uom_category_lsn'), table_name='uom_category')
     op.drop_index(op.f('ix_uom_category_id'), table_name='uom_category')
     op.drop_index(op.f('ix_uom_category_company_id'), table_name='uom_category')
@@ -368,14 +201,6 @@ def downgrade():
     op.drop_index(op.f('ix_role_id'), table_name='role')
     op.drop_index(op.f('ix_role_company_id'), table_name='role')
     op.drop_table('role')
-    op.drop_index(op.f('ix_manufacturer_lsn'), table_name='manufacturer')
-    op.drop_index(op.f('ix_manufacturer_id'), table_name='manufacturer')
-    op.drop_index(op.f('ix_manufacturer_company_id'), table_name='manufacturer')
-    op.drop_table('manufacturer')
-    op.drop_index(op.f('ix_asset_type_lsn'), table_name='asset_type')
-    op.drop_index(op.f('ix_asset_type_id'), table_name='asset_type')
-    op.drop_index(op.f('ix_asset_type_company_id'), table_name='asset_type')
-    op.drop_table('asset_type')
     op.drop_index(op.f('ix_company_title'), table_name='company')
     op.drop_index(op.f('ix_company_lsn'), table_name='company')
     op.drop_index(op.f('ix_company_id'), table_name='company')
