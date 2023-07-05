@@ -1,26 +1,33 @@
 export default defineAppConfig({
-  sidebar: {
-    circularMenu: {
-      enabled: false,
-      tools: [],
-    },
-    toolbar: {
-      enabled: true,
-      showTitle: true,
-      showNavBurger: false,
-      tools: [],
-    },
-    navigation: {
-      enabled: true,
-      startOpen: true,
-      logo: {
-        component: 'TairoLogo',
-        resolve: true,
-        props: {
-          class: 'text-primary-600 h-10',
-        },
+  tairo: {
+    sidebar: {
+      circularMenu: {
+        enabled: false,
+        tools: [],
       },
-      items: [],
+      toolbar: {
+        showNavBurger: true,
+        tools: [
+          {
+            component: 'ThemeToggle',
+          },
+          {
+            component: 'PanelLanguage',
+          },
+        ],
+      },
+      navigation: {
+        enabled: true,
+        startOpen: true,
+        logo: {
+          component: 'TairoLogo',
+          resolve: true,
+          props: {
+            class: 'text-primary-600 h-10',
+          },
+        },
+        items: [],
+      },
     },
   },
   title: 'Tairo Quick Starter',
