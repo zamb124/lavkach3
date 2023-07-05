@@ -5,6 +5,7 @@ from core.db.session import session
 
 from app.basic.user.models import User
 
+
 class CurrentUser(BaseModel):
     id: Optional[UUID4]
     companies: Optional[List[UUID4]] = []
@@ -13,6 +14,7 @@ class CurrentUser(BaseModel):
 
     class Config:
         validate_assignment = True
+
     async def get_user_data(self):
         query = select(User).where(User.id == self.id)
         result = await session.execute(query)
