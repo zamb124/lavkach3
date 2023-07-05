@@ -47,6 +47,7 @@ class LoginResponseSchema(BaseModel):
     store_id: Optional[UUID4]
     token: str = Field(..., description="Token")
     refresh_token: str = Field(..., description="Refresh token")
+    user_id: Optional[UUID4]
     companies: Optional[List[UUID4]]
     permissions: Optional[List[str]]
     roles: Optional[List[str]]

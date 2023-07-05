@@ -96,6 +96,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
                 "is_admin": user.is_admin
             }),
             'refresh_token': TokenHelper.encode(payload={"sub": "refresh"}),
+            'user_id': user.id,
             'companies': companies,
             'nickname': user.nickname,
             'permissions': permissions_list,

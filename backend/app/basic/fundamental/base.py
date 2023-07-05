@@ -45,7 +45,7 @@ def upload(request: Request, schema: Image):
 
 @fundamental_router.get("/countries", response_model=list[CountrySchema])
 async def countries(request: Request):
-    user_data = await request.user.get_user_data(request)
+    user_data = await request.user.get_user_data()
     currencies = [
         {
             'code': k, 'name': v
@@ -56,7 +56,7 @@ async def countries(request: Request):
 
 @fundamental_router.get("/countries/{code}", response_model=CountrySchema)
 async def countries_code(request: Request, code: str):
-    user_data = await request.user.get_user_data(request)
+    user_data = await request.user.get_user_data()
     try:
         country = user_data.locale.territories._data[code.upper()]
     except KeyError as ex:
@@ -69,14 +69,14 @@ async def countries_code(request: Request, code: str):
 
 @fundamental_router.get("/currencies", response_model=list[CurrencySchema])
 async def currencies(request: Request):
-    user_data = await request.user.get_user_data(request)
+    user_data = await request.user.get_user_data()
     currencies = [{'code': k, 'name': v} for k, v in user_data.locale.currencies._data.items()]
     return currencies
 
 
 @fundamental_router.get("/currencies/{code}", response_model=CurrencySchema)
 async def currencies_code(request: Request, code: str):
-    user_data = await request.user.get_user_data(request)
+    user_data = await request.user.get_user_data()
     try:
         currency = user_data.locale.currencies._data[code.upper()]
     except KeyError as ex:
@@ -95,7 +95,7 @@ async def locales(request: Request):
 
 @fundamental_router.get("/locales/my", response_model=LocaleSchema)
 async def locales_my(request: Request):
-    user = await request.user.get_user_data(request)
+    user = await request.user.get_user_data()
     locale = TypeLocale(str(user.locale))
     return locale.validate(locale)
 

@@ -43,4 +43,4 @@ class User(Base, TimestampMixin, VarsMixin, LsnMixin):
     store_id = Column(Uuid, ForeignKey("store.id"), index=True, nullable=True)
     store = relationship("Store", back_populates='store_users', lazy='selectin')
     companies = Column(ARRAY(Uuid), index=True, nullable=True)
-    roles = Column(ARRAY(Uuid), index=True, nullable=True)
+    roles = Column(ARRAY(Uuid), index=True, nullable=True, default=[])
