@@ -28,6 +28,7 @@
                 :classes="{
                   input: 'h-12',
                 }"
+                autocomplete="on"
               />
 
               <BaseInput
@@ -38,6 +39,7 @@
                 :classes="{
                   input: 'h-12',
                 }"
+                autocomplete="on"
               />
             </div>
 
@@ -71,7 +73,7 @@ definePageMeta({
   layout: 'empty',
 })
 
-const token = useLocalStorage('userToken', '')
+const token = useUserToken()
 const router = useRouter()
 
 const loginData = ref({
