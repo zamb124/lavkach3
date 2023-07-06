@@ -138,14 +138,12 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             user_id = user.id
             login = await self.login(user.email, user.password)
         except Exception as e:
-
             if role_id:
                 await RoleService(db_session=self.session).sudo().delete(role_id)
             if user_id:
                 await self.sudo().delete(user_id)
             if company_id:
                 await CompanyService(db_session=self.session).sudo().delete(company_id)
-
             await self.session.rollback()
             if isinstance(e, DuplicateEmailOrNicknameException):
                 raise e
