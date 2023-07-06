@@ -7,10 +7,6 @@
   </div>
 </template>
 
-<script setup>
-const config = useRuntimeConfig()
-
-globalThis.$fetch = $fetch.create({
-  baseURL: config.public.apiUrl,
-})
+<script setup lang="ts">
+globalThis.$fetch = useCreateFetch()
 </script>

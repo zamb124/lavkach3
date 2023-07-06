@@ -6,10 +6,9 @@
       <!--Form-->
       <div class="me-auto ms-auto mt-4 w-full">
         <form
-          method="POST"
-          action=""
           class="me-auto ms-auto mt-4 w-full max-w-md"
           novalidate
+          @submit.prevent="login"
         >
           <div class="text-center">
             <BaseHeading as="h2" size="3xl" weight="medium">
@@ -22,6 +21,7 @@
           <div class="px-8 py-4">
             <div class="mb-4 space-y-4">
               <BaseInput
+                v-model="loginData.email"
                 type="email"
                 label="Email address"
                 placeholder="Email address"
@@ -31,6 +31,7 @@
               />
 
               <BaseInput
+                v-model="loginData.password"
                 type="password"
                 label="Password"
                 placeholder="Password"
@@ -39,6 +40,7 @@
                 }"
               />
             </div>
+
             <div class="mt-6">
               <BaseButton type="submit" color="primary" class="!h-12 w-full">
                 Sign In
@@ -68,4 +70,21 @@
 definePageMeta({
   layout: 'empty',
 })
+
+const token = useLocalStorage('userToken', '')
+const router = useRouter()
+
+const loginData = ref({
+  email: '',
+  password: '',
+})
+
+const login = async () => {
+  const user = await $fetch('/user/login', {
+    body: loginData.value,
+    method: 'POST',
+  })
+  token.value = user.token
+  await router.push('/')
+}
 </script>
