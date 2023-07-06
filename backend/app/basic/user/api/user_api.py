@@ -19,12 +19,13 @@ from core.fastapi.dependencies import (
     IsAuthenticated,
 )
 from .schemas import LoginRequest
+from ..schemas.user_schemas import SignUpScheme
 
 user_router = APIRouter()
 
 
 @user_router.get("", response_model=UserListSchema, dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
-async def company_list(
+async def user_list(
         request: Request,
         model_filter: UserFilter = FilterDepends(UserFilter),
         size: int = Query(ge=1, le=100, default=100),
@@ -71,3 +72,8 @@ async def login(request: Request, obj: LoginRequest):
         email=obj.email,
         password=obj.password,
     )
+
+@user_router.post("/signup", response_model=LoginResponseSchema)
+async def signup(request: Request, schema: SignUpScheme):
+    return await UserService(request).signup(obj=schema)
+

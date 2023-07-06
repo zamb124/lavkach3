@@ -3,12 +3,12 @@ from datetime import datetime
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
 from pydantic.types import Optional, List
+
+from app.basic.company.schemas import CompanyCreateScheme
 from app.basic.user.models.user_models import UserType, User
 from app.basic.store.schemas.store_schemas import StoreScheme
-from app.basic.company.schemas import CompanyScheme
 from core.types.types import *
-from core.types.types import Locale
-from core.schemas.list_schema import BaseListSchame, GenericListSchema
+from core.schemas.list_schema import GenericListSchema
 
 
 class GetUserListResponseSchema(BaseModel):
@@ -125,3 +125,8 @@ class UserFilter(Filter):
 
 class UserListSchema(GenericListSchema):
     data: Optional[List[UserScheme]]
+
+
+class SignUpScheme(BaseModel):
+    user: UserCreateScheme
+    company: CompanyCreateScheme

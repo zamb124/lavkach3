@@ -7,7 +7,7 @@ from core.permissions.permissions import permit
 Deny = 'Deny'
 
 class CompanyService(BaseService[Company, CompanyCreateScheme, CompanyUpdateScheme, CompanyFilter]):
-    def __init__(self, request):
+    def __init__(self, request=None):
         super(CompanyService, self).__init__(request, Company)
 
     @permit('company_create', 'company_edit')
