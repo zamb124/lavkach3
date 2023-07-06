@@ -72,9 +72,12 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             select(User).where(User.email == email)
         )
         user = result_user.scalars().first()
-        user = user if user.password == password else None
+
         if not user:
             raise UserNotFoundException
+
+        if not user.password == password:
+            raise PasswordDoesNotMatchException
         # Получаем пермишены
         if not user.is_admin:
             result_roles = await self.session.execute(
