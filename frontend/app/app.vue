@@ -7,6 +7,6 @@
   </div>
 </template>
 
-<script setup>
-globalThis.$fetch = useFetchCreate()
+<script setup lang="ts">
+globalThis.$fetch = useCreateFetch()
 </script>
