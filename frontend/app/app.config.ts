@@ -1,10 +1,6 @@
 export default defineAppConfig({
   tairo: {
     sidebar: {
-      circularMenu: {
-        enabled: false,
-        tools: [],
-      },
       toolbar: {
         showNavBurger: true,
         tools: [
