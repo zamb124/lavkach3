@@ -3,7 +3,7 @@ from typing import List, Any, Optional
 from app.basic.user.models.role_models import Role
 from app.basic.user.schemas.role_schemas import RoleCreateScheme, RoleUpdateScheme, RoleFilter
 from core.db.session import session
-from core.permissions import permit
+from core.permissions import permit, permits
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
 
@@ -26,3 +26,8 @@ class RoleService(BaseService[Role, RoleCreateScheme, RoleUpdateScheme, RoleFilt
     @permit('role_delete')
     async def delete(self, id: Any) -> None:
         return await super(RoleService).delete(id)
+
+    @permit('role_create')
+    async def create_company_admin_role(self, company_id) -> ModelType:
+        obj = RoleCreateScheme(title='company_admin', company_id=company_id, permissions_allow=list(permits.keys()))
+        return await super(RoleService, self).create(obj)

@@ -33,6 +33,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     def sudo(self):
         self.user = CurrentUser(id=uuid4(), is_admin=True)
+        return self
 
     async def get(self, id: Any) -> Optional[ModelType]:
         query = select(self.model).where(self.model.id == id)

@@ -4,10 +4,12 @@ from sqlalchemy import select, and_
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 
+from app.basic.company.services import CompanyService
 from app.basic.user.models.user_models import User
 from app.basic.user.models.role_models import Role
-from app.basic.user.schemas.user_schemas import LoginResponseSchema
+from app.basic.user.schemas.user_schemas import LoginResponseSchema, SignUpScheme
 from app.basic.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme, UserFilter
+from app.basic.user.services.role_service import RoleService
 from core.db.session import session
 from core.exceptions import (
     PasswordDoesNotMatchException,
@@ -40,7 +42,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         return await super(UserService, self).delete(id)
 
     @permit('user_create')
-    async def create(self, obj: UserCreateScheme) -> User:
+    async def create(self, obj: UserCreateScheme, commit=True) -> User:
         if obj.password1 != obj.password2:
             raise PasswordDoesNotMatchException
         setattr(obj, 'password', obj.password1)
@@ -115,6 +117,23 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             return False
 
         return user
+
+    async def signup(self, obj: SignUpScheme):
+
+        try:
+            company = await CompanyService().sudo().create(obj.company)
+            obj.user.companies = [company.id]
+            role = await RoleService().sudo().create_company_admin_role(company.id)
+            obj.user.roles = [role.id]
+            user = await self.sudo().create(obj.user)
+            login = await self.login(user.email, user.password)
+
+        except Exception as e:
+            await self.session.rollback()
+            if isinstance(e, DuplicateEmailOrNicknameException):
+                raise e
+            raise HTTPException(status_code=409, detail=f"Dublicate {str(e)}")
+        return login
 
 # class UserService:
 #

@@ -6,11 +6,6 @@ from fastapi import Response, Request
 from pydantic import BaseModel
 
 from app.basic.fundamental.schemas.dundamental_shemas import Image
-from core.fastapi.dependencies import AllowAll
-from core.fastapi.dependencies import (
-    PermissionDependency,
-    IsAuthenticated,
-)
 from core.helpers.s3.s3 import s3_client
 from core.schemas.basic_schemes import CurrencySchema, CountrySchema, LocaleSchema
 from core.types.types import TypeLocale

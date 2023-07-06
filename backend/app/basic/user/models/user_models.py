@@ -2,7 +2,7 @@ import uuid
 from enum import Enum
 
 from fastapi_localization import lazy_gettext as _
-from sqlalchemy import Column
+from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey
 from sqlalchemy import Unicode, Boolean, Uuid, Sequence
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -21,6 +21,7 @@ class UserType(str, Enum):
 
 class User(Base, TimestampMixin, VarsMixin, LsnMixin):
     __tablename__ = "user"
+    __table_args__ = (UniqueConstraint('email', 'companies', name='_user_company_id_uc'),)
 
     id = Column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     external_id = Column(Unicode(255), nullable=True, unique=True)

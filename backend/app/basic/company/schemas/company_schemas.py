@@ -10,6 +10,7 @@ from app.basic.company.models.company_models import Company
 from core.schemas.list_schema import GenericListSchema
 from core.helpers.fastapi_filter_patch import BaseFilter
 
+
 class CompanyBaseScheme(BaseModel):
     title: str = Field(description="Title")
     external_id: Optional[str]
@@ -53,7 +54,6 @@ class CompanyFilter(BaseFilter):
     order_by: Optional[List[str]]
     search: Optional[str]
 
-
     class Config:
         allow_population_by_field_name = True
 
@@ -66,3 +66,4 @@ class CompanyFilter(BaseFilter):
 
 class CompanyListSchema(GenericListSchema):
     data: Optional[List[CompanyScheme]]
+
