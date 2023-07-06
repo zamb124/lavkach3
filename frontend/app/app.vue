@@ -8,9 +8,5 @@
 </template>
 
 <script setup>
-const config = useRuntimeConfig()
-
-globalThis.$fetch = $fetch.create({
-  baseURL: config.public.apiUrl,
-})
+globalThis.$fetch = useFetchCreate()
 </script>
