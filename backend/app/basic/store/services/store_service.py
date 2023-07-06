@@ -1,5 +1,6 @@
 from typing import Any, Optional
 
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 
 from app.basic.store.models.store_models import Store
@@ -10,7 +11,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 
 class StoreService(BaseService[Store, StoreCreateScheme, StoreUpdateScheme, StoreFilter]):
-    def __init__(self, request: Request, db_session: session=session):
+    def __init__(self, request, db_session: AsyncSession = None):
         super(StoreService, self).__init__(request, Store, db_session)
 
     @permit('store_edit')

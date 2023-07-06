@@ -2,7 +2,9 @@ from typing import List, Dict, Any, Optional
 
 from sqlalchemy import select, and_
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
+from starlette.requests import Request
 
 from app.basic.company.services import CompanyService
 from app.basic.user.models.user_models import User
@@ -11,6 +13,7 @@ from app.basic.user.schemas.user_schemas import LoginResponseSchema, SignUpSchem
 from app.basic.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme, UserFilter
 from app.basic.user.services.role_service import RoleService
 from core.db.session import session
+from core.db.transactional import Transactional
 from core.exceptions import (
     PasswordDoesNotMatchException,
     DuplicateEmailOrNicknameException,
@@ -22,7 +25,7 @@ from core.permissions.permissions import permit, permits
 
 
 class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilter]):
-    def __init__(self, request, db_session: session = session):
+    def __init__(self, request=None, db_session=None):
         super(UserService, self).__init__(request, User, db_session)
 
     @permit('user_get')
@@ -66,9 +69,10 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
     async def login(self, email: str, password: str):
         # Получаем юзера из бд
         result_user = await self.session.execute(
-            select(User).where(and_(User.email == email, password == password))
+            select(User).where(User.email == email)
         )
         user = result_user.scalars().first()
+        user = user if user.password == password else None
         if not user:
             raise UserNotFoundException
         # Получаем пермишены
@@ -118,17 +122,30 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
 
         return user
 
+
     async def signup(self, obj: SignUpScheme):
-
+        company_id = None
+        role_id = None
+        user_id = None
         try:
-            company = await CompanyService().sudo().create(obj.company)
+            company = await CompanyService(db_session=self.session).sudo().create(obj.company)
+            company_id = company.id
             obj.user.companies = [company.id]
-            role = await RoleService().sudo().create_company_admin_role(company.id)
+            role = await RoleService(db_session=self.session).sudo().create_company_admin_role(company.id)
+            role_id = role.id
             obj.user.roles = [role.id]
-            user = await self.sudo().create(obj.user)
+            user = await self.sudo().create(obj.user, commit=False)
+            user_id = user.id
             login = await self.login(user.email, user.password)
-
         except Exception as e:
+
+            if role_id:
+                await RoleService(db_session=self.session).sudo().delete(role_id)
+            if user_id:
+                await self.sudo().delete(user_id)
+            if company_id:
+                await CompanyService(db_session=self.session).sudo().delete(company_id)
+
             await self.session.rollback()
             if isinstance(e, DuplicateEmailOrNicknameException):
                 raise e

@@ -1,5 +1,8 @@
 from typing import List, Any, Optional
 
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.requests import Request
+
 from app.basic.user.models.role_models import Role
 from app.basic.user.schemas.role_schemas import RoleCreateScheme, RoleUpdateScheme, RoleFilter
 from core.db.session import session
@@ -8,7 +11,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 
 class RoleService(BaseService[Role, RoleCreateScheme, RoleUpdateScheme, RoleFilter]):
-    def __init__(self, request=None, db_session=session):
+    def __init__(self, request=None, db_session=None):
         super(RoleService, self).__init__(request, Role, db_session)
 
     @permit('role_edit')
@@ -25,7 +28,7 @@ class RoleService(BaseService[Role, RoleCreateScheme, RoleUpdateScheme, RoleFilt
 
     @permit('role_delete')
     async def delete(self, id: Any) -> None:
-        return await super(RoleService).delete(id)
+        return await super(RoleService, self).delete(id)
 
     @permit('role_create')
     async def create_company_admin_role(self, company_id) -> ModelType:

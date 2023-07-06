@@ -1,5 +1,8 @@
 from typing import Any, Optional
 
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.requests import Request
+
 from app.basic.partner.models import Partner
 from app.basic.partner.schemas import PartnerCreateScheme, PartnerUpdateScheme, PartnerFilter
 from core.db.session import session
@@ -8,7 +11,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 
 class PartnerService(BaseService[Partner, PartnerCreateScheme, PartnerUpdateScheme, PartnerFilter]):
-    def __init__(self, request, db_session=session):
+    def __init__(self, request=None, db_session=None):
         super(PartnerService, self).__init__(request, Partner, db_session)
 
     @permit('partner_edit')

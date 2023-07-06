@@ -23,13 +23,13 @@ before_fields = ['roles', 'companies', 'is_admin', 'store_id']
 
 
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterSchemaType]):
-    def __init__(self, request: Request | CurrentUser | None = None, model: Type[ModelType] = None, db_session: AsyncSession = session):
+    def __init__(self, request=None, model: Type[ModelType] = None, db_session: AsyncSession = session):
         if isinstance(request, CurrentUser):
             self.user = CurrentUser
         elif isinstance(request, Request):
             self.user = request.user
         self.model = model
-        self.session = db_session
+        self.session = db_session if db_session else session
 
     def sudo(self):
         self.user = CurrentUser(id=uuid4(), is_admin=True)
