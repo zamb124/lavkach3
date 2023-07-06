@@ -37,6 +37,15 @@ export default defineAppConfig({
             activePath: '/purchase',
           },
           {
+            title: 'Sales',
+            icon: {
+              name: 'streamline:shopping-cart-2-shopping-cart-checkout',
+              class: 'w-6 h-10',
+            },
+            subsidebar: { component: 'SalesSidebar' },
+            activePath: '/sales',
+          },
+          {
             title: 'Accounting',
             icon: { name: 'carbon:money', class: 'w-6 h-10' },
             subsidebar: { component: 'AccountingSidebar' },
