@@ -12,7 +12,7 @@ export default defineAppConfig({
             component: 'ThemeToggle',
           },
           {
-            component: 'SelecLanguage',
+            component: 'SelectLanguage',
           },
           {
             component: 'ToolbarAccount',
@@ -50,30 +50,6 @@ export default defineAppConfig({
             icon: { name: 'carbon:money', class: 'w-6 h-10' },
             subsidebar: { component: 'AccountingSidebar' },
             activePath: '/accounting',
-          },
-          {
-            title: 'Customize',
-            icon: { name: 'ph:drop-half-bottom-duotone', class: 'w-5 h-5' },
-            click: () => {
-              const isOpen = useState('switcher-open', () => false)
-              isOpen.value = true
-            },
-            position: 'end',
-          },
-          {
-            title: 'Search',
-            icon: { name: 'ph:magnifying-glass-duotone', class: 'w-5 h-5' },
-            click: () => {
-              const isOpen = useState('search-open', () => false)
-              isOpen.value = true
-            },
-            position: 'end',
-          },
-          {
-            title: 'Settings',
-            icon: { name: 'ph:gear-six-duotone', class: 'w-5 h-5' },
-            to: '/layouts/profile-settings',
-            position: 'end',
           },
         ],
       },
