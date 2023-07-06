@@ -1,3 +1,4 @@
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 
 from app.basic.uom.schemas.uom_category_schemas import UomCategoryCreateScheme, UomCategoryUpdateScheme, \
@@ -10,10 +11,10 @@ from core.service.base import BaseService
 
 
 class UomCategoryService(BaseService[UomCategory, UomCategoryCreateScheme, UomCategoryUpdateScheme, UomCategoryFilter]):
-    def __init__(self, request: Request, db_session: session = session):
+    def __init__(self, request=None, db_session=None):
         super(UomCategoryService, self).__init__(request, UomCategory, db_session)
 
 
 class UomService(BaseService[Uom, UomCreateScheme, UomUpdateScheme, UomFilter]):
-    def __init__(self, request: Request, db_session: session = session):
-        super(UomService, self).__init__(request, Uom, db_session)
+    def __init__(self, request: Request, session: AsyncSession = None):
+        super(UomService, self).__init__(request, Uom, session)

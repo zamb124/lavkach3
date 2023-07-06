@@ -112,7 +112,7 @@ async def user_admin(db_session: AsyncSession) -> User:
         "password1": "1402",
         "password2": "1402"
     })
-    user_db = await UserService(None).create(user)
+    user_db = await UserService().sudo().create(user)
     admin_user = CurrentUser(**user_db.__dict__)
     yield admin_user
     await db_session.delete(user_db)
