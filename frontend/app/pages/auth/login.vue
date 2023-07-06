@@ -71,7 +71,7 @@ definePageMeta({
   layout: 'empty',
 })
 
-const token = useLocalStorage('userToken', '')
+const token = useUserToken()
 const router = useRouter()
 
 const loginData = ref({
