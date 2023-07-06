@@ -29,7 +29,14 @@ export default defineAppConfig({
             class: 'text-primary-600 h-10',
           },
         },
-        items: [],
+        items: [
+          {
+            title: 'Dashboards',
+            icon: { name: 'gg:briefcase', class: 'w-6 h-10' },
+            subsidebar: { component: 'Purchase' },
+            activePath: '/dashboards',
+          },
+        ],
       },
     },
     panels: [
