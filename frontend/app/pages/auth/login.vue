@@ -28,6 +28,7 @@
                 :classes="{
                   input: 'h-12',
                 }"
+                autocomplete="on"
               />
 
               <BaseInput
@@ -38,6 +39,7 @@
                 :classes="{
                   input: 'h-12',
                 }"
+                autocomplete="on"
               />
             </div>
 
