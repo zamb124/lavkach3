@@ -31,10 +31,40 @@ export default defineAppConfig({
         },
         items: [
           {
-            title: 'Dashboards',
+            title: 'Purchase',
             icon: { name: 'gg:briefcase', class: 'w-6 h-10' },
-            subsidebar: { component: 'Purchase' },
-            activePath: '/dashboards',
+            subsidebar: { component: 'PurchaseSidebar' },
+            activePath: '/purchase',
+          },
+          {
+            title: 'Accounting',
+            icon: { name: 'carbon:money', class: 'w-6 h-10' },
+            subsidebar: { component: 'AccountingSidebar' },
+            activePath: '/accounting',
+          },
+          {
+            title: 'Customize',
+            icon: { name: 'ph:drop-half-bottom-duotone', class: 'w-5 h-5' },
+            click: () => {
+              const isOpen = useState('switcher-open', () => false)
+              isOpen.value = true
+            },
+            position: 'end',
+          },
+          {
+            title: 'Search',
+            icon: { name: 'ph:magnifying-glass-duotone', class: 'w-5 h-5' },
+            click: () => {
+              const isOpen = useState('search-open', () => false)
+              isOpen.value = true
+            },
+            position: 'end',
+          },
+          {
+            title: 'Settings',
+            icon: { name: 'ph:gear-six-duotone', class: 'w-5 h-5' },
+            to: '/layouts/profile-settings',
+            position: 'end',
           },
         ],
       },
