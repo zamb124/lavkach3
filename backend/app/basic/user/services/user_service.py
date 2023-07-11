@@ -125,32 +125,20 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
 
         return user
 
-
     async def signup(self, obj: SignUpScheme):
-        company_id = None
-        role_id = None
-        user_id = None
         try:
-            company = await CompanyService(db_session=self.session).sudo().create(obj.company)
-            company_id = company.id
+            company = await CompanyService(db_session=self.session).sudo().create(obj.company, commit=False)
             obj.user.companies = [company.id]
-            role = await RoleService(db_session=self.session).sudo().create_company_admin_role(company.id)
-            role_id = role.id
+            role = await RoleService(db_session=self.session).sudo().create_company_admin_role(company.id, commit=False)
             obj.user.roles = [role.id]
             user = await self.sudo().create(obj.user, commit=False)
-            user_id = user.id
             login = await self.login(user.email, user.password)
         except Exception as e:
-            if role_id:
-                await RoleService(db_session=self.session).sudo().delete(role_id)
-            if user_id:
-                await self.sudo().delete(user_id)
-            if company_id:
-                await CompanyService(db_session=self.session).sudo().delete(company_id)
             await self.session.rollback()
             if isinstance(e, DuplicateEmailOrNicknameException):
                 raise e
             raise HTTPException(status_code=409, detail=f"Dublicate {str(e)}")
+        await self.session.commit()
         return login
 
 # class UserService:

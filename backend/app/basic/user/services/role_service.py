@@ -31,6 +31,6 @@ class RoleService(BaseService[Role, RoleCreateScheme, RoleUpdateScheme, RoleFilt
         return await super(RoleService, self).delete(id)
 
     @permit('role_create')
-    async def create_company_admin_role(self, company_id) -> ModelType:
+    async def create_company_admin_role(self, company_id, commit=False) -> ModelType:
         obj = RoleCreateScheme(title='company_admin', company_id=company_id, permissions_allow=list(permits.keys()))
-        return await super(RoleService, self).create(obj)
+        return await super(RoleService, self).create(obj, commit)
