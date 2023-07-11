@@ -16,4 +16,4 @@ class CompanyService(BaseService[Company, CompanyCreateScheme, CompanyUpdateSche
 
     @permit('company_create', 'company_edit')
     async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
-        return await super(CompanyService, self).create(obj)
+        return await super(CompanyService, self).create(obj, commit)

@@ -47,40 +47,46 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         executed_data = await self.session.execute(query_filter)
         return executed_data.scalars().all()
 
-    async def create(self, obj: CreateSchemaType) -> ModelType:
+    async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
         entity = self.model(**obj.dict())
         self.session.add(entity)
-        try:
-            await self.session.commit()
-            await self.session.refresh(entity)
-        except IntegrityError as e:
-            await self.session.rollback()
-            if "duplicate key" in str(e):
+        if commit:
+            try:
+                await self.session.commit()
+                await self.session.refresh(entity)
+            except IntegrityError as e:
+                await self.session.rollback()
+                if "duplicate key" in str(e):
+                    raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
+                else:
+                    raise e
+            except Exception as e:
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
-            else:
-                raise e
-        except Exception as e:
-            raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
+        else:
+            await self.session.flush([entity])
         return entity
 
-    async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
+    async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
         entity = await self.get(id)
         if not entity:
             raise HTTPException(status_code=404, detail=f"Not Found with id {id}")
         self.session.add(entity)
         for column, value in obj.dict(exclude_unset=True).items():
             setattr(entity, column, value)
-        try:
-            await self.session.commit()
-            await self.session.refresh(entity)
-        except IntegrityError as e:
-            await self.session.rollback()
-            if "duplicate key" in str(e):
-                raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
-            else:
-                raise e
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
+        if commit:
+            try:
+                await self.session.commit()
+                await self.session.refresh(entity)
+            except IntegrityError as e:
+                await self.session.rollback()
+                if "duplicate key" in str(e):
+                    raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
+                else:
+                    raise e
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
+        else:
+            await self.session.flush([entity])
         return entity
 
     async def delete(self, id: Any) -> None:
