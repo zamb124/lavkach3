@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, UUID4
-from pydantic.types import Optional
+from typing import Optional
 
 
 class LoginRequest(BaseModel):

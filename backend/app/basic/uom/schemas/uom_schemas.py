@@ -1,10 +1,9 @@
 from datetime import datetime
 
 from pydantic import BaseModel, Field, UUID4
-from pydantic.types import Optional, List
+from typing import Optional, List
 
 from core.schemas.timestamps import TimeStampScheme
-from core.types.types import TypeCountry, TypeLocale, TypeCurrency
 from fastapi_filter.contrib.sqlalchemy import Filter
 from app.basic.uom.models.uom_models import Uom, UomType
 from core.schemas.list_schema import GenericListSchema
@@ -34,7 +33,7 @@ class UomScheme(UomCreateScheme, TimeStampScheme):
     lsn: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         arbitrary_types_allowed = True
 
 
@@ -50,7 +49,7 @@ class UomFilter(BaseFilter):
     type__in: Optional[List[str]] = Field(description="type")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     class Constants(Filter.Constants):
         model = Uom

@@ -34,7 +34,7 @@ class StoreScheme(StoreCreateScheme, TimeStampScheme):
     company: Optional[CompanyScheme]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class StoreFilter(Filter):
@@ -52,7 +52,7 @@ class StoreFilter(Filter):
     search: Optional[str]
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     class Constants(Filter.Constants):
         model = Store

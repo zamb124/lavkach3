@@ -31,7 +31,11 @@ async def user_list(
         size: int = Query(ge=1, le=100, default=100),
 ):
     data = await UserService(request).list(model_filter, size)
-    cursor = model_filter.lsn__gt
+    if data:
+        a = sorted(data, key=lambda x: x.lsn, reverse=True)
+        cursor = a[0].lsn
+    else:
+        cursor = model_filter.lsn__gt
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
@@ -46,10 +50,10 @@ async def create_user(request: Request, shema: UserCreateScheme):
     return user
 
 
-@user_router.get("/{user_id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+@user_router.get("/{user_id}", response_model=UserScheme, dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def user_get(request: Request, user_id: uuid.UUID):
-    return await UserService(request).get(id=user_id)
-
+    user = await UserService(request).get(id=user_id)
+    return user
 
 @user_router.put("/{user_id}", response_model=UserScheme,
                  dependencies=[Depends(PermissionDependency([IsAuthenticated]))])

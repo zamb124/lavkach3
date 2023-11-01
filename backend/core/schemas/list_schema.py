@@ -1,8 +1,7 @@
 from typing import Any, Type
 
-from pydantic import BaseModel, validator, root_validator
-from pydantic.types import Optional, List
-from pydantic_computed import Computed, computed
+from pydantic import BaseModel
+from typing import Optional, List
 
 class GenericListSchema(BaseModel):
     size: Optional[int]
@@ -43,6 +42,6 @@ class BaseListSchame(BaseModel):
         return super(BaseListSchame, cls).validate(value)
 
     class Config:
-        orm_mode = False
+        from_attributes = False
         arbitrary_types_allowed = True
 

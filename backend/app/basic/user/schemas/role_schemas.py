@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
-from pydantic.types import Optional, List
+from typing import Optional, List
 
 from app.basic.user.models.role_models import Role
 from core.helpers.fastapi_filter_patch import BaseFilter
@@ -11,10 +11,10 @@ from core.schemas.timestamps import TimeStampScheme
 
 
 class RoleBaseScheme(BaseModel):
-    vars: Optional[dict]
-    title: Optional[str]
-    permissions_allow: Optional[List[str]]
-    permissions_deny: Optional[List[str]]
+    vars: Optional[dict] = None
+    title: Optional[str] = None
+    permissions_allow: Optional[List[str]] = None
+    permissions_deny: Optional[List[str]] = None
 
 
 class RoleUpdateScheme(RoleBaseScheme):
@@ -25,7 +25,7 @@ class RoleUpdateScheme(RoleBaseScheme):
 class RoleCreateScheme(RoleBaseScheme):
     title: str
     company_id: UUID4
-    parents: Optional[List[UUID4]]
+    parents: Optional[List[UUID4]] = None
 
 
 class RoleScheme(RoleCreateScheme, TimeStampScheme):
@@ -33,24 +33,24 @@ class RoleScheme(RoleCreateScheme, TimeStampScheme):
     lsn: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RoleFilter(BaseFilter):
-    lsn__gt: Optional[int] = Field(alias="cursor")
-    id__in: Optional[List[UUID4]] = Field(alias="id")
-    created_at_gte: Optional[datetime] = Field(description="bigger or equal created")
-    created_at_lt: Optional[datetime] = Field(description="less created")
-    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated")
-    updated_at_lt: Optional[datetime] = Field(description="less updated")
-    company_id__in: Optional[List[str]] = Field(alias="company_id")
-    title__in: Optional[List[str]] = Field(alias="title")
-    permissions_allow__contains: Optional[str] = Field(alias="permissions_allow")
-    permissions_deny__contains: Optional[str] = Field(alias="permissions_deny")
-    order_by: Optional[List[str]]
-    search: Optional[str]
+    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
+    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
+    created_at_gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
+    created_at_lt: Optional[datetime] = Field(description="less created", default=None)
+    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
+    updated_at_lt: Optional[datetime] = Field(description="less updated", default=None)
+    company_id__in: Optional[List[str]] = Field(alias="company_id", default=None)
+    title__in: Optional[List[str]] = Field(alias="title", default=None)
+    permissions_allow__contains: Optional[str] = Field(alias="permissions_allow", default=None)
+    permissions_deny__contains: Optional[str] = Field(alias="permissions_deny", default=None)
+    order_by: Optional[List[str]] = ["created_at"]
+    search: Optional[str] = None
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     class Constants(Filter.Constants):
         model = Role

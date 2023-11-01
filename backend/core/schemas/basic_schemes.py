@@ -7,6 +7,7 @@ class CountrySchema(BaseModel):
     name: str
     code: str
 
+
 class LocaleSchema(BaseModel):
     language: str
     territory: str
@@ -14,14 +15,16 @@ class LocaleSchema(BaseModel):
     english_name: str
     language_name: str
 
+
 class CurrencySchema(BaseModel):
     name: str
     code: str
 
+
 class PhoneSchema(BaseModel):
-    country_code: str
-    country_code_source: str
+    country_code: int
+    country_code_source: int
     e164: str
     international: str
     national: str
-    national_number: str
+    national_number: int

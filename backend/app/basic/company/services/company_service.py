@@ -7,8 +7,6 @@ from core.db.session import session
 from core.service.base import BaseService, CreateSchemaType, ModelType
 from core.permissions.permissions import permit
 
-Deny = 'Deny'
-
 
 class CompanyService(BaseService[Company, CompanyCreateScheme, CompanyUpdateScheme, CompanyFilter]):
     def __init__(self, request=None, db_session=None):

@@ -3,7 +3,7 @@ from typing import List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
-from pydantic.types import Optional
+from typing import Optional
 
 from core.helpers.fastapi_filter_patch import BaseFilter
 from core.schemas.list_schema import GenericListSchema
@@ -35,7 +35,7 @@ class PartnerParent(PartnerBaseScheme, TimeStampScheme):
     id: UUID4
     lsn: int
     country: TypeCountry
-    company_id = CompanyScheme
+    company_id: CompanyScheme
     locale: TypeLocale
     currency: TypeCurrency
 
@@ -43,33 +43,33 @@ class PartnerScheme(PartnerParent, TimeStampScheme):
     partner: Optional[PartnerParent]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         arbitrary_types_allowed = True
 
 class PartnerFilter(BaseFilter):
-    lsn__gt: Optional[int] = Field(alias="cursor")
-    id__in: Optional[List[UUID4]] = Field(alias="id")
-    created_at_gte: Optional[datetime] = Field(description="bigger or equal created")
-    created_at_lt: Optional[datetime] = Field(description="less created")
-    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated")
-    updated_at_lt: Optional[datetime] = Field(description="less updated")
-    title__in: Optional[str] = Field(description="title")
-    type__in: Optional[str] = Field(description="type")
-    external_id__in: Optional[str] = Field(description="external_id")
-    parent_id__in: Optional[UUID4] = Field(description="parent_id")
-    phone_number__in: Optional[str] = Field(description="phone_number")
-    email__in: Optional[str] = Field(description="email")
-    created_user_id__in: Optional[str] = Field(description="created_user_id")
+    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
+    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
+    created_at_gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
+    created_at_lt: Optional[datetime] = Field(description="less created", default=None)
+    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
+    updated_at_lt: Optional[datetime] = Field(description="less updated", default=None)
+    title__in: Optional[str] = Field(description="title", default=None)
+    type__in: Optional[str] = Field(description="type", default=None)
+    external_id__in: Optional[str] = Field(description="external_id", default=None)
+    parent_id__in: Optional[UUID4] = Field(description="parent_id", default=None)
+    phone_number__in: Optional[str] = Field(description="phone_number", default=None)
+    email__in: Optional[str] = Field(description="email", default=None)
+    created_user_id__in: Optional[str] = Field(description="created_user_id", default=None)
 
-    country__in: Optional[List[str]] = Field(alias="country")
-    currency__in: Optional[List[str]] = Field(alias="currency")
-    locale__in: Optional[List[str]] = Field(alias="locale")
-    order_by: Optional[List[str]]
-    search: Optional[str]
+    country__in: Optional[List[str]] = Field(alias="country", default=None)
+    currency__in: Optional[List[str]] = Field(alias="currency", default=None)
+    locale__in: Optional[List[str]] = Field(alias="locale", default=None)
+    order_by: Optional[List[str]] = ["created_at"]
+    search: Optional[str] = None
 
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     class Constants(Filter.Constants):
         model = Partner

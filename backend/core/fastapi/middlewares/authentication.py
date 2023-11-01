@@ -9,6 +9,7 @@ from starlette.requests import HTTPConnection, HTTPException
 
 from core.config import config
 from ..schemas import CurrentUser
+from ...exceptions import DecodeTokenException
 
 
 class AuthBackend(AuthenticationBackend):

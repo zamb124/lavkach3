@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
-from pydantic.types import Optional, List
+from typing import Optional, List
 
 from app.basic.company.schemas import CompanyCreateScheme
 from app.basic.user.models.user_models import UserType, User
@@ -19,7 +19,7 @@ class GetUserListResponseSchema(BaseModel):
     store: Optional[StoreScheme]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CreateUserRequestSchema(BaseModel):
@@ -31,7 +31,7 @@ class CreateUserRequestSchema(BaseModel):
     store_id: Optional[UUID4]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CreateUserResponseSchema(BaseModel):
@@ -39,7 +39,7 @@ class CreateUserResponseSchema(BaseModel):
     nickname: str = Field(..., description="Nickname")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class LoginResponseSchema(BaseModel):
@@ -59,18 +59,18 @@ from core.schemas.timestamps import TimeStampScheme
 
 
 class UserBaseScheme(BaseModel):
-    vars: Optional[dict]
+    vars: Optional[dict] = {}
     email: str = Field(description="Email")
-    country: Optional[TypeCountry]
-    locale: Optional[TypeLocale]
-    phone_number: Optional[TypePhone]
+    country: Optional[TypeCountry] = None
+    locale: Optional[TypeLocale] = None
+    phone_number: Optional[TypePhone] = None
     nickname: str
-    is_admin: Optional[bool]
-    type: Optional[str]
-    external_id: Optional[str]
-    store_id: Optional[UUID4]
-    companies: Optional[list[UUID4]]
-    roles: Optional[list[UUID4]]
+    is_admin: Optional[bool] = None
+    type: Optional[str] = None
+    external_id: Optional[str] = None
+    store_id: Optional[UUID4] = None
+    companies: Optional[list[UUID4]] = None
+    roles: Optional[list[UUID4]] = None
 
 
 class UserUpdateScheme(UserBaseScheme):
@@ -81,7 +81,7 @@ class UserUpdateScheme(UserBaseScheme):
 class UserCreateScheme(UserBaseScheme):
     password1: str = Field(..., description="Password1")
     password2: str = Field(..., description="Password2")
-    password: Optional[str]
+    password: Optional[str] = None
     # password: Optional[str]
 
 
@@ -98,23 +98,23 @@ class UserScheme(UserBaseScheme, TimeStampScheme):
 
 
 class UserFilter(Filter):
-    lsn__gt: Optional[int] = Field(alias="cursor")
-    id__in: Optional[List[UUID4]] = Field(alias="id")
-    created_at_gte: Optional[datetime] = Field(description="bigger or equal created")
-    created_at_lt: Optional[datetime] = Field(description="less created")
-    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated")
-    updated_at_lt: Optional[datetime] = Field(description="less updated")
-    country__in: Optional[List[str]] = Field(alias="country")
-    external_id__in: Optional[List[str]] = Field(alias="external_id")
-    email__in: Optional[List[str]] = Field(alias="email")
-    nickname__in: Optional[List[str]] = Field(alias="nickname")
-    roles__in: Optional[List[str]] = Field(alias="roles")
-    locale__in: Optional[List[str]] = Field(alias="locale")
-    order_by: Optional[List[str]]
-    search: Optional[str]
+    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
+    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
+    created_at_gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
+    created_at_lt: Optional[datetime] = Field(description="less created", default=None)
+    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
+    updated_at_lt: Optional[datetime] = Field(description="less updated", default=None)
+    country__in: Optional[List[str]] = Field(alias="country", default=None)
+    external_id__in: Optional[List[str]] = Field(alias="external_id", default=None)
+    email__in: Optional[List[str]] = Field(alias="email", default=None)
+    nickname__in: Optional[List[str]] = Field(alias="nickname", default=None)
+    roles__in: Optional[List[str]] = Field(alias="roles", default=None)
+    locale__in: Optional[List[str]] = Field(alias="locale", default=None)
+    order_by: Optional[List[str]] = ["created_at"]
+    search: Optional[str] = None
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     class Constants(Filter.Constants):
         model = User

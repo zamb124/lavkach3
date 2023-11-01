@@ -1,5 +1,7 @@
+import uuid
+
 from pydantic import BaseModel, UUID4
-from pydantic.typing import Optional, List
+from typing import Optional, List
 from sqlalchemy import select
 from core.db.session import session
 
@@ -7,7 +9,7 @@ from app.basic.user.models import User
 
 
 class CurrentUser(BaseModel):
-    id: Optional[UUID4]
+    id: Optional[UUID4] = None
     companies: Optional[List[UUID4]] = []
     roles: Optional[List[str]] = []
     is_admin: Optional[bool] = False

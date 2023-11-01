@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
-from pydantic.types import Optional, List
+from typing import Optional, List
 from app.basic.uom.models.uom_category_models import UomCategory
 from core.helpers.fastapi_filter_patch import BaseFilter
 from core.schemas.list_schema import GenericListSchema
@@ -28,7 +28,7 @@ class UomCategoryScheme(UomCategoryCreateScheme, TimeStampScheme):
     lsn: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         arbitrary_types_allowed = True
 
 
@@ -42,7 +42,7 @@ class UomCategoryFilter(BaseFilter):
     title__in: Optional[str] = Field(description="title")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     class Constants(Filter.Constants):
         model = UomCategory

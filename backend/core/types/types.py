@@ -1,8 +1,14 @@
+from typing import Any, Dict
+
+from babel import Locale
+from pydantic import GetJsonSchemaHandler
+from pydantic_core import CoreSchema
 from sqlalchemy_utils.types.country import Country
 from sqlalchemy_utils.types.currency import Currency
 from sqlalchemy_utils.types.phone_number import PhoneNumber
-from babel import Locale
+from pydantic import BaseModel
 from core.schemas.basic_schemes import CountrySchema, LocaleSchema, CurrencySchema, PhoneSchema
+
 
 class TypeCountry(Country):
     @classmethod
@@ -10,7 +16,7 @@ class TypeCountry(Country):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v, c=None):
         if isinstance(v, str):
             try:
                 Country(v)
@@ -25,15 +31,22 @@ class TypeCountry(Country):
         raise TypeError("Type sqlalchemy_utils.types.country.Country or String")
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string", example='US')
+    def __get_pydantic_json_schema__(cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler) -> Dict[str, Any]:
+        return {
+            'type': 'string',
+            'properties': {},
+            'title': 'TypeCountry',
+            'example': 'US'
+        }
+
 
 class TypeLocale(Locale):
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
+
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v, c=None):
         if isinstance(v, str):
             try:
                 Locale(v)
@@ -52,17 +65,24 @@ class TypeLocale(Locale):
 
             })
         raise TypeError("Type babel.Locale or String")
+
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string", example='en_US')
+    def __get_pydantic_json_schema__(cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler) -> Dict[str, Any]:
+        return {
+            'type': 'string',
+            'properties': {},
+            'title': 'TypeLocale',
+            'example': 'en_US'
+        }
 
 
 class TypeCurrency(Currency):
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
+
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v, c=None):
         if isinstance(v, str):
             try:
                 Currency(v)
@@ -77,16 +97,22 @@ class TypeCurrency(Currency):
         raise TypeError("Type sqlalchemy_utils.types.country.Country or String")
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string", example='SAE')
+    def __get_pydantic_json_schema__(cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler) -> Dict[str, Any]:
+        return {
+            'type': 'string',
+            'properties': {},
+            'title': 'TypeCurrency',
+            'example': 'SAE'
+        }
 
 
 class TypePhone(PhoneNumber):
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
+
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v, c=None):
         if isinstance(v, str):
             return v
         elif isinstance(v, PhoneNumber):
@@ -101,5 +127,10 @@ class TypePhone(PhoneNumber):
         raise TypeError("Type sqlalchemy_utils.types.country.Country or String")
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string", example='+449534771093')
+    def __get_pydantic_json_schema__(cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler) -> Dict[str, Any]:
+        return {
+            'type': 'string',
+            'properties': {},
+            'title': 'TypePhone',
+            'example': '449534771093'
+        }

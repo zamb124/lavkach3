@@ -26,9 +26,7 @@ fundamental_router = APIRouter(
     #dependencies=[Depends(PermissionDependency([AllowAll]))]
 )
 async def health():
-        f = await s3_client.upload_file('pyproject.toml')
-        a=1
-        return Response(status_code=200)
+    return Response(status_code=200)
 
 @fundamental_router.post("/upload_image_test")
 def upload(request: Request, schema: Image):
@@ -84,6 +82,7 @@ async def currencies_code(request: Request, code: str):
 
 @fundamental_router.get("/locales", response_model=list[LocaleSchema])
 async def locales(request: Request):
+    l = TypeLocale('en', 'US')
     locales = [TypeLocale(i) for i in LOCALE_ALIASES]
     return [i.validate(i) for i in locales]
 

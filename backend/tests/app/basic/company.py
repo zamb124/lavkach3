@@ -50,9 +50,9 @@ async def test_list_filter_company(async_client, headers, companies):
     response = await async_client.get("/api/company", headers=headers['superadmin'], params={'size': 100, 'currency': 'RUB'})
     assert response.status_code == 200
     data = response.json()
-    assert len(data['data']) == 1
+    assert len(data.get('data')) == 1
 
     response = await async_client.get("/api/company", headers=headers['superadmin'], params={'size': 100, 'search': 'Company 2'})
     assert response.status_code == 200
     data = response.json()
-    assert len(data) == 1
+    assert len(data.get('data')) == 1

@@ -35,15 +35,15 @@ async def role_list(
 
 @role_router.get("/permissions_filter", response_model=PermissionListSchema)
 async def permission_list_filter(filter: str = Query('', description="filter"), ):
-    perms = []
+    data = []
     for i, perm in enumerate(permits.items()):
         if filter:
             if not ((filter.lower() in perm[0]) or (filter.lower() in perm[1].lower())):
                 continue
-        perms.append(PermissionSchema(**{
+        data.append({
             'lsn': i, 'title': perm[0], 'description': perm[1]
-        }))
-    return perms
+        })
+    return {'data': data}
 
 
 @role_router.post("/create", response_model=RoleScheme)
@@ -51,7 +51,7 @@ async def role_create(request: Request, schema: RoleCreateScheme):
     return await RoleService(request).create(obj=schema)
 
 
-@role_router.get("/{role_id}")
+@role_router.get("/{role_id}", response_model=RoleScheme)
 async def role_get(request: Request, role_id: uuid.UUID):
     return await RoleService(request).get(id=role_id)
 
