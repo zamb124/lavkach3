@@ -46,17 +46,24 @@ async def prepare_db():
         config.POSTGRES_TEST_DATABASE_URL,
         isolation_level="AUTOCOMMIT",
     )
-    async with create_db_engine.begin() as connection:
-        await connection.execute(
-            text(
-                "drop database if exists {name};".format(
-                    name=config.DB_NAME_TEST
+    db_name_base = config.DB_NAME_TEST
+    for i in range(5):
+        db_name = f'{db_name_base}_{i}'
+        try:
+            async with create_db_engine.begin() as connection:
+                await connection.execute(
+                    text(
+                        "drop database if exists {name};".format(
+                            name=db_name
+                        )
+                    ),
                 )
-            ),
-        )
-        await connection.execute(
-            text("create database {name};".format(name=config.DB_NAME_TEST)),
-        )
+            await connection.execute(
+                text("create database {name};".format(name=db_name)),
+            )
+        except Exception as ex:
+            continue
+
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -108,12 +115,14 @@ async def user_admin(db_session: AsyncSession) -> User:
     user = UserCreateScheme(**{
         "email": "admin@admin.com",
         "nickname": "admin",
+        "locale": "RU",
         "is_admin": True,
         "password1": "1402",
         "password2": "1402"
     })
     user_db = await UserService().sudo().create(user)
     admin_user = CurrentUser(**user_db.__dict__)
+
     yield admin_user
     await db_session.delete(user_db)
     await db_session.commit()
@@ -154,6 +163,7 @@ async def users(db_session: AsyncSession, companies, roles, user_admin) -> User:
     company_admin = UserCreateScheme(**{
         "email": "company_admin@gmail.com",
         "nickname": "Admin vasya",
+        "locale": "EN",
         "is_admin": False,
         "companies": [
             companies[0].id
@@ -168,6 +178,7 @@ async def users(db_session: AsyncSession, companies, roles, user_admin) -> User:
         "email": "company_support@gmail.com",
         "nickname": "Support vasya",
         "is_admin": False,
+        "locale": "RU",
         "companies": [
             companies[0].id
         ],

@@ -6,13 +6,15 @@ from sqlalchemy import select
 from core.db.session import session
 
 from app.basic.user.models import User
+from core.types import TypeLocale
 
 
 class CurrentUser(BaseModel):
-    id: Optional[UUID4] = None
+    user_id: Optional[UUID4] = None
     companies: Optional[List[UUID4]] = []
     roles: Optional[List[str]] = []
     is_admin: Optional[bool] = False
+    locale: Optional[TypeLocale] = False
 
     class Config:
         validate_assignment = True

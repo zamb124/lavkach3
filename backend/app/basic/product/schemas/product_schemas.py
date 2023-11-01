@@ -34,7 +34,7 @@ class StoreScheme(StoreCreateScheme, TimeStampScheme):
     company: Optional[CompanyScheme]
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 
 class StoreFilter(Filter):

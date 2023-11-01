@@ -19,7 +19,7 @@ class GetUserListResponseSchema(BaseModel):
     store: Optional[StoreScheme]
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 
 class CreateUserRequestSchema(BaseModel):
@@ -31,7 +31,7 @@ class CreateUserRequestSchema(BaseModel):
     store_id: Optional[UUID4]
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 
 class CreateUserResponseSchema(BaseModel):
@@ -39,7 +39,7 @@ class CreateUserResponseSchema(BaseModel):
     nickname: str = Field(..., description="Nickname")
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 
 class LoginResponseSchema(BaseModel):
@@ -51,7 +51,8 @@ class LoginResponseSchema(BaseModel):
     companies: Optional[List[UUID4]]
     permissions: Optional[List[str]]
     roles: Optional[List[str]]
-    locale: Optional[TypeLocale]
+    locale: Optional[str]
+    country: Optional[str]
 
 
 from pydantic import BaseModel, Field, UUID4
@@ -62,7 +63,7 @@ class UserBaseScheme(BaseModel):
     vars: Optional[dict] = {}
     email: str = Field(description="Email")
     country: Optional[TypeCountry] = None
-    locale: Optional[TypeLocale] = None
+    locale: TypeLocale
     phone_number: Optional[TypePhone] = None
     nickname: str
     is_admin: Optional[bool] = None

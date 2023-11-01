@@ -21,14 +21,14 @@ class IsAuthenticated(BasePermission):
     exception = UnauthorizedException
 
     async def has_permission(self, request: Request) -> bool:
-        return request.user.id is not None
+        return request.user.user_id is not None
 
 
 class IsAdmin(BasePermission):
     exception = UnauthorizedException
 
     async def has_permission(self, request: Request) -> bool:
-        user_id = request.user.id
+        user_id = request.user.user_id
         if not user_id:
             return False
 

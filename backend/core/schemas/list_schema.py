@@ -42,6 +42,6 @@ class BaseListSchame(BaseModel):
         return super(BaseListSchame, cls).validate(value)
 
     class Config:
-        from_attributes = False
+        orm_mode = False
         arbitrary_types_allowed = True
 

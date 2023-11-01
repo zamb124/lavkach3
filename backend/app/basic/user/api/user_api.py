@@ -72,10 +72,11 @@ async def user_delete(request: Request, user_id: uuid.UUID):
     responses={"404": {"model": ExceptionResponseSchema}},
 )
 async def login(request: Request, obj: LoginRequest):
-    return await UserService(request).login(
+    a = await UserService(request).login(
         email=obj.email,
         password=obj.password,
     )
+    return a
 
 @user_router.post("/signup", response_model=LoginResponseSchema)
 async def signup(request: Request, schema: SignUpScheme):

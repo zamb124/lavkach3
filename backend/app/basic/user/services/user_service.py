@@ -102,7 +102,9 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
                 "user_id": user.id.__str__(),
                 "companies": companies,
                 "roles": [i.id.__str__() for i in set(roles)],
-                "is_admin": user.is_admin
+                "is_admin": user.is_admin,
+                'locale': user.locale.language,
+                'country': user.country.code
             }),
             'refresh_token': TokenHelper.encode(payload={"sub": "refresh"}),
             'user_id': user.id,
@@ -111,7 +113,8 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             'permissions': permissions_list,
             'store_id': user.store_id,
             'roles': [i.title for i in roles] if not user.is_admin else ['superadmin'],
-            'locale': user.locale
+            'locale': user.locale.language,
+            'country': user.country.code
         }
 
     async def is_admin(self, user_id: int) -> bool:

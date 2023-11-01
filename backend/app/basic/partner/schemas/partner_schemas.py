@@ -43,7 +43,7 @@ class PartnerScheme(PartnerParent, TimeStampScheme):
     partner: Optional[PartnerParent]
 
     class Config:
-        from_attributes = True
+        orm_mode = True
         arbitrary_types_allowed = True
 
 class PartnerFilter(BaseFilter):

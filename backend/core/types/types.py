@@ -49,7 +49,7 @@ class TypeLocale(Locale):
     def validate(cls, v, c=None):
         if isinstance(v, str):
             try:
-                Locale(v)
+                v = Locale(v)
             except ValueError as ex:
                 raise TypeError(str(ex))
             except Exception as ex:

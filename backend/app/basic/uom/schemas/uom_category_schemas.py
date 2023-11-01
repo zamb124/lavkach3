@@ -28,7 +28,7 @@ class UomCategoryScheme(UomCategoryCreateScheme, TimeStampScheme):
     lsn: int
 
     class Config:
-        from_attributes = True
+        orm_mode = True
         arbitrary_types_allowed = True
 
 

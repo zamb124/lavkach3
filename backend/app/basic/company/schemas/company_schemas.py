@@ -36,7 +36,7 @@ class CompanyScheme(CompanyCreateScheme, TimeStampScheme):
     currency: TypeCurrency
 
     class Config:
-        from_attributes = True
+        orm_mode = True
         arbitrary_types_allowed = True
 
 

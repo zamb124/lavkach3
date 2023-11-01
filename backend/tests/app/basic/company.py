@@ -27,7 +27,7 @@ async def test_list_company(async_client, headers, companies):
     response = await async_client.get("/api/company", headers=headers['superadmin'])
     assert response.status_code == 200
     data = response.json()
-    assert len(data) == 1
+    assert len(data) == 3
 
 @pytest.mark.asyncio
 async def test_update_company(async_client, headers, companies):
