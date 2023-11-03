@@ -35,12 +35,15 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         self.user = CurrentUser(id=uuid4(), is_admin=True)
         return self
 
-    async def get(self, id: Any) -> Optional[ModelType]:
+    async def get(self, id: Any) -> Row | RowMapping:
         query = select(self.model).where(self.model.id == id)
         if self.user.is_admin:
             query = select(self.model).where(self.model.id == id)
         result = await self.session.execute(query)
-        return result.scalars().first()
+        sql_obj = result.scalars().first()
+        if not sql_obj:
+            raise HTTPException(status_code=404, detail=f"Not found")
+        return sql_obj
 
     async def list(self, _filter: FilterSchemaType, size: int):
         query_filter = _filter.filter(select(self.model)).limit(size)
@@ -89,7 +92,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             await self.session.flush([entity])
         return entity
 
-    async def delete(self, id: Any) -> None:
+    async def delete(self, id: Any):
         entity = await self.get(id)
         await self.session.delete(entity)
         try:
@@ -102,4 +105,4 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise e
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
-        return entity
+        return True

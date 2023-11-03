@@ -12,6 +12,8 @@ from starlette.requests import Request
 from app.basic.company.models import Company
 from app.basic.company.schemas import CompanyCreateScheme
 from app.basic.company.services import CompanyService
+from app.basic.store.schemas import StoreCreateScheme
+from app.basic.store.services import StoreService
 from app.basic.user.models import User
 from app.basic.user.schemas import UserCreateScheme, RoleCreateScheme, LoginResponseSchema
 from app.basic.user.services import UserService
@@ -134,6 +136,26 @@ async def companies(db_session: AsyncSession, user_admin) -> Company:
     company2 = CompanyCreateScheme(title="Test company 2", currency='RUB')
     company1_db = await CompanyService(user_admin).create(company1)
     company2_db = await CompanyService(user_admin).create(company2)
+    yield [company1_db, company2_db]
+    await db_session.delete(company1_db)
+    await db_session.delete(company2_db)
+    await db_session.commit()
+
+@pytest_asyncio.fixture
+async def stores(db_session: AsyncSession, user_admin, companies) -> Company:
+    company1 = CompanyCreateScheme(title="Test company 1", currency='USD')
+    company2 = CompanyCreateScheme(title="Test company 2", currency='RUB')
+    company1_db = await CompanyService(user_admin).create(company1)
+    company2_db = await CompanyService(user_admin).create(company2)
+    yield [company1_db, company2_db]
+    await db_session.delete(company1_db)
+    await db_session.delete(company2_db)
+    await db_session.commit()
+
+    store1 = StoreCreateScheme(title="Store company 1", currency='USD')
+    store2 = StoreCreateScheme(title="Store company 2", currency='RUB')
+    company1_db = await StoreService(user_admin).create(store1)
+    company2_db = await StoreService(user_admin).create(store2)
     yield [company1_db, company2_db]
     await db_session.delete(company1_db)
     await db_session.delete(company2_db)

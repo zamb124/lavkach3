@@ -75,8 +75,9 @@ class UserBaseScheme(BaseModel):
 
 
 class UserUpdateScheme(UserBaseScheme):
-    nickname: Optional[str]
-    email: Optional[str] = Field(description="Email")
+    nickname: Optional[str] = None
+    locale: TypeLocale = None
+    email: str = None
 
 
 class UserCreateScheme(UserBaseScheme):

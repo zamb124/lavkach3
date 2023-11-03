@@ -4,17 +4,14 @@ import pytest
 from sqlalchemy import func, select
 
 
-
 async def test_health(async_client, headers):
     response = await async_client.get("/api/fundamental/health", headers=headers['superadmin'])
     assert response.status_code == 200
 
 
-
 async def test_countries(async_client, headers):
     response = await async_client.get("/api/fundamental/countries", headers=headers['superadmin'])
     assert response.status_code == 200
-
 
 
 async def test_countries_code(async_client, headers):
@@ -34,11 +31,9 @@ async def test_countries_code(async_client, headers):
     assert data.get('name') == 'Russia'
 
 
-
 async def test_currencies(async_client, headers):
     response = await async_client.get("/api/fundamental/currencies", headers=headers['superadmin'])
     assert response.status_code == 200
-
 
 
 async def test_currencies_code(async_client, headers):
@@ -58,14 +53,12 @@ async def test_currencies_code(async_client, headers):
     assert data.get('name') == 'Russian Ruble'
 
 
-
 async def test_locales(async_client, headers):
     """
     Проверяем что отдаем
     """
     response = await async_client.get("/api/fundamental/locales", headers=headers['superadmin'])
     assert response.status_code == 200
-
 
 
 async def test_locales_my(async_client, headers):

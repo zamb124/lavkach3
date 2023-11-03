@@ -2,7 +2,7 @@ import uuid
 from enum import Enum
 
 from sqlalchemy import Column, Unicode, Sequence, Uuid
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from core.db import Base
 from core.db.mixins import AllMixin

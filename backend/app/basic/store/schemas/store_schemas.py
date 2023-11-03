@@ -13,15 +13,19 @@ from app.basic.store.models.store_models import Store
 
 class StoreBaseScheme(BaseModel):
     company_id: UUID4
-    vars: Optional[dict]
+    vars: Optional[dict] = None
     title: str
-    external_id: str
-    address: Optional[str]
-    source: Optional[StoreType]
+    external_id: str = None
+    address: Optional[str] = None
+    source: Optional[StoreType] = StoreType.INTERNAL
 
 
 class StoreUpdateScheme(StoreBaseScheme):
-    pass
+    vars: Optional[dict] = None
+    title: str = None
+    external_id: str = None
+    address: Optional[str] = None
+    source: Optional[StoreType] = None
 
 
 class StoreCreateScheme(StoreBaseScheme):
@@ -39,17 +43,17 @@ class StoreScheme(StoreCreateScheme, TimeStampScheme):
 
 class StoreFilter(Filter):
     lsn__gt: Optional[int] = Field(alias="cursor")
-    id__in: Optional[List[UUID4]] = Field(alias="id")
-    created_at_gte: Optional[datetime] = Field(description="bigger or equal created")
-    created_at_lt: Optional[datetime] = Field(description="less created")
-    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated")
-    updated_at_lt: Optional[datetime] = Field(description="less updated")
-    company_id__in: Optional[List[UUID4]] = Field(alias="company_id")
-    title__in: Optional[List[str]] = Field(description="title")
-    address__in: Optional[List[str]] = Field(description="address")
-    source__in: Optional[List[str]] = Field(description="source")
-    order_by: Optional[List[str]]
-    search: Optional[str]
+    id__in: Optional[List[UUID4]] = Field(alias="id", default=0)
+    created_at_gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
+    created_at_lt: Optional[datetime] = Field(description="less created", default=None)
+    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
+    updated_at_lt: Optional[datetime] = Field(description="less updated", default=None)
+    company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
+    title__in: Optional[List[str]] = Field(description="title", default=None)
+    address__in: Optional[List[str]] = Field(description="address", default=None)
+    source__in: Optional[List[str]] = Field(description="source", default=None)
+    order_by: Optional[List[str]] = ["created_at"]
+    search: Optional[str] = None
 
     class Config:
         populate_by_name = True

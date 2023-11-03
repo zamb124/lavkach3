@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Optional
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, Row, RowMapping
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
@@ -29,12 +29,8 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         super(UserService, self).__init__(request, User, db_session)
 
     @permit('user_get')
-    async def get(self, id: Any) -> Optional[ModelType]:
-        query = select(self.model).where(self.model.id == id)
-        if self.user.is_admin:
-            query = select(self.model).where(self.model.id == id)
-        result = await self.session.execute(query)
-        return result.scalars().first()
+    async def get(self, id: Any) -> Row | RowMapping:
+        return await super(UserService, self).get(id)
 
     @permit('user_list')
     async def list(self, _filter: FilterSchemaType, size: int):
