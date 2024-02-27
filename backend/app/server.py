@@ -5,8 +5,8 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.routers import router
 from app.basic.basic_router import basic_router
+from app.bff.bff_router import bff_router
 from core.config import config
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
@@ -17,11 +17,13 @@ from core.fastapi.middlewares import (
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
+from fastapi.staticfiles import StaticFiles
+
 
 
 def init_routers(app_: FastAPI) -> None:
+    app_.include_router(bff_router)
     app_.include_router(basic_router)
-    app_.include_router(router)
 
 
 def init_listeners(app_: FastAPI) -> None:
@@ -87,3 +89,7 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
+#app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
+#app.add_middleware(GZipMiddleware)

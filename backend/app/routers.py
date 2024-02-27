@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
-
+from app.basic.basic_router import basic_router
+from app.bff.bff_router import bff_router
 # from .maintenance.api.manufacturer_api import manufacturer_router
 # from .maintenance.api.asset_log_api import asset_log_router
 # from .maintenance.api.asset_type_api import asset_type_router
@@ -8,7 +9,10 @@ from fastapi import APIRouter, Depends
 # from .maintenance.api.order_api import order_router
 #
 #
+
 router = APIRouter()
+router.include_router(basic_router)
+router.include_router(bff_router)
 # router.include_router(manufacturer_router, prefix="/api/manufacturer", tags=["Manufacturer"])
 # router.include_router(model_router, prefix="/api/model", tags=["Model"])
 # router.include_router(asset_type_router, prefix="/api/assets_type", tags=["AssetType"])
@@ -18,4 +22,4 @@ router = APIRouter()
 
 
 
-__all__ = ["router"]
+__all__ = ["router", "basic_router"]

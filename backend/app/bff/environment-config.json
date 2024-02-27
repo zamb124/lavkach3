@@ -1,0 +1,13 @@
+{
+    "run": "default",
+    "demos" : [
+        "default",
+        "minimal",
+        "material",
+        "modern",
+        "creative",
+        "saas",
+        "interactive",
+        "corporate"
+    ]
+}

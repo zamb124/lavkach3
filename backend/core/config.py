@@ -32,17 +32,17 @@ class Config(BaseSettings):
     READER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
     JWT_SECRET_KEY: str = os.environ.get("JWT_SECRET_KEY") or 'secret'
     JWT_ALGORITHM: str = os.environ.get("JWT_ALGORITHM") or 'HS256'
-    SENTRY_SDN: str = os.environ.get("SENTRY_SDN")
+    #SENTRY_SDN: str = os.environ.get("SENTRY_SDN")
     CELERY_BROKER_URL: str = "amqp://user:bitnami@localhost:5672/"
     CELERY_BACKEND_URL: str = "redis://:password123@localhost:6379/0"
-    REDIS_HOST: str = os.environ.get("REDIS_HOST")
-    REDIS_PORT: int = os.environ.get("REDIS_PORT")
-    REDIS_PASSWORD: str = os.environ.get("REDIS_PASSWORD")
+    REDIS_HOST: str = os.environ.get("REDIS_HOST") or 'redis'
+    REDIS_PORT: int = os.environ.get("REDIS_PORT") or '5370'
+    REDIS_PASSWORD: str = os.environ.get("REDIS_PASSWORD") or ''
     REDIS_SSL: bool = os.environ.get("REDIS_SSL") or False
-    REDIS_CERT_PATH: str = os.environ.get("REDIS_CERT_PATH") or None
+    REDIS_CERT_PATH: str = os.environ.get("REDIS_CERT_PATH") or ''
     AWS_DEFAULT_REGION: str = os.environ.get("AWS_DEFAULT_REGION") or 'us-east-1'
-    AWS_ACCESS_KEY_ID: str = os.environ.get("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY: str = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    AWS_ACCESS_KEY_ID: str = os.environ.get("AWS_ACCESS_KEY_ID") or ''
+    AWS_SECRET_ACCESS_KEY: str = os.environ.get("AWS_SECRET_ACCESS_KEY") or ''
     AWS_DEFAULT_BUCKET: str = os.environ.get("AWS_DEFAULT_BUCKET") or 'us-east-1'
     AWS_ENDPOINT_URL: str = os.environ.get("AWS_ENDPOINT_URL") or 'https://storage.yandexcloud.net'
 
