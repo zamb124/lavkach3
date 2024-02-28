@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.basic.basic_router import basic_router
+from app.inventory.inventory_router import inventory_router
 from app.bff.bff_router import bff_router
 from core.config import config
 from core.exceptions import CustomException
@@ -24,6 +25,8 @@ from fastapi.staticfiles import StaticFiles
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(bff_router)
     app_.include_router(basic_router)
+    app_.include_router(inventory_router)
+
 
 
 def init_listeners(app_: FastAPI) -> None:

@@ -15,20 +15,21 @@ updated_at = Annotated[datetime.datetime, mapped_column(
 
 class VarsMixin:
     @declared_attr
-    def vars(cls): #company_id = Column(UUID, ForeignKey("companies.id"))
+    def vars(cls):  # company_id = Column(UUID, ForeignKey("companies.id"))
         return Column(
             JSONType,
             nullable=True
         )
 
+
 class TimestampMixin:
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=True),
         default=func.now(),
         nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
+        DateTime(timezone=True),
         default=func.now(),
         onupdate=func.now(),
         nullable=False,

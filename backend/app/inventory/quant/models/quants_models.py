@@ -1,8 +1,8 @@
 import uuid
 from enum import Enum
 from typing import Optional
-
-from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey
+import datetime
+from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from core.db import Base
@@ -39,4 +39,5 @@ class Quant(Base, AllMixin):
     owner_id: Mapped[Optional[Uuid]] = mapped_column(ForeignKey("owner.id", ondelete="CASCADE"))
     quantity: Mapped[float]
     reserved_quantity: Mapped[float]
+    expiration_date: Mapped[Optional[datetime.datetime]]
     uom_id: Mapped[Uuid] = mapped_column(ForeignKey("uom.id", ondelete="CASCADE"), index=True)

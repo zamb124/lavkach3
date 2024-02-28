@@ -3,51 +3,53 @@ import uuid
 
 from fastapi_filter import FilterDepends
 
-from app.basic.store.schemas import (
-    StoreScheme,
-    StoreCreateScheme,
-    StoreUpdateScheme,
-    ExceptionResponseSchema, StoreListSchema, StoreFilter
+from app.inventory.quant.schemas import (
+    QuantScheme,
+    QuantCreateScheme,
+    QuantUpdateScheme,
+    ExceptionResponseSchema,
+    QuantListSchema,
+    QuantFilter
 )
-from app.basic.store.services import StoreService
+from app.inventory.quant.services import QuantService
 from core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )
 from fastapi import APIRouter, Depends, Query, Request
 
-store_router = APIRouter(
+quant_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 
 
-@store_router.get("", response_model=StoreListSchema)
-async def store_list(
+@quant_router.get("", response_model=QuantListSchema)
+async def quant_list(
         request: Request,
-        model_filter: StoreFilter = FilterDepends(StoreFilter),
+        model_filter: QuantFilter = FilterDepends(QuantFilter),
         size: int = Query(ge=1, le=100, default=100),
 ):
-    data = await StoreService(request).list(model_filter, size)
+    data = await QuantService(request).list(model_filter, size)
     cursor = model_filter.lsn__gt
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@store_router.post("/create", response_model=StoreScheme)
-async def store_create(request: Request, schema: StoreCreateScheme):
-    return await StoreService(request).create(obj=schema)
+@quant_router.post("/create", response_model=QuantScheme)
+async def quant_create(request: Request, schema: QuantCreateScheme):
+    return await QuantService(request).create(obj=schema)
 
 
-@store_router.get("/{store_id}")
-async def store_get(request: Request, store_id: uuid.UUID) -> typing.Union[None, StoreScheme]:
-    return await StoreService(request).get(id=store_id)
+@quant_router.get("/{quant_id}")
+async def quant_get(request: Request, quant_id: uuid.UUID) -> typing.Union[None, QuantScheme]:
+    return await QuantService(request).get(id=quant_id)
 
 
-@store_router.put("/{store_id}", response_model=StoreScheme)
-async def store_update(request: Request, store_id: uuid.UUID, schema: StoreUpdateScheme):
-    return await StoreService(request).update(id=store_id, obj=schema)
+@quant_router.put("/{quant_id}", response_model=QuantScheme)
+async def quant_update(request: Request, quant_id: uuid.UUID, schema: QuantUpdateScheme):
+    return await QuantService(request).update(id=quant_id, obj=schema)
 
 
-@store_router.delete("/{store_id}")
-async def store_delete(request: Request, store_id: uuid.UUID):
-    await StoreService(request).delete(id=store_id)
+@quant_router.delete("/{quant_id}")
+async def quant_delete(request: Request, quant_id: uuid.UUID):
+    await QuantService(request).delete(id=quant_id)
