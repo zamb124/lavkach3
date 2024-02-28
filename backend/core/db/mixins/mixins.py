@@ -6,11 +6,23 @@ from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy_utils.types import JSONType
 from typing import Annotated, Optional
 
-created_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
-updated_at = Annotated[datetime.datetime, mapped_column(
-    server_default=text("TIMEZONE('utc', now())"),
-    onupdate=datetime.datetime.utcnow,
-)]
+from sqlalchemy import DateTime
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.sql import expression
+
+
+# UTC now function on database server
+class UTCNow(
+    expression.FunctionElement  # type: ignore[name-defined]
+):  # pylint: disable=too-many-ancestors
+    type = DateTime()
+
+
+@compiles(UTCNow, "postgresql")  # type: ignore[misc]
+def pg_utcnow(  # type: ignore[no-untyped-def]
+        element, compiler, **kw  # pylint: disable=unused-argument
+) -> str:
+    return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
 
 
 class VarsMixin:
@@ -23,16 +35,17 @@ class VarsMixin:
 
 
 class TimestampMixin:
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=func.now(),
+    created_at: Mapped[datetime.datetime] = Column(
+        DateTime(),
         nullable=False,
+        server_default=UTCNow()
     )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=func.now(),
-        onupdate=func.now(),
-        nullable=False,
+
+    updated_at: Mapped[datetime.datetime] = Column(
+        DateTime(),
+        nullable=True,
+        server_default=UTCNow(),
+        server_onupdate=UTCNow(),
     )
 
 

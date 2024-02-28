@@ -27,8 +27,11 @@ fileConfig(config.config_file_name)
 # target_metadata = mymodel.Base.metadata
 
 # For auto generate schemas
+
 from core.config import config
+from app.inventory.quant.models import *
 from app.basic.company.models import *
+from app.basic.product.models import *
 from app.basic.store.models import *
 from app.basic.user.models import *
 from app.basic.partner.models import *
