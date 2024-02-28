@@ -34,13 +34,17 @@
         {% include "partials/topbar.html" %}
         {% endblock header %}
         {% block sidebar %}
+
         {% include "partials/sidebar.html" %}
         {% endblock sidebar %}
+        <div id="htmx_content">
         {% block content %}
 
         {% block footer %}
         {% endblock footer %}
         {% endblock content %}
+        </div>
+
     </div>
     
     {% block extra_content %}        
@@ -54,6 +58,7 @@
     {% block javascript %}
     <!-- JAVASCRIPT -->
     <script src="{{url_for('static' ,path='libs/bootstrap/dist/js/bootstrap.bundle.min.js')}}"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="{{url_for('static' ,path='libs/simplebar/dist/simplebar.min.js')}}"></script>
     <script src="{{url_for('static' ,path='libs/node-waves/dist/waves.min.js')}}"></script>
     <script src="{{url_for('static' ,path='libs/feather-icons/dist/feather.min.js')}}"></script>

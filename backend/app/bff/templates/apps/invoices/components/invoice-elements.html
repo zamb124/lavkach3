@@ -26,22 +26,23 @@
             </tr>
             </thead>
             <tbody id="newlink">
-            <tr id="1" class="product">
-                <th scope="row" class="product-id">1</th>
+            {% for i in elements %}
+            <tr id="{{ i.id }}" class="product">
+                <th scope="row" class="product-id">{{ i.id }}</th>
                 <td class="text-start">
                     <div class="mb-2">
-                        <input type="text" class="form-control bg-light border-0" id="productName-1"
-                               placeholder="Product Name" required/>
+                        <input type="text" class="form-control bg-light border-0" id="productName-{{ i.id }}"
+                               placeholder="Product Name" value="{{ i.name }}" required/>
                         <div class="invalid-feedback">
                             Please enter a product name
                         </div>
                     </div>
                     <textarea class="form-control bg-light border-0" id="productDetails-1" rows="2"
-                              placeholder="Product Details"></textarea>
+                              placeholder="Product Details">{{ i.product_details }}</textarea>
                 </td>
                 <td>
                     <input type="number" class="form-control product-price bg-light border-0" id="productRate-1"
-                           step="0.01" placeholder="0.00" required/>
+                           step="0.01" placeholder="0.00" value="{{ i.rate }}" required/>
                     <div class="invalid-feedback">
                         Please enter a rate
                     </div>
@@ -49,20 +50,21 @@
                 <td>
                     <div class="input-step">
                         <button type="button" class='minus'>–</button>
-                        <input type="number" class="product-quantity" id="product-qty-1" value="0" readonly>
+                        <input type="number" class="product-quantity" id="product-qty-1" value="{{ i.quantity }}" readonly>
                         <button type="button" class='plus'>+</button>
                     </div>
                 </td>
                 <td class="text-end">
                     <div>
                         <input type="text" class="form-control bg-light border-0 product-line-price" id="productPrice-1"
-                               placeholder="$0.00" readonly/>
+                               placeholder="$0.00" value="{{ i.amount }}"  readonly/>
                     </div>
                 </td>
                 <td class="product-removal">
                     <a href="javascript:void(0)" class="btn btn-success">Delete</a>
                 </td>
             </tr>
+            {% endfor %}
             </tbody>
             <tbody>
             <tr id="newForm" style="display: none;">

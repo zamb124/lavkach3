@@ -1,8 +1,16 @@
-from sqlalchemy import Column, DateTime, func, Uuid, BigInteger, ForeignKey, Sequence
-from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy_utils.types import  JSONType
-import pytz
+import datetime
 
+from sqlalchemy import Column, DateTime, func, Uuid, BigInteger, ForeignKey, Sequence, text
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy_utils.types import JSONType
+from typing import Annotated, Optional
+
+created_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
+updated_at = Annotated[datetime.datetime, mapped_column(
+    server_default=text("TIMEZONE('utc', now())"),
+    onupdate=datetime.datetime.utcnow,
+)]
 
 
 class VarsMixin:
@@ -14,31 +22,22 @@ class VarsMixin:
         )
 
 class TimestampMixin:
-    @declared_attr
-    def created_at(cls):
-        return Column(
-            DateTime(timezone=True),
-            default=func.now(tz=pytz.timezone('UTC')),
-            nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=func.now(),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
 
-    @declared_attr
-    def updated_at(cls):
-        return Column(
-            DateTime(timezone=True),
-            default=func.now(tz=pytz.timezone('UTC')),
-            onupdate=func.now(tz=pytz.timezone('UTC')),
-            nullable=False,
-        )
 
 class CompanyMixin:
-    @declared_attr
-    def company_id(cls): #company_id = Column(UUID, ForeignKey("companies.id"))
-        return Column(
-            Uuid,
-            ForeignKey("company.id"),
-            index=True,
-            nullable=False
-        )
+    company_id: Mapped[Uuid] = mapped_column(ForeignKey("company.id"), index=True, nullable=False)
+
 
 class LsnMixin:
     @declared_attr
@@ -46,12 +45,15 @@ class LsnMixin:
         return Sequence(
             f'{cls.__tablename__}_lsn_seq'
         )
+
     @declared_attr
     def lsn(cls):
         return Column(
-                BigInteger,
-                getattr(cls, 'lsn_seq'),
-                onupdate=getattr(cls, 'lsn_seq').next_value(), index=True
-            )
-class AllMixin(LsnMixin, CompanyMixin,TimestampMixin,VarsMixin):
+            BigInteger,
+            getattr(cls, 'lsn_seq'),
+            onupdate=getattr(cls, 'lsn_seq').next_value(), index=True
+        )
+
+
+class AllMixin(LsnMixin, CompanyMixin, TimestampMixin, VarsMixin):
     pass

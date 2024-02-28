@@ -3,7 +3,7 @@ from enum import Enum
 
 from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, UniqueConstraint, ARRAY, String
 from sqlalchemy.orm import relationship
-
+from sqlalchemy.orm import Mapped, mapped_column, composite
 from core.db import Base
 from core.db.mixins import AllMixin
 

@@ -1,4 +1,4 @@
-{% extends "partials/base.html" %}
+
 
 {% block title %}Create Invoice{% endblock title %}
 {% block extra_css %}
@@ -244,9 +244,11 @@
                                     <!--end row-->
                                 </div>
                                 <div class="card-body p-4">
-                                    {% block elements %}
-                                        {% include "apps/invoices/components/invoice-elements.html" %}
-                                        {% endblock %}
+                                    <div hx-get="/htmx/invoices/elements" hx-trigger="load">
+                                        <img alt="Result loading..." class="htmx-indicator" width="150"
+                                             src="/static/images/coming-soon-img.png"/>
+                                    </div>
+
                                     <div class="row mt-3">
                                         <div class="col-lg-4">
                                             <div class="mb-2">
@@ -309,9 +311,6 @@
         </div>
         <!-- End Page-content -->
 
-        {% block footer %}
-            {% include "partials/footer.html" %}
-        {% endblock footer %}
     </div>
     <!-- end main content-->
 {% endblock content %}
