@@ -5,9 +5,7 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.basic.basic_router import basic_router
 from app.inventory.inventory_router import inventory_router
-from app.bff.bff_router import bff_router
 from core.config import config
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
@@ -18,8 +16,6 @@ from core.fastapi.middlewares import (
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
-from fastapi.staticfiles import StaticFiles
-
 
 
 def init_routers(app_: FastAPI) -> None:

@@ -18,16 +18,44 @@ services:
     env_file:
       - .env-docker
 
-  app:
+  basic-app:
     build:
       context: .
     env_file:
       - .env-docker
-    container_name: fastapi_app
-    command: ["/fastapi/docker/app.sh"]
+    container_name: basic_app
+    command: ["/fastapi/docker/basic_app.sh"]
     ports:
-      - 9999:8000
+      - 9991:8001
     depends_on:
+      - db
+      - redis
+
+  inventory-app:
+    build:
+      context: .
+    env_file:
+      - .env-docker
+    container_name: inventory_app
+    command: [ "/fastapi/docker/inventory_app.sh" ]
+    ports:
+      - 9992:8002
+    depends_on:
+      - basic-app
+      - db
+      - redis
+  bff-app:
+    build:
+      context: .
+    env_file:
+      - .env-docker
+    container_name: inventory_app
+    command: [ "/fastapi/docker/bff_app.sh" ]
+    ports:
+      - 9993:8003
+    depends_on:
+      - basic-app
+      - inventory-app
       - db
       - redis
 

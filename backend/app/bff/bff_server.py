@@ -24,10 +24,6 @@ from fastapi.staticfiles import StaticFiles
 
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(bff_router)
-    app_.include_router(basic_router)
-    app_.include_router(inventory_router)
-
-
 
 def init_listeners(app_: FastAPI) -> None:
     # Exception handler
