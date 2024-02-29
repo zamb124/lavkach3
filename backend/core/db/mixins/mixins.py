@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, DateTime, func, Uuid, BigInteger, ForeignKey, Sequence, text
+from sqlalchemy import Column, DateTime, func, Uuid, BigInteger, ForeignKey, Sequence, text, types
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy_utils.types import JSONType
@@ -24,7 +24,18 @@ def pg_utcnow(  # type: ignore[no-untyped-def]
 ) -> str:
     return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
 
-
+guid_primary_key = mapped_column(
+        types.Uuid,
+        primary_key=True,
+        init=False,
+        server_default=text("gen_random_uuid()")
+    )
+guid = mapped_column(
+        types.Uuid,
+        init=False,
+        index=True,
+        server_default=text("gen_random_uuid()")
+    )
 class VarsMixin:
     @declared_attr
     def vars(cls):  # company_id = Column(UUID, ForeignKey("companies.id"))

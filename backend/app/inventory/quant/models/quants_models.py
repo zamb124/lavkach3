@@ -6,7 +6,7 @@ from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, fu
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from core.db import Base
-from core.db.mixins import AllMixin
+from core.db.mixins import AllMixin, guid, guid_primary_key
 
 
 class StoreType(str, Enum):
@@ -22,11 +22,11 @@ class Lot(Base, AllMixin):
     __tablename__ = "lot"
     __table_args__ = (UniqueConstraint('external_id', 'product_id', 'partner_id', name='_lot_ex_pr_par_id_uc'),)
     lsn_seq = Sequence(f'lot_lsn_seq')
-    id = Column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     expiration_date = Column(DateTime(timezone=True))
-    product_id: Mapped[Uuid] = mapped_column(ForeignKey("product.id", ondelete="CASCADE"))
+    product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=True)
     external_id: Mapped[Optional[str]] = mapped_column(nullable=False, unique=True)
-    partner_id: Mapped[Optional[Uuid]] = mapped_column(Uuid, ForeignKey("partner.id"), index=True, nullable=True)
+    partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
 
 
 class Quant(Base, AllMixin):
@@ -49,12 +49,12 @@ class Quant(Base, AllMixin):
         'store_id', 'location_id', 'lot_id', 'expiration_date', name='_quant_st_loc_lot_ex_id_uc'
     ),)
     lsn_seq = Sequence(f'quant_lsn_seq')
-    id = Column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    product_id: Mapped[Uuid] = mapped_column(ForeignKey("product.id", ondelete="RESTRICT"))
-    store_id: Mapped[Uuid] = mapped_column(ForeignKey("store.id", ondelete="RESTRICT"))
-    location_id: Mapped[Optional[Uuid]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
-    lot_id: Mapped[Optional[Uuid]] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
-    partner_id: Mapped[Optional[Uuid]] = mapped_column(ForeignKey("partner.id", ondelete="SET NULL"))
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)                                          # ForeignKey("basic.product.id")
+    store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)                                            # ForeignKey("basic.store.id")
+    location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
+    lot_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
+    partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     quantity: Mapped[float]
     reserved_quantity: Mapped[float]
     expiration_date = Column(DateTime(timezone=True))
