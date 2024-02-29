@@ -17,6 +17,7 @@ click-repl==0.3.0
 cryptography==41.0.5
 fastapi==0.104.1
 fastapi-filter==1.0.0
+fastapi-htmx==0.4.1
 fastapi-localization==0.0a2.dev3
 flower==2.0.1
 greenlet==3.0.1
