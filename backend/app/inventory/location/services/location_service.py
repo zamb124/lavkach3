@@ -2,29 +2,29 @@ from typing import Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.inventory.quant.models.quants_models import Quant
-from app.inventory.quant.schemas.quants_schemas import QuantCreateScheme, QuantUpdateScheme, QuantFilter
+from app.inventory.location.models.location_models import Location
+from app.inventory.location.schemas.location_schemas import LocationCreateScheme, LocationUpdateScheme, LocationFilter
 from core.db.session import session
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
 
-class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, QuantFilter]):
+class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdateScheme, LocationFilter]):
     def __init__(self, request, db_session: AsyncSession = None):
-        super(QuantService, self).__init__(request, Quant, db_session)
+        super(LocationService, self).__init__(request, Location, db_session)
 
-    @permit('quant_edit')
+    @permit('location_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
-        return await super(QuantService, self).update(id, obj)
+        return await super(LocationService, self).update(id, obj)
 
-    @permit('quant_list')
+    @permit('location_list')
     async def list(self, _filter: FilterSchemaType, size: int):
-        return await super(QuantService, self).list(_filter, size)
+        return await super(LocationService, self).list(_filter, size)
 
-    @permit('quant_create')
+    @permit('location_create')
     async def create(self, obj: CreateSchemaType) -> ModelType:
-        return await super(QuantService, self).create(obj)
+        return await super(LocationService, self).create(obj)
 
-    @permit('quant_delete')
+    @permit('location_delete')
     async def delete(self, id: Any) -> None:
-        return await super(QuantService, self).delete(id)
+        return await super(LocationService, self).delete(id)

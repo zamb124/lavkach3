@@ -1,6 +1,6 @@
 permits:
-  quant_create: Может создавать квант
-  quant_edit: Может редактировать квант
-  quant_list: Может получать список квант
-  quant_delete: Может удалять квант
-  quant_get: Может смотреть на квант
+  location_create: Может создавать локацию
+  location_edit: Может редактировать локацию
+  location_list: Может получать список локацию
+  location_delete: Может удалять локацию
+  location_get: Может смотреть на локацию

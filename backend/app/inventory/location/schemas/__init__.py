@@ -1,4 +1,4 @@
-from .quants_schemas import *
+from .location_schemas import *
 
 
 class ExceptionResponseSchema(BaseModel):

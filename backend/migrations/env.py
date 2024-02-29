@@ -36,6 +36,7 @@ from app.basic.store.models import *
 from app.basic.user.models import *
 from app.basic.partner.models import *
 from app.basic.uom.models import *
+from app.inventory.location.models import *
 
 target_metadata = Base.metadata
 
