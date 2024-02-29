@@ -1,4 +1,4 @@
-# FastAPI Boilerplate
+# FastAPI SUKA Project
 
 # Features
 - Async SQLAlchemy session

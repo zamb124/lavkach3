@@ -5,7 +5,8 @@ from core.db import Base
 from core.db.mixins import TimestampMixin, LsnMixin, AllMixin
 import uuid
 from enum import Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, mapped_column, Mapped
+
 
 class PartnerType(str, Enum):
     PARTNER: str = 'partner' # Просто партнер у которого можно закупать или продавать
@@ -18,8 +19,7 @@ class PartnerType(str, Enum):
 class Partner(Base,AllMixin):
     __tablename__ = "partner"
     lsn_seq = Sequence(f'partner_lsn_seq')
-    lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
-    id = Column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     #
     type = Column(Unicode(30), nullable=False, default=PartnerType.PARTNER)

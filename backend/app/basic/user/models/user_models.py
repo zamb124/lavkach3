@@ -6,7 +6,7 @@ from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey
 from sqlalchemy import Unicode, Boolean, Uuid, Sequence
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy_utils.types import PasswordType, EmailType, CountryType, LocaleType, PhoneNumberType
 
 from core.db import Base
@@ -23,7 +23,7 @@ class User(Base, TimestampMixin, VarsMixin, LsnMixin):
     __tablename__ = "user"
     __table_args__ = (UniqueConstraint('email', 'companies', name='_user_company_id_uc'),)
 
-    id = Column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     external_id = Column(Unicode(255), nullable=True, unique=True)
     lsn_seq = Sequence(f'user_lsn_seq')
     # lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)

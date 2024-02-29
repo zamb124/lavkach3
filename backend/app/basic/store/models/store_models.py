@@ -16,7 +16,7 @@ class StoreType(str, Enum):
 class Store(Base, AllMixin):
     __tablename__ = "store"
     lsn_seq = Sequence(f'store_lsn_seq')
-    id = Column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title = Column(Unicode(255), nullable=False)
     external_id = Column(Unicode(255), nullable=True, unique=True)
     address = Column(Unicode(255), nullable=False)
