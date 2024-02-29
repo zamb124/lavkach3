@@ -49,7 +49,7 @@ services:
       context: .
     env_file:
       - .env-docker
-    container_name: inventory_app
+    container_name: bff_app
     command: [ "/fastapi/docker/bff_app.sh" ]
     ports:
       - 9993:8003
