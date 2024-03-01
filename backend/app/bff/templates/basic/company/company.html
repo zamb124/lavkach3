@@ -1,0 +1,90 @@
+{% block title %}Companies{% endblock title %}
+{% block extra_css %}
+<!-- Sweet Alert css-->
+<link href="{{url_for('static' ,path='libs/sweetalert2/dist/sweetalert2.min.css')}}" rel="stylesheet" type="text/css" />
+{% endblock extra_css %}
+{% block content %}
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="main-content">
+            
+                <div class="page-content">
+                    <div class="container-fluid">
+            
+                    <!-- start page title -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Companies</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Commpany</a></li>
+                                        <li class="breadcrumb-item active">Companies</li>
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end page title -->
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="d-flex align-items-center flex-wrap gap-2">
+                                        <div class="flex-grow-1">
+                                            <button hx-post="" class="btn btn-secondary add-btn" data-bs-toggle="modal" data-bs-target="#showModal"><i class="ri-add-fill me-1 align-bottom"></i> Add Company</button>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="hstack text-nowrap gap-2">
+                                                <button class="btn btn-soft-danger" id="remove-actions" onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
+                                                <button class="btn btn-secondary"><i class="ri-filter-2-line me-1 align-bottom"></i> Filters</button>
+                                                <button class="btn btn-soft-success">Import</button>
+                                                <button type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown" aria-expanded="false" class="btn btn-soft-info"><i class="ri-more-2-fill"></i></button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
+                                                    <li><a class="dropdown-item" href="#">All</a></li>
+                                                    <li><a class="dropdown-item" href="#">Last Week</a></li>
+                                                    <li><a class="dropdown-item" href="#">Last Month</a></li>
+                                                    <li><a class="dropdown-item" href="#">Last Year</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="modal"></div>
+                        <!--end col-->
+                        <div class="col-xxl-9" hx-get="/basic/company/table" hx-trigger="load">
+
+                            <!--end card-->
+                        </div>
+                        <!--end col-->
+                        <div class="col-xxl-3" hx-get="/basic/company/short-card" hx-trigger="load">
+
+                            <!--end card-->
+                        </div>
+                        <!--end col-->
+                    </div>
+                    <!--end row-->
+
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+            
+                {% block footer %}
+                {% include "partials/footer.html" %}
+                {% endblock footer %}
+            </div>
+            <!-- end main content-->
+{% endblock content %}
+{% block extra_js %}
+    <!-- list.js min js -->
+    <!-- Sweet Alerts js -->
+    <script src="{{url_for('static' ,path='libs/sweetalert2/dist/sweetalert2.min.js')}}"></script>
+{% endblock extra_js %}

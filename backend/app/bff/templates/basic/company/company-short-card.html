@@ -1,0 +1,74 @@
+<div class="card" id="company-view-detail">
+    <div class="card-body text-center">
+        <div class="position-relative d-inline-block">
+            <div class="avatar-md">
+                <div class="avatar-title bg-light rounded-circle">
+                    <img src="{{ url_for('static' ,path='images/brands/mail_chimp.png') }}" alt=""
+                         class="avatar-sm rounded-circle object-fit-cover">
+                </div>
+            </div>
+        </div>
+        <h5 class="mt-3 mb-1">{{ company.title}}</h5>
+        <p class="text-muted">{{ company.user}}</p>
+
+        <ul class="list-inline mb-0">
+            <li class="list-inline-item avatar-xs">
+                <a href="javascript:void(0);" class="avatar-title bg-success-subtle text-success fs-15 rounded">
+                    <i class="ri-global-line"></i>
+                </a>
+            </li>
+            <li class="list-inline-item avatar-xs">
+                <a href="javascript:void(0);" class="avatar-title bg-danger-subtle text-danger fs-15 rounded">
+                    <i class="ri-mail-line"></i>
+                </a>
+            </li>
+            <li class="list-inline-item avatar-xs">
+                <a href="javascript:void(0);" class="avatar-title bg-warning-subtle text-warning fs-15 rounded">
+                    <i class="ri-question-answer-line"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <h6 class="text-muted text-uppercase fw-semibold mb-3">Information</h6>
+        <p class="text-muted mb-4">A company incurs fixed and variable costs such as the purchase of raw materials,
+            salaries and overhead, as explained by AccountingTools, Inc. Business owners have the discretion to
+            determine the actions.</p>
+        <div class="table-responsive table-card">
+            <table class="table table-borderless mb-0">
+                <tbody>
+                <tr>
+                    <td class="fw-medium" scope="row">Industry Type</td>
+                    <td>Chemical Industries</td>
+                </tr>
+                <tr>
+                    <td class="fw-medium" scope="row">Location</td>
+                    <td>{{ company.country }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-medium" scope="row">Employee</td>
+                    <td>10-50</td>
+                </tr>
+                <tr>
+                    <td class="fw-medium" scope="row">Rating</td>
+                    <td>4.0 <i class="ri-star-fill text-warning align-bottom"></i></td>
+                </tr>
+                <tr>
+                    <td class="fw-medium" scope="row">Website</td>
+                    <td>
+                        <a href="javascript:void(0);" class="link-primary text-decoration-underline">www.syntycesolution.com</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-medium" scope="row">Contact Email</td>
+                    <td>info@syntycesolution.com</td>
+                </tr>
+                <tr>
+                    <td class="fw-medium" scope="row">Since</td>
+                    <td>1995</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

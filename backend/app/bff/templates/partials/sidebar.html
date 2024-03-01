@@ -46,39 +46,30 @@
                                         Analytics </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/dashboard-crm/" class="nav-link" data-key="t-crm"> CRM </a>
+                                    <a href="/dashboard-purchase/" class="nav-link" data-key="t-purchase"> Purchase </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/" class="nav-link" data-key="t-ecommerce"> Ecommerce </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/dashboard-crypto/" class="nav-link" data-key="t-crypto"> Crypto </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/dashboard-projects/" class="nav-link" data-key="t-projects"> Projects </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/dashboard-nft/" class="nav-link" data-key="t-nft"> NFT </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/dashboard-job/" class="nav-link"><span data-key="t-job">Job</span></a>
+                                    <a href="/dashboard-projects/" class="nav-link" data-key="t-inventory"> Inventory </a>
                                 </li>
                             </ul>
                         </div>
                     </li> <!-- end Dashboard Menu -->
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#sidebarWMS" data-bs-toggle="collapse"
-                           role="button" aria-expanded="false" aria-controls="sidebarWMS">
-                            <i class="ri-apps-2-line"></i> <span data-key="t-wms">Stores</span>
+                        <a class="nav-link menu-link" href="#sidebarInventory" data-bs-toggle="collapse"
+                           role="button" aria-expanded="false" aria-controls="sidebarInventory">
+                            <i class="ri-apps-2-line"></i> <span data-key="t-inventory">Inventory</span>
                         </a>
-                        <div class="collapse menu-dropdown" id="sidebarWMS">
+                        <div class="collapse menu-dropdown" id="sidebarInventory">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="#sidebarShops" class="nav-link" data-bs-toggle="collapse" role="button"
-                                       aria-expanded="false" aria-controls="sidebarShops" data-key="t-shops">
+                                    <a href="#sidebarStores" class="nav-link" data-bs-toggle="collapse" role="button"
+                                       aria-expanded="false" aria-controls="sidebarStores" data-key="t-shops">
                                         Stores
                                     </a>
-                                    <div class="collapse menu-dropdown" id="sidebarShops">
+                                    <div class="collapse menu-dropdown" id="sidebarStores">
                                         <ul class="nav nav-sm flex-column">
                                             <li class="nav-item">
                                                 <a href="/basic/my-store" class="nav-link" data-key="t-my-store">
@@ -92,7 +83,7 @@
                                     </div>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/apps/chat" class="nav-link" data-key="t-chat"> Chat </a>
+                                    <a href="/inventory/quant" class="nav-link" data-key="t-stocks"> Stocks </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#sidebarEmail" class="nav-link" data-bs-toggle="collapse" role="button"
@@ -180,7 +171,7 @@
                                 </li>
                                 <li class="nav-item">
                                     <a href="#sidebarProjects" class="nav-link" data-bs-toggle="collapse" role="button"
-                                       aria-expanded="false" aria-controls="sidebarProjects" data-key="t-projects">
+                                       aria-expanded="false" aria-controls="sidebarProjects" data-key="t-inventory">
                                         Projects
                                     </a>
                                     <div class="collapse menu-dropdown" id="sidebarProjects">
@@ -223,7 +214,7 @@
                                 </li>
                                 <li class="nav-item">
                                     <a href="#sidebarCRM" class="nav-link" data-bs-toggle="collapse" role="button"
-                                       aria-expanded="false" aria-controls="sidebarCRM" data-key="t-crm"> CRM
+                                       aria-expanded="false" aria-controls="sidebarCRM" data-key="t-purchase"> Purchase
                                     </a>
                                     <div class="collapse menu-dropdown" id="sidebarCRM">
                                         <ul class="nav nav-sm flex-column">
@@ -483,7 +474,51 @@
                         </div>
                     </li> <!-- end Dashboard Menu -->
 
-                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Pages</span></li>
+                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-admin">Administration</span></li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarCompany" data-bs-toggle="collapse"
+                           role="button" aria-expanded="false" aria-controls="sidebarCompany">
+                            <i class="ri-share-line"></i> <span data-key="t-company">Company</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarCompany">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="basic/company" class="nav-link" data-key="t-company">Companies</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#sidebarAccount" class="nav-link" data-bs-toggle="collapse" role="button"
+                                       aria-expanded="false" aria-controls="sidebarAccount" data-key="t-stores">
+                                        Stores
+                                    </a>
+                                    <div class="collapse menu-dropdown" id="sidebarAccount">
+                                        <ul class="nav nav-sm flex-column">
+                                            <li class="nav-item">
+                                                <a href="#" class="nav-link" data-key="t-level-2.1"> Level 2.1 </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="#sidebarCrm" class="nav-link" data-bs-toggle="collapse"
+                                                   role="button" aria-expanded="false" aria-controls="sidebarCrm"
+                                                   data-key="t-level-2.2"> Level 2.2
+                                                </a>
+                                                <div class="collapse menu-dropdown" id="sidebarCrm">
+                                                    <ul class="nav nav-sm flex-column">
+                                                        <li class="nav-item">
+                                                            <a href="#" class="nav-link" data-key="t-level-3.1"> Level
+                                                                3.1 </a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a href="#" class="nav-link" data-key="t-level-3.2"> Level
+                                                                3.2 </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarAuth" data-bs-toggle="collapse" role="button"
@@ -679,7 +714,7 @@
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarPages" data-bs-toggle="collapse" role="button"
                            aria-expanded="false" aria-controls="sidebarPages">
-                            <i class="ri-pages-line"></i> <span data-key="t-pages">Pages</span>
+                            <i class="ri-pages-line"></i> <span data-key="t-admin">Pages</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarPages">
                             <ul class="nav nav-sm flex-column">
@@ -1181,50 +1216,7 @@
                         </div>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="#sidebarMultilevel" data-bs-toggle="collapse"
-                           role="button" aria-expanded="false" aria-controls="sidebarMultilevel">
-                            <i class="ri-share-line"></i> <span data-key="t-multi-level">Multi Level</span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="sidebarMultilevel">
-                            <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link" data-key="t-level-1.1"> Level 1.1 </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#sidebarAccount" class="nav-link" data-bs-toggle="collapse" role="button"
-                                       aria-expanded="false" aria-controls="sidebarAccount" data-key="t-level-1.2">
-                                        Level 1.2
-                                    </a>
-                                    <div class="collapse menu-dropdown" id="sidebarAccount">
-                                        <ul class="nav nav-sm flex-column">
-                                            <li class="nav-item">
-                                                <a href="#" class="nav-link" data-key="t-level-2.1"> Level 2.1 </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a href="#sidebarCrm" class="nav-link" data-bs-toggle="collapse"
-                                                   role="button" aria-expanded="false" aria-controls="sidebarCrm"
-                                                   data-key="t-level-2.2"> Level 2.2
-                                                </a>
-                                                <div class="collapse menu-dropdown" id="sidebarCrm">
-                                                    <ul class="nav nav-sm flex-column">
-                                                        <li class="nav-item">
-                                                            <a href="#" class="nav-link" data-key="t-level-3.1"> Level
-                                                                3.1 </a>
-                                                        </li>
-                                                        <li class="nav-item">
-                                                            <a href="#" class="nav-link" data-key="t-level-3.2"> Level
-                                                                3.2 </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
+
 
                 </ul>
             </div>
