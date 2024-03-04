@@ -39,14 +39,14 @@ class Location(Base, AllMixin):
     title: Mapped[str]
     store_id: Mapped[Uuid] = mapped_column(Uuid, index=True)
     parent_id: Mapped[Optional[Uuid]] = mapped_column(ForeignKey("location.id"), index=True)
-    active: Mapped[bool] = mapped_column(default=True)
+    active: Mapped[Optional[bool]] = mapped_column(default=True)
     location_type_id: Mapped[Uuid] = mapped_column(ForeignKey('location_type.id'), index=True)
     product_storage_type_ids: Mapped[Optional[list[str]]] = mapped_column(type_=ARRAY(String), index=True, nullable=True)
     partner_id: Mapped[Optional[Uuid]] = mapped_column(Uuid, index=True, nullable=True)
-    homogeneity: Mapped[bool]
-    allow_create_package: Mapped[bool]                                                                                          # Можно ли создавать упаковки# Признак Гомогенности
+    homogeneity: Mapped[Optional[bool]] = mapped_column(default=False)
+    allow_create_package: Mapped[Optional[bool]] = mapped_column(default=True)                                                                                          # Можно ли создавать упаковки# Признак Гомогенности
     allowed_package_ids: Mapped[Optional[list['Location']]] = mapped_column(ARRAY(Uuid), index=True)                            # Разрешенные типы упаковок
     exclusive_package_ids: Mapped[Optional[list['Location']]] = mapped_column(ARRAY(Uuid), index=True)                          # Исключение типы упаковок
     allowed_order_types_ids: Mapped[Optional[list['OrderType']]] = mapped_column(ARRAY(Uuid), index=True)                       # Разрешенные типы упаковок
     exclusive_order_types_ids: Mapped[Optional[list['OrderType']]] = mapped_column(ARRAY(Uuid), index=True)                     # Разрешенные типы упаковок
-    strategy: Mapped['PutawayStrategy'] = mapped_column(default=PutawayStrategy.FEFO)                                           # Стратегия комплектования
+    strategy: Mapped[Optional['PutawayStrategy']] = mapped_column(default=PutawayStrategy.FEFO)                                           # Стратегия комплектования

@@ -12,7 +12,12 @@ from app.basic.company.models.company_models import Company
 from app.basic.user.models.user_models import User
 from app.basic.user.models.role_models import Role
 from app.basic.store.models.store_models import Store
+from app.basic.product.models.product_models import Product, ProductCategory, ProductStorageType
+from app.basic.uom.models.uom_models import Uom
+from app.basic.uom.models.uom_category_models import UomCategory
 from datetime import datetime
+from app.inventory.location.models import Location, LocationType
+from app.inventory.quant.models import Lot, Quant
 from sqlalchemy_utils.types import PasswordType
 
 # revision identifiers, used by Alembic.
@@ -40,6 +45,18 @@ def upgrade():
     role_2_company_1_id = uuid4().__str__()
     role_1_company_2_id = uuid4().__str__()
     role_2_company_2_id = uuid4().__str__()
+    uom_category_1_company_1 = uuid4().__str__()
+    uom_category_1_company_2 = uuid4().__str__()
+    uom_1_company_1 = uuid4().__str__()
+    uom_1_company_2 = uuid4().__str__()
+    product_category_1_company_1 = uuid4().__str__()
+    product_category_1_company_2 = uuid4().__str__()
+    product_storage_type_1_company_1 = uuid4().__str__()
+    product_storage_type_1_company_2 = uuid4().__str__()
+    product_1_company_1_id = uuid4().__str__()
+    product_2_company_1_id = uuid4().__str__()
+    product_1_company_2_id = uuid4().__str__()
+    product_2_company_2_id = uuid4().__str__()
     from passlib.hash import pbkdf2_sha512
     target = User()
     target.password = '1402'
@@ -71,7 +88,114 @@ def upgrade():
                            'updated_at': datetime.now(),
                        }
                    ])
-    op.bulk_insert(Store.__table__,
+
+    op.bulk_insert(ProductCategory.__tablename__, [
+        {
+            'id': product_category_1_company_1,
+            'lsn': 1,
+            "company_id": company_1_id,
+            "title": "Product Category 1",
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+        {
+            'id': product_category_1_company_2,
+            'lsn': 1,
+            "company_id": company_2_id,
+            "title": "Product Category 1",
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+    ])
+    op.bulk_insert(ProductStorageType.__tablename__, [
+        {
+            'id': product_storage_type_1_company_1,
+            'lsn': 1,
+            "company_id": company_1_id,
+            "title": "Product Storage type 1",
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+        {
+            'id': product_storage_type_1_company_2,
+            'lsn': 2,
+            "company_id": company_2_id,
+            "title": "Product Storage type 1",
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+    ])
+    op.bulk_insert(UomCategory.__tablename__, [
+        {
+            'id': uom_category_1_company_1,
+            'lsn': 1,
+            "company_id": company_1_id,
+            "title": "Uom category 1",
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+        {
+            'id': uom_category_1_company_2,
+            'lsn': 2,
+            "company_id": company_2_id,
+            "title": "Uom category 2",
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+    ])
+    op.bulk_insert(Uom.__tablename__, [
+        {
+            'id': uom_1_company_1,
+            'lsn': 1,
+            "company_id": company_1_id,
+            "title": "Uom 1",
+            'category_id': uom_category_1_company_1,
+            'type': 'standart',
+            'ratio': 2,
+            'precision': 2,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+        {
+            'id': uom_1_company_1,
+            'lsn': 1,
+            "company_id": company_2_id,
+            "title": "Uom 1",
+            'category_id': uom_category_1_company_2,
+            'type': 'standart',
+            'ratio': 2,
+            'precision': 2,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+    ])
+    op.bulk_insert(Product.__tablename__, [
+        {
+            'id': product_storage_type_1_company_1,
+            'lsn': 1,
+            "company_id": company_1_id,
+            "title": "Product Storage type 1",
+            'product_type': 'storable',
+            'uom_id': uom_1_company_1,
+            'product_category_id': product_category_1_company_1,
+            'product_storage_type_id': product_storage_type_1_company_1,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+        {
+            'id': product_storage_type_1_company_2,
+            'lsn': 2,
+            "company_id": company_2_id,
+            "title": "Product Storage type 1",
+            'product_type': 'storable',
+            'uom_id': uom_1_company_1,
+            'product_category_id': product_category_1_company_2,
+            'product_storage_type_id': product_storage_type_1_company_2,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+    ])
+    op.bulk_insert(Store.__tablename__,
                    [
                        {
                            'id': store_1_company_1_id,
@@ -285,6 +409,585 @@ def upgrade():
                        }
                    ])
 
+
+    location_type_partner_company_1 =  uuid4().__str__()
+    location_type_place_company_1  = uuid4().__str__()
+    location_type_resource_company_1  = uuid4().__str__()
+    location_type_package_company_1  = uuid4().__str__()
+    location_type_zone_company_1  = uuid4().__str__()
+    location_type_lost_company_1  = uuid4().__str__()
+    location_type_inventory_company_1  = uuid4().__str__()
+    location_type_scrap_company_1  = uuid4().__str__()
+    location_type_scrapped_company_1  = uuid4().__str__()
+    location_type_buffer_company_1  = uuid4().__str__()
+    location_type_partner_company_2 =  uuid4().__str__()
+    location_type_place_company_2  = uuid4().__str__()
+    location_type_resource_company_2  = uuid4().__str__()
+    location_type_package_company_2  = uuid4().__str__()
+    location_type_zone_company_2  = uuid4().__str__()
+    location_type_lost_company_2  = uuid4().__str__()
+    location_type_inventory_company_2  = uuid4().__str__()
+    location_type_scrap_company_2  = uuid4().__str__()
+    location_type_scrapped_company_2  = uuid4().__str__()
+    location_type_buffer_company_2  = uuid4().__str__()
+    op.bulk_insert(LocationType.__table__,
+               [
+                   {
+                       'id': location_type_partner_company_1,
+                       'lsn': 1,
+                       "company_id": company_1_id,
+                       "title": "partner",
+                       "location_class": "partner",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_place_company_1,
+                       'lsn': 2,
+                       "company_id": company_1_id,
+                       "title": "place",
+                       "location_class": "place",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_resource_company_1,
+                       'lsn': 3,
+                       "company_id": company_1_id,
+                       "title": "resource",
+                       "location_class": "resource",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_package_company_1,
+                       'lsn': 4,
+                       "company_id": company_1_id,
+                       "title": "package",
+                       "location_class": "package",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_zone_company_1,
+                       'lsn': 5,
+                       "company_id": company_1_id,
+                       "title": "zone",
+                       "location_class": "zone",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_lost_company_1,
+                       'lsn': 6,
+                       "company_id": company_1_id,
+                       "title": "lost",
+                       "location_class": "lost",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_inventory_company_1,
+                       'lsn': 7,
+                       "company_id": company_1_id,
+                       "title": "inventory",
+                       "location_class": "inventory",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_scrap_company_1,
+                       'lsn': 8,
+                       "company_id": company_1_id,
+                       "title": "scrap",
+                       "location_class": "scrap",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_scrapped_company_1,
+                       'lsn': 9,
+                       "company_id": company_1_id,
+                       "title": "scrapped",
+                       "location_class": "scrapped",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_buffer_company_1,
+                       'lsn': 10,
+                       "company_id": company_1_id,
+                       "title": "buffer",
+                       "location_class": "buffer",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_partner_company_2,
+                       'lsn': 1,
+                       "company_id": company_2_id,
+                       "title": "partner",
+                       "location_class": "partner",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_place_company_2,
+                       'lsn': 2,
+                       "company_id": company_2_id,
+                       "title": "place",
+                       "location_class": "place",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_resource_company_2,
+                       'lsn': 3,
+                       "company_id": company_2_id,
+                       "title": "resource",
+                       "location_class": "resource",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_package_company_2,
+                       'lsn': 4,
+                       "company_id": company_2_id,
+                       "title": "package",
+                       "location_class": "package",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_zone_company_2,
+                       'lsn': 5,
+                       "company_id": company_2_id,
+                       "title": "zone",
+                       "location_class": "zone",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_lost_company_2,
+                       'lsn': 6,
+                       "company_id": company_2_id,
+                       "title": "lost",
+                       "location_class": "lost",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_inventory_company_2,
+                       'lsn': 7,
+                       "company_id": company_2_id,
+                       "title": "inventory",
+                       "location_class": "inventory",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_scrap_company_2,
+                       'lsn': 8,
+                       "company_id": company_2_id,
+                       "title": "scrap",
+                       "location_class": "scrap",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_scrapped_company_2,
+                       'lsn': 9,
+                       "company_id": company_2_id,
+                       "title": "scrapped",
+                       "location_class": "scrapped",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+                   {
+                       'id': location_type_buffer_company_2,
+                       'lsn': 10,
+                       "company_id": company_2_id,
+                       "title": "buffer",
+                       "location_class": "buffer",
+                       'created_at': datetime.now(),
+                       'updated_at': datetime.now(),
+                   },
+               ])
+    location_partner_company_1 = uuid4().__str__()
+    location_place_company_1 = uuid4().__str__()
+    location_resource_company_1 = uuid4().__str__()
+    location_package_company_1 = uuid4().__str__()
+    location_zone_company_1 = uuid4().__str__()
+    location_lost_company_1 = uuid4().__str__()
+    location_inventory_company_1 = uuid4().__str__()
+    location_scrap_company_1 = uuid4().__str__()
+    location_scrapped_company_1 = uuid4().__str__()
+    location_buffer_company_1 = uuid4().__str__()
+    location_partner_company_2 = uuid4().__str__()
+    location_place_company_2 = uuid4().__str__()
+    location_resource_company_2 = uuid4().__str__()
+    location_package_company_2 = uuid4().__str__()
+    location_zone_company_2 = uuid4().__str__()
+    location_lost_company_2 = uuid4().__str__()
+    location_inventory_company_2 = uuid4().__str__()
+    location_scrap_company_2 = uuid4().__str__()
+    location_scrapped_company_2 = uuid4().__str__()
+    location_buffer_company_2 = uuid4().__str__()
+
+    op.bulk_insert(Location.__table__,[
+        {
+            'id': location_partner_company_1,
+            'lsn': 1,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'location_type_id': location_type_partner_company_1,
+            "title": f"LOCATION_PARTNER_COMPANY 1",
+        },
+        {
+            'id': location_resource_company_1,
+            'lsn': 3,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'location_type_id': location_resource_company_1,
+            "title": f"LOCATION_RESOURCE_COMPANY 1",
+        },
+        {
+            'id': location_package_company_1,
+            'lsn': 4,
+            "company_id": company_1_id,
+            "parent_id": location_place_company_1,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'location_type_id': location_package_company_1,
+            "title": f"LOCATION_PACKAGE_COMPANY 1",
+        },
+        {
+            'id': location_zone_company_1,
+            'lsn': 5,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'location_type_id': location_zone_company_1,
+            "title": f"LOCATION_ZONE_COMPANY 1",
+        },
+        {
+            'id': location_place_company_1,
+            'lsn': 2,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'parent_id': location_zone_company_1,
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'location_type_id': location_place_company_1,
+            "title": f"LOCATION_PLACE_COMPANY 1",
+        },
+        {
+            'id': location_lost_company_1,
+            'lsn': 6,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'location_type_id': location_lost_company_1,
+            "title": f"LOCATION_LOST_COMPANY 1",
+        },
+        {
+            'id': location_inventory_company_1,
+            'lsn': 7,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'location_type_id': location_inventory_company_1,
+            "title": f"LOCATION_INVENTORY_COMPANY 1",
+        },
+        {
+            'id': location_scrap_company_1,
+            'lsn': 8,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'location_type_id': location_scrap_company_1,
+            "title": f"LOCATION_SCRAP_COMPANY 1",
+        },
+        {
+            'id': location_scrapped_company_1,
+            'lsn': 9,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'location_type_id': location_scrapped_company_1,
+            "title": f"LOCATION_SCRAPED_COMPANY 1",
+        },
+        {
+            'id': location_buffer_company_1,
+            'lsn': 10,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'location_type_id': location_buffer_company_1,
+            "title": f"LOCATION_BUFFER_COMPANY 1",
+        },
+        {
+            'id': location_partner_company_2,
+            'lsn': 11,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_type_partner_company_1,
+            "title": f"LOCATION_PARTNER_COMPANY 1",
+        },
+        {
+            'id': location_resource_company_2,
+            'lsn': 13,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_resource_company_2,
+            "title": f"LOCATION_RESOURCE_COMPANY 1",
+        },
+        {
+            'id': location_package_company_2,
+            'lsn': 14,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_package_company_2,
+            "title": f"LOCATION_PACKAGE_COMPANY 1",
+        },
+        {
+            'id': location_zone_company_2,
+            'lsn': 16,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_zone_company_2,
+            "title": f"LOCATION_ZONE_COMPANY 1",
+        },
+        {
+            'id': location_place_company_2,
+            'lsn': 12,
+            "company_id": company_2_id,
+            'parent_id': location_zone_company_2,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_place_company_2,
+            "title": f"LOCATION_PLACE_COMPANY 1",
+        },
+        {
+            'id': location_package_company_2,
+            'lsn': 15,
+            "company_id": company_2_id,
+            "parent_id": location_place_company_2,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_package_company_2,
+            "title": f"LOCATION_PACKAGE_COMPANY 1",
+        },
+        {
+            'id': location_lost_company_2,
+            'lsn': 17,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_lost_company_2,
+            "title": f"LOCATION_LOST_COMPANY 1",
+        },
+        {
+            'id': location_inventory_company_2,
+            'lsn': 18,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_inventory_company_2,
+            "title": f"LOCATION_INVENTORY_COMPANY 1",
+        },
+        {
+            'id': location_scrap_company_2,
+            'lsn': 19,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_scrap_company_2,
+            "title": f"LOCATION_SCRAP_COMPANY 1",
+        },
+        {
+            'id': location_scrapped_company_2,
+            'lsn': 20,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_scrapped_company_2,
+            "title": f"LOCATION_SCRAPED_COMPANY 1",
+        },
+        {
+            'id': location_buffer_company_2,
+            'lsn': 21,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
+            'location_type_id': location_buffer_company_2,
+            "title": f"LOCATION_BUFFER_COMPANY 1",
+        },
+    ])
+    lot_1_company_1 = uuid4().__str__()
+    lot_2_company_1 = uuid4().__str__()
+    lot_1_company_2 = uuid4().__str__()
+    lot_2_company_2 = uuid4().__str__()
+    op.bulk_insert(Lot.__table__, [
+        {
+            'id': lot_1_company_1,
+            'lsn': 1,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'expiration_date': datetime.now(),
+            'product_id': product_1_company_1_id,
+            'external_id': 'lot1_external1',
+        },
+        {
+            'id': lot_2_company_1,
+            'lsn': 2,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'expiration_date': datetime.now(),
+            'product_id': product_2_company_1_id,
+            'external_id': 'lot2_external1',
+        },
+        {
+            'id': lot_1_company_2,
+            'lsn': 3,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'expiration_date': datetime.now(),
+            'product_id': product_1_company_2_id,
+            'external_id': 'lot1_external2',
+        },
+        {
+            'id': lot_2_company_2,
+            'lsn': 4,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'expiration_date': datetime.now(),
+            'product_id': product_2_company_2_id,
+            'external_id': 'lot2_external2',
+        },
+    ])
+    quant_1_company_1 = uuid4().__str__()
+    quant_2_company_1 = uuid4().__str__()
+    quant_3_company_1 = uuid4().__str__()
+    quant_1_company_2 = uuid4().__str__()
+    quant_2_company_2 = uuid4().__str__()
+    quant_3_company_2 = uuid4().__str__()
+    op.bulk_insert(Quant.__table__, [
+        {
+            'id': quant_1_company_1,
+            'lsn': 1,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'lot_id': lot_1_company_1,
+            'quantity': 100.0,
+            'reserved_quantity': 0.0,
+            'expiration_date': datetime.now(),
+            'product_id': product_1_company_1_id,
+            'uom_id': uom_1_company_1,
+        },
+        {
+            'id': quant_2_company_1,
+            'lsn': 2,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            'lot_id': lot_2_company_1,
+            'quantity': 200.0,
+            'reserved_quantity': 0.0,
+            'expiration_date': datetime.now(),
+            'product_id': product_1_company_1_id,
+            'uom_id': uom_1_company_1,
+        },
+        {
+            'id': quant_3_company_1,
+            'lsn': 3,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_1_company_1_id,
+            #'lot_id': lot_2_company_1,
+            'quantity': 300.0,
+            'reserved_quantity': 0.0,
+            'expiration_date': datetime.now(),
+            'product_id': product_1_company_1_id,
+            'uom_id': uom_1_company_1,
+        },
+        {
+            'id': quant_1_company_2,
+            'lsn': 4,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_2_company_1_id,
+            'lot_id': lot_1_company_2,
+            'quantity': 100.0,
+            'reserved_quantity': 0.0,
+            'expiration_date': datetime.now(),
+            'product_id': product_1_company_2_id,
+            'uom_id': uom_1_company_2,
+        },
+        {
+            'id': quant_2_company_2,
+            'lsn': 5,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_2_company_1_id,
+            'lot_id': lot_2_company_2,
+            'quantity': 200.0,
+            'reserved_quantity': 0.0,
+            'expiration_date': datetime.now(),
+            'product_id': product_1_company_2_id,
+            'uom_id': uom_1_company_2,
+        },
+        {
+            'id': quant_3_company_2,
+            'lsn': 6,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'store_id': store_2_company_1_id,
+            #'lot_id': lot_2_company_2,
+            'quantity': 300.0,
+            'reserved_quantity': 0.0,
+            'expiration_date': datetime.now(),
+            'product_id': product_1_company_2_id,
+            'uom_id': uom_1_company_2,
+        },
+    ])
     # ### end Alembic commands ###
 
 

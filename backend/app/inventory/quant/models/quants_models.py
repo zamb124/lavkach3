@@ -23,7 +23,7 @@ class Lot(Base, AllMixin):
     __table_args__ = (UniqueConstraint('external_id', 'product_id', 'partner_id', name='_lot_ex_pr_par_id_uc'),)
     lsn_seq = Sequence(f'lot_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    expiration_date = Column(DateTime(timezone=True))
+    expiration_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=True)
     external_id: Mapped[Optional[str]] = mapped_column(nullable=False, unique=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)

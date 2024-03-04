@@ -24,7 +24,7 @@ class LocationClass(str, Enum):
     -
     """
     PARTNER:    str = "partner"
-    PLASE:      str = "place"
+    PLACE:      str = "place"
     RESOURCE:   str = "resource"
     PACKAGE:    str = "package"
     ZONE:       str = "zone"
@@ -32,4 +32,4 @@ class LocationClass(str, Enum):
     INVENTORY:  str = "inventory"
     SCRAP:      str = "scrap"
     SCRAPPED:   str = "scrapped"
-    BUFFER :    str = "buffer"
+    BUFFER:     str = "buffer"

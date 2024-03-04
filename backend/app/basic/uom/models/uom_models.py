@@ -1,15 +1,14 @@
-import decimal
 import uuid
 from enum import Enum
 from typing import Optional
 
-from sqlalchemy import Column, Unicode, BigInteger, ForeignKey, Sequence
+from sqlalchemy import ForeignKey, Sequence
 from sqlalchemy import Numeric, Uuid
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
+from app.basic.product.models import Product
 from core.db import Base
 from core.db.mixins import AllMixin
-from app.basic.product.models import Product
 
 
 class UomType(str, Enum):
