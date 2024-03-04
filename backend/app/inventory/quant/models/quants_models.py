@@ -58,4 +58,4 @@ class Quant(Base, AllMixin):
     quantity: Mapped[float]
     reserved_quantity: Mapped[float]
     expiration_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
-    uom_id: Mapped[Uuid] = mapped_column(ForeignKey("uom.id", ondelete="RESTRICT"), index=True)
+    uom_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("uom.id", ondelete="RESTRICT"), index=True)

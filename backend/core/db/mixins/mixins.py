@@ -56,7 +56,7 @@ class TimestampMixin:
 
 
 class CompanyMixin:
-    company_id: Mapped[Uuid] = mapped_column(ForeignKey("company.id"), index=True, nullable=False)
+    company_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("company.id"), index=True, nullable=False)
 
 class CreatedEdited:
     created_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
