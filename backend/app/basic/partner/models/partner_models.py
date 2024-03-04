@@ -24,7 +24,7 @@ class Partner(Base,AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(index=True)
     #
-    type: Mapped[str] = mapped_column(default=PartnerType.PARTNER)
+    type: Mapped[PartnerType] = mapped_column(default=PartnerType.PARTNER)
     external_id: Mapped[Optional[str]] = mapped_column(unique=True)
     parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey("partner.id"), index=True)
     parent: Mapped['Partner'] = relationship(lazy='selectin')
@@ -32,6 +32,6 @@ class Partner(Base,AllMixin):
     email: Mapped[Optional[str]] = mapped_column(EmailType)
     country: Mapped[str] = mapped_column(CountryType, default='US')
     #
-    created_user_id: Mapped['Uuid'] = mapped_column(Uuid, ForeignKey("user.id"), index=True)
+    created_user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("user.id"), index=True)
     locale: Mapped[str] = mapped_column(LocaleType, default='en_US')
     currency: Mapped[str] = mapped_column(CurrencyType, default='USD')
