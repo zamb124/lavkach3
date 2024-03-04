@@ -1,4 +1,3 @@
-import enum
 import uuid
 from enum import Enum
 from typing import Optional
@@ -11,7 +10,7 @@ from core.db import Base
 from core.db.mixins import AllMixin
 
 
-class LocationClass(enum.Enum):
+class LocationClass(str, Enum):
     """
     **Классификация** типов местоположения, обозначающий свойства типов местоположения
     - partner - Зона внешняя (например поставщика товаров)
@@ -22,17 +21,20 @@ class LocationClass(enum.Enum):
     - lost - класс типа местоположения отвечающий аккумулирование расхождений в рамках набора локаций, может быть ограничен зоной, магазином или компанией
     - inventory - класс типов ячеек, которы аккумулирует расхождения при легальной инвентаризации
     - scrap - класс хранение некондиционного товара
+    - scraped - списанный товар (уже утиилизарованный)
     - buffer - класс типов ячеек отвечающий за буфер приемки например за зону приемки или зону отгрузки
     -
     """
-    partner = "partner"
-    place = "place"
-    resource = "resource"
-    package = "package"
-    zone = "zone"
-    lost = "lost"
-    inventory = "inventory"
-    scrap = "scrap"
+    PARTNER:    str = "partner"
+    PLASE:      str = "place"
+    RESOURCE:   str = "resource"
+    PACKAGE:    str = "package"
+    ZONE:       str = "zone"
+    LOST:       str = "lost"
+    INVENTORY:  str = "inventory"
+    SCRAP:      str = "scrap"
+    SCRAPPED:   str = "scrapped"
+    BUFFER :    str = "buffer"
 
 
 class LocationType(Base, AllMixin):
@@ -43,7 +45,7 @@ class LocationType(Base, AllMixin):
     lsn_seq = Sequence(f'location_type_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str]
-    location_class = Mapped[LocationClass]
+    location_class: Mapped[LocationClass]
 
 
 class Location(Base, AllMixin):
