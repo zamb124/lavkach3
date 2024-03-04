@@ -1,5 +1,1 @@
-from enum import Enum
-
-
-class BaseEnum(Enum):
-    pass
+from .location_enum import *

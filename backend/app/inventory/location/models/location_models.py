@@ -8,33 +8,9 @@ from sqlalchemy.sql.sqltypes import ARRAY
 
 from core.db import Base
 from core.db.mixins import AllMixin
+from app.inventory.location.enums import LocationClass, PutawayStrategy
 
 
-class LocationClass(str, Enum):
-    """
-    **Классификация** типов местоположения, обозначающий свойства типов местоположения
-    - partner - Зона внешняя (например поставщика товаров)
-    - place - Статичный класс местоположения в пространстве, например ячейка на складе или магазине
-    - zone - Зона, которая отвечает за агрегацию свойств местоположений, например стратегия приемки или отгрузки
-    - resource - Статически/динамическое местоположение означающее ресурс с помощью которого происзодит перемещение, например Тележка, или штабелер или что то иное
-    - package - Динамическое местоположение, например паллета коробка
-    - lost - класс типа местоположения отвечающий аккумулирование расхождений в рамках набора локаций, может быть ограничен зоной, магазином или компанией
-    - inventory - класс типов ячеек, которы аккумулирует расхождения при легальной инвентаризации
-    - scrap - класс хранение некондиционного товара
-    - scraped - списанный товар (уже утиилизарованный)
-    - buffer - класс типов ячеек отвечающий за буфер приемки например за зону приемки или зону отгрузки
-    -
-    """
-    PARTNER:    str = "partner"
-    PLASE:      str = "place"
-    RESOURCE:   str = "resource"
-    PACKAGE:    str = "package"
-    ZONE:       str = "zone"
-    LOST:       str = "lost"
-    INVENTORY:  str = "inventory"
-    SCRAP:      str = "scrap"
-    SCRAPPED:   str = "scrapped"
-    BUFFER :    str = "buffer"
 
 
 class LocationType(Base, AllMixin):
@@ -46,6 +22,7 @@ class LocationType(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str]
     location_class: Mapped[LocationClass]
+
 
 
 class Location(Base, AllMixin):
@@ -66,3 +43,10 @@ class Location(Base, AllMixin):
     location_type_id: Mapped[Uuid] = mapped_column(ForeignKey('location_type.id'), index=True)
     product_storage_type_ids: Mapped[Optional[list[str]]] = mapped_column(type_=ARRAY(String), index=True, nullable=True)
     partner_id: Mapped[Optional[Uuid]] = mapped_column(Uuid, index=True, nullable=True)
+    homogeneity: Mapped[bool]
+    allow_create_package: Mapped[bool]                                                                                          # Можно ли создавать упаковки# Признак Гомогенности
+    allowed_package_ids: Mapped[Optional[list['Location']]] = mapped_column(ARRAY(Uuid), index=True)                            # Разрешенные типы упаковок
+    exclusive_package_ids: Mapped[Optional[list['Location']]] = mapped_column(ARRAY(Uuid), index=True)                          # Исключение типы упаковок
+    allowed_order_types_ids: Mapped[Optional[list['OrderType']]] = mapped_column(ARRAY(Uuid), index=True)                       # Разрешенные типы упаковок
+    exclusive_order_types_ids: Mapped[Optional[list['OrderType']]] = mapped_column(ARRAY(Uuid), index=True)                     # Разрешенные типы упаковок
+    strategy: Mapped['PutawayStrategy'] = mapped_column(default=PutawayStrategy.FEFO)                                           # Стратегия комплектования
