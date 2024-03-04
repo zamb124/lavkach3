@@ -13,7 +13,7 @@ from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
     AuthenticationMiddleware,
-    AuthBackend,
+    AuthBffBackend,
     SQLAlchemyMiddleware,
 )
 from core.helpers.cache import Cache, CustomKeyMaker
@@ -59,7 +59,7 @@ def make_middleware() -> List[Middleware]:
         ),
         Middleware(
             AuthenticationMiddleware,
-            backend=AuthBackend(),
+            backend=AuthBffBackend(),
             on_error=on_auth_error,
         ),
         Middleware(SQLAlchemyMiddleware),

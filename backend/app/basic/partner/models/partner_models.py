@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy import Column, Unicode, BigInteger, Boolean, Uuid, ForeignKey, Sequence
 from sqlalchemy_utils.types import PasswordType, EmailType, CountryType, ChoiceType, JSONType, LocaleType, PhoneNumber, PhoneNumberType
 from sqlalchemy_utils import CurrencyType, Currency, CountryType, LocaleType
@@ -20,19 +22,16 @@ class Partner(Base,AllMixin):
     __tablename__ = "partner"
     lsn_seq = Sequence(f'partner_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    title = Column(Unicode(255), nullable=False)
+    title: Mapped[str] = mapped_column(index=True)
     #
-    type = Column(Unicode(30), nullable=False, default=PartnerType.PARTNER)
-    external_id = Column(Unicode(255), nullable=True, unique=True)
-    parent_id = Column(Uuid, ForeignKey("partner.id"), index=True, nullable=True)
-    parent = relationship("Partner", lazy='selectin')
-    phone_number = Column(PhoneNumberType(), nullable=True)
-    email = Column(EmailType, nullable=True)
-    country = Column(CountryType, default='US')
+    type: Mapped[str] = mapped_column(default=PartnerType.PARTNER)
+    external_id: Mapped[Optional[str]] = mapped_column(unique=True)
+    parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey("partner.id"), index=True)
+    parent: Mapped['Partner'] = relationship(lazy='selectin')
+    phone_number: Mapped[Optional[str]] = mapped_column(PhoneNumberType)
+    email: Mapped[Optional[str]] = mapped_column(EmailType)
+    country: Mapped[str] = mapped_column(CountryType, default='US')
     #
-    created_user_id = Column(Uuid, ForeignKey("user.id"), index=True, nullable=False)
-    locale = Column(LocaleType, default='en_US')
-    currency = Column(CurrencyType, nullable=False, default='USD')
-    #
-    #bank_id
-    #bank_account_id
+    created_user_id: Mapped['Uuid'] = mapped_column(Uuid, ForeignKey("user.id"), index=True)
+    locale: Mapped[str] = mapped_column(LocaleType, default='en_US')
+    currency: Mapped[str] = mapped_column(CurrencyType, default='USD')

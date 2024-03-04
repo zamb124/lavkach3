@@ -30,8 +30,8 @@ def reset_session_context(context: Token) -> None:
 
 
 engines = {
-    "writer": create_async_engine(config.WRITER_DB_URL, pool_recycle=3600, connect_args={"options": "-c timezone=utc"}),
-    "reader": create_async_engine(config.READER_DB_URL, pool_recycle=3600, connect_args={"options": "-c timezone=utc"}),
+    "writer": create_async_engine(config.WRITER_DB_URL, pool_recycle=3600),
+    "reader": create_async_engine(config.READER_DB_URL, pool_recycle=3600),
 }
 
 

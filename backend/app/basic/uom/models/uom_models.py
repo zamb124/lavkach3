@@ -1,5 +1,7 @@
+import decimal
 import uuid
 from enum import Enum
+from typing import Optional
 
 from sqlalchemy import Column, Unicode, BigInteger, ForeignKey, Sequence
 from sqlalchemy import Numeric, Uuid
@@ -7,6 +9,7 @@ from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from core.db import Base
 from core.db.mixins import AllMixin
+from app.basic.product.models import Product
 
 
 class UomType(str, Enum):
@@ -20,9 +23,10 @@ class Uom(Base, AllMixin):
 
     lsn_seq = Sequence(f'uom_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    title = Column(Unicode(255), nullable=False)
-    category_id = Column(Uuid, ForeignKey("uom_category.id"), nullable=True)
-    category = relationship("UomCategory", back_populates='uoms', lazy='selectin')
-    type = Column(Unicode(30), nullable=False, index=True, default=UomType.STANDART)
-    ratio = Column(Numeric(12, 2), default=1)
-    precision = Column(Numeric(12, 2), default=0.01)
+    title: Mapped[str] = mapped_column(index=True)
+    category_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey("uom_category.id"))
+    category: Mapped['UomCategory'] = relationship(back_populates='uoms', lazy='selectin')
+    products: Mapped['Product'] = relationship(back_populates='uom', lazy='selectin')
+    type: Mapped[str] = mapped_column(index=True, default=UomType.STANDART)
+    ratio: Mapped[float] = mapped_column(Numeric(12, 2), default=1)
+    precision: Mapped[float] = mapped_column(Numeric(12, 2), default=0.01)

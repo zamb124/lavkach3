@@ -10414,14 +10414,14 @@ button.gridjs-sort-asc, button.gridjs-sort-desc {
   font-weight: 500;
 }
 
-.jvm-tooltip {
-  border-radius: 3px;
-  background-color: var(--vz-primary);
-  font-family: var(--vz-font-sans-serif);
-  -webkit-box-shadow: 0 5px 10px rgba(30, 32, 37, 0.12);
-          box-shadow: 0 5px 10px rgba(30, 32, 37, 0.12);
-  padding: 5px 9px;
-}
+/*.jvm-tooltip {*/
+/*  border-radius: 3px;*/
+/*  background-color: var(--vz-primary);*/
+/*  font-family: var(--vz-font-sans-serif);*/
+/*  -webkit-box-shadow: 0 5px 10px rgba(30, 32, 37, 0.12);*/
+/*          box-shadow: 0 5px 10px rgba(30, 32, 37, 0.12);*/
+/*  padding: 5px 9px;*/
+/*}*/
 
 .jvm-container text {
   font-family: var(--vz-font-sans-serif);

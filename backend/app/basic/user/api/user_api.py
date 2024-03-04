@@ -1,5 +1,7 @@
+import json
 import uuid
 
+import starlette
 from fastapi import APIRouter, Depends, Query
 from fastapi_filter import FilterDepends
 from starlette.requests import Request
@@ -20,6 +22,7 @@ from core.fastapi.dependencies import (
 )
 from .schemas import LoginRequest
 from ..schemas.user_schemas import SignUpScheme
+from fastapi import Response
 
 user_router = APIRouter()
 
@@ -71,11 +74,12 @@ async def user_delete(request: Request, user_id: uuid.UUID):
     response_model=LoginResponseSchema,
     responses={"404": {"model": ExceptionResponseSchema}},
 )
-async def login(request: Request, obj: LoginRequest):
+async def login(request: Request, obj: LoginRequest, response: Response):
     a = await UserService(request).login(
         email=obj.email,
         password=obj.password,
     )
+    response.set_cookie(key='token', value='helloworld', httponly=True)
     return a
 
 @user_router.post("/signup", response_model=LoginResponseSchema)

@@ -13,15 +13,15 @@ class ProductCategory(Base, AllMixin):
     __table_args__ = (UniqueConstraint('external_id', 'company_id', name='_product_category_company_id_uc'),)
     lsn_seq = Sequence(f'product_category_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    external_id = Column(Unicode(255), nullable=True, unique=True)
-    title = Column(Unicode(255), nullable=False)
-    parent_id = Column(Uuid, ForeignKey("product_category.id"), index=True, nullable=True)
+    external_id: Mapped[Optional[str]]
+    title: Mapped[str] = mapped_column(index=True)
+    parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey("product_category.id"), index=True)
 
 class ProductStorageType(Base, AllMixin):
     __tablename__ = "product_storage_type"
     lsn_seq = Sequence(f'product_storage_type_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    title = Column(Unicode(255), nullable=False)
+    title: Mapped[str] = mapped_column(index=True)
 
 class ProductType(str, Enum):
     CONSUMABLE: str = 'consumable'
@@ -33,12 +33,12 @@ class Product(Base, AllMixin):
     __table_args__ = (UniqueConstraint('external_id', 'company_id', name='_product_company_id_uc'),)
     lsn_seq = Sequence(f'product_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    title = Column(Unicode(255), nullable=False)
-    description = Column(String, nullable=True)
-    external_id = Column(Unicode(255), nullable=True, unique=True)
-    product_type = Column(Unicode(20), nullable=False, default=ProductType.STORABLE)
-    uom_id = Column(Uuid, ForeignKey("uom.id"), index=True, nullable=False)
-    uom = relationship("Uom", lazy='select', back_populates="products")
-    product_category_id = Column(Uuid, ForeignKey("product_category.id"), index=True, nullable=False)
-    product_storage_type_id = Column(Uuid, ForeignKey("product_storage_type.id"), index=True, nullable=False)
+    title: Mapped[str] = mapped_column(index=True)
+    description: Mapped[Optional[str]]
+    external_id: Mapped[Optional[str]]
+    product_type: Mapped[str] = mapped_column(default=ProductType.STORABLE)
+    uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("uom.id"), index=True)
+    uom: Mapped['Uom'] = relationship(lazy='select', back_populates="products")
+    product_category_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("product_category.id"), index=True)
+    product_storage_type_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("product_storage_type.id"), index=True)
     barcodes: Mapped[list[str]] = mapped_column(type_=ARRAY(String), index=True, nullable=True)

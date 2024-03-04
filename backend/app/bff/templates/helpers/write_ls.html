@@ -1,0 +1,6 @@
+<script>
+    localStorage.setItem('token', '{{token}}');
+    localStorage.setItem('refresh_token', '{{refresh_token}}');
+    htmx.ajax('GET', '/', {target:'#htmx_content'})
+                //console.log(authToken)
+</script>
