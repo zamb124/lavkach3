@@ -37,12 +37,12 @@ class Location(Base, AllMixin):
     lsn_seq = Sequence(f'location_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str]
-    store_id: Mapped[Uuid] = mapped_column(Uuid, index=True)
-    parent_id: Mapped[Optional[Uuid]] = mapped_column(ForeignKey("location.id"), index=True)
+    store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
+    parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id"), index=True)
     active: Mapped[Optional[bool]] = mapped_column(default=True)
-    location_type_id: Mapped[Uuid] = mapped_column(ForeignKey('location_type.id'), index=True)
+    location_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('location_type.id'), index=True)
     product_storage_type_ids: Mapped[Optional[list[str]]] = mapped_column(type_=ARRAY(String), index=True, nullable=True)
-    partner_id: Mapped[Optional[Uuid]] = mapped_column(Uuid, index=True, nullable=True)
+    partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     homogeneity: Mapped[Optional[bool]] = mapped_column(default=False)
     allow_create_package: Mapped[Optional[bool]] = mapped_column(default=True)                                                                                          # Можно ли создавать упаковки# Признак Гомогенности
     allowed_package_ids: Mapped[Optional[list['Location']]] = mapped_column(ARRAY(Uuid), index=True)                            # Разрешенные типы упаковок
