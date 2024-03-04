@@ -131,7 +131,7 @@ class Order(Base, AllMixin):
     users_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
     description: Mapped[Optional[str]]
     status: Mapped[OrderStatus]
-    move_ids: Mapped[list["Move"]] = relationship(back_populates="order", )
+    moves: Mapped[list["Move"]] = relationship(back_populates="order", )
 
 
 class MoveStatus(str, Enum):
@@ -152,7 +152,8 @@ class Move(Base, AllMixin):
     lsn_seq = Sequence(f'move_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
-    order_id: Mapped['Order'] = relationship(back_populates="moves",)
+    order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order.id', ondelete='RESTRICT'))
+    order: Mapped['Order'] = relationship(back_populates="moves",)
     location_src_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
     location_dest_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
     lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
