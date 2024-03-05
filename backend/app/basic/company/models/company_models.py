@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import Column, Unicode, BigInteger, Uuid, Sequence
+from sqlalchemy import Column, Unicode, BigInteger, Uuid, Sequence, ForeignKey
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from sqlalchemy_utils import CurrencyType, CountryType, LocaleType
 
@@ -18,4 +18,5 @@ class Company(Base, TimestampMixin, LsnMixin):
     country: Mapped[str] = mapped_column(CountryType, default='US')
     locale: Mapped[str] = mapped_column(LocaleType, default='en_US')
     currency: Mapped[str] = mapped_column(CurrencyType, default="USD")
+    #owner: Mapped['User'] = mapped_column(Uuid, ForeignKey("User.id"), index=True)
     stores: Mapped[list['Store']] = relationship(lazy='selectin', back_populates="company")

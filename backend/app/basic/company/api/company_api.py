@@ -37,7 +37,7 @@ async def company_create(request: Request, schema: CompanyCreateScheme):
     return await CompanyService(request).create(obj=schema)
 
 
-@company_router.get("/{company_id}")
+@company_router.get("/{company_id}", response_model=CompanyScheme)
 async def company_get(request: Request, company_id: uuid.UUID):
     return await CompanyService(request).get(id=company_id)
 

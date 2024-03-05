@@ -11,7 +11,7 @@
     }).then((result)=>{
         if (result.isConfirmed) {
             htmx.ajax('DELETE', '/basic/company/{{ company_id }}?confirmed=True', {
-                target: 'body',
+                target: 'closest tr',
                 swap: 'beforeend'
             })
         }

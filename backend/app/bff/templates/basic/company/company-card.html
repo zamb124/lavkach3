@@ -31,23 +31,21 @@
     </div>
     <div class="card-body">
         <h6 class="text-muted text-uppercase fw-semibold mb-3">Information</h6>
-        <p class="text-muted mb-4">A company incurs fixed and variable costs such as the purchase of raw materials,
-            salaries and overhead, as explained by AccountingTools, Inc. Business owners have the discretion to
-            determine the actions.</p>
+        <p class="text-muted mb-4">some description</p>
         <div class="table-responsive table-card">
             <table class="table table-borderless mb-0">
                 <tbody>
                 <tr>
-                    <td class="fw-medium" scope="row">Industry Type</td>
-                    <td>Chemical Industries</td>
+                    <td class="fw-medium" scope="row">Locale</td>
+                    <td>{{ company.locale.name }}</td>
                 </tr>
                 <tr>
                     <td class="fw-medium" scope="row">Location</td>
-                    <td>{{ company.country }}</td>
+                    <td>{{ company.country.name }}</td>
                 </tr>
                 <tr>
-                    <td class="fw-medium" scope="row">Employee</td>
-                    <td>10-50</td>
+                    <td class="fw-medium" scope="row">External ID</td>
+                    <td>{{ company.external_id }}</td>
                 </tr>
                 <tr>
                     <td class="fw-medium" scope="row">Rating</td>
