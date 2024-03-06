@@ -1,89 +1,86 @@
-from unittest import mock
+import datetime
 
 import pytest
-from sqlalchemy import func, select
-#from tests.conftest import *
+
+
 @pytest.mark.asyncio
-async def test_crud_location_type(async_inventory_client, headers, stores, companies):
+async def test_crud_lot(async_inventory_client, headers, stores, companies, products):
     """
     Проверяем rруд вокруг товаров
     """
     create_data = {
         'company_id': companies[0].id.__str__(),
-        'title': 'Partner Location',
-        'location_class': 'partner'
+        'expiration_date': datetime.datetime.now().isoformat(),
+        'product_id': products[0].id.__str__(),
+        'external_id': '1000001',
+        #'partner_id': 'partner'
     }
-    response = await async_inventory_client.post("/api/inventory/location_type/create", json=create_data, headers=headers['superadmin'])
+    response = await async_inventory_client.post("/api/inventory/lot/create", json=create_data, headers=headers['superadmin'])
     assert response.status_code == 200
     data = response.json()
-    location_type_id_1 = data['id']
+    lot_id_1 = data['id']
     #--------------------------------
-    # Изменяем категорию
+    # Изменяем
     update_data = {
-        'company_id': companies[0].id.__str__(),
-        'location_class': 'place',
-        'title': 'Place Location',
+        'expiration_date': datetime.datetime.now().isoformat(),
+        'product_id': products[0].id.__str__(),
+        'external_id': '1000002',
     }
-    response = await async_inventory_client.put(f"/api/inventory/location_type/{location_type_id_1}", json=update_data, headers=headers['superadmin'], )
+    response = await async_inventory_client.put(f"/api/inventory/lot/{lot_id_1}", json=update_data, headers=headers['superadmin'], )
     assert response.status_code == 200
     # --------------------------------
     # Поиск
-    response = await async_inventory_client.get("/api/inventory/location_type", headers=headers['superadmin'], params={'size': 100, 'search': 'Place'}
+    response = await async_inventory_client.get("/api/inventory/lot", headers=headers['superadmin'], params={'size': 100, 'search': '1000002'}
     )
     assert response.status_code == 200
     data = response.json()
     assert len(data.get('data')) == 1
     # Удаление
-    response = await async_inventory_client.delete(f"/api/inventory/location_type/{location_type_id_1}", headers=headers['superadmin'], )
+    response = await async_inventory_client.delete(f"/api/inventory/lot/{lot_id_1}", headers=headers['superadmin'], )
     assert response.status_code == 200
 
 
 @pytest.mark.asyncio
-async def test_crud_location(async_inventory_client, headers, stores, companies, location_types, product_categories, product_storage_types, uom_categories, uoms, products):
+async def test_crud_quant(async_inventory_client, headers, stores, companies, products, lots, uoms, locations):
     """
     Проверяем rруд вокруг товаров
     """
     create_data = {
         'company_id': companies[0].id.__str__(),
-        'title': 'place location',
+        'product_id': products[0].id.__str__(),
         'store_id': stores[0].id.__str__(),
-        #'parent_id': 'product_storage_type 1',
-        'active': True,
-        'location_type_id': location_types['place'].id.__str__(),
-        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
-        #'partner_id': 'product_storage_type 1',
-        'homogeneity': False,
-        'allow_create_package': True,
-        #'allowed_package_ids': 'product_storage_type 1',
-        #'exclusive_package_ids': 'product_storage_type 1',
-        #'allowed_order_types_ids': 'allowed_order_types_ids',
-        # 'exclusive_order_types_ids': 'exclusive_order_types_ids',
-        #'strategy': 'product_storage_type 1',
+        'location_id': locations['place'].id.__str__(),
+        'lot_id': lots[0].id.__str__(),
+        'quantity': 10.0,
+        'reserved_quantity': 5,
+        'expiration_date': datetime.datetime.now().isoformat(),
+        'uom_id': uoms[0].id.__str__()
     }
-    response = await async_inventory_client.post("/api/inventory/location/create", json=create_data, headers=headers['superadmin'])
+    response = await async_inventory_client.post("/api/inventory/quant/create", json=create_data, headers=headers['superadmin'])
     assert response.status_code == 200
     data = response.json()
-    location_id = data['id']
+    lot_id_1 = data['id']
     #--------------------------------
-    # Изменяем локацию
+    # Изменяем
     update_data = {
-        'title': 'zone location',
-        'active': False,
-        'location_type_id': location_types['zone'].id.__str__(),
-        'product_storage_type_ids': [product_storage_types[0].id.__str__(),],
-        'homogeneity': False,
-        'allow_create_package': False,
-
+        'product_id': products[0].id.__str__(),
+        'store_id': stores[1].id.__str__(),
+        'location_id': locations['zone'].id.__str__(),
+        'lot_id': None,
+        'quantity': 2.5,
+        'reserved_quantity': 8,
+        'expiration_date': datetime.datetime.now().isoformat(),
+        'uom_id': uoms[1].id.__str__()
     }
-    response = await async_inventory_client.put(f"/api/inventory/location/{location_id}", json=update_data, headers=headers['superadmin'], )
+    response = await async_inventory_client.put(f"/api/inventory/quant/{lot_id_1}", json=update_data, headers=headers['superadmin'], )
     assert response.status_code == 200
     # --------------------------------
     # Поиск
-    response = await async_inventory_client.get("/api/inventory/location", headers=headers['superadmin'], params={'size': 100, 'search': 'zone location'}
+    response = await async_inventory_client.get("/api/inventory/quant", headers=headers['superadmin'], params={'size': 100, 'search': '1000002'}
     )
     assert response.status_code == 200
     data = response.json()
     assert len(data.get('data')) == 1
     # Удаление
-    response = await async_inventory_client.delete(f"/api/inventory/location/{location_id}", headers=headers['superadmin'], )
+    response = await async_inventory_client.delete(f"/api/inventory/quant/{lot_id_1}", headers=headers['superadmin'], )
     assert response.status_code == 200

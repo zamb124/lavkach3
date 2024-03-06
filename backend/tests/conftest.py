@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 from typing import Type, Dict, Any, List
 
 import pytest
@@ -29,6 +30,8 @@ from app.inventory.inventory_server import app as basic_app
 from app.inventory.location.enums import LocationClass, PutawayStrategy
 from app.inventory.location.schemas import LocationTypeCreateScheme, LocationCreateScheme
 from app.inventory.location.services import LocationService, LocationTypeService
+from app.inventory.quant.schemas import LotCreateScheme
+from app.inventory.quant.services import LotService
 from core.config import config
 from core.db.session import Base
 from core.fastapi.schemas import CurrentUser
@@ -539,6 +542,27 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
     await db_session.delete(location_scrapped)
     await db_session.delete(location_buffer)
     await db_session.commit()
+
+@pytest_asyncio.fixture
+async def lots(db_session: AsyncSession, user_admin, companies, products) -> Company:
+    lot1 = await LotService(user_admin).create(LotCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'expiration_date': datetime.now().isoformat(),
+        'product_id': products[0].id.__str__(),
+        'external_id': '1000001',
+    }))
+    lot2 = await LotService(user_admin).create(LotCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'expiration_date': datetime.now().isoformat(),
+        'product_id': products[0].id.__str__(),
+        'external_id': '1000002',
+    }))
+    yield [lot1, lot2]
+    await db_session.delete(lot1)
+    await db_session.delete(lot2)
+    await db_session.commit()
+
+
 
 @pytest_asyncio.fixture
 async def roles(db_session: AsyncSession, companies, user_admin) -> User:

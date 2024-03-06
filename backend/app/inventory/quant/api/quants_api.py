@@ -40,8 +40,8 @@ async def quant_create(request: Request, schema: QuantCreateScheme):
     return await QuantService(request).create(obj=schema)
 
 
-@quant_router.get("/{quant_id}")
-async def quant_get(request: Request, quant_id: uuid.UUID) -> typing.Union[None, QuantScheme]:
+@quant_router.get("/{quant_id}", response_model=QuantScheme)
+async def quant_get(request: Request, quant_id: uuid.UUID):
     return await QuantService(request).get(id=quant_id)
 
 

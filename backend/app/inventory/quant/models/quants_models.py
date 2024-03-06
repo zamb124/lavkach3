@@ -9,11 +9,6 @@ from core.db import Base
 from core.db.mixins import AllMixin, guid, guid_primary_key
 
 
-class StoreType(str, Enum):
-    INTERNAL: str = 'internal'
-    WMS: str = 'wms'
-
-
 class Lot(Base, AllMixin):
     """
     **Партия** -  Партия обозначает уникальный набор аттрибутов конкретного количества товаров, например Единый срок годности
