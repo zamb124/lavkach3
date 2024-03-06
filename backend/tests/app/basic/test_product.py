@@ -4,12 +4,12 @@ import pytest
 from sqlalchemy import func, select
 from tests.conftest import *
 @pytest.mark.asyncio
-async def test_list_filter_store(async_client, headers, stores):
+async def test_crud_product_category(async_client, headers, stores, companies):
     """
-    Проверяем что работает список с фильтрами
+    Проверяем rруд вокруг товаров
     """
     response = await async_client.get(
-        "/api/store",
+        "/api/product",
         headers=headers['superadmin'],
         params={'size': 100}
     )

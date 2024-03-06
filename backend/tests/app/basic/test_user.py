@@ -3,8 +3,7 @@ from unittest import mock
 import pytest
 from sqlalchemy import func, select
 import pytest_asyncio
-
-
+@pytest.mark.asyncio
 async def test_signup(async_client, headers):
     request_data = {
         "user": {
@@ -27,7 +26,7 @@ async def test_signup(async_client, headers):
     response = await async_client.post("/api/user/signup", json=request_data)
     assert response.status_code == 200
 
-
+@pytest.mark.asyncio
 async def test_list_filter_company(async_client, headers):
     """
     Проверяем что работает список с фильтрами
@@ -50,7 +49,7 @@ async def test_list_filter_company(async_client, headers):
     data = response.json()
     assert len(data.get('data')) == 2
 
-
+@pytest.mark.asyncio
 async def test_user_edit(async_client, headers):
     response = await async_client.get(
         "/api/user",
@@ -69,7 +68,7 @@ async def test_user_edit(async_client, headers):
     assert data['nickname'] == 'admin_edited'
     assert response.status_code == 200
 
-
+@pytest.mark.asyncio
 async def test_user_login(async_client, headers):
     body = {
         "email": "company_support@gmail.com",
@@ -80,7 +79,7 @@ async def test_user_login(async_client, headers):
     data = response.json()
     assert data['nickname'] == 'Support vasya'
 
-
+@pytest.mark.asyncio
 async def test_user_crud(async_client, headers, companies, roles):
     """
     Полный тест круда модельки

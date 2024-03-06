@@ -1,26 +1,26 @@
-# FastAPI SUKA Project
+# SUKA Project
+
+# todo:
+1) Вынести Auth, юзеров и роли/пермиты в отдельный сервис
+2) 
+
+## Функциональные возможности
+todo:
 
 # Features
-- Async SQLAlchemy session
-- Custom user class
-- Top-level dependency
-- Dependencies for specific permissions
-- Celery
-- Dockerize(Hot reload)
-- Event dispatcher
-- Cache
+- Auth
+- Inventory (wms)
 
 ## Run
 
-```python
-python3 main.py --env local|dev|prod --debug
+```bash
+docker compose up
 ```
 
 ## SQLAlchemy for asyncio context
 
 ```python
 from core.db import Transactional, session
-
 
 @Transactional()
 async def create_user(self):
@@ -58,7 +58,6 @@ If you need additional logic to use the database, refer to the `get_bind()` meth
 ```python
 from fastapi import Request
 
-
 @home_router.get("/")
 def home(request: Request):
     return request.user.id
@@ -92,8 +91,6 @@ After line 18, assign values that you added on `CurrentUser`.
 
 ## Top-level dependency
 
-**Note. Available from version 0.62 or higher.**
-
 Set a callable function when initialize FastAPI() app through `dependencies` argument.
 
 Refer `Logging` class inside of `core/fastapi/dependencies/logging.py` 
@@ -110,7 +107,6 @@ from core.fastapi.dependencies import (
 
 
 user_router = APIRouter()
-
 
 @user_router.get(
     "",

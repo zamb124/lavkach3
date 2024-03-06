@@ -21,6 +21,7 @@ class ProductStorageType(Base, AllMixin):
     __tablename__ = "product_storage_type"
     lsn_seq = Sequence(f'product_storage_type_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    external_id: Mapped[Optional[str]]
     title: Mapped[str] = mapped_column(index=True)
 
 class ProductType(str, Enum):

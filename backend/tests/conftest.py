@@ -18,7 +18,7 @@ from app.basic.user.models import User
 from app.basic.user.schemas import UserCreateScheme, RoleCreateScheme, LoginResponseSchema
 from app.basic.user.services import UserService
 from app.basic.user.services.role_service import RoleService
-from app.server import app
+from app.basic.basic_server import app
 from core.config import config
 from core.db.session import Base
 from core.fastapi.schemas import CurrentUser
@@ -143,22 +143,13 @@ async def companies(db_session: AsyncSession, user_admin) -> Company:
 
 @pytest_asyncio.fixture
 async def stores(db_session: AsyncSession, user_admin, companies) -> Company:
-    company1 = CompanyCreateScheme(title="Test company 1", currency='USD')
-    company2 = CompanyCreateScheme(title="Test company 2", currency='RUB')
-    company1_db = await CompanyService(user_admin).create(company1)
-    company2_db = await CompanyService(user_admin).create(company2)
-    yield [company1_db, company2_db]
-    await db_session.delete(company1_db)
-    await db_session.delete(company2_db)
-    await db_session.commit()
-
-    store1 = StoreCreateScheme(title="Store company 1", currency='USD')
-    store2 = StoreCreateScheme(title="Store company 2", currency='RUB')
-    company1_db = await StoreService(user_admin).create(store1)
-    company2_db = await StoreService(user_admin).create(store2)
-    yield [company1_db, company2_db]
-    await db_session.delete(company1_db)
-    await db_session.delete(company2_db)
+    store1 = StoreCreateScheme(title="Store company 1", company_id=companies[0].id, address='addres 1')
+    store2 = StoreCreateScheme(title="Store company 2",  company_id=companies[1].id, address='addres 1')
+    store1_db = await StoreService(user_admin).create(store1)
+    store2_db = await StoreService(user_admin).create(store2)
+    yield [store1_db, store2_db]
+    await db_session.delete(store1_db)
+    await db_session.delete(store2_db)
     await db_session.commit()
 
 
