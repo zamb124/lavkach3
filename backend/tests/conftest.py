@@ -30,8 +30,8 @@ from app.inventory.inventory_server import app as basic_app
 from app.inventory.location.enums import LocationClass, PutawayStrategy
 from app.inventory.location.schemas import LocationTypeCreateScheme, LocationCreateScheme
 from app.inventory.location.services import LocationService, LocationTypeService
-from app.inventory.quant.schemas import LotCreateScheme
-from app.inventory.quant.services import LotService
+from app.inventory.quant.schemas import LotCreateScheme, QuantCreateScheme
+from app.inventory.quant.services import LotService, QuantService
 from core.config import config
 from core.db.session import Base
 from core.fastapi.schemas import CurrentUser
@@ -562,6 +562,35 @@ async def lots(db_session: AsyncSession, user_admin, companies, products) -> Com
     await db_session.delete(lot2)
     await db_session.commit()
 
+@pytest_asyncio.fixture
+async def quants(db_session: AsyncSession, user_admin, companies, lots, products, stores, locations, uoms) -> Company:
+    quant1 = await QuantService(user_admin).create(QuantCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'product_id': products[0].id.__str__(),
+        'store_id': stores[0].id.__str__(),
+        'location_id': locations['place'].id.__str__(),
+        'lot_id': lots[0].id.__str__(),
+        'quantity': 10.0,
+        'reserved_quantity': 5,
+        'expiration_date': datetime.now().isoformat(),
+        'uom_id': uoms[0].id.__str__()
+    }))
+    quant2 = await QuantService(user_admin).create(QuantCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'product_id': products[0].id.__str__(),
+        'store_id': stores[0].id.__str__(),
+        'location_id': locations['zone'].id.__str__(),
+        'lot_id': lots[1].id.__str__(),
+        'quantity': 5,
+        'reserved_quantity': 0,
+        'expiration_date': datetime.now().isoformat(),
+        'uom_id': uoms[0].id.__str__()
+    }))
+    yield [quant1, quant2]
+    await db_session.delete(quant1)
+    await db_session.delete(quant2)
+    await db_session.commit()
+
 
 
 @pytest_asyncio.fixture
@@ -644,6 +673,6 @@ async def headers(token) -> dict:
 
 
 @pytest.mark.asyncio
-async def test_health(async_client, headers, stores, product_categories, product_storage_types, uom_categories, uoms, products, locations):
+async def test_health(async_client, headers, stores, product_categories, product_storage_types, uom_categories, uoms, products, locations, quants):
     response = await async_client.get("/api/fundamental/health", headers=headers['superadmin'])
     assert response.status_code == 200
