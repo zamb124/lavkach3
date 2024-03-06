@@ -3,53 +3,53 @@ import uuid
 
 from fastapi_filter import FilterDepends
 
-from app.inventory.quant.schemas import (
-    QuantScheme,
-    QuantCreateScheme,
-    QuantUpdateScheme,
+from app.inventory.order.schemas import (
+    OrderScheme,
+    OrderCreateScheme,
+    OrderUpdateScheme,
     ExceptionResponseSchema,
-    QuantListSchema,
-    QuantFilter
+    OrderListSchema,
+    OrderFilter,
 )
-from app.inventory.quant.services import QuantService
+from app.inventory.order.services import OrderService
 from core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )
 from fastapi import APIRouter, Depends, Query, Request
 
-quant_router = APIRouter(
+order_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 
 
-@quant_router.get("", response_model=QuantListSchema)
-async def quant_list(
+@order_router.get("", response_model=OrderListSchema)
+async def order_list(
         request: Request,
-        model_filter: QuantFilter = FilterDepends(QuantFilter),
+        model_filter: OrderFilter = FilterDepends(OrderFilter),
         size: int = Query(ge=1, le=100, default=100),
 ):
-    data = await QuantService(request).list(model_filter, size)
+    data = await OrderService(request).list(model_filter, size)
     cursor = model_filter.lsn__gt
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@quant_router.post("/create", response_model=QuantScheme)
-async def quant_create(request: Request, schema: QuantCreateScheme):
-    return await QuantService(request).create(obj=schema)
+@order_router.post("/create", response_model=OrderScheme)
+async def order_create(request: Request, schema: OrderCreateScheme):
+    return await OrderService(request).create(obj=schema)
 
 
-@quant_router.get("/{quant_id}")
-async def quant_get(request: Request, quant_id: uuid.UUID) -> typing.Union[None, QuantScheme]:
-    return await QuantService(request).get(id=quant_id)
+@order_router.get("/{order_id}")
+async def order_get(request: Request, order_id: uuid.UUID) -> typing.Union[None, OrderScheme]:
+    return await OrderService(request).get(id=order_id)
 
 
-@quant_router.put("/{quant_id}", response_model=QuantScheme)
-async def quant_update(request: Request, quant_id: uuid.UUID, schema: QuantUpdateScheme):
-    return await QuantService(request).update(id=quant_id, obj=schema)
+@order_router.put("/{order_id}", response_model=OrderScheme)
+async def order_update(request: Request, order_id: uuid.UUID, schema: OrderUpdateScheme):
+    return await OrderService(request).update(id=order_id, obj=schema)
 
 
-@quant_router.delete("/{quant_id}")
-async def quant_delete(request: Request, quant_id: uuid.UUID):
-    await QuantService(request).delete(id=quant_id)
+@order_router.delete("/{order_id}")
+async def order_delete(request: Request, order_id: uuid.UUID):
+    await OrderService(request).delete(id=order_id)

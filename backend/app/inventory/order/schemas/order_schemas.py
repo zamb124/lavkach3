@@ -4,41 +4,51 @@ from typing import Optional, List
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
+
+from app.inventory.location.enums import PutawayStrategy
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.inventory.order.models import Order
+from app.inventory.order.models import Order, OrderType
+from app.inventory.order.models.order_models import OrderStatus, OrderClass, BackOrderAction, ReservationMethod
 
 
-class QuantBaseScheme(BaseModel):
+class OrderBaseScheme(BaseModel):
     company_id: UUID4
     vars: Optional[dict] = None
-    product_id: UUID4
+    parent_id: Optional[UUID4] = None
+    external_id: Optional[str] = None
     store_id: UUID4
-    location_id: Optional[UUID4]
-    lot_id: Optional[UUID4]
-    owner_id: Optional[UUID4]
+    partner_id: Optional[UUID4] = None
+    lot_id: UUID4 = None
+    origin_type: Optional[str] = None
+    origin_number: Optional[str] = None
+    planned_date: Optional[datetime]
+    actual_date: Optional[datetime]
+    created_by: UUID4
+    edited_by: UUID4
     expiration_date: Optional[datetime]
-    quantity: float
-    reserved_quantity: Optional[float]
-    uom_id: UUID4
+    users_ids: Optional[list[UUID4]] = []
+    description: Optional[str]
+    status: OrderStatus
+    moves: Optional[list[UUID4]] = []
 
 
-class QuantUpdateScheme(QuantBaseScheme):
+class OrderUpdateScheme(OrderBaseScheme):
     vars: Optional[dict] = None
-    product_id: Optional[UUID4]
-    location_id: Optional[UUID4]
-    lot_id: Optional[UUID4]
-    owner_id: Optional[UUID4]
-    quantity: Optional[float]
-    reserved_quantity: Optional[float]
-    uom_id: Optional[UUID4]
+    external_id: Optional[str] = None
+    lot_id: Optional[UUID4] = None
+    origin_type: Optional[str] = None
+    origin_number: Optional[str] = None
+    planned_date: Optional[datetime] = None
+    expiration_date: Optional[datetime] = None
+    description: Optional[str] = None
+    partner_id: Optional[UUID4] = None
 
-
-class QuantCreateScheme(QuantBaseScheme):
+class OrderCreateScheme(OrderBaseScheme):
     pass
 
 
-class QuantScheme(QuantCreateScheme, TimeStampScheme):
+class OrderScheme(OrderCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
     company: UUID4
@@ -47,24 +57,26 @@ class QuantScheme(QuantCreateScheme, TimeStampScheme):
         orm_mode = True
 
 
-class QuantFilter(Filter):
-    lsn__gt: Optional[int] = Field(alias="cursor")
-    id__in: Optional[List[UUID4]] = Field(alias="id", default=0)
+class OrderFilter(Filter):
+    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
+    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
     created_at_gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
     created_at_lt: Optional[datetime] = Field(description="less created", default=None)
     updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
     updated_at_lt: Optional[datetime] = Field(description="less updated", default=None)
     company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
+    store_id__in: Optional[List[UUID4]] = Field(alias="store_id", default=None)
 
     class Config:
         populate_by_name = True
 
     class Constants(Filter.Constants):
-        model = Quant
+        model = Order
         ordering_field_name = "order_by"
         search_field_name = "search"
         search_model_fields = ["company_id", "product_id", "lot_id"]
 
 
-class QuantListSchema(GenericListSchema):
-    data: Optional[List[QuantScheme]]
+class OrderListSchema(GenericListSchema):
+    data: Optional[List[OrderScheme]]
+

@@ -2,29 +2,29 @@ from typing import Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.inventory.quant.models.quants_models import Quant
-from app.inventory.quant.schemas.quants_schemas import QuantCreateScheme, QuantUpdateScheme, QuantFilter
+from app.inventory.order.models.order_models import Order, OrderType
+from app.inventory.order.schemas.order_schemas import OrderCreateScheme, OrderUpdateScheme, OrderFilter
 from core.db.session import session
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
 
-class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, QuantFilter]):
+class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, OrderFilter]):
     def __init__(self, request, db_session: AsyncSession = None):
-        super(QuantService, self).__init__(request, Quant, db_session)
+        super(OrderService, self).__init__(request, Order, db_session)
 
-    @permit('quant_edit')
+    @permit('order_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
-        return await super(QuantService, self).update(id, obj)
+        return await super(OrderService, self).update(id, obj)
 
-    @permit('quant_list')
+    @permit('order_list')
     async def list(self, _filter: FilterSchemaType, size: int):
-        return await super(QuantService, self).list(_filter, size)
+        return await super(OrderService, self).list(_filter, size)
 
-    @permit('quant_create')
+    @permit('order_create')
     async def create(self, obj: CreateSchemaType) -> ModelType:
-        return await super(QuantService, self).create(obj)
+        return await super(OrderService, self).create(obj)
 
-    @permit('quant_delete')
+    @permit('order_delete')
     async def delete(self, id: Any) -> None:
-        return await super(QuantService, self).delete(id)
+        return await super(OrderService, self).delete(id)
