@@ -12,9 +12,7 @@ from core.helpers.fastapi_filter_patch import BaseFilter
 
 class UomBaseScheme(BaseModel):
     title: str = Field(description="Title")
-    external_id: Optional[str]
     category_id: UUID4
-    company_id: UUID4
     type: UomType
     ratio: float
     precision: float
@@ -25,7 +23,7 @@ class UomUpdateScheme(UomBaseScheme):
 
 
 class UomCreateScheme(UomBaseScheme):
-    pass
+    company_id: UUID4
 
 
 class UomScheme(UomCreateScheme, TimeStampScheme):

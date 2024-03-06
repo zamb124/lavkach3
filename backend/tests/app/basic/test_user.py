@@ -2,7 +2,6 @@ from unittest import mock
 
 import pytest
 from sqlalchemy import func, select
-import pytest_asyncio
 @pytest.mark.asyncio
 async def test_signup(async_client, headers):
     request_data = {

@@ -51,7 +51,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         return executed_data.scalars().all()
 
     async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
-        entity = self.model(**obj.dict())
+        entity = self.model(**obj.model_dump())
         self.session.add(entity)
         if commit:
             try:

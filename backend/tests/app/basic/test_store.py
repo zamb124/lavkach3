@@ -2,7 +2,6 @@ from unittest import mock
 
 import pytest
 from sqlalchemy import func, select
-from tests.conftest import *
 @pytest.mark.asyncio
 async def test_list_filter_store(async_client, headers, stores):
     """
@@ -41,7 +40,7 @@ async def test_update_store(async_client, headers, stores):
     data = response.json()
     assert data['title'] == update_json['title']
     assert data['address'] == update_json['address']
-    assert data['address'] == update_json['external_id']
+    assert data['external_id'] == update_json['external_id']
 
 @pytest.mark.asyncio
 async def test_crud_store(async_client, headers, companies):

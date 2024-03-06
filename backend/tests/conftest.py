@@ -12,13 +12,23 @@ from starlette.requests import Request
 from app.basic.company.models import Company
 from app.basic.company.schemas import CompanyCreateScheme
 from app.basic.company.services import CompanyService
+from app.basic.product.models import ProductType
 from app.basic.store.schemas import StoreCreateScheme
 from app.basic.store.services import StoreService
+from app.basic.product.services import ProductCategoryService, ProductStorageTypeService, ProductService
+from app.basic.product.schemas import ProductCategoryCreateScheme, ProductStorageTypeCreateScheme, ProductCreateScheme
+from app.basic.uom.models import UomType
+from app.basic.uom.schemas import UomCategoryCreateScheme, UomCreateScheme
+from app.basic.uom.services import UomCategoryService, UomService
 from app.basic.user.models import User
 from app.basic.user.schemas import UserCreateScheme, RoleCreateScheme, LoginResponseSchema
 from app.basic.user.services import UserService
 from app.basic.user.services.role_service import RoleService
 from app.basic.basic_server import app
+from app.inventory.inventory_server import app as basic_app
+from app.inventory.location.enums import LocationClass, PutawayStrategy
+from app.inventory.location.schemas import LocationTypeCreateScheme, LocationCreateScheme
+from app.inventory.location.services import LocationService, LocationTypeService
 from core.config import config
 from core.db.session import Base
 from core.fastapi.schemas import CurrentUser
@@ -111,6 +121,12 @@ async def async_client(override_get_db, db_session, ovveride_base_init):
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
 
+@pytest_asyncio.fixture(scope="session")
+async def async_inventory_client(override_get_db, db_session, ovveride_base_init):
+    base.BaseService.__init__ = ovveride_base_init
+    async with AsyncClient(app=basic_app, base_url="http://test") as ac:
+        yield ac
+
 
 @pytest_asyncio.fixture
 async def user_admin(db_session: AsyncSession) -> User:
@@ -152,6 +168,377 @@ async def stores(db_session: AsyncSession, user_admin, companies) -> Company:
     await db_session.delete(store2_db)
     await db_session.commit()
 
+@pytest_asyncio.fixture
+async def product_categories(db_session: AsyncSession, user_admin, companies) -> Company:
+    product_category1 = await ProductCategoryService(user_admin).create(ProductCategoryCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'Some Category 1'
+    }))
+    product_category2 = await ProductCategoryService(user_admin).create(ProductCategoryCreateScheme(**{
+        'company_id': companies[1].id.__str__(),
+        'title': 'Some Category 2'
+    }))
+    yield [product_category1, product_category2]
+    await db_session.delete(product_category1)
+    await db_session.delete(product_category2)
+    await db_session.commit()
+
+@pytest_asyncio.fixture
+async def product_storage_types(db_session: AsyncSession, user_admin, companies) -> Company:
+    product_storage_type1 = await ProductStorageTypeService(user_admin).create(ProductStorageTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'Product Storage Type 1'
+    }))
+    product_storage_type2 = await ProductStorageTypeService(user_admin).create(ProductStorageTypeCreateScheme(**{
+        'company_id': companies[1].id.__str__(),
+        'title': 'Product Storage Type 2'
+    }))
+    yield [product_storage_type1, product_storage_type2]
+    await db_session.delete(product_storage_type1)
+    await db_session.delete(product_storage_type2)
+    await db_session.commit()
+
+@pytest_asyncio.fixture
+async def uom_categories(db_session: AsyncSession, user_admin, companies) -> Company:
+    uom_category1 = await UomCategoryService(user_admin).create(UomCategoryCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'Uom category 1'
+    }))
+    uom_category2 = await UomCategoryService(user_admin).create(UomCategoryCreateScheme(**{
+        'company_id': companies[1].id.__str__(),
+        'title': 'Uom category 2'
+    }))
+    yield [uom_category1, uom_category2]
+    await db_session.delete(uom_category1)
+    await db_session.delete(uom_category2)
+    await db_session.commit()
+
+@pytest_asyncio.fixture
+async def uoms(db_session: AsyncSession, user_admin, companies, uom_categories) -> Company:
+    uom1 = await UomService(user_admin).create(UomCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'ST',
+        'category_id': uom_categories[0].id.__str__(),
+        'type': UomType.STANDART,
+        'ratio': 1,
+        'precision': 1
+    }))
+    uom2 = await UomService(user_admin).create(UomCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'PAK10',
+        'category_id': uom_categories[0].id.__str__(),
+        'type': UomType.BIGGER,
+        'ratio': 12,
+        'precision': 0.5
+    }))
+    yield [uom1, uom2]
+    await db_session.delete(uom1)
+    await db_session.delete(uom2)
+    await db_session.commit()
+
+@pytest_asyncio.fixture
+async def products(db_session: AsyncSession, user_admin, companies, uoms, product_storage_types, product_categories) -> Company:
+    product1 = await ProductService(user_admin).create(ProductCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'Product 1',
+        'description': 'Product Desc 1',
+        'external_id': 'Product 1',
+        'product_type': ProductType.STORABLE,
+        'uom_id': uoms[0].id.__str__(),
+        'product_category_id': product_categories[0].id.__str__(),
+        'product_storage_type_id': product_storage_types[0].id.__str__(),
+        'barcodes': ['Product1 Barcode1', 'Product1 Barcode2'],
+    }))
+    product2 = await ProductService(user_admin).create(ProductCreateScheme(**{
+        'company_id': companies[1].id.__str__(),
+        'title': 'Product 1',
+        'description': 'Product 2',
+        'external_id': 'Product 2',
+        'product_type': ProductType.STORABLE,
+        'uom_id': uoms[1].id.__str__(),
+        'product_category_id': product_categories[1].id.__str__(),
+        'product_storage_type_id': product_storage_types[1].id.__str__(),
+        'barcodes': ['Product2 Barcode1', 'Product2 Barcode2'],
+    }))
+    yield [product1, product2]
+    await db_session.delete(product1)
+    await db_session.delete(product2)
+    await db_session.commit()
+
+
+@pytest_asyncio.fixture
+async def location_types(db_session: AsyncSession, user_admin, companies) -> Company:
+    location_type_partner = await LocationTypeService(user_admin).create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'PARTNER',
+        'location_class': LocationClass.PARTNER
+    }))
+    location_type_place = await LocationTypeService(user_admin).create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'PLACE',
+        'location_class': LocationClass.PLACE
+    }))
+    location_type_resource = await LocationTypeService(user_admin).create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'RESOURCE',
+        'location_class': LocationClass.RESOURCE
+    }))
+    location_type_package = await LocationTypeService(user_admin).create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'PACKAGE',
+        'location_class': LocationClass.PACKAGE
+    }))
+    location_type_zone = await LocationTypeService(user_admin).create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'ZONE',
+        'location_class': LocationClass.ZONE
+    }))
+    location_type_lost = await LocationTypeService(user_admin).create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'LOST',
+        'location_class': LocationClass.LOST
+    }))
+    location_type_inventory = await LocationTypeService(user_admin).create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'INVENTORY',
+        'location_class': LocationClass.INVENTORY
+    }))
+    location_type_scrap = await LocationTypeService(user_admin).create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'SCRAP',
+        'location_class': LocationClass.SCRAP
+    }))
+    location_type_scrapped = await LocationTypeService(user_admin).create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'SCRAPPED',
+        'location_class': LocationClass.SCRAPPED
+    }))
+    location_type_buffer = await LocationTypeService(user_admin).create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'BUFFER',
+        'location_class': LocationClass.BUFFER
+    }))
+    yield {
+        'partner': location_type_partner,
+        'place': location_type_place,
+        'resource': location_type_resource,
+        'package': location_type_package,
+        'zone': location_type_zone,
+        'lost': location_type_lost,
+        'inventory': location_type_inventory,
+        'scrap': location_type_scrap,
+        'scrapped': location_type_scrapped,
+        'buffer': location_type_buffer
+    }
+    await db_session.delete(location_type_partner)
+    await db_session.delete(location_type_place)
+    await db_session.delete(location_type_resource)
+    await db_session.delete(location_type_package)
+    await db_session.delete(location_type_zone)
+    await db_session.delete(location_type_lost)
+    await db_session.delete(location_type_inventory)
+    await db_session.delete(location_type_scrap)
+    await db_session.delete(location_type_scrapped)
+    await db_session.delete(location_type_buffer)
+    await db_session.commit()
+
+
+@pytest_asyncio.fixture
+async def locations(db_session: AsyncSession, user_admin, companies, stores, location_types, product_storage_types) -> dict:
+    location_partner = await LocationService(user_admin).create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'PARTNER',
+        'store_id': stores[0].id.__str__(),
+        #'parent_id': 'PARTNER',
+        'active': True,
+        'location_type_id': location_types['partner'].id.__str__(),
+        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
+        #'partner_id': 'PARTNER',
+        'homogeneity': False,
+        'allow_create_package': True,
+        'allowed_package_ids': [],
+        'exclusive_package_ids': [],
+        'allowed_order_types_ids': [],
+        'exclusive_order_types_ids': [],
+        'strategy': PutawayStrategy.FEFO
+
+    }))
+    location_place = await LocationService(user_admin).create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'PLACE',
+        'store_id': stores[0].id.__str__(),
+        # 'parent_id': 'PARTNER',
+        'active': True,
+        'location_type_id': location_types['place'].id.__str__(),
+        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
+        # 'partner_id': 'PARTNER',
+        'homogeneity': False,
+        'allow_create_package': True,
+        'allowed_package_ids': [],
+        'exclusive_package_ids': [],
+        'allowed_order_types_ids': [],
+        'exclusive_order_types_ids': [],
+        'strategy': PutawayStrategy.FEFO
+    }))
+    location_resource = await LocationService(user_admin).create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'RESOURCE',
+        'store_id': stores[0].id.__str__(),
+        # 'parent_id': 'PARTNER',
+        'active': True,
+        'location_type_id': location_types['resource'].id.__str__(),
+        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
+        # 'partner_id': 'PARTNER',
+        'homogeneity': False,
+        'allow_create_package': True,
+        'allowed_package_ids': [],
+        'exclusive_package_ids': [],
+        'allowed_order_types_ids': [],
+        'exclusive_order_types_ids': [],
+        'strategy': PutawayStrategy.FEFO
+    }))
+    location_package = await LocationService(user_admin).create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'PACKAGE',
+        'store_id': stores[0].id.__str__(),
+        # 'parent_id': 'PARTNER',
+        'active': True,
+        'location_type_id': location_types['package'].id.__str__(),
+        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
+        # 'partner_id': 'PARTNER',
+        'homogeneity': False,
+        'allow_create_package': True,
+        'allowed_package_ids': [],
+        'exclusive_package_ids': [],
+        'allowed_order_types_ids': [],
+        'exclusive_order_types_ids': [],
+        'strategy': PutawayStrategy.FEFO
+    }))
+    location_zone = await LocationService(user_admin).create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'ZONE',
+        'store_id': stores[0].id.__str__(),
+        # 'parent_id': 'PARTNER',
+        'active': True,
+        'location_type_id': location_types['zone'].id.__str__(),
+        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
+        # 'partner_id': 'PARTNER',
+        'homogeneity': False,
+        'allow_create_package': True,
+        'allowed_package_ids': [],
+        'exclusive_package_ids': [],
+        'allowed_order_types_ids': [],
+        'exclusive_order_types_ids': [],
+        'strategy': PutawayStrategy.FEFO
+    }))
+    location_lost = await LocationService(user_admin).create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'LOST',
+        'store_id': stores[0].id.__str__(),
+        # 'parent_id': 'PARTNER',
+        'active': True,
+        'location_type_id': location_types['lost'].id.__str__(),
+        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
+        # 'partner_id': 'PARTNER',
+        'homogeneity': False,
+        'allow_create_package': True,
+        'allowed_package_ids': [],
+        'exclusive_package_ids': [],
+        'allowed_order_types_ids': [],
+        'exclusive_order_types_ids': [],
+        'strategy': PutawayStrategy.FEFO
+    }))
+    location_inventory = await LocationService(user_admin).create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'LOST',
+        'store_id': stores[0].id.__str__(),
+        # 'parent_id': 'PARTNER',
+        'active': True,
+        'location_type_id': location_types['inventory'].id.__str__(),
+        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
+        # 'partner_id': 'PARTNER',
+        'homogeneity': False,
+        'allow_create_package': True,
+        'allowed_package_ids': [],
+        'exclusive_package_ids': [],
+        'allowed_order_types_ids': [],
+        'exclusive_order_types_ids': [],
+        'strategy': PutawayStrategy.FEFO
+    }))
+    location_scrap = await LocationService(user_admin).create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'SCRAP',
+        'store_id': stores[0].id.__str__(),
+        # 'parent_id': 'PARTNER',
+        'active': True,
+        'location_type_id': location_types['scrap'].id.__str__(),
+        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
+        # 'partner_id': 'PARTNER',
+        'homogeneity': False,
+        'allow_create_package': True,
+        'allowed_package_ids': [],
+        'exclusive_package_ids': [],
+        'allowed_order_types_ids': [],
+        'exclusive_order_types_ids': [],
+        'strategy': PutawayStrategy.FEFO
+    }))
+    location_scrapped = await LocationService(user_admin).create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'SCRAPPED',
+        'store_id': stores[0].id.__str__(),
+        # 'parent_id': 'PARTNER',
+        'active': True,
+        'location_type_id': location_types['scrapped'].id.__str__(),
+        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
+        # 'partner_id': 'PARTNER',
+        'homogeneity': False,
+        'allow_create_package': True,
+        'allowed_package_ids': [],
+        'exclusive_package_ids': [],
+        'allowed_order_types_ids': [],
+        'exclusive_order_types_ids': [],
+        'strategy': PutawayStrategy.FEFO
+    }))
+    location_buffer = await LocationService(user_admin).create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'SCRAPPED',
+        'store_id': stores[0].id.__str__(),
+        # 'parent_id': 'PARTNER',
+        'active': True,
+        'location_type_id': location_types['buffer'].id.__str__(),
+        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
+        # 'partner_id': 'PARTNER',
+        'homogeneity': False,
+        'allow_create_package': True,
+        'allowed_package_ids': [],
+        'exclusive_package_ids': [],
+        'allowed_order_types_ids': [],
+        'exclusive_order_types_ids': [],
+        'strategy': PutawayStrategy.FEFO
+    }))
+    yield {
+        'partner': location_partner,
+        'place': location_place,
+        'resource': location_resource,
+        'package': location_package,
+        'zone': location_zone,
+        'lost': location_lost,
+        'inventory': location_inventory,
+        'scrap': location_scrap,
+        'scrapped': location_scrapped,
+        'buffer': location_buffer
+    }
+    await db_session.delete(location_partner)
+    await db_session.delete(location_place)
+    await db_session.delete(location_resource)
+    await db_session.delete(location_package)
+    await db_session.delete(location_zone)
+    await db_session.delete(location_lost)
+    await db_session.delete(location_inventory)
+    await db_session.delete(location_scrap)
+    await db_session.delete(location_scrapped)
+    await db_session.delete(location_buffer)
+    await db_session.commit()
 
 @pytest_asyncio.fixture
 async def roles(db_session: AsyncSession, companies, user_admin) -> User:
@@ -222,6 +609,7 @@ async def token(db_session: AsyncSession, users: User, user_admin) -> dict[str, 
     }
 
 
+
 @pytest_asyncio.fixture
 async def headers(token) -> dict:
     return {
@@ -232,6 +620,6 @@ async def headers(token) -> dict:
 
 
 @pytest.mark.asyncio
-async def test_health(async_client, headers):
+async def test_health(async_client, headers, stores, product_categories, product_storage_types, uom_categories, uoms, products, locations):
     response = await async_client.get("/api/fundamental/health", headers=headers['superadmin'])
     assert response.status_code == 200

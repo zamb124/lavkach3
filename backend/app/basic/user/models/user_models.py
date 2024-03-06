@@ -42,7 +42,7 @@ class User(Base, TimestampMixin, VarsMixin, LsnMixin):
     locale: Mapped[str] = mapped_column(LocaleType, default='en_US')
     phone_number: Mapped[Optional[str]] = mapped_column(PhoneNumberType)
     nickname: Mapped[str]
-    is_admin: Mapped[bool]
+    is_admin: Mapped[bool] = mapped_column(default=False)
     type: Mapped[str] = mapped_column(default=UserType.COMMON)
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey("store.id"), index=True)
     store: Mapped['Store'] = relationship(back_populates='store_users', lazy='selectin')

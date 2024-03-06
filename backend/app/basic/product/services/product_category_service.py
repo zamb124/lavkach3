@@ -11,7 +11,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 
 class ProductCategoryService(BaseService[ProductCategory, ProductCategoryCreateScheme, ProductCategoryUpdateScheme, ProductCategoryFilter]):
-    def __init__(self, request, db_session):
+    def __init__(self, request, db_session=None):
         super(ProductCategoryService, self).__init__(request, ProductCategory, db_session)
 
     @permit('product_category_edit')

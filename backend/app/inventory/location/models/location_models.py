@@ -45,8 +45,8 @@ class Location(Base, AllMixin):
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
     homogeneity: Mapped[Optional[bool]] = mapped_column(default=False)
     allow_create_package: Mapped[Optional[bool]] = mapped_column(default=True)                                   # Можно ли создавать упаковки# Признак Гомогенности
-    allowed_package_ids: Mapped[Optional[list['Location']]] = mapped_column(ARRAY(Uuid), index=True)             # Разрешенные типы упаковок
-    exclusive_package_ids: Mapped[Optional[list['Location']]] = mapped_column(ARRAY(Uuid), index=True)           # Исключение типы упаковок
-    allowed_order_types_ids: Mapped[Optional[list['OrderType']]] = mapped_column(ARRAY(Uuid), index=True)        # Разрешенные типы упаковок
-    exclusive_order_types_ids: Mapped[Optional[list['OrderType']]] = mapped_column(ARRAY(Uuid), index=True)      # Разрешенные типы упаковок
+    allowed_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)             # Разрешенные типы упаковок
+    exclusive_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)           # Исключение типы упаковок
+    allowed_order_types_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)        # Разрешенные типы упаковок
+    exclusive_order_types_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)      # Разрешенные типы упаковок
     strategy: Mapped[Optional['PutawayStrategy']] = mapped_column(default=PutawayStrategy.FEFO)                  # Стратегия комплектования

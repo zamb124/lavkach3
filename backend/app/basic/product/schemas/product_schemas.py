@@ -12,7 +12,6 @@ from app.basic.uom.schemas import UomScheme
 
 
 class ProductBaseScheme(BaseModel):
-    company_id: UUID4
     vars: Optional[dict] = None
     title: str
     description: Optional[str] = None
@@ -34,13 +33,12 @@ class ProductUpdateScheme(ProductBaseScheme):
 
 
 class ProductCreateScheme(ProductBaseScheme):
-    pass
+    company_id: UUID4
 
 
 class ProductScheme(ProductCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
-    company: CompanyScheme
     uom: UomScheme
 
     class Config:
@@ -48,15 +46,15 @@ class ProductScheme(ProductCreateScheme, TimeStampScheme):
 
 
 class ProductFilter(Filter):
-    lsn__gt: Optional[int] = Field(alias="cursor")
-    id__in: Optional[List[UUID4]] = Field(alias="id")
-    created_at_gte: Optional[datetime] = Field(description="bigger or equal created")
-    created_at_lt: Optional[datetime] = Field(description="less created")
-    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated")
-    updated_at_lt: Optional[datetime] = Field(description="less updated")
-    company_id__in: Optional[List[UUID4]] = Field(alias="company_id")
-    title__in: Optional[List[str]] = Field(description="title")
-    order_by: Optional[List[str]]
+    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
+    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
+    created_at_gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
+    created_at_lt: Optional[datetime] = Field(description="less created", default=None)
+    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
+    updated_at_lt: Optional[datetime] = Field(description="less updated", default=None)
+    company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
+    title__in: Optional[List[str]] = Field(description="title", default=None)
+    order_by: Optional[List[str]] = ["created_at"]
     search: Optional[str]
 
     class Config:

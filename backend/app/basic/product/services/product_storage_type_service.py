@@ -11,7 +11,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 
 class ProductStorageTypeService(BaseService[ProductStorageType, ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, ProductStorageTypeFilter]):
-    def __init__(self, request, db_session):
+    def __init__(self, request, db_session=None):
         super(ProductStorageTypeService, self).__init__(request, ProductStorageType, db_session)
 
     @permit('product_storage_type_edit')

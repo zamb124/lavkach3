@@ -4,36 +4,36 @@ from typing import Optional, List
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
-from app.basic.product.models.product_models import ProductCategory
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.basic.company.schemas import CompanyScheme
+from app.inventory.location.models import LocationType
+from app.inventory.location.enums import LocationClass
 
-
-class ProductCategoryBaseScheme(BaseModel):
+class LocationTypeBaseScheme(BaseModel):
+    company_id: UUID4
     vars: Optional[dict] = None
     title: str
-    external_id: Optional[str] = None
-    parent_id: Optional[list[UUID4]] = None
+    location_class: LocationClass
 
 
-class ProductCategoryUpdateScheme(ProductCategoryBaseScheme):
+class LocationTypeUpdateScheme(LocationTypeBaseScheme):
     title: Optional[str] = None
+    location_class: Optional[LocationClass] = None
 
 
-class ProductCategoryCreateScheme(ProductCategoryBaseScheme):
-    company_id: UUID4
+class LocationTypeCreateScheme(LocationTypeBaseScheme):
+    pass
 
 
-class ProductCategoryScheme(ProductCategoryCreateScheme, TimeStampScheme):
+class LocationTypeScheme(LocationTypeCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
-    company_id: UUID4
+
     class Config:
         orm_mode = True
 
 
-class ProductCategoryFilter(Filter):
+class LocationTypeFilter(Filter):
     lsn__gt: Optional[int] = Field(alias="cursor", default=0)
     id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
     created_at_gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
@@ -41,19 +41,16 @@ class ProductCategoryFilter(Filter):
     updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
     updated_at_lt: Optional[datetime] = Field(description="less updated", default=None)
     company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
-    title__in: Optional[List[str]] = Field(description="title", default=None)
-    order_by: Optional[List[str]] = ["created_at"]
-    search: Optional[str]
 
     class Config:
         populate_by_name = True
 
     class Constants(Filter.Constants):
-        model = ProductCategory
+        model = LocationType
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["title", "external_id"]
+        search_model_fields = ["title",]
 
 
-class ProductCategoryListSchema(GenericListSchema):
-    data: Optional[List[ProductCategoryScheme]]
+class LocationTypeListSchema(GenericListSchema):
+    data: Optional[List[LocationTypeScheme]]

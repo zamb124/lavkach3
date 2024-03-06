@@ -50,6 +50,6 @@ async def location_update(request: Request, location_id: uuid.UUID, schema: Loca
     return await LocationService(request).update(id=location_id, obj=schema)
 
 
-@location_router.delete("/{Llocation_id}")
+@location_router.delete("/{location_id}")
 async def location_delete(request: Request, location_id: uuid.UUID):
     await LocationService(request).delete(id=location_id)

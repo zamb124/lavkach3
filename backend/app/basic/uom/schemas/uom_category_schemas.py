@@ -11,8 +11,6 @@ from core.schemas.timestamps import TimeStampScheme
 
 class UomCategoryBaseScheme(BaseModel):
     title: str = Field(description="Title")
-    external_id: Optional[str]
-    company_id: UUID4
 
 
 class UomCategoryUpdateScheme(UomCategoryBaseScheme):
@@ -20,7 +18,7 @@ class UomCategoryUpdateScheme(UomCategoryBaseScheme):
 
 
 class UomCategoryCreateScheme(UomCategoryBaseScheme):
-    pass
+    company_id: UUID4
 
 
 class UomCategoryScheme(UomCategoryCreateScheme, TimeStampScheme):
