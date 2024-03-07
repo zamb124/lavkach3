@@ -14,14 +14,16 @@ from app.inventory.order.models.order_models import OrderClass, BackOrderAction,
 
 
 class OrderTypeBaseScheme(BaseModel):
-    company_id: UUID4
     vars: Optional[dict] = None
+    prefix: str
     order_class: OrderClass
+    title: str
     allowed_location_src_ids: Optional[list[UUID4]] = None
     exclusive_location_src_ids: Optional[list[UUID4]] = None
     allowed_location_dest_ids: Optional[list[UUID4]] = None
     exclusive_location_dest_ids: Optional[list[UUID4]] = None
     backorder_order_type_id: Optional[UUID4] = None
+    backorder_action_type: BackOrderAction
     store_id: Optional[UUID4] = None
     partner_id: Optional[UUID4] = None
     reservation_time_before: Optional[int] = None
@@ -31,24 +33,28 @@ class OrderTypeBaseScheme(BaseModel):
     allow_create_package: bool = True
     can_create_order_manualy: bool = True
     overdelivery: bool = False
-
+    barcode: str
+    created_by: UUID4
+    edited_by: UUID4
 
 class OrderTypeUpdateScheme(OrderTypeBaseScheme):
+    prefix: Optional[str] = None
     backorder_action_type: BackOrderAction = BackOrderAction.ASK
     strategy: PutawayStrategy = PutawayStrategy.FEFO
     reservation_method: ReservationMethod = ReservationMethod.AT_CONFIRM
-    title: str
-    barcode: str
+    title: str = None
+    barcode: str = None
+    created_by: UUID4 = None
+    edited_by: UUID4 = None
 
 
 class OrderTypeCreateScheme(OrderTypeBaseScheme):
-    pass
+    company_id: UUID4
 
 
 class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
-    company: UUID4
     created_by: UUID4
     edited_by: UUID4
 

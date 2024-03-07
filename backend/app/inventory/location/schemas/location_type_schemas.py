@@ -10,7 +10,6 @@ from app.inventory.location.models import LocationType
 from app.inventory.location.enums import LocationClass
 
 class LocationTypeBaseScheme(BaseModel):
-    company_id: UUID4
     vars: Optional[dict] = None
     title: str
     location_class: LocationClass
@@ -22,7 +21,7 @@ class LocationTypeUpdateScheme(LocationTypeBaseScheme):
 
 
 class LocationTypeCreateScheme(LocationTypeBaseScheme):
-    pass
+    company_id: UUID4
 
 
 class LocationTypeScheme(LocationTypeCreateScheme, TimeStampScheme):
