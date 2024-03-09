@@ -1,3 +1,4 @@
+import enum
 import uuid
 from enum import Enum
 from typing import Optional
@@ -78,7 +79,7 @@ class OrderType(Base, AllMixin):
     exclusive_location_src_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)     # Искличенные зоны из подбора
     allowed_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)      # Разрешенные зона для назначения
     exclusive_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)    # Исключение зон из назначения
-    backorder_order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order.id", ondelete='SET NULL'))# Тип Ордера возврата разницы
+    backorder_order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order_type.id", ondelete='SET NULL'))# Тип Ордера возврата разницы
     backorder_action_type: Mapped[BackOrderAction] = mapped_column(default=BackOrderAction.ASK)                 # Поведение возврата разницы
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                     # Склад
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                   # Партнер (если у опредленного партнера своя стратегия)
@@ -116,6 +117,7 @@ class Order(Base, AllMixin):
     )
     lsn_seq = Sequence(f'order_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='SET NULL'))
     parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order.id", ondelete="CASCADE"))
     external_id: Mapped[Optional[str]]
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
@@ -131,7 +133,7 @@ class Order(Base, AllMixin):
     users_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
     description: Mapped[Optional[str]]
     status: Mapped[OrderStatus]
-    moves: Mapped[list["Move"]] = relationship(back_populates="order", )
+    moves: Mapped[Optional[list["Move"]]] = relationship(back_populates="order", lazy="selectin")
 
 
 class MoveStatus(str, Enum):
@@ -143,6 +145,12 @@ class MoveStatus(str, Enum):
     DONE:       str = 'done'
     CANCELED:   str = 'canceled'
 
+class MoveType(str, enum.Enum):
+    """
+    Типа Move означает это перемещение упаковкой или товара
+    """
+    PRODUCT: str = 'product' # Означает что задание товарное, те перемещается часть товара
+    PACKAGE: str = 'package' # Перемещается упаковка вместе с товаром
 
 class Move(Base, AllMixin):
     """
@@ -150,20 +158,21 @@ class Move(Base, AllMixin):
     """
     __tablename__ = "move"
     lsn_seq = Sequence(f'move_lsn_seq')
+
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    type: Mapped[MoveType]
     parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order.id', ondelete='RESTRICT'))
-    order: Mapped['Order'] = relationship(back_populates="moves",)
+    order: Mapped[Order] = relationship(back_populates='moves')
     location_src_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
     location_dest_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
     lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
-
+    location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
+    # ONE OF Возможно либо location_id либо product_id
     product_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
-    quantity: Mapped[float]
-    reserved_quantity: Mapped[float]
-    expiration_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
-    uom_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("uom.id", ondelete="RESTRICT"), index=True)
+    quantity: Mapped[float]     # Если перемещение кпаковки, то всегда 0
+    uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("uom.id", ondelete="RESTRICT"), index=True) # Если перемещение упаковкой то None
     status: Mapped[MoveStatus]
 
 
@@ -173,6 +182,35 @@ class MoveLogType(str, Enum):
     RES: str = 'res'        # Зарезервировал квант
     UNR: str = 'unr'        # Разрезервировал квант
 
+
+class SuggestType(str, enum.Enum):
+    IN_QUANTITY: str = 'in_quantity'  # Саджест ввода количества (те на экране нужно ввести какуюто цифру)
+    IN_PACKAGE: str = 'in_package'    # саджест ввода/сканирования идентификатора упаковки
+    IN_LOCATION: str = 'in_location'  # саджест ввода/сканирования местоположения(location)
+    IN_RESOURCE: str = 'in_resource'  # сканирование ресурса
+    IN_VALID: str = 'in_valid'        # ввод даны истечения срока годности, когда просто ввод а не создание партии
+    NEW_PACKAGE: str = 'new_package'  # саджест создания новой package
+    NEW_LOT: str = 'new_lot'          # саджест создания партии / не путать с in_valid
+
+
+class SuggestStatus(str, enum.Enum):
+    WAITING: str = 'waiting'  # Ожидает подверждения
+    DONE: str = 'done'        # Выполнен
+
+
+class Suggest(Base, AllMixin):
+    """
+    Suggest Саджест, это набор минимальных действий для  [[Move]] выполнив который Move будет выполнен, например
+    """
+    __tablename__ = "suggest"
+    lsn_seq = Sequence(f'suggest_lsn_seq')
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    move_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('move.id', ondelete='CASCADE'), index=True)
+
+    priority: Mapped[int]
+    type: Mapped[SuggestType]
+    value: Mapped[Optional[str]]    # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
+    user_done: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
 
 class MoveLog(Base, AllMixin):
     """
@@ -185,6 +223,8 @@ class MoveLog(Base, AllMixin):
     Когда же Move попытается сменить статус На Done - обсалютно ВСЕ документы по нему сторнируются (создаются движения с обратным знаком) и
     Создаются движения с типом get - на ячейке источнике и put на ячейке назначения
     ВАЖНО: на ячейка с типом external движения не создаются TODO: правда ли не надо?
+
+    TODO: Нужно ли делать MoveLog при перемещении package???? кажется что только при выбытии/прибытии упаковки на склад
 
     """
     __tablename__ = "move_log"

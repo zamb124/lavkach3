@@ -30,6 +30,8 @@ from app.inventory.inventory_server import app as basic_app
 from app.inventory.location.enums import LocationClass, PutawayStrategy
 from app.inventory.location.schemas import LocationTypeCreateScheme, LocationCreateScheme
 from app.inventory.location.services import LocationService, LocationTypeService
+from app.inventory.order.schemas import OrderTypeCreateScheme
+from app.inventory.order.services import OrderTypeService
 from app.inventory.quant.schemas import LotCreateScheme, QuantCreateScheme
 from app.inventory.quant.services import LotService, QuantService
 from core.config import config
@@ -589,6 +591,125 @@ async def quants(db_session: AsyncSession, user_admin, companies, lots, products
     yield [quant1, quant2]
     await db_session.delete(quant1)
     await db_session.delete(quant2)
+    await db_session.commit()
+
+@pytest_asyncio.fixture
+async def order_types(db_session: AsyncSession, user_admin, companies, lots, products, stores, locations,uoms, token) -> Company:
+    inbound_order_type = await OrderTypeService(user_admin).create(OrderTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'prefix': 'IN',
+        'title': 'Inbound Type',
+        'order_class': 'incoming',
+        'allowed_location_src_ids': [locations['partner'].id.__str__(), ],
+        'exclusive_location_src_ids': None,
+        'allowed_location_dest_ids': [locations['buffer'].id.__str__(), ],
+        'exclusive_location_dest_ids': None,
+        'backorder_order_type_id': None,
+        'backorder_action_type': 'ask',
+        'store_id': None,
+        'partner_id': None,
+        'reservation_method': 'at_confirm',
+        'reservation_time_before': 0,
+        #'allowed_package_ids': [locations['package'].id.__str__(), ],
+        'exclusive_package_ids': None,
+        'homogeneity': False,
+        'allow_create_package': True,
+        'can_create_order_manualy': True,
+        'overdelivery': False,
+        'created_by': token['user_admin']['user_id'].__str__(),
+        'edited_by': token['user_admin']['user_id'].__str__(),
+        'barcode': '2132132131231',
+        'strategy': 'fefo',
+    }))
+    lost_order_type = await OrderTypeService(user_admin).create(OrderTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'prefix': 'LO',
+        'title': 'Lost Type',
+        'order_class': 'incoming',
+        'allowed_location_src_ids': None,
+        'exclusive_location_src_ids': None,
+        'allowed_location_dest_ids': [locations['lost'].id.__str__(), ],
+        'exclusive_location_dest_ids': None,
+        'backorder_order_type_id': None,
+        'backorder_action_type': 'never',
+        'store_id': None,
+        'partner_id': None,
+        'reservation_method': 'at_confirm',
+        'reservation_time_before': 0,
+        # 'allowed_package_ids': [locations['package'].id.__str__(), ],
+        'exclusive_package_ids': None,
+        'homogeneity': False,
+        'allow_create_package': False,
+        'can_create_order_manualy': True,
+        'overdelivery': False,
+        'created_by': token['user_admin']['user_id'].__str__(),
+        'edited_by': token['user_admin']['user_id'].__str__(),
+        'barcode': '2132132131231',
+        'strategy': 'fefo',
+    }))
+    placement_order_type = await OrderTypeService(user_admin).create(OrderTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'prefix': 'PL',
+        'title': 'Placement Type',
+        'order_class': 'internal',
+        'allowed_location_src_ids': [locations['buffer'].id.__str__(), ],
+        'exclusive_location_src_ids': None,
+        'allowed_location_dest_ids': [locations['place'].id.__str__(), ],
+        'exclusive_location_dest_ids': None,
+        'backorder_order_type_id': lost_order_type.id.__str__(),
+        'backorder_action_type': 'always',
+        'store_id': None,
+        'partner_id': None,
+        'reservation_method': 'at_confirm',
+        'reservation_time_before': 0,
+        # 'allowed_package_ids': [locations['package'].id.__str__(), ],
+        'exclusive_package_ids': None,
+        'homogeneity': False,
+        'allow_create_package': True,
+        'can_create_order_manualy': True,
+        'overdelivery': False,
+        'created_by': token['user_admin']['user_id'].__str__(),
+        'edited_by': token['user_admin']['user_id'].__str__(),
+        'barcode': '2132132131231',
+        'strategy': 'fefo',
+    }))
+    shipment_order_type = await OrderTypeService(user_admin).create(OrderTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'prefix': 'SH',
+        'title': 'Shipment Type',
+        'order_class': 'outgoing',
+        'allowed_location_src_ids': [locations['place'].id.__str__(), ] ,
+        'exclusive_location_src_ids': None,
+        'allowed_location_dest_ids': [locations['buffer'].id.__str__(), ],
+        'exclusive_location_dest_ids': None,
+        'backorder_order_type_id': None,
+        'backorder_action_type': 'ask',
+        'store_id': None,
+        'partner_id': None,
+        'reservation_method': 'at_confirm',
+        'reservation_time_before': 0,
+        # 'allowed_package_ids': [locations['package'].id.__str__(), ],
+        'exclusive_package_ids': None,
+        'homogeneity': False,
+        'allow_create_package': True,
+        'can_create_order_manualy': True,
+        'overdelivery': False,
+        'created_by': token['user_admin']['user_id'].__str__(),
+        'edited_by': token['user_admin']['user_id'].__str__(),
+        'barcode': '2132132131231',
+        'strategy': 'fefo',
+    }))
+
+    yield {
+        'inbound': inbound_order_type,
+        'placement': placement_order_type,
+        'lost': lost_order_type,
+        'shipment': shipment_order_type
+    }
+    await db_session.delete(inbound_order_type)
+    await db_session.delete(placement_order_type)
+    await db_session.delete(lost_order_type)
+    await db_session.delete(shipment_order_type)
     await db_session.commit()
 
 

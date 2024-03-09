@@ -47,18 +47,8 @@ async def test_crud_location(async_inventory_client, headers, stores, companies,
         'company_id': companies[0].id.__str__(),
         'title': 'place location',
         'store_id': stores[0].id.__str__(),
-        #'parent_id': 'product_storage_type 1',
         'active': True,
         'location_type_id': location_types['place'].id.__str__(),
-        'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
-        #'partner_id': 'product_storage_type 1',
-        'homogeneity': False,
-        'allow_create_package': True,
-        #'allowed_package_ids': 'product_storage_type 1',
-        #'exclusive_package_ids': 'product_storage_type 1',
-        #'allowed_order_types_ids': 'allowed_order_types_ids',
-        # 'exclusive_order_types_ids': 'exclusive_order_types_ids',
-        #'strategy': 'product_storage_type 1',
     }
     response = await async_inventory_client.post("/api/inventory/location/create", json=create_data, headers=headers['superadmin'])
     assert response.status_code == 200
@@ -70,10 +60,6 @@ async def test_crud_location(async_inventory_client, headers, stores, companies,
         'title': 'zone location',
         'active': False,
         'location_type_id': location_types['zone'].id.__str__(),
-        'product_storage_type_ids': [product_storage_types[0].id.__str__(),],
-        'homogeneity': False,
-        'allow_create_package': False,
-
     }
     response = await async_inventory_client.put(f"/api/inventory/location/{location_id}", json=update_data, headers=headers['superadmin'], )
     assert response.status_code == 200

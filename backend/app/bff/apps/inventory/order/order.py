@@ -4,6 +4,7 @@ from asyncio import sleep
 from typing import Optional
 
 import aiohttp
+import httpx
 from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
@@ -15,28 +16,29 @@ from app.bff.bff_config import config
 
 from app.bff.dff_helpers.htmx_decorator import s
 from app.bff.template_spec import templates
+from app.inventory.order.models import OrderStatus
 
 order_router = APIRouter()
 
 
 class OrderAdapter:
-    headers: str
-    session: aiohttp.ClientSession = None
-    basic_url: str = f"http://{config.services['basic']['DOMAIN']}:{config.services['basic']['PORT']}"
-    path = '/api/company'
+    headers: dict
+    session: httpx.AsyncClient = None
+    inventory_url: str = f"http://{config.services['inventory']['DOMAIN']}:{config.services['inventory']['PORT']}"
+    order_list_path = '/api/inventory/order'
     def __init__(self, request: Request):
         self.headers = {'Authorization': request.headers.get('Authorization') or request.cookies.get('token')}
     async def __aenter__(self):
-        self.session = aiohttp.ClientSession(headers=self.headers)
+        self.session = httpx.AsyncClient(headers=self.headers)
         return self
 
     async def __aexit__(self, *args, **kwargs):
-        await self.session.close()
+        await self.session.aclose()
 
-    async def get_company_list(self, **kwargs):
+    async def get_orders(self, params, **kwargs):
+        responce = await self.session.get(self.inventory_url + self.order_list_path, params=params)
 
-        async with self.session.get(self.basic_url + self.path) as resp:
-            data = await resp.json()
+        data = await responce.json()
         return data
 
     async def get_company(self, company_id: uuid.UUID):
@@ -47,13 +49,15 @@ class OrderAdapter:
 @order_router.get("", response_class=HTMLResponse)
 @htmx(*s('inventory/order/order'))
 async def company(request: Request):
-    return {}
+
+    a = OrderStatus.DONE
+    return {'statuses': OrderStatus, 'orders': {}}
 
 @order_router.get("/table", response_class=HTMLResponse)
-@htmx(*s('basic/inventory/order-table'))
+@htmx(*s('inventory/order/order-table'))
 async def company_list(request: Request):
-    async with OrderAdapter(request) as ca:
-        data = await ca.get_company_list()
+    async with OrderAdapter(request) as oa:
+        data = await oa.get_orders(request.query_params)
     return {
         'companies': data['data']
     }

@@ -7,13 +7,22 @@ from pydantic.types import UUID4
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.location.models import LocationType
-from app.inventory.location.enums import LocationClass
+from app.inventory.location.enums import LocationClass, PutawayStrategy
+
 
 class LocationTypeBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: str
     location_class: LocationClass
-
+    homogeneity: Optional[bool] = None
+    mix_products: Optional[bool] = None
+    allow_create_package: Optional[bool] = None
+    allowed_package_ids: Optional[list[UUID4]] = None
+    exclusive_package_ids: Optional[list[UUID4]] = None
+    allowed_order_types_ids: Optional[list[UUID4]] = None
+    exclusive_order_types_ids: Optional[list[UUID4]] = None
+    strategy: Optional[PutawayStrategy] = PutawayStrategy.FEFO
+    product_storage_type_ids: Optional[list[str]] = None
 
 class LocationTypeUpdateScheme(LocationTypeBaseScheme):
     title: Optional[str] = None

@@ -36,6 +36,7 @@ class OrderTypeBaseScheme(BaseModel):
     barcode: str
     created_by: UUID4
     edited_by: UUID4
+    reservation_method: ReservationMethod
 
 class OrderTypeUpdateScheme(OrderTypeBaseScheme):
     prefix: Optional[str] = None
@@ -79,7 +80,7 @@ class OrderTypeFilter(Filter):
         model = OrderType
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["company_id", "product_id", "lot_id"]
+        search_model_fields = ["title", "barcode"]
 
 
 class OrderTypeListSchema(GenericListSchema):

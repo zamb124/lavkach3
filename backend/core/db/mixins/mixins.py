@@ -59,7 +59,8 @@ class CompanyMixin:
     company_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("company.id"), index=True, nullable=False)
 
 class CreatedEdited:
-    created_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
+    created_by: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=False)
+    edited_by: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=False)
 
 
 class LsnMixin:

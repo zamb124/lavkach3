@@ -8,57 +8,44 @@ from pydantic.types import UUID4
 from app.inventory.location.enums import PutawayStrategy
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.inventory.order.models import Order, OrderType
-from app.inventory.order.models.order_models import OrderStatus, OrderClass, BackOrderAction, ReservationMethod
+from app.inventory.order.models import Move, MoveType
+from app.inventory.order.models.order_models import MoveStatus, ReservationMethod
 
 
-class OrderBaseScheme(BaseModel):
-
-    vars: Optional[dict] = None
+class MoveBaseScheme(BaseModel):
+    type: MoveType
     parent_id: Optional[UUID4] = None
-    external_id: Optional[str] = None
-    store_id: UUID4
-    partner_id: Optional[UUID4] = None
+    order_id: UUID4
+    location_src_id: Optional[UUID4] = None
+    location_dest_id: Optional[UUID4] = None
     lot_id: Optional[UUID4] = None
-    order_type_id: Optional[UUID4] = None
-    origin_number: Optional[str] = None
-    planned_date: Optional[datetime]
-    actual_date: Optional[datetime]
-    created_by: UUID4
-    edited_by: UUID4
-    expiration_date: Optional[datetime]
-    users_ids: Optional[list[UUID4]] = []
-    description: Optional[str]
-    status: OrderStatus
-
-
-class OrderUpdateScheme(OrderBaseScheme):
-    vars: Optional[dict] = None
-    external_id: Optional[str] = None
-    lot_id: Optional[UUID4] = None
-    origin_type: Optional[str] = None
-    origin_number: Optional[str] = None
-    planned_date: Optional[datetime] = None
-    expiration_date: Optional[datetime] = None
-    description: Optional[str] = None
+    location_id: Optional[UUID4] = None
+    # ONE OF Возможно либо location_id либо product_id
+    product_id: Optional[UUID4] = None
     partner_id: Optional[UUID4] = None
-    order_type_id: UUID4 = None
+    quantity: float
+    uom_id: Optional[UUID4] = None
 
-class OrderCreateScheme(OrderBaseScheme):
+class MoveUpdateScheme(MoveBaseScheme):
+    quantity: Optional[float] = None
+
+
+class MoveCreateScheme(MoveBaseScheme):
     company_id: UUID4
 
 
-class OrderScheme(OrderCreateScheme, TimeStampScheme):
+
+class MoveScheme(MoveCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
-    company_id: UUID4
-    moves: Optional[list[UUID4]] = []
+    type: MoveType
+    status: MoveStatus
 
     class Config:
         orm_mode = True
 
 
-class OrderFilter(Filter):
+class MoveFilter(Filter):
     lsn__gt: Optional[int] = Field(alias="cursor", default=0)
     id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
     created_at_gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
@@ -72,12 +59,12 @@ class OrderFilter(Filter):
         populate_by_name = True
 
     class Constants(Filter.Constants):
-        model = Order
+        model = Move
         ordering_field_name = "order_by"
         search_field_name = "search"
         search_model_fields = ["external_id", "origin_number"]
 
 
-class OrderListSchema(GenericListSchema):
-    data: Optional[List[OrderScheme]]
+class MoveListSchema(GenericListSchema):
+    data: Optional[List[MoveScheme]]
 

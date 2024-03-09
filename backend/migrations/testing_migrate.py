@@ -17,14 +17,15 @@ from app.basic.uom.models.uom_models import Uom
 from app.basic.uom.models.uom_category_models import UomCategory
 from datetime import datetime
 from app.inventory.location.models import Location, LocationType
+from app.inventory.order.models import OrderType, Order
 from app.inventory.quant.models import Lot, Quant
 from sqlalchemy_utils.types import PasswordType
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'
-down_revision = '78294f5907ec'
+down_revision = '0279dcb66d3b'
 branch_labels = None
-depends_on = '78294f5907ec'
+depends_on = '0279dcb66d3b'
 
 
 def upgrade():
@@ -959,6 +960,218 @@ def upgrade():
             'uom_id': uom_1_company_2,
         },
     ])
+    order_type_inc_company_1 = uuid4().__str__()
+    order_type_out_company_1 = uuid4().__str__()
+    order_type_int_company_1 = uuid4().__str__()
+    order_type_inc_company_2 = uuid4().__str__()
+    order_type_out_company_2 = uuid4().__str__()
+    order_type_int_company_2 = uuid4().__str__()
+    op.bulk_insert(OrderType.__table__, [
+        {
+            'id': order_type_inc_company_1,
+            'company_id': company_1_id,
+            'prefix': 'INC',
+            'title': 'Incoming type',
+            'order_class': 'incoming',
+            'allowed_location_src_ids': [location_partner_company_1, ],
+            'exclusive_location_src_ids': None,
+            'allowed_location_dest_ids': [location_buffer_company_1, ],
+            'exclusive_location_dest_ids': None,
+            'backorder_order_type_id': None,
+            'backorder_action_type': 'ask',
+            'store_id': None,
+            'partner_id': None,
+            'reservation_method': 'at_confirm',
+            'reservation_time_before': 0,
+            'allowed_package_ids': [],
+            'exclusive_package_ids': None,
+            'homogeneity': False,
+            'allow_create_package': True,
+            'can_create_order_manualy': True,
+            'overdelivery': False,
+            'created_by': user_1_company_1_id,
+            'edited_by': user_1_company_1_id,
+            'barcode': '2132132131231',
+            'strategy': 'fefo',
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+        {
+            'id': order_type_out_company_1,
+            'company_id': company_1_id,
+            'prefix': 'OUT',
+            'title': 'OUT',
+            'order_class': 'incoming',
+            'allowed_location_src_ids': [location_buffer_company_1, ],
+            'exclusive_location_src_ids': None,
+            'allowed_location_dest_ids': [location_partner_company_1, ],
+            'exclusive_location_dest_ids': None,
+            'backorder_order_type_id': None,
+            'backorder_action_type': 'ask',
+            'store_id': None,
+            'partner_id': None,
+            'reservation_method': 'at_confirm',
+            'reservation_time_before': 0,
+            'allowed_package_ids': [],
+            'exclusive_package_ids': None,
+            'homogeneity': False,
+            'allow_create_package': True,
+            'can_create_order_manualy': True,
+            'overdelivery': False,
+            'created_by': user_1_company_1_id,
+            'edited_by': user_1_company_1_id,
+            'barcode': '2132132131231',
+            'strategy': 'fefo',
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+        {
+            'id': order_type_int_company_1,
+            'company_id': company_1_id,
+            'prefix': 'INT',
+            'title': 'Internal type',
+            'order_class': 'incoming',
+            'allowed_location_src_ids': [],
+            'exclusive_location_src_ids': None,
+            'allowed_location_dest_ids': [],
+            'exclusive_location_dest_ids': None,
+            'backorder_order_type_id': None,
+            'backorder_action_type': 'ask',
+            'store_id': None,
+            'partner_id': None,
+            'reservation_method': 'at_confirm',
+            'reservation_time_before': 0,
+            'allowed_package_ids': [],
+            'exclusive_package_ids': None,
+            'homogeneity': False,
+            'allow_create_package': True,
+            'can_create_order_manualy': True,
+            'overdelivery': False,
+            'created_by': user_1_company_1_id,
+            'edited_by': user_1_company_1_id,
+            'barcode': '2132132131231',
+            'strategy': 'fefo',
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+            # Company 2
+        {
+            'id': order_type_inc_company_2,
+            'company_id': company_2_id,
+            'prefix': 'INC',
+            'title': 'Incoming type',
+            'order_class': 'incoming',
+            'allowed_location_src_ids': [location_partner_company_2, ],
+            'exclusive_location_src_ids': None,
+            'allowed_location_dest_ids': [location_buffer_company_2, ],
+            'exclusive_location_dest_ids': None,
+            'backorder_order_type_id': None,
+            'backorder_action_type': 'ask',
+            'store_id': None,
+            'partner_id': None,
+            'reservation_method': 'at_confirm',
+            'reservation_time_before': 0,
+            'allowed_package_ids': [],
+            'exclusive_package_ids': None,
+            'homogeneity': False,
+            'allow_create_package': True,
+            'can_create_order_manualy': True,
+            'overdelivery': False,
+            'created_by': user_1_company_2_id,
+            'edited_by': user_1_company_2_id,
+            'barcode': '2132132131231',
+            'strategy': 'fefo',
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+        {
+            'id': order_type_out_company_2,
+            'company_id': company_2_id,
+            'prefix': 'OUT',
+            'title': 'OUT',
+            'order_class': 'incoming',
+            'allowed_location_src_ids': [location_buffer_company_2, ],
+            'exclusive_location_src_ids': None,
+            'allowed_location_dest_ids': [location_partner_company_2, ],
+            'exclusive_location_dest_ids': None,
+            'backorder_order_type_id': None,
+            'backorder_action_type': 'ask',
+            'store_id': None,
+            'partner_id': None,
+            'reservation_method': 'at_confirm',
+            'reservation_time_before': 0,
+            'allowed_package_ids': [],
+            'exclusive_package_ids': None,
+            'homogeneity': False,
+            'allow_create_package': True,
+            'can_create_order_manualy': True,
+            'overdelivery': False,
+            'created_by': user_1_company_2_id,
+            'edited_by': user_1_company_2_id,
+            'barcode': '2132132131231',
+            'strategy': 'fefo',
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+        {
+            'id': order_type_int_company_2,
+            'company_id': company_2_id,
+            'prefix': 'INT',
+            'title': 'Internal type',
+            'order_class': 'incoming',
+            'allowed_location_src_ids': [],
+            'exclusive_location_src_ids': None,
+            'allowed_location_dest_ids': [],
+            'exclusive_location_dest_ids': None,
+            'backorder_order_type_id': None,
+            'backorder_action_type': 'ask',
+            'store_id': None,
+            'partner_id': None,
+            'reservation_method': 'at_confirm',
+            'reservation_time_before': 0,
+            'allowed_package_ids': [],
+            'exclusive_package_ids': None,
+            'homogeneity': False,
+            'allow_create_package': True,
+            'can_create_order_manualy': True,
+            'overdelivery': False,
+            'created_by': user_1_company_2_id,
+            'edited_by': user_1_company_2_id,
+            'barcode': '2132132131231',
+            'strategy': 'fefo',
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+        },
+    ])
+
+    order_inc_company_1 = uuid4().__str__()
+    order_out_company_1 = uuid4().__str__()
+    order_int_company_1 = uuid4().__str__()
+    order_inc_company_2 = uuid4().__str__()
+    order_out_company_2 = uuid4().__str__()
+    order_int_company_2 = uuid4().__str__()
+    op.bulk_insert(Order.__table__, [
+        {
+            'company_id': company_1_id,
+            'order_type_id': order_type_inc_company_1,
+            'parent_id': None,
+            'external_id': 'external id',
+            'store_id': store_1_company_1_id,
+            'partner_id': None,
+            'lot_id': None,
+            'origin_type': 'Purchase Order',
+            'origin_number': 'Some Purchase Order Number',
+            'planned_date': datetime.now(),
+            'actual_date': None,
+            'created_by': user_1_company_1_id,
+            'edited_by': user_1_company_1_id,
+            'expiration_date': datetime.now(),
+            'users_ids': None,
+            'description': 'description',
+            'status': 'draft'
+        },
+
+    ])
     # ### end Alembic commands ###
 
 
@@ -977,3 +1190,4 @@ def downgrade():
     op.execute(f"TRUNCATE TABLE {Quant.__table__}")
     op.execute(f"TRUNCATE TABLE {LocationType.__table__}")
     op.execute(f"TRUNCATE TABLE {Location.__table__}")
+    op.execute(f"TRUNCATE TABLE {OrderType.__table__}")

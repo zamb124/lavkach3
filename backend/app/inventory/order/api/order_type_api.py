@@ -41,15 +41,15 @@ async def order_type_create(request: Request, schema: OrderTypeCreateScheme):
 
 
 @order_type_router.get("/{order_type_id}")
-async def order_type_get(request: Request, order_id: uuid.UUID) -> typing.Union[None, OrderTypeScheme]:
-    return await OrderTypeService(request).get(id=order_id)
+async def order_type_get(request: Request, order_type_id: uuid.UUID) -> typing.Union[None, OrderTypeScheme]:
+    return await OrderTypeService(request).get(id=order_type_id)
 
 
 @order_type_router.put("/{order_type_id}", response_model=OrderTypeScheme)
-async def order_type_update(request: Request, order_id: uuid.UUID, schema: OrderTypeUpdateScheme):
-    return await OrderTypeService(request).update(id=order_id, obj=schema)
+async def order_type_update(request: Request, order_type_id: uuid.UUID, schema: OrderTypeUpdateScheme):
+    return await OrderTypeService(request).update(id=order_type_id, obj=schema)
 
 
 @order_type_router.delete("/{order_type_id}")
-async def order_type_delete(request: Request, order_id: uuid.UUID):
-    await OrderTypeService(request).delete(id=order_id)
+async def order_type_delete(request: Request, order_type_id: uuid.UUID):
+    await OrderTypeService(request).delete(id=order_type_id)

@@ -18,15 +18,8 @@ class LocationBaseScheme(BaseModel):
     parent_id: Optional[UUID4] = None
     active: bool = None
     location_type_id: UUID4
-    product_storage_type_ids: Optional[list[str]] = None
     partner_id: Optional[UUID4] = None
-    homogeneity: Optional[bool] = None
-    allow_create_package: Optional[bool] = None
-    allowed_package_ids: Optional[list[UUID4]] = None
-    exclusive_package_ids: Optional[list[UUID4]] = None
-    allowed_order_types_ids: Optional[list[UUID4]] = None
-    exclusive_order_types_ids: Optional[list[UUID4]] = None
-    strategy: Optional[PutawayStrategy] = PutawayStrategy.FEFO
+
 
 
 class LocationUpdateScheme(LocationBaseScheme):

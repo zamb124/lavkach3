@@ -25,28 +25,18 @@
                     </div>
                     <!-- end page title -->
 
-                    <div class="row" hx-get="/inventory/order/table" hx-target="load">
+                    <div class="row" hx-get="/inventory/order/table?status=DRAFT" hx-trigger="load">
                         <img class="htmx-indicator" src="{{ url_for('static' ,path='images/layouts/horizontal.png') }}"
                              style="width: 100%">
                         <!--end col-->
+
                     </div>
                     <!--end row-->
 
                 </div>
                 <!-- container-fluid -->
             </div>
-            <!-- End Page-content -->
-
-            {% block footer %}
-            {% include "partials/footer.html" %}
-            {% endblock footer %}
             </div>
+            <!-- End Page-content -->
             <!-- end main content-->
 {% endblock content %}
-{% block extra_js %}
-    <!-- list.js min js -->
-    <script src="{{url_for('static' ,path='libs/list.js/dist/list.min.js')}}"></script>
-    <script src="{{url_for('static' ,path='libs/list.pagination.js/dist/list.pagination.min.js')}}"></script>
-    <script src="{{url_for('static' ,path='js/pages/ecommerce-order.init.js')}}"></script>
-
-{% endblock extra_js %}

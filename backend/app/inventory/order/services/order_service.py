@@ -1,12 +1,15 @@
+import uuid
 from typing import Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.inventory.order.models.order_models import Order, OrderType
+from app.inventory.order.schemas.move_schemas import MoveCreateScheme
 from app.inventory.order.schemas.order_schemas import OrderCreateScheme, OrderUpdateScheme, OrderFilter
 from core.db.session import session
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
+
 
 
 class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, OrderFilter]):
@@ -27,4 +30,9 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
 
     @permit('order_delete')
     async def delete(self, id: Any) -> None:
+        return await super(OrderService, self).delete(id)
+
+
+    @permit('order_move_counstructor')
+    async def move_counstructor(self, order_id: uuid.UUID, moves: list) -> None:
         return await super(OrderService, self).delete(id)
