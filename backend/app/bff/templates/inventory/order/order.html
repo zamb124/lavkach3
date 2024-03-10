@@ -15,7 +15,7 @@
 
                                 <div class="page-title-right">
                                     <ol class="breadcrumb m-0">
-                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Inventory</a></li>
                                         <li class="breadcrumb-item active">Orders</li>
                                     </ol>
                                 </div>
@@ -25,7 +25,7 @@
                     </div>
                     <!-- end page title -->
 
-                    <div class="row" hx-get="/inventory/order/table?status=DRAFT" hx-trigger="load">
+                    <div class="row" id="table" hx-get="/inventory/order/table" hx-trigger="load">
                         <img class="htmx-indicator" src="{{ url_for('static' ,path='images/layouts/horizontal.png') }}"
                              style="width: 100%">
                         <!--end col-->

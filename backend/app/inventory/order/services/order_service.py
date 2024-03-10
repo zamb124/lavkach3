@@ -1,3 +1,4 @@
+import datetime
 import uuid
 from typing import Any, Optional
 
@@ -26,6 +27,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
 
     @permit('order_create')
     async def create(self, obj: CreateSchemaType) -> ModelType:
+        obj.number = datetime.datetime.now(datetime.UTC).strftime('%y%m%d%H%m%S')
         return await super(OrderService, self).create(obj)
 
     @permit('order_delete')

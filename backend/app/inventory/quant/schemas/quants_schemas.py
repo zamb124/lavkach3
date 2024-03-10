@@ -43,10 +43,10 @@ class QuantScheme(QuantCreateScheme, TimeStampScheme):
 class QuantFilter(Filter):
     lsn__gt: Optional[int] = Field(alias="cursor", default=0)
     id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
-    created_at_gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
-    created_at_lt: Optional[datetime] = Field(description="less created", default=None)
-    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
-    updated_at_lt: Optional[datetime] = Field(description="less updated", default=None)
+    created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
+    created_at__lt: Optional[datetime] = Field(description="less created", default=None)
+    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
+    updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
     company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
 
     class Config:

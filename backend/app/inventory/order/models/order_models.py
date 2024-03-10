@@ -117,7 +117,9 @@ class Order(Base, AllMixin):
     )
     lsn_seq = Sequence(f'order_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    number: Mapped[str] = mapped_column(index=True)    # Человекочитаемый номер присвается по формуле - {ГОД(2)}-{МЕСЯЦ}-{ДЕНЬ}-{LSN}
     order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='SET NULL'))
+    order_type: Mapped[OrderType] = relationship(lazy='selectin')
     parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order.id", ondelete="CASCADE"))
     external_id: Mapped[Optional[str]]
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)

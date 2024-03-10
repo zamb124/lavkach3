@@ -33,10 +33,10 @@ class UomCategoryScheme(UomCategoryCreateScheme, TimeStampScheme):
 class UomCategoryFilter(BaseFilter):
     lsn__gt: Optional[int] = Field(alias="cursor")
     id__in: Optional[List[UUID4]] = Field(alias="id")
-    created_at_gte: Optional[datetime] = Field(description="bigger or equal created")
-    created_at_lt: Optional[datetime] = Field(description="less created")
-    updated_at_gte: Optional[datetime] = Field(description="bigger or equal updated")
-    updated_at_lt: Optional[datetime] = Field(description="less updated")
+    created_at__gte: Optional[datetime] = Field(description="bigger or equal created")
+    created_at__lt: Optional[datetime] = Field(description="less created")
+    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated")
+    updated_at__lt: Optional[datetime] = Field(description="less updated")
     title__in: Optional[str] = Field(description="title")
 
     class Config:
