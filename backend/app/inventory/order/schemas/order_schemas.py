@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator, model_s
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import PutawayStrategy
+from core.schemas import BaseFilter
 
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
@@ -68,44 +69,16 @@ def empty_erray(val):
     if val:
         return val
 
-class OrderFilter(Filter):
-    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
-    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
-    created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
-    created_at__lt: Optional[datetime] = Field(description="less created", default=None)
+class OrderFilter(BaseFilter):
     planned_date__gte: Optional[datetime] = Field(description="bigger or equal planned date", default=None)
     planned_date__lt: Optional[datetime] = Field(description="less planned date", default=None)
-    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
-    updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
-    company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
     status__in: Optional[List[OrderStatus]] = Field(alias="status", default=None)
     date_planned_range: Optional[str] = Field(alias="date_planned_range", default=None)
-    store_id__in: Optional[List[UUID4]] = None #Field(alias="store_id", default=None)
-    order_type_id__in: Optional[List[UUID4]] = None #Field(alias="order_type_id", default=None)
-    order_by: Optional[List[str]] = ["created_at"]
-    search: Optional[str] = None
-
-    @model_validator(mode="before")
-    def check_root_validator(cls, value):
-        """
-            сериализует дейтрендж
-        """
-        if value.get('date_planned_range'):
-            gte, lt = value['date_planned_range'].split(':')
-            value.update({
-                'planned_date__gte': datetime.fromisoformat(gte),
-                'planned_date__lt': datetime.fromisoformat(f'{lt}T23:59:59')
-            })
-            value.pop('date_planned_range')
-        return value
-
-    class Config:
-        populate_by_name = True
+    store_id__in: Optional[List[UUID4]] = Field(alias="store_id", default=None)
+    order_type_id__in: Optional[List[UUID4]] = Field(alias="order_type_id", default=None)
 
     class Constants(Filter.Constants):
         model = Order
-        ordering_field_name = "order_by"
-        search_field_name = "search"
         search_model_fields = ["external_id", "origin_number", "number"]
 
 

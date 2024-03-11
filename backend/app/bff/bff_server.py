@@ -4,6 +4,8 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.requests import HTTPConnection
+from starlette.types import ASGIApp
 
 from app.bff.bff_router import bff_router
 from app.bff.bff_config import config
@@ -19,6 +21,14 @@ from core.helpers.cache import RedisBackend
 from fastapi.staticfiles import StaticFiles
 
 
+class BFFMidlware:
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope, receive, send) -> None:
+        conn = HTTPConnection(scope)
+        conn.query_params.items()
+        return
 
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(bff_router)
@@ -60,7 +70,7 @@ def make_middleware() -> List[Middleware]:
             backend=AuthBffBackend(),
             on_error=on_auth_error,
         ),
-        Middleware(SQLAlchemyMiddleware),
+        Middleware(SQLAlchemyMiddleware)
     ]
     return middleware
 
