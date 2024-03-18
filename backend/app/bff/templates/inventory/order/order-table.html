@@ -1,0 +1,437 @@
+{% block content %}
+    <div class="col-lg-12">
+        <div class="card" id="orderList">
+            <div class="card-header border-0">
+                <div class="row align-items-center gy-3">
+                    <div class="col-sm">
+                        <h5 class="card-title mb-0">Order History</h5>
+                    </div>
+                    <div class="col-sm-auto">
+                        <div class="d-flex gap-1 flex-wrap">
+                            <button type="button" class="btn btn-secondary add-btn" data-bs-toggle="modal"
+                                    id="create-btn"
+                                    data-bs-target="#createOrderModal"><i class="ri-add-line align-bottom me-1"></i>
+                                Create Order
+                            </button>
+                            <button type="button" class="btn btn-success"><i
+                                    class="ri-file-download-line align-bottom me-1"></i> Import
+                            </button>
+                            <button class="btn btn-soft-danger" id="remove-actions" onClick="deleteMultiple()"><i
+                                    class="ri-delete-bin-2-line"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body border border-dashed border-end-0 border-start-0">
+                <div>
+
+                    <div class="row g-3">
+                        <div class="col-xxl-5 col-sm-6">
+                            <div class="search-box">
+                                <input type="search"
+                                       name="search"
+                                       id="search"
+                                       value="{{ request.query_params.search }}"
+                                       class="form-control search"
+                                       placeholder="Search for order ID, customer, order status or something..."
+                                       hx-get="/inventory/order/table"
+                                       hx-push-url="false"
+                                       hx-trigger="input changed delay:500ms, search"
+                                       hx-target="#table"
+                                       hx-include="#store_id, #order_type_id, #date_planned_range"
+                                       hx-indicator=".htmx-indicator">
+
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
+                        </div>
+                        <!--end col-->
+                        <div class="col-xxl-2 col-sm-6">
+                            <div>
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        name="date_planned_range"
+                                        id="date_planned_range"
+                                        hx-get="/inventory/order/table"
+                                        hx-push-url="false"
+                                        hx-trigger="date_planned_range"
+                                        hx-target="#table"
+                                        hx-include="#store_id, #order_type_id, #search"
+                                        value="
+                                                {% if request.query_params.date_planned_range %}{{ request.query_params.date_planned_range }} {% else %}2024-01-01:2025-01-01{% endif %}">
+                            </div>
+                        </div>
+                        <!--end col-->
+                        <div class="col-xxl-2 col-sm-4">
+                            <div>
+                                <select class="form-control"
+                                        name="order_type_id"
+                                        id="order_type_id"
+                                        hx-get="/inventory/order/table"
+                                        hx-push-url="false"
+                                        hx-trigger="input changed delay:500ms"
+                                        hx-target="#table"
+                                        hx-include="#order_type_id, #date_planned_range, #search, #basic_store_search"
+                                >
+                                    <option value="">Select Order Type</option>
+                                    {% for order_type in order_types %}
+                                        <option value="{{ order_type.id }}"
+                                                {% if request.query_params.order_type_id == order_type.id %}
+                                                selected="selected" {% endif %}>{{ order_type.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <!--end col-->
+                        <div class="col-xxl-2 col-sm-4">
+                            <select class="form-control"
+                                    id="basic_store_title"
+                                    name="basic_store_search"
+                                    hx-get="/bff/select"
+                                    hx-target="#store_id"
+                                    hx-trigger="input changed delay:100ms"
+                            >
+                                <option value="">Select Store</option>
+                                    {% for store in stores %}
+                                        <option value="{{ store.id }}"
+                                                {% if request.query_params.store_id == store.id %}
+                                                selected="selected" {% endif %}>{{ store.title }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+                        <!--end col-->
+                        <div class="col-xxl-1 col-sm-4">
+                            <div>
+                                <button type="button" class="btn btn-primary w-100" onclick="SearchData();"><i
+                                        class="ri-equalizer-fill me-1 align-bottom"></i>
+                                    Filters
+                                </button>
+                            </div>
+                        </div>
+                        <!--end col-->
+                    </div>
+                    <!--end row-->
+                </div>
+            </div>
+            <div class="card-body pt-0">
+                <div>
+                    <ul class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
+                        <li class="nav-item">
+                            <a hx-push-url="/inventory/order" hx-get="/inventory/order/table" hx-target="#table"
+                               hx-include="#search, #store_id, #order_type_id, #date_planned_range, #search"
+                               class="nav-link {% if not request.query_params.get('status') %} active {% endif %} All py-3"
+                               data-bs-toggle="tab" id="All" href="#home1" role="tab"
+                               aria-selected="true">
+                                <i class="ri-store-2-fill me-1 align-bottom"></i> All Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a hx-push-url="/inventory/order" hx-get="/inventory/order/table"
+                               hx-vals='{"status": "draft"}'
+                               hx-include="#search, #store_id, #order_type_id, #date_planned_range, #search"
+                               hx-target="#table"
+                               class="nav-link {% if request.query_params.get('status') == 'draft' %} active {% endif %} py-3 Draft"
+                               data-bs-toggle="tab" id="Draft" href="#draft"
+                               role="tab" aria-selected="false">
+                                <i class="ri-draft-fill me-1 align-bottom"></i> Draft
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a hx-push-url="/inventory/order" hx-get="/inventory/order/table"
+                               hx-vals='{"status": "waiting"}'
+                               hx-include="#search, #store_id, #order_type_id, #date_planned_range, #search"
+                               hx-target="#table"
+                               class="nav-link {% if request.query_params.get('status') == 'waiting' %} active {% endif %} py-3 Waiting"
+                               data-bs-toggle="tab" id="Waiting" href="#waiting" role="tab"
+                               aria-selected="false">
+                                <i class="ri-time-fill me-1 align-bottom"></i> Waiting
+                                <span class="badge bg-danger align-middle ms-1">5</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a hx-push-url="/inventory/order" hx-get="/inventory/order/table"
+                               hx-vals='{"status": "confirmed"}'
+                               hx-include="#search, #store_id, #order_type_id, #date_planned_range, #search"
+                               hx-target="#table"
+                               class="nav-link {% if request.query_params.get('status') == 'confirmed' %} active {% endif %} py-3 Confirmed"
+                               data-bs-toggle="tab" id="Confirmed" href="#confirmed" role="tab"
+                               aria-selected="false">
+                                <i class="ri-task-fill me-1 align-bottom"></i> Confirmed
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a hx-push-url="/inventory/order" hx-get="/inventory/order/table"
+                               hx-vals='{"status": "assigned"}'
+                               hx-include="#search, #store_id, #order_type_id, #date_planned_range, #search"
+                               hx-target="#table"
+                               class="nav-link {% if request.query_params.get('status') == 'assigned' %} active {% endif %} py-3 Assigned"
+                               data-bs-toggle="tab" id="Assigned" href="#assigned"
+                               role="tab" aria-selected="false">
+                                <i class="ri-creative-commons-by-fill me-1 align-bottom"></i> Assigned
+                            </a>
+                        </li>
+                        <li class="nav-item ">
+                            <a hx-push-url="/inventory/order" hx-get="/inventory/order/table"
+                               hx-vals='{"status": "canceled"}'
+                               hx-include="#search, #store_id, #order_type_id, #date_planned_range, #search"
+                               hx-target="#table"
+                               class="nav-link {% if request.query_params.get('status') == 'canceled' %} active {% endif %} py-3 Canceled"
+                               data-bs-toggle="tab" id="Canceled" href="#canceled"
+                               role="tab" aria-selected="false">
+                                <i class="ri-delete-back-2-fill me-1 align-bottom"></i> Canceled
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="table-responsive table-card mb-1">
+                        <table class="table table-nowrap align-middle" id="orderTable">
+                            <thead class="text-muted table-light">
+                            <tr class="text-uppercase fs-13">
+                                <th scope="col" style="width: 25px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="checkAll" value="option">
+                                    </div>
+                                </th>
+                                <th class="sort" data-sort="number">Order Number</th>
+                                <th class="sort" data-sort="order_type">Order Type</th>
+                                <th class="sort" data-sort="created_at">Created</th>
+                                <th class="sort" data-sort="external_id">External ID</th>
+                                <th class="sort" data-sort="origin_number">Origin</th>
+                                <th class="sort" data-sort="store">Store</th>
+                                <th class="sort" data-sort="partner">Partner</th>
+                                <th class="sort" data-sort="planned_date">Planned</th>
+                                <th class="sort" data-sort="amount">Amount</th>
+                                <th class="sort" data-sort="status">Status</th>
+                                <th class="sort" data-sort="action">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody class="list form-check-all">
+                            {% for order in orders %}
+
+                                <tr>
+                                    <th scope="row">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="checkAll"
+                                                   value="option1">
+                                        </div>
+                                    </th>
+                                    <td class="number"><a href="/inventory/order/{{ order.id }}"
+                                                          class="fw-medium link-primary">{{ order.number }}</a>
+                                    </td>
+                                    <td class="order_type"><a href="/inventory/order_type/{{ order.order_type.id }}"
+                                                              hx-push-url="true"
+                                                              hx-get="/inventory/order_type/{{ order.order_type.id }}">{{ order.order_type.title }}</a>
+                                    </td>
+                                    <td class="created_at">{{ datetime.fromisoformat(order.created_at).strftime('%Y-%m-%d') }}
+                                        <small class="text-muted">{{ datetime.fromisoformat(order.created_at).strftime('%H:%M') }}</small>
+                                    </td>
+                                    <td class="external_id">{{ order.external_id }}</td>
+                                    <td class="origin_number">{{ order.origin }}</td>
+                                    <td class="store"><a href="/basic/store/{{ order.store.id }}"
+                                                         class="fw-medium link-primary" hx-push-url="true"
+                                                         hx-get="/basic/store/{{ order.store.id }}">{{ order.store.title }}</a>
+                                    </td>
+                                    {% if order.partner %}
+                                        <td class="store">{{ order.partner.title }}</td>
+                                    {% else %}
+                                        <td class="store">{{ order.partner }}</td>
+                                    {% endif %}
+                                    <td class="planned_date">{{ datetime.fromisoformat(order.planned_date).strftime('%Y-%m-%d') }}
+                                        <small class="text-muted">{{ datetime.fromisoformat(order.planned_date).strftime('%H:%M') }}</small>
+                                    </td>
+                                    <td class="amount text-center">{{ order.moves|length }}</td>
+                                    <td class="status"><span
+                                            class="badge bg-{{ order.status_badge }} text-uppercase">{{ order.status }}</span>
+                                    </td>
+                                    <td>
+                                        <ul class="list-inline hstack gap-2 mb-0">
+                                            <li class="list-inline-item" data-bs-toggle="tooltip"
+                                                data-bs-trigger="hover"
+                                                data-bs-placement="top" title="View">
+                                                <a href="/apps/ecommerce/order_details"
+                                                   class="text-primary d-inline-block">
+                                                    <i class="ri-eye-fill fs-16"></i>
+                                                </a>
+                                            </li>
+                                            <li class="list-inline-item edit" data-bs-toggle="tooltip"
+                                                data-bs-trigger="hover"
+                                                data-bs-placement="top" title="Edit">
+                                                <a href="#createOrderModal" data-bs-toggle="modal"
+                                                   class="text-primary d-inline-block edit-item-btn">
+                                                    <i class="ri-pencil-fill fs-16"></i>
+                                                </a>
+                                            </li>
+                                            <li class="list-inline-item" data-bs-toggle="tooltip"
+                                                data-bs-trigger="hover"
+                                                data-bs-placement="top" title="Remove">
+                                                <a class="text-danger d-inline-block remove-item-btn"
+                                                   data-bs-toggle="modal"
+                                                   href="#deleteOrder">
+                                                    <i class="ri-delete-bin-5-fill fs-16"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="noresult" style="display: none">
+                            <div class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                           colors="primary:#405189,secondary:#0ab39c"
+                                           style="width:75px;height:75px"></lord-icon>
+                                <h5 class="mt-2">Sorry! No Result Found</h5>
+                                <p class="text-muted">We've searched more than 150+ Orders We did not find any orders
+                                    for
+                                    you search.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <div class="pagination-wrap hstack gap-2">
+                            <a class="page-item pagination-prev disabled" href="#">
+                                Previous
+                            </a>
+                            <ul class="pagination listjs-pagination mb-0"></ul>
+                            <a class="page-item pagination-next" href="#">
+                                Next
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="createOrderModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <form class="tablelist-form" autocomplete="off">
+                                <div class="modal-body text-center">
+                                    <lord-icon
+                                            src="https://cdn.lordicon.com/ghhwiltn.json"
+                                            trigger="hover"
+                                            style="width:250px;height:250px">
+                                    </lord-icon>
+                                    <input type="hidden" id="id-field"/>
+                                    <div class="mb-3">
+                                        <label for="productname-field" class="form-label">Store</label>
+                                        <select class="form-control"
+                                                type="text"
+                                                data-trigger name="productname-field"
+                                                hx-post="/basic/store"
+                                        />
+                                        <option value="">---Select Store ---</option>
+                                        {% for store in stores %}
+                                            <option value="{{ store.id }}">{{ store.title }}</option>
+                                        {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="date-field" class="form-label">Planned Date</label>
+                                        <input class="form-control" type="text" name="new_order_planned_date"
+                                               id="new_order_planned_date" value="2023-03-01"/>
+                                    </div>
+
+                                    <div class="row gy-4 mb-3">
+                                        <div class="col-md-6">
+                                            <div>
+                                                <label for="amount-field" class="form-label">Amount</label>
+                                                <input type="text" id="amount-field" class="form-control"
+                                                       placeholder="Total amount" required/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div>
+                                                <label for="payment-field" class="form-label">Payment Method</label>
+                                                <select class="form-control cho" data-trigger required
+                                                        name="payment-method"
+                                                        id="payment-field">
+                                                    <option value="">Payment Method</option>
+                                                    <option value="Mastercard">Mastercard</option>
+                                                    <option value="Visa">Visa</option>
+                                                    <option value="COD">COD</option>
+                                                    <option value="Paypal">Paypal</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="hstack gap-2 justify-content-end">
+                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close
+                                        </button>
+                                        <button type="submit" class="btn btn-primary" id="add-btn">Add Order</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade flip" id="deleteOrder" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-body p-5 text-center">
+                                <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
+                                           colors="primary:#405189,secondary:#f06548"
+                                           style="width:90px;height:90px"></lord-icon>
+                                <div class="mt-4 text-center">
+                                    <h4>You are about to delete a order ?</h4>
+                                    <p class="text-muted fs-15 mb-4">Deleting your order will remove all of your
+                                        information
+                                        from our database.</p>
+                                    <div class="hstack gap-2 justify-content-center remove">
+                                        <button class="btn btn-link link-success fw-medium text-decoration-none"
+                                                id="deleteRecord-close" data-bs-dismiss="modal"><i
+                                                class="ri-close-line me-1 align-middle"></i> Close
+                                        </button>
+                                        <button class="btn btn-danger" id="delete-record">Yes, Delete It</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end modal -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $(function () {
+            $('input[name="date_planned_range"]').daterangepicker({
+                opens: 'left',
+                locale: {
+                    format: "YYYY-MM-DD",
+                    separator: ':'
+                },
+            }, function (start, end, label) {
+                var date_planned_range = $('#date_planned_range')[0];
+                date_planned_range.value = (start.format('YYYY-MM-DD') + ':' + end.format('YYYY-MM-DD'));
+                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                htmx.trigger("#date_planned_range", "date_planned_range");
+            });
+        });
+    </script>
+    <script>
+        $(function () {
+            $('input[name="new_order_planned_date"]').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true,
+                minYear: 1901,
+                maxYear: parseInt(moment().format('YYYY'), 10),
+                locale: {
+                    format: 'YYYY-MM-DD'
+                }
+            });
+        });
+    </script>
+{% endblock %}
