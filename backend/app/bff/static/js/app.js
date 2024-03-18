@@ -464,12 +464,6 @@
                 e.classList.remove("active")
             }), document.getElementById("notification-actions").style.display = ""
         })
-    }), document.getElementById("removeNotificationModal").addEventListener("show.bs.modal", function (e) {
-        document.getElementById("delete-notification").addEventListener("click", function () {
-            Array.from(document.querySelectorAll(".notification-item")).forEach(function (e) {
-                e.classList.contains("active") && e.remove()
-            }), H(), document.getElementById("NotificationModalbtn-close").click()
-        })
     })), [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')).map(function (e) {
         return new bootstrap.Tooltip(e)
     }), [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]')).map(function (e) {

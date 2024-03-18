@@ -60,32 +60,3 @@ async def company_list(request: Request):
         'companies': data['data']
     }
 
-
-@company_router.get("/card", response_class=HTMLResponse)
-@htmx(*s('basic/company/company-card'))
-async def company_card(request: Request, company_id: str | None = None):
-    if not company_id:
-        company_id = request.user.companies[0]
-    async with CompanyAdapter(request) as ca:
-        data = await ca.get_company(company_id)
-    return {'company': data}
-
-
-@company_router.get("/create-modal")
-@htmx(*s('basic/company/create-modal'))
-async def create_modal_company(request: Request):
-    return {'hello': 'hello'}
-
-
-@company_router.delete("/{company_id}")
-async def delete_company(request: Request, company_id: uuid.UUID):
-    return templates.TemplateResponse(
-        status_code=403,
-        name="/helpers/informer.html",
-        context={'request': request, "title": 'Forbitten', 'message': f'You cannot delete a company record with id: {company_id} '}
-    )
-
-
-@company_router.put("/{company_id}")
-async def edit_company(request: Request, company_id: int):
-    return Response()

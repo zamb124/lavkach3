@@ -30,3 +30,7 @@ class BasicAdapter:
     async def get_stores(self, params=None, **kwargs):
         responce = await self.session.get(self.basic_url + self.store_base_path, params=params)
         return responce.json()
+
+    async def store(self, params=None, *args, **kwargs):
+        responce = await self.session.get(self.basic_url + self.store_base_path, params=params)
+        return responce.json()

@@ -14,11 +14,13 @@ class Config(CoreConfig):
     services: dict = {
         'basic': {
             'DOMAIN': '127.0.0.1',
-            'PORT': '8001'
+            'PORT': '8001',
+            'adapter': 'BasicAdapter'
         },
         'inventory': {
             'DOMAIN': '127.0.0.1',
-            'PORT': '8002'
+            'PORT': '8002',
+            'adapter': 'InventoryAdapter'
         },
 
     }

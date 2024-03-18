@@ -5,7 +5,7 @@ from app.bff.bff_config import config
 from fastapi import Request
 
 
-class OrderAdapter:
+class InventoryAdapter:
     headers: dict
     session: httpx.AsyncClient = None
     inventory_url: str = f"http://{config.services['inventory']['DOMAIN']}:{config.services['inventory']['PORT']}"
@@ -24,8 +24,15 @@ class OrderAdapter:
         responce = await self.session.get(self.inventory_url + self.order_list_path, params=params)
         data = responce.json()
         return data
+
+    async def order(self, params=None, **kwargs):
+        responce = await self.session.get(self.inventory_url + self.order_list_path, params=params)
+        data = responce.json()
+        return data
+
     async def get_order_types(self, params=None, **kwargs):
         path = '/api/inventory/order_type'
         responce = await self.session.get(self.inventory_url + path, params=params)
         data = responce.json()
         return data
+

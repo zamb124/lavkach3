@@ -13,7 +13,7 @@ from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 from starlette.templating import Jinja2Templates
 
-from app.bff.adapters import OrderAdapter, BasicAdapter
+from app.bff.adapters import InventoryAdapter, BasicAdapter
 from app.bff.bff_config import config
 
 from app.bff.dff_helpers.htmx_decorator import s
@@ -41,10 +41,10 @@ status_badges_map = {
 @order_router.get("/table", response_class=HTMLResponse)
 @htmx(*s('inventory/order/order-table'))
 async def order_list(request: Request,):
-    async with OrderAdapter(request) as oa:
+    async with InventoryAdapter(request) as oa:
         # Достаю сначала ордера
         orders_data = await oa.get_orders(request.query_params)
-    async with OrderAdapter(request) as oa:
+    async with InventoryAdapter(request) as oa:
         # Достаю все типы ордеров
         order_types_data = await oa.get_order_types()
     async with BasicAdapter(request) as oa:

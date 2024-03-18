@@ -49,7 +49,7 @@ class StoreFilter(Filter):
     updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
     updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
     company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
-    title__in: Optional[List[str]] = Field(description="title", default=None)
+    title__in: Optional[List[str]] = Field(description="title", alias='title', default=None)
     address__in: Optional[List[str]] = Field(description="address", default=None)
     source__in: Optional[List[str]] = Field(description="source", default=None)
     order_by: Optional[List[str]] = ["created_at"]
