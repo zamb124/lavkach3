@@ -70,8 +70,8 @@ def empty_erray(val):
         return val
 
 class OrderFilter(BaseFilter):
-    planned_date__gte: Optional[datetime] = Field(description="bigger or equal planned date", default=None)
-    planned_date__lt: Optional[datetime] = Field(description="less planned date", default=None)
+    planned_date__gte: Optional[datetime] = Field(alias='planned_date_from', description="bigger or equal planned date", default=None)
+    planned_date__lt: Optional[datetime] = Field(alias='planned_date_to', description="less planned date", default=None)
     status__in: Optional[List[OrderStatus]] = Field(alias="status", default=None)
     date_planned_range: Optional[str] = Field(alias="date_planned_range", default=None)
     store_id__in: Optional[List[UUID4]] = Field(alias="store_id", default=None)
@@ -79,6 +79,7 @@ class OrderFilter(BaseFilter):
 
     class Constants(Filter.Constants):
         model = Order
+        ordering_field_name = "order_by"
         search_model_fields = ["external_id", "origin_number", "number"]
 
 

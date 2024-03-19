@@ -18,7 +18,7 @@
         <!-- Bootstrap Css -->
         <link href="{{ url_for('static' ,path='css/bootstrap.min.css') }}" id="bootstrap-style" rel="stylesheet"
               type="text/css"/>
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
         <!-- Icons Css -->
         <link href="{{ url_for('static' ,path='css/icons.min.css') }}" rel="stylesheet" type="text/css"/>
         <!-- App Css-->
@@ -26,8 +26,8 @@
         <!-- custom Css-->
         <link href="{{ url_for('static' ,path='css/custom.min.css') }}" id="app-style" rel="stylesheet"
               type="text/css"/>
-            <link href="{{ url_for('static' ,path='libs/sweetalert2/dist/sweetalert2.min.css') }}" rel="stylesheet"
-          type="text/css"/>
+        <link href="{{ url_for('static' ,path='libs/sweetalert2/dist/sweetalert2.min.css') }}" rel="stylesheet"
+              type="text/css"/>
     {% endblock css %}
 </head>
 
@@ -42,14 +42,14 @@
     {% endblock sidebar %}
     <div id="htmx_content">
         {% block content %}
-        <!--<div hx-get="/" hx-trigger="load"></div>-->
+            <!--<div hx-get="/" hx-trigger="load"></div>-->
         {% endblock %}
     </div>
-<div hx-get="/htmx/footer" hx-trigger="load">
-    {% block footer %}
+    <div hx-get="/htmx/footer" hx-trigger="load">
+        {% block footer %}
 
-    {% endblock footer %}
-</div>
+        {% endblock footer %}
+    </div>
 
 
 </div>
@@ -66,16 +66,16 @@
     <!-- JAVASCRIPT -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script>
-    const links = document.querySelectorAll('a[class="nav-link"]')
+        const links = document.querySelectorAll('a[class="nav-link"]')
 
-    links.forEach(link => {
-        link.addEventListener('click', function (){
-            links.forEach(link => {
-                link.classList.remove('active')
+        links.forEach(link => {
+            link.addEventListener('click', function () {
+                links.forEach(link => {
+                    link.classList.remove('active')
+                })
+                this.classList.add('active')
             })
-            this.classList.add('active')
         })
-    })
     </script>
     <script>
         function getCookieValue(name) {
@@ -98,6 +98,7 @@
                 (sDomain ? "; domain=" + sDomain : "") +
                 (sPath ? "; path=" + sPath : "");
         }
+
         function parseJwt(token) {
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -107,6 +108,7 @@
 
             return JSON.parse(jsonPayload);
         }
+
         // auth is a promise returned by our authentication system
 
         // await the auth token and store it somewhere
@@ -120,10 +122,10 @@
                 e.preventDefault()
                 window.history.pushState('Login', 'Login', '/auth/login');
                 htmx.ajax('GET', '/auth/login', {
-                        target:'#htmx_content', headers:{
-                            'HX-Replace-Url': 'true'
-                        }
-                    })
+                    target: '#htmx_content', headers: {
+                        'HX-Replace-Url': 'true'
+                    }
+                })
                 //console.log(authToken)
             }
         });
@@ -178,22 +180,28 @@
                 evt.detail.target = htmx.find("#teapot");
             }
         });
+        htmx.logger = function (elt, event, data) {
+            if (console) {
+                console.log(event, elt, data);
+            }
+        };
     </script>
+
 
     <script src="{{ url_for('static' ,path='libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='libs/simplebar/dist/simplebar.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='libs/node-waves/dist/waves.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='libs/feather-icons/dist/feather.min.js') }}"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="{{ url_for('static' ,path='js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
     <script src="{{ url_for('static' ,path='libs/sweetalert2/dist/sweetalert2.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='js/plugins.js') }}"></script>
     <script src="{{ url_for('static' ,path='js/plugins.js') }}"></script>
 
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
-    <script src="{{url_for('static' ,path='js/app.js')}}"></script>
+    <script src="{{ url_for('static' ,path='js/app.js') }}"></script>
     {% block extra_js %}
 
     {% endblock extra_js %}

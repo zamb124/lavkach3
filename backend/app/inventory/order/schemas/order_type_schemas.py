@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import PutawayStrategy
+from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import OrderType
@@ -63,7 +64,7 @@ class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
         orm_mode = True
 
 
-class OrderTypeFilter(Filter):
+class OrderTypeFilter(BaseFilter):
     lsn__gt: Optional[int] = Field(alias="cursor", default=0)
     id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
     created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
@@ -72,6 +73,7 @@ class OrderTypeFilter(Filter):
     updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
     company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
     store_id__in: Optional[List[UUID4]] = Field(alias="store_id", default=None)
+    search: Optional[str] = None
 
     class Config:
         populate_by_name = True

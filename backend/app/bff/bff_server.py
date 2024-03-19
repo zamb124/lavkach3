@@ -70,7 +70,8 @@ def make_middleware() -> List[Middleware]:
             backend=AuthBffBackend(),
             on_error=on_auth_error,
         ),
-        Middleware(SQLAlchemyMiddleware)
+        Middleware(SQLAlchemyMiddleware),
+        #Middleware(BFFMidlware)
     ]
     return middleware
 

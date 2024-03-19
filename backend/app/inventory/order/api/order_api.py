@@ -28,7 +28,7 @@ order_router = APIRouter(
 async def order_list(
         request: Request,
         model_filter: OrderFilter = FilterDepends(OrderFilter),
-        size: int = Query(ge=1, le=100, default=100),
+        size: int = Query(ge=1, le=100, default=20),
 ):
     data = await OrderService(request).list(model_filter, size)
     cursor = model_filter.lsn__gt

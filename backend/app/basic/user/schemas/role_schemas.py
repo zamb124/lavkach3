@@ -6,7 +6,7 @@ from typing import Optional, List
 
 from app.basic.user.models.role_models import Role
 from core.helpers.fastapi_filter_patch import BaseFilter
-from core.schemas.list_schema import BaseListSchame, GenericListSchema
+from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
@@ -69,5 +69,5 @@ class PermissionSchema(BaseModel):
     description: Optional[str]
 
 
-class PermissionListSchema(BaseListSchame):
+class PermissionListSchema(GenericListSchema):
     data: List[PermissionSchema] = []

@@ -87,20 +87,32 @@ async def login(
 
 
 @index_router.get("/bff/select", response_class=HTMLResponse)
-@htmx(*s('helpers/select_options'))
+@htmx(*s('helpers/choices'))
 async def select(request: Request):
-    for k, v in request.query_params.items():
-        module, model, param_key = k.split('_')
-        param_value = v
-        break
-    params = QueryParams({param_key: param_value})
+    # for k, v in request.query_params.get('select_name'):
+    #     module, model, param_key = k.split('_')
+    #     param_value = v
+    #     break
+    trigger_component = request.query_params.get('target_component') or 'table'
+    module = request.query_params.get('module')
+    model = request.query_params.get('model')
+    field = request.query_params.get('field') or 'search'
+    return_field_name = request.query_params.get('return_field_name')
+    v = request.query_params.get('search_terms')
+    params = QueryParams({field: v if v else ''})
     adapter_path = importlib.import_module('app.bff.adapters')
     adapter = getattr(adapter_path, config.services[module]['adapter'])
     async with adapter(request) as a:
         method = getattr(a, model)
         data = await method(params=params)
     return {
-        'options': data['data']
+        'name': f'{module}_{model}_{field}',
+        'module': module,
+        'model': model,
+        'field': field,
+        'trigger_component': f"#{trigger_component}",
+        'return_field_name': return_field_name,
+        'objects': data['data']
     }
 
 import app.bff.adapters.inventory_adapter

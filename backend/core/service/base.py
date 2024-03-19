@@ -47,6 +47,8 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def list(self, _filter: FilterSchemaType, size: int):
         query_filter = _filter.filter(select(self.model)).limit(size)
+        if getattr(_filter, 'order_by'):
+            query_filter = _filter.sort(query_filter)
         executed_data = await self.session.execute(query_filter)
         return executed_data.scalars().all()
 

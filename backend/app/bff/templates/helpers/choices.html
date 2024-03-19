@@ -1,0 +1,20 @@
+<select
+        id="{{ return_field_name }}"
+        name="{{ return_field_name }}"
+        class="form-control"
+        data-choices data-choices-removeItem name="{{ name }}"
+        hx-get="/bff/select"
+        hx-include="next [name='search_terms']"
+        hx-vals='{"module": "{{ module }}","model":"{{ model }}", "field":"{{ field }}", "return_field_name": "{{ return_field_name }}"}'
+        hx-trigger="search delay:0.5s"
+>
+    <option value="">Select {{ model }}</option>
+    {% for o in objects %}
+        <option value="{{ o.id }}">{{ o.title }}</option>
+    {% endfor %}
+</select>
+<script>
+    var element = document.getElementById('{{return_field_name}}')
+    var choices = new Choices(element);
+
+</script>

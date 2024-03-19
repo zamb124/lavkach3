@@ -51,15 +51,9 @@ async def order_list(request: Request,):
         # Теперь склады
         stores_data = await oa.get_stores()
         # Склеиваю
-    a=1
     for order in orders_data['data']:
         for store in stores_data['data']:
             if order['store_id'] == store['id']:
                 order.update({'store': store})
         order['status_badge'] = status_badges_map[order['status']]
-    return {
-        'orders': orders_data['data'],
-        'search': request.query_params.get('search'),
-        'stores': stores_data.get('data'),
-        'order_types': order_types_data.get('data'),
-    }
+    return orders_data

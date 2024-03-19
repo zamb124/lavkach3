@@ -10,6 +10,7 @@ class InventoryAdapter:
     session: httpx.AsyncClient = None
     inventory_url: str = f"http://{config.services['inventory']['DOMAIN']}:{config.services['inventory']['PORT']}"
     order_list_path = '/api/inventory/order'
+
     def __init__(self, request: Request):
         self.headers = {'Authorization': request.headers.get('Authorization') or request.cookies.get('token')}
 
@@ -27,6 +28,12 @@ class InventoryAdapter:
 
     async def order(self, params=None, **kwargs):
         responce = await self.session.get(self.inventory_url + self.order_list_path, params=params)
+        data = responce.json()
+        return data
+
+    async def order_type(self, params=None, **kwargs):
+        path = '/api/inventory/order_type'
+        responce = await self.session.get(self.inventory_url + path, params=params)
         data = responce.json()
         return data
 
