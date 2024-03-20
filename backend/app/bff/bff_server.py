@@ -4,11 +4,12 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.requests import HTTPConnection
-from starlette.types import ASGIApp
+from starlette.types import ASGIApp, Scope, Receive, Send
 
-from app.bff.bff_router import bff_router
 from app.bff.bff_config import config
+from app.bff.bff_router import bff_router
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -18,20 +19,32 @@ from core.fastapi.middlewares import (
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
-from fastapi.staticfiles import StaticFiles
 
 
-class BFFMidlware:
-    def __init__(self, app: ASGIApp) -> None:
+class env:
+    ...
+
+
+class AdapterMidlleWare:
+    """
+    Адартер кладется в request для удобства
+    """
+
+    def __init__(self, app: ASGIApp, *args, **kwargs):
         self.app = app
 
-    async def __call__(self, scope, receive, send) -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
         conn = HTTPConnection(scope)
-        conn.query_params.items()
-        return
+        e = env()
+        for i, v in config.services.items():
+            e.__setattr__(i, v['adapter'](conn, i))
+        scope['env'] = e
+        await self.app(scope, receive, send)
+
 
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(bff_router)
+
 
 def init_listeners(app_: FastAPI) -> None:
     # Exception handler
@@ -58,6 +71,7 @@ def on_auth_error(request: Request, exc: Exception):
 
 def make_middleware() -> List[Middleware]:
     middleware = [
+        Middleware(AdapterMidlleWare),
         Middleware(
             CORSMiddleware,
             allow_origins=["*"],
@@ -71,7 +85,7 @@ def make_middleware() -> List[Middleware]:
             on_error=on_auth_error,
         ),
         Middleware(SQLAlchemyMiddleware),
-        #Middleware(BFFMidlware)
+
     ]
     return middleware
 
@@ -99,5 +113,5 @@ def create_app() -> FastAPI:
 app = create_app()
 
 app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
-#app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
-#app.add_middleware(GZipMiddleware)
+# app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
+# app.add_middleware(GZipMiddleware)

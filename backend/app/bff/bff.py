@@ -1,23 +1,19 @@
 import asyncio
-import base64
-import importlib
 from typing import Annotated
 from fastapi import Form
 import aiohttp
-import jwt
-from babel.core import LOCALE_ALIASES
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi import Response, Request
+from fastapi import APIRouter
+from fastapi import Request
 from starlette.datastructures import QueryParams
 from starlette.responses import Response
 from pydantic import BaseModel
 from fastapi.responses import HTMLResponse
-from fastapi_htmx import htmx_init, htmx, TemplateSpec as ts
+from fastapi_htmx import htmx_init, htmx
 
-from app.bff.bff_config import config
+from core.fastapi.adapters.base_adapter import BaseAdapter
 from app.bff.template_spec import templates
 from app.bff.dff_helpers.htmx_decorator import s
-import app.bff.adapters.inventory_adapter
+
 htmx_init(templates, file_extension='html')
 
 
@@ -79,7 +75,7 @@ async def login(
             'email': username,
             'password': password
         }
-        async with session.post('http://127.0.0.1:8001/api/user/login', json=body) as bresp:
+        async with session.post('http://127.0.0.1:8001/api/basic/user/login', json=body) as bresp:
             data = await bresp.json()
     response.set_cookie(key='token', value=data['token'], httponly=True)
     response.set_cookie(key='refresh_token', value=data['refresh_token'], httponly=True)
@@ -89,10 +85,6 @@ async def login(
 @index_router.get("/bff/select", response_class=HTMLResponse)
 @htmx(*s('helpers/choices'))
 async def select(request: Request):
-    # for k, v in request.query_params.get('select_name'):
-    #     module, model, param_key = k.split('_')
-    #     param_value = v
-    #     break
     trigger_component = request.query_params.get('target_component') or 'table'
     module = request.query_params.get('module')
     model = request.query_params.get('model')
@@ -100,11 +92,8 @@ async def select(request: Request):
     return_field_name = request.query_params.get('return_field_name')
     v = request.query_params.get('search_terms')
     params = QueryParams({field: v if v else ''})
-    adapter_path = importlib.import_module('app.bff.adapters')
-    adapter = getattr(adapter_path, config.services[module]['adapter'])
-    async with adapter(request) as a:
-        method = getattr(a, model)
-        data = await method(params=params)
+    async with BaseAdapter(request, module=module, model=model) as a:
+        data = await a.list(params=params)
     return {
         'name': f'{module}_{model}_{field}',
         'module': module,
@@ -115,4 +104,3 @@ async def select(request: Request):
         'objects': data['data']
     }
 
-import app.bff.adapters.inventory_adapter

@@ -73,8 +73,9 @@
                                                     class="form-control"
                                                     type="date"
                                                     name="planned_date_from"
+                                                    placeholder=""
                                                     id="planned_date_from"
-                                                    value="{% if request.query_params.planned_date_from %}{{ request.query_params.planned_date_from }} {% else %}{{ now }}{% endif %}">
+                                                    value="{% if request.query_params.planned_date_to %}{{ request.query_params.planned_date_to }} {% else %}{{ now }}{% endif %}">
                                         </div>
                                     </div>
                                     <div class="col-xxl-2 col-sm-4">
@@ -194,7 +195,7 @@
                                     </li>
                                 </ul>
                                 <!------Таблица----->
-                                <div class="table-responsive table-card mb-1">
+                                <div class="table-responsive table-card mb-1" style="width: auto;">
                                     <table class="table table-nowrap align-middle" id="orderTable">
                                         <thead class="text-muted table-light">
                                         <tr class="text-uppercase fs-13">

@@ -45,6 +45,19 @@ class Config(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str = os.environ.get("AWS_SECRET_ACCESS_KEY") or ''
     AWS_DEFAULT_BUCKET: str = os.environ.get("AWS_DEFAULT_BUCKET") or 'us-east-1'
     AWS_ENDPOINT_URL: str = os.environ.get("AWS_ENDPOINT_URL") or 'https://storage.yandexcloud.net'
+    services: dict = {
+        'basic': {
+            'DOMAIN': '127.0.0.1',
+            'PORT': '8001',
+            'adapter': 'BasicAdapter'
+        },
+        'inventory': {
+            'DOMAIN': '127.0.0.1',
+            'PORT': '8002',
+            'adapter': 'InventoryAdapter'
+        },
+
+    }
 
 class DevelopmentConfig(Config):
     ...

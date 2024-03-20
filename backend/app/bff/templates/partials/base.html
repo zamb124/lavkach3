@@ -173,6 +173,14 @@
                 evt.detail.target = errors
                 evt.detail.shouldSwap = true;
                 evt.detail.isError = false;
+            } else if (evt.detail.xhr.status === 401) {
+                // Запрещено
+                window.history.pushState('Login', 'Login', '/auth/login');
+                htmx.ajax('GET', '/auth/login', {
+                    target: '#htmx_content', headers: {
+                        'HX-Replace-Url': 'true'
+                    }
+                })
             } else if (evt.detail.xhr.status === 418) {
                 // if the response code 418 (I'm a teapot) is returned, retarget the
                 // content of the response to the element with the id `teapot`
@@ -192,15 +200,10 @@
     <script src="{{ url_for('static' ,path='libs/simplebar/dist/simplebar.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='libs/node-waves/dist/waves.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='libs/feather-icons/dist/feather.min.js') }}"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="{{ url_for('static' ,path='js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
     <script src="{{ url_for('static' ,path='libs/sweetalert2/dist/sweetalert2.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='js/plugins.js') }}"></script>
     <script src="{{ url_for('static' ,path='js/plugins.js') }}"></script>
-
-    <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <script src="{{ url_for('static' ,path='js/app.js') }}"></script>
     {% block extra_js %}
 

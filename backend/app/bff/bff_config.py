@@ -10,17 +10,27 @@ logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
+def my_import(name):
+    """
+    Метод для удобного импорта адаптеров по пути
+    """
+    components = name.split('.')
+    mod = __import__(components[0])
+    for comp in components[1:]:
+        mod = getattr(mod, comp)
+    return mod
+
 class Config(CoreConfig):
     services: dict = {
         'basic': {
             'DOMAIN': '127.0.0.1',
             'PORT': '8001',
-            'adapter': 'BasicAdapter'
+            'adapter': my_import('app.bff.apps.basic.BasicAdapter')
         },
         'inventory': {
             'DOMAIN': '127.0.0.1',
             'PORT': '8002',
-            'adapter': 'InventoryAdapter'
+            'adapter': my_import('app.bff.apps.inventory.InventoryAdapter')
         },
 
     }
