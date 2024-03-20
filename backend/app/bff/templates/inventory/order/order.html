@@ -53,7 +53,7 @@
 
                         <div class="card-body border border-dashed border-end-0 border-start-0">
                             <div>
-                                <div class="row g-3">
+                                <div class="row g-3" id="filterList">
                                     <div class="col-xxl-3 col-sm-4">
                                         <div class="search-box">
                                             <input type="search"
@@ -75,7 +75,8 @@
                                                     name="planned_date_from"
                                                     placeholder=""
                                                     id="planned_date_from"
-                                                    value="{% if request.query_params.planned_date_to %}{{ request.query_params.planned_date_to }} {% else %}{{ now }}{% endif %}">
+                                                    value="{% if request.query_params.planned_date_to %}{{ request.query_params.planned_date_to }} {% else %}{{ now }}{% endif %}"
+                                            >
                                         </div>
                                     </div>
                                     <div class="col-xxl-2 col-sm-4">
@@ -222,7 +223,7 @@
                                         <tbody class="list form-check-all"
                                                id="table"
                                                hx-get="/inventory/order/table"
-                                               hx-trigger="change from:#orderList delay:500ms, load"
+                                               hx-trigger="change from:#filterList delay:500ms,change from:#tablist delay:500ms, load"
                                                hx-include="#orderList, #paginator"
                                         >
 
@@ -246,29 +247,38 @@
             <!-- container-fluid -->
             <div class="modal fade" id="createOrderModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                  aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-dialog modal-xl">
                     <div class="modal-content">
 
-                        <form class="tablelist-form" autocomplete="off">
-                            <div class="modal-body text-center">
+                        <form class="tablelist-form" autocomplete="off" id="OrderCreateForm">
+                            <div class="modal-body left">
                                 <lord-icon
                                         src="https://cdn.lordicon.com/ghhwiltn.json"
-                                        trigger="hover"
-                                        style="width:250px;height:250px">
+                                        trigger="loop"
+                                        style="width:50px;height:50px">
                                 </lord-icon>
                                 <input type="hidden" id="id-field"/>
-                                <div class="mb-3">
-                                    <label for="productname-field" class="form-label">Store</label>
-                                    <select class="form-control"
-                                            type="text"
-                                            data-trigger name="productname-field"
-                                            hx-post="/basic/store"
-                                    />
-                                    <option value="">---Select Store ---</option>
-                                    {% for store in stores %}
-                                        <option value="{{ store.id }}">{{ store.title }}</option>
-                                    {% endfor %}
-                                    </select>
+                                <div class="row">
+                                    <div class="col-md-6" hx-get="/bff/select"
+                                         hx-vals='{
+                                         "module": "basic",
+                                         "model":"store",
+                                         "return_field_name": "form_store_id"
+                                         }'
+                                         hx-swap="innerHTML"
+                                         hx-trigger="load">
+
+                                    </div>
+
+                                    <div class="col-md-6" hx-get="/bff/select"
+                                         hx-vals='{
+                                         "module": "inventory",
+                                         "model":"order_type",
+                                         "return_field_name": "form_order_type_id"
+                                         }'
+                                         hx-swap="innerHTML"
+                                         hx-trigger="load">
+                                    </div>
                                 </div>
 
                                 <div class="row gy-4 mb-3">
@@ -292,11 +302,8 @@
                                                 <option value="Paypal">Paypal</option>
                                             </select>
                                         </div>
-
                                     </div>
-
                                 </div>
-
                             </div>
                             <div class="modal-footer">
                                 <div class="hstack gap-2 justify-content-end">

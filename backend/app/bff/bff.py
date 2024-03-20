@@ -92,8 +92,8 @@ async def select(request: Request):
     return_field_name = request.query_params.get('return_field_name')
     v = request.query_params.get('search_terms')
     params = QueryParams({field: v if v else ''})
-    async with BaseAdapter(request, module=module, model=model) as a:
-        data = await a.list(params=params)
+    async with getattr(request.scope['env'], module) as a:
+        data = await a.list(params=params, model=model)
     return {
         'name': f'{module}_{model}_{field}',
         'module': module,

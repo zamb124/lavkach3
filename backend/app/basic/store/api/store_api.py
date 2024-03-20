@@ -33,7 +33,7 @@ async def store_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@store_router.post("/create", response_model=StoreScheme)
+@store_router.post("", response_model=StoreScheme)
 async def store_create(request: Request, schema: StoreCreateScheme):
     return await StoreService(request).create(obj=schema)
 

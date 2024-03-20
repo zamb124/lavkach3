@@ -6,7 +6,8 @@ from pydantic import BaseConfig
 from core.config import Config as CoreConfig
 BaseConfig.arbitrary_types_allowed = True
 logging.basicConfig(level=logging.INFO)
-
+from app.bff.apps.inventory import InventoryAdapter
+from app.bff.apps.basic import BasicAdapter
 
 load_dotenv()
 
@@ -25,14 +26,13 @@ class Config(CoreConfig):
         'basic': {
             'DOMAIN': '127.0.0.1',
             'PORT': '8001',
-            'adapter': my_import('app.bff.apps.basic.BasicAdapter')
+            'adapter': BasicAdapter
         },
         'inventory': {
             'DOMAIN': '127.0.0.1',
             'PORT': '8002',
-            'adapter': my_import('app.bff.apps.inventory.InventoryAdapter')
+            'adapter': InventoryAdapter
         },
-
     }
 
 class DevelopmentConfig(Config):

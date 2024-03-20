@@ -101,14 +101,42 @@
                                                     My Store </a>
                                             </li>
                                             <li class="nav-item">
-                                                <a href="/basic/store-list" class="nav-link"
-                                                   data-key="t-all-stores"> All Stores </a>
+                                                <a
+                                                    href="/basic/store"
+                                                    hx-target="#htmx_content"
+                                                    hx-push-url="true"
+                                                    hx-get="/basic/store"
+                                                    class="nav-link"
+                                                    data-key="t-all-store"> Stores
+                                                </a>
                                             </li>
                                         </ul>
                                     </div>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/inventory/quant" class="nav-link" data-key="t-stocks"> Stocks </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#sidebarInventoryProducts" class="nav-link" data-bs-toggle="collapse" role="button"
+                                       aria-expanded="false" aria-controls="sidebarProducts" data-key="t-products">
+                                        Products
+                                    </a>
+                                    <div class="collapse menu-dropdown" id="sidebarInventoryProducts">
+                                        <ul class="nav nav-sm flex-column">
+                                            <li class="nav-item">
+                                                <a href="/basic/product_category" class="nav-link" data-key="t-product-category">
+                                                    Product Category </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="/basic/product_storage_type" class="nav-link"
+                                                   data-key="t-product-storage-type"> Product Storage Type </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="/basic/product" class="nav-link"
+                                                   data-key="t-products"> Products </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </li>
 
                             </ul>

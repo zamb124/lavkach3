@@ -1,5 +1,4 @@
 {% block content %}
-
     {% for order in data %}
         <tr {% if loop.last %}
             hx-get="/inventory/order/table?cursor={{ cursor }}"
@@ -71,6 +70,4 @@
             </td>
         </tr>
     {% endfor %}
-
-
 {% endblock %}
