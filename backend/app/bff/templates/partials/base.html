@@ -32,7 +32,16 @@
 </head>
 
 <body>
+<div class="position-fixed top-0 end-0 p-3">
+  <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div id="toast-body" class="toast-body"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
 <!-- Begin page -->
+
 <div id="layout-wrapper">
 
     <div hx-get="/htmx/topbar" hx-trigger="load"></div>
@@ -45,6 +54,7 @@
             <!--<div hx-get="/" hx-trigger="load"></div>-->
         {% endblock %}
     </div>
+
     <div hx-get="/htmx/footer" hx-trigger="load">
         {% block footer %}
 
@@ -164,9 +174,20 @@
             }
         })
         htmx.on('htmx:beforeSwap', function (evt) {
-            if (evt.detail.xhr.status === 404) {
+            if (evt.detail.xhr.status === 200) {
+                // do nothing
+            } else if (evt.detail.xhr.status === 404) {
                 // alert the user when a 404 occurs (maybe use a nicer mechanism than alert())
-                alert("Error: Could Not Find Resource");
+                var myToast = Toastify({
+                    text: evt.detail.pathInfo.requestPath + ' + ' + evt.detail.xhr.responseText,
+                    duration: 3000,
+                    close: true,
+                    style: {
+                        background: "#e94e1d",
+                    },
+
+                })
+                myToast.showToast();
             } else if (evt.detail.xhr.status === 403) {
                 // Запрещено
                 var errors = htmx.find("#errors");
@@ -186,6 +207,18 @@
                 // content of the response to the element with the id `teapot`
                 evt.detail.shouldSwap = true;
                 evt.detail.target = htmx.find("#teapot");
+
+            }else {
+                var myToast = Toastify({
+                    text: evt.detail.xhr.responseText,
+                    duration: 3000,
+                    close: true,
+                    style: {
+                        background: "#e94e1d",
+                    },
+
+                })
+                myToast.showToast();
             }
         });
         htmx.logger = function (elt, event, data) {

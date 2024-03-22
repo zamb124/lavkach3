@@ -64,7 +64,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 if "duplicate key" in str(e):
                     raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
                 else:
-                    raise e
+                    raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
             except Exception as e:
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         else:
@@ -87,7 +87,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 if "duplicate key" in str(e):
                     raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
                 else:
-                    raise e
+                    raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         else:
@@ -104,7 +104,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             if "duplicate key" in str(e):
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
             else:
-                raise e
+                raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         return True

@@ -1,3 +1,4 @@
+from http.client import HTTPException
 from typing import List
 
 from fastapi import FastAPI, Request, Depends
@@ -10,6 +11,7 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.bff.bff_config import config
 from app.bff.bff_router import bff_router
+from app.bff.template_spec import exception_handlers, templates
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -19,6 +21,7 @@ from core.fastapi.middlewares import (
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
+
 
 
 class env:
@@ -111,6 +114,7 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
 
 app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
 # app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")

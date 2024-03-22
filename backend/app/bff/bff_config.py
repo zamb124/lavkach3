@@ -3,6 +3,10 @@ import os
 
 from dotenv import load_dotenv
 from pydantic import BaseConfig
+
+from app.basic.company.schemas import CompanyUpdateScheme, CompanyCreateScheme, CompanyScheme
+from app.basic.store.schemas import StoreScheme, StoreCreateScheme, StoreUpdateScheme, StoreListSchema
+from app.inventory.order.schemas import OrderUpdateScheme, OrderCreateScheme, OrderScheme
 from core.config import Config as CoreConfig
 BaseConfig.arbitrary_types_allowed = True
 logging.basicConfig(level=logging.INFO)
@@ -26,13 +30,32 @@ class Config(CoreConfig):
         'basic': {
             'DOMAIN': '127.0.0.1',
             'PORT': '8001',
-            'adapter': BasicAdapter
+            'adapter': BasicAdapter,
+            'schema': {
+                'store': {
+                    'base': StoreScheme,
+                    'create': StoreCreateScheme,
+                    'update': StoreUpdateScheme,
+                },
+                'company': {
+                    'base': CompanyScheme,
+                    'create': CompanyCreateScheme,
+                    'update': CompanyUpdateScheme,
+                }
+            }
         },
         'inventory': {
             'DOMAIN': '127.0.0.1',
             'PORT': '8002',
-            'adapter': InventoryAdapter
-        },
+            'adapter': InventoryAdapter,
+            'schema': {
+                'order': {
+                    'base': OrderScheme,
+                    'create': OrderCreateScheme,
+                    'update': OrderUpdateScheme,
+                },
+            },
+        }
     }
 
 class DevelopmentConfig(Config):

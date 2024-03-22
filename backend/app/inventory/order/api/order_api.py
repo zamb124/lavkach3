@@ -35,7 +35,7 @@ async def order_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@order_router.post("/create", response_model=OrderScheme)
+@order_router.post("", response_model=OrderScheme)
 async def order_create(request: Request, schema: OrderCreateScheme):
     return await OrderService(request).create(obj=schema)
 

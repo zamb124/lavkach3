@@ -1,20 +1,21 @@
+{% set select_key  = (prefix or 'select') ~ '-' ~ model %}
 <select
-        id="{{ return_field_name }}"
-        name="{{ return_field_name }}"
+        id="{{ select_key }}"
+        name="{{ model }}"
         class="form-control"
-        data-choices data-choices-removeItem name="{{ name }}"
+        data-choices data-choices-removeItem name="{{ select_key }}"
         hx-get="/bff/select"
+        required="{{ required or 0 }}"
         hx-include="next [name='search_terms']"
-        hx-vals='{"module": "{{ module }}","model":"{{ model }}", "field":"{{ field }}", "return_field_name": "{{ return_field_name }}"}'
+        hx-vals='{"module": "{{ module }}","model":"{{ model }}", "field":"{{ field }}"}'
         hx-trigger="search delay:0.5s"
 >
-    <option value="">Select {{ model }}</option>
+    <option value="{{ key or ''}}">{{ value or 'Select ' ~ model|capitalize }}</option>
     {% for o in objects %}
-        <option value="{{ o.id }}">{{ o.title }}</option>
+        <option value="{{ o.id or o.language or o.code }}">{{ o.title or o.english_name or o.name }}</option>
     {% endfor %}
 </select>
 <script>
-    var element = document.getElementById('{{return_field_name}}')
+    var element = document.getElementById('{{ select_key }}')
     var choices = new Choices(element);
-
 </script>

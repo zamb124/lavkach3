@@ -31,7 +31,7 @@ async def partner_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@partner_router.post("/create", response_model=PartnerScheme)
+@partner_router.post("", response_model=PartnerScheme)
 async def partner_create(request: Request, schema: PartnerCreateScheme):
     return await PartnerService(request).create(obj=schema)
 

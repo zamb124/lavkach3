@@ -42,7 +42,7 @@ async def uom_category_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@uom_category_router.post("/create", response_model=UomCategoryScheme)
+@uom_category_router.post("", response_model=UomCategoryScheme)
 async def uom_category_create(request: Request, schema: UomCategoryCreateScheme):
     return await UomCategoryService(request).create(obj=schema)
 
@@ -74,7 +74,7 @@ async def uom_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@uom_router.post("/create", response_model=UomScheme)
+@uom_router.post("", response_model=UomScheme)
 async def uom_create(request: Request, schema: UomCreateScheme):
     return await UomService(request).create(obj=schema)
 

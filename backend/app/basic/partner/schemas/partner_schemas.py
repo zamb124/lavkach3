@@ -5,7 +5,7 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
 from typing import Optional
 
-from core.helpers.fastapi_filter_patch import BaseFilter
+from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from core.types.types import TypeCountry, TypePhone, TypeLocale, TypeCurrency

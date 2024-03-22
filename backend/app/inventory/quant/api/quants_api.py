@@ -35,7 +35,7 @@ async def quant_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@quant_router.post("/create", response_model=QuantScheme)
+@quant_router.post("", response_model=QuantScheme)
 async def quant_create(request: Request, schema: QuantCreateScheme):
     return await QuantService(request).create(obj=schema)
 

@@ -1,0 +1,50 @@
+<div class="modal-dialog modal-dialog-centered modal-xl">
+  <div class="modal-content modal-lg">
+    <div class="modal-header">
+      <h5 class="modal-title">Create {{ model|capitalize }}</h5>
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+
+    </div>
+  <form class="was-validated" hx-post="/base/modal-create" hx-vals='{"form_module": "{{ module }}", "form_model": "{{ model }}"}'>
+    <div class="modal-body text-center p-5" >
+    <lord-icon
+    src="https://cdn.lordicon.com/wzwygmng.json"
+    trigger="loop"
+    style="width:150px;height:150px">
+</lord-icon>
+    {% set count = 0 %}
+            {%  for k, v in columns.items() %}
+                {% if loop.index0 % 2 == 0 %}
+                    <div class="row" style="">
+                {% endif %}
+                <div class="col">
+                    {% if v.type == 'str'%}
+                        <div>
+                        <label for="{{ k }}">{{ k }}</label>
+                            <input class="form-control" required="{{ v.required }}" placeholder="Enter {{ k|capitalize }}" name="{{ k }}">
+                            <div class="invalid-feedback">Enter valid value</div>
+                        </div>
+                    {% else  %}{# v.type == 'model' #}
+                        <div style="padding-top: 20px"
+                            class="row"
+                             hx-get="/bff/select"
+                             hx-vals='{"module": "{{ v.module }}","model": "{{ v.model }}",
+                                "prefix": "create-modal"
+                             }'
+                             hx-trigger="load">
+                        <a href="#" class="btn btn-dark form-control disabled placeholder col-12 htmx-indicator text-start">Select</a>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if loop.index % 2 == 0 %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+        <button type="submit" class="btn btn-success" data-bs-dismiss="modal" >Create</button>
+    </div>
+  </form>
+  </div>
+</div>

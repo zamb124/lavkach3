@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, UUID4
 from typing import Optional, List
 
 from app.basic.user.models.role_models import Role
-from core.helpers.fastapi_filter_patch import BaseFilter
+from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 

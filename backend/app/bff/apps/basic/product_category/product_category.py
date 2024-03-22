@@ -23,7 +23,7 @@ async def product_category_list(request: Request,):
     return product_categorys_data
 
 
-@product_category_router.post("/create", response_class=HTMLResponse)
+@product_category_router.post("", response_class=HTMLResponse)
 @htmx(*s('helpers/informer'))
 async def product_category_create(request: Request, company_id: Annotated[str, Form()], title: Annotated[str, Form()], address: Annotated[str, Form()]):
     async with request.scope['env'].basic as ba:

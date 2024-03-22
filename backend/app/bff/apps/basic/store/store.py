@@ -22,7 +22,7 @@ async def store_list(request: Request,):
     async with request.scope['env'].basic as oa:
         stores_data = await oa.list(model='store', params=request.query_params) # Достаю склады
     return stores_data
-@store_router.post("/create", response_class=HTMLResponse)
+@store_router.post("", response_class=HTMLResponse)
 @htmx(*s('helpers/informer'))
 async def store_create(request: Request, company_id: Annotated[str, Form()], title: Annotated[str, Form()], address: Annotated[str, Form()]):
     async with request.scope['env'].basic as ba:
@@ -39,4 +39,11 @@ async def store_create(request: Request, company_id: Annotated[str, Form()], tit
 async def store_create(request: Request, store_id: uuid.UUID):
     async with request.scope['env'].basic as ba:
         stores_data = await ba.delete(model='store', id=store_id, params=request.query_params)  # Достаю склады
+    return {'title': 'Store Deleted', 'Message': ''}
+
+@store_router.get("/{store_id}", response_class=HTMLResponse)
+@htmx(*s('basic/store/table/row/store-edit-row'))
+async def store_edit_row(request: Request, store_id: uuid.UUID):
+    async with request.scope['env'].basic as ba:
+        store_data = await ba.get(model='store', id=store_id, params=request.query_params)  # Достаю склады
     return {'title': 'Store Deleted', 'Message': ''}

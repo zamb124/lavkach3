@@ -1,0 +1,28 @@
+<tr id="{{ o.id }}">
+    <th scope="row">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="checkAll"
+                   value="">
+        </div>
+    </th>
+    <td class="company"><a href="/basic/company/{{ o.id }}" class="fw-medium link-primary">{{ o.company.title }}</a>
+    </td>
+    <td class="title"><input name="row-title" value="{{ o.title }}"></td>
+    <td class="created_at">{{ datetime.fromisoformat(o.created_at).strftime('%Y-%m-%d') }}<small
+            class="text-muted">{{ datetime.fromisoformat(o.created_at).strftime('%H:%M') }}</small></td>
+    <td class="external_id">{{ o.external_id }}</td>
+    <td class="address">{{ o.address }}</td>
+    <td class="source">{{ o.source }}</td>
+    <td>
+        <ul class="list-inline hstack gap-2 mb-0">
+            <li class="list-inline-item edit" data-bs-toggle="tooltip"
+                data-bs-trigger="hover"
+                data-bs-placement="top" title="Edit">
+                <a href="#createOrderModal" data-bs-toggle="modal"
+                   class="text-primary d-inline-block edit-item-btn">
+                    <i class="ri-save-fill fs-16"></i>
+                </a>
+            </li>
+        </ul>
+    </td>
+</tr>

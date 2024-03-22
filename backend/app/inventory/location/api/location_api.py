@@ -35,7 +35,7 @@ async def location_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@location_router.post("/create", response_model=LocationScheme)
+@location_router.post("", response_model=LocationScheme)
 async def location_create(request: Request, schema: LocationCreateScheme):
     return await LocationService(request).create(obj=schema)
 

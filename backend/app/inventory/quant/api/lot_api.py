@@ -30,7 +30,7 @@ async def lot_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@lot_router.post("/create", response_model=LotScheme)
+@lot_router.post("", response_model=LotScheme)
 async def lot_create(request: Request, schema: LotCreateScheme):
     return await LotService(request).create(obj=schema)
 

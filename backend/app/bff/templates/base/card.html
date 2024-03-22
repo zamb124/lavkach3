@@ -1,0 +1,29 @@
+<div class="card card-body text-center">
+    <div class="avatar-sm mx-auto mb-3">
+        <div class="avatar-title bg-success-subtle text-success fs-17 rounded">
+            <i class="ri-cpu-fill"></i>
+        </div>
+    </div>
+    <h4 class="card-title">{{ title }}</h4>
+    <div class="row">
+        <div class="col">
+            <div class="col">
+                <label class="card-text"> Created: </label>
+            </div>
+            <div class="col">
+                <label class="card-text"> Updated: </label>
+            </div>
+        </div>
+        <div class="col">
+            <div class="col">
+                <p class="card-text text">{{ created_at.strftime('%Y-%m-%d') }}<small
+                        class="text-muted"> {{ updated_at.strftime('%H:%M') }}</small></p>
+            </div>
+            <div class="col">
+                <p class="card-text text">{{ updated_at.strftime('%Y-%m-%d') }}<small
+                        class="text-muted"> {{ updated_at.strftime('%H:%M') }}</small></p>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -31,7 +31,7 @@ async def product_storage_type_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@product_storage_type_router.post("/create", response_model=ProductStorageTypeScheme)
+@product_storage_type_router.post("", response_model=ProductStorageTypeScheme)
 async def product_storage_type_create(request: Request, schema: ProductStorageTypeCreateScheme):
     return await ProductStorageTypeService(request).create(obj=schema)
 

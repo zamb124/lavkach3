@@ -7,7 +7,7 @@ from core.schemas.timestamps import TimeStampScheme
 from fastapi_filter.contrib.sqlalchemy import Filter
 from app.basic.uom.models.uom_models import Uom, UomType
 from core.schemas.list_schema import GenericListSchema
-from core.helpers.fastapi_filter_patch import BaseFilter
+from core.schemas import BaseFilter
 
 
 class UomBaseScheme(BaseModel):

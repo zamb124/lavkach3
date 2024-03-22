@@ -11,7 +11,6 @@ from core.schemas.basic_schemes import CurrencySchema, CountrySchema, LocaleSche
 from core.types.types import TypeLocale
 from babel.core import UnknownLocaleError
 
-
 class ExceptionResponseSchema(BaseModel):
     error: str
 
@@ -36,17 +35,17 @@ def upload(request: Request, schema: Image):
         f.write(img_recovered)
     return {"message": f"Successfuly uploaded {schema.filename}"}
 
-@fundamental_router.get("/countries", response_model=list[CountrySchema])
+@fundamental_router.get("/country", response_model=list[CountrySchema])
 async def countries(request: Request):
     currencies = [
         {
             'code': k, 'name': v
-        } for k, v in request.user.locale.territories._data.items()
+        } for k, v in TypeLocale(request.user.locale).territories._data.items()
     ]
     return currencies
 
 
-@fundamental_router.get("/countries/{code}", response_model=CountrySchema)
+@fundamental_router.get("/country/{code}", response_model=CountrySchema)
 async def countries_code(request: Request, code: str):
     try:
         country = request.user.locale.territories._data[code.upper()]
@@ -58,13 +57,13 @@ async def countries_code(request: Request, code: str):
     return {'name': country, 'code': code}
 
 
-@fundamental_router.get("/currencies", response_model=list[CurrencySchema])
+@fundamental_router.get("/currency", response_model=list[CurrencySchema])
 async def currencies(request: Request):
-    currencies = [{'code': k, 'name': v} for k, v in request.user.locale.currencies._data.items()]
+    currencies = [{'code': k, 'name': v} for k, v in TypeLocale(request.user.locale).currencies._data.items()]
     return currencies
 
 
-@fundamental_router.get("/currencies/{code}", response_model=CurrencySchema)
+@fundamental_router.get("/currency/{code}", response_model=CurrencySchema)
 async def currencies_code(request: Request, code: str):
     try:
         currency = request.user.locale.currencies._data[code.upper()]
@@ -76,20 +75,20 @@ async def currencies_code(request: Request, code: str):
     return {'name': currency, 'code': code}
 
 
-@fundamental_router.get("/locales", response_model=list[LocaleSchema])
+@fundamental_router.get("/locale", response_model=list[LocaleSchema])
 async def locales(request: Request):
     l = TypeLocale('en', 'US')
     locales = [TypeLocale(i) for i in LOCALE_ALIASES]
     return [i.validate(i) for i in locales]
 
 
-@fundamental_router.get("/locales/my", response_model=LocaleSchema)
+@fundamental_router.get("/locale/my", response_model=LocaleSchema)
 async def locales_my(request: Request):
     locale = TypeLocale(str(request.user.locale))
     return locale.validate(locale)
 
 
-@fundamental_router.get("/locales/{code}", response_model=LocaleSchema)
+@fundamental_router.get("/locale/{code}", response_model=LocaleSchema)
 async def locales_code(request: Request, code: str):
     try:
         locale = TypeLocale(code.lower())

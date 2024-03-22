@@ -46,7 +46,7 @@ async def permission_list_filter(filter: str = Query('', description="filter"), 
     return {'data': data}
 
 
-@role_router.post("/create", response_model=RoleScheme)
+@role_router.post("", response_model=RoleScheme)
 async def role_create(request: Request, schema: RoleCreateScheme):
     return await RoleService(request).create(obj=schema)
 

@@ -1,0 +1,12 @@
+<script>
+var myToast = Toastify({
+ text: "{{message}}",
+ duration: 3000,
+    style: {
+    background: "{{background}}",
+  },
+
+})
+myToast.showToast();
+htmx.trigger("#table", "update"); // событие обновления
+</script>

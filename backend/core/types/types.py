@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 from babel import Locale
-from pydantic import GetJsonSchemaHandler
+from pydantic import GetJsonSchemaHandler, model_validator
 from pydantic_core import CoreSchema
 from sqlalchemy_utils.types.country import Country
 from sqlalchemy_utils.types.currency import Currency
@@ -49,7 +49,7 @@ class TypeLocale(Locale):
     def validate(cls, v, c=None):
         if isinstance(v, str):
             try:
-                v = Locale(v)
+                Locale(v)
             except ValueError as ex:
                 raise TypeError(str(ex))
             except Exception as ex:

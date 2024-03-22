@@ -69,14 +69,7 @@
                                     <!--end col-->
                                     <div class="col-xxl-2 col-sm-4">
                                         <div>
-                                            <input
-                                                    class="form-control"
-                                                    type="date"
-                                                    name="planned_date_from"
-                                                    placeholder=""
-                                                    id="planned_date_from"
-                                                    value="{% if request.query_params.planned_date_to %}{{ request.query_params.planned_date_to }} {% else %}{{ now }}{% endif %}"
-                                            >
+                                            <input class="form-control" type="date" name="planned_date_from" placeholder="" id="planned_date_from" value="{% if request.query_params.planned_date_to %}{{ request.query_params.planned_date_to }} {% else %}{{ now }}{% endif %}">
                                         </div>
                                     </div>
                                     <div class="col-xxl-2 col-sm-4">
@@ -90,17 +83,12 @@
                                         </div>
                                     </div>
                                     <!--end col-->
-                                    <div class="col-xxl-2 col-sm-4" hx-get="/bff/select"
-                                         hx-vals='{
-                                         "module": "inventory",
-                                         "model":"order_type",
-                                         "return_field_name": "order_type_id"
-                                         }'
-                                         hx-trigger="load">
+                                    <div class="col-xxl-2 col-sm-4" hx-get="/bff/select" hx-vals='{"module": "inventory", "model":"order_type","return_field_name": "order_type_id"}' hx-trigger="load">
 
                                     </div>
                                     <!--end col-->
-                                    <div class="col-xxl-2 col-sm-4" hx-get="/bff/select"
+                                    <div class="col-xxl-2 col-sm-4"
+                                         hx-get="/bff/select"
                                          hx-vals='{
                                          "module": "basic",
                                          "model":"store",

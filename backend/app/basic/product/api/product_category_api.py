@@ -31,7 +31,7 @@ async def product_category_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@product_category_router.post("/create", response_model=ProductCategoryScheme)
+@product_category_router.post("", response_model=ProductCategoryScheme)
 async def product_category_create(request: Request, schema: ProductCategoryCreateScheme):
     return await ProductCategoryService(request).create(obj=schema)
 

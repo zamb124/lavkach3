@@ -32,7 +32,7 @@ async def company_list(
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
-@company_router.post("/create", response_model=CompanyScheme)
+@company_router.post("", response_model=CompanyScheme)
 async def company_create(request: Request, schema: CompanyCreateScheme):
     return await CompanyService(request).create(obj=schema)
 
@@ -49,4 +49,4 @@ async def company_update(request: Request, company_id: uuid.UUID, schema: Compan
 
 @company_router.delete("/{company_id}")
 async def company_delete(request: Request, company_id: uuid.UUID):
-    await CompanyService(request).delete(id=company_id)
+    return await CompanyService(request).delete(id=company_id)

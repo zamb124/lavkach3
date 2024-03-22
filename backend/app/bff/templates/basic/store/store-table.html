@@ -31,6 +31,8 @@
                         data-bs-trigger="hover"
                         data-bs-placement="top" title="Edit">
                         <a href="#createOrderModal" data-bs-toggle="modal"
+                           hx-target="closest tr"
+                           hx-get="/basic/store/table/row/{{ o.id }}"
                            class="text-primary d-inline-block edit-item-btn">
                             <i class="ri-pencil-fill fs-16"></i>
                         </a>
@@ -43,6 +45,7 @@
                            href="#deleteOrder"
                            hx-delete="/basic/store/{{ o.id }}"
                            hx-swap="outerHTML swap:1s"
+                           hx-confirm="Are you sure?"
                            hx-target="closest tr"
                         >
                             <i class="ri-delete-bin-5-fill fs-16"></i>

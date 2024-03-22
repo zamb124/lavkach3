@@ -16,7 +16,7 @@ from core.fastapi.dependencies import (
 )
 
 basic_router = APIRouter(prefix='/api/basic')
-basic_router.include_router(fundamental_router, prefix="/fundamental", tags=["Base"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+basic_router.include_router(fundamental_router, prefix="", tags=["Base"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 basic_router.include_router(user_router, prefix="/user", tags=["User"])
 basic_router.include_router(role_router, prefix="/role", tags=["Role"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 basic_router.include_router(partner_router, prefix="/partner", tags=["Partner"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
