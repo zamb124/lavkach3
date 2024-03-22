@@ -28,7 +28,7 @@ class CreateUserRequestSchema(BaseModel):
     password2: str = Field(..., description="Password2")
     nickname: str = Field(..., description="Nickname")
     type: Optional[UserType]
-    store_id: Optional[UUID4]
+    store_rel: Optional[UUID4]
 
     class Config:
         orm_mode = True
@@ -48,9 +48,9 @@ class LoginResponseSchema(BaseModel):
     token: str = Field(..., description="Token")
     refresh_token: str = Field(..., description="Refresh token")
     user_id: Optional[UUID4]
-    companies: Optional[List[UUID4]]
-    permissions: Optional[List[str]]
-    roles: Optional[List[str]]
+    company_ids: Optional[List[UUID4]]
+    permission_list: Optional[List[str]]
+    role_ids: Optional[List[str]]
     locale: Optional[str]
     country: Optional[str]
 
@@ -68,10 +68,10 @@ class UserBaseScheme(BaseModel):
     nickname: str
     is_admin: Optional[bool] = None
     type: Optional[str] = None
-    external_id: Optional[str] = None
+    external_number: Optional[str] = None
     store_id: Optional[UUID4] = None
-    companies: Optional[list[UUID4]] = None
-    roles: Optional[list[UUID4]] = None
+    company_ids: Optional[list[UUID4]] = None
+    role_ids: Optional[list[UUID4]] = None
 
 
 class UserUpdateScheme(UserBaseScheme):
@@ -93,7 +93,7 @@ class UserScheme(UserBaseScheme, TimeStampScheme):
     phone_number: Optional[TypePhone]
     locale: Optional[TypeLocale]
     country: Optional[TypeCountry]
-    store: Optional[StoreScheme]
+    store_rel: Optional[StoreScheme]
 
     class Config:
         orm_mode = True
@@ -107,10 +107,10 @@ class UserFilter(Filter):
     updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
     updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
     country__in: Optional[List[str]] = Field(alias="country", default=None)
-    external_id__in: Optional[List[str]] = Field(alias="external_id", default=None)
+    external_number__in: Optional[List[str]] = Field(alias="external_number", default=None)
     email__in: Optional[List[str]] = Field(alias="email", default=None)
     nickname__in: Optional[List[str]] = Field(alias="nickname", default=None)
-    roles__in: Optional[List[str]] = Field(alias="roles", default=None)
+    role_ids__in: Optional[List[str]] = Field(alias="roles", default=None)
     locale__in: Optional[List[str]] = Field(alias="locale", default=None)
     order_by: Optional[List[str]] = ["created_at"]
     search: Optional[str] = None
@@ -122,7 +122,7 @@ class UserFilter(Filter):
         model = User
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["nickname", "email", "external_id"]
+        search_model_fields = ["nickname", "email", "external_number"]
 
 
 class UserListSchema(GenericListSchema):

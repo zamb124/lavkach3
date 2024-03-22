@@ -25,9 +25,9 @@ class Partner(Base,AllMixin):
     title: Mapped[str] = mapped_column(index=True)
     #
     type: Mapped[PartnerType] = mapped_column(default=PartnerType.PARTNER)
-    external_id: Mapped[Optional[str]] = mapped_column(unique=True)
+    external_number: Mapped[Optional[str]] = mapped_column(unique=True)
     parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey("partner.id"), index=True)
-    parent: Mapped['Partner'] = relationship(lazy='selectin')
+    parent_rel: Mapped['Partner'] = relationship(lazy='selectin')
     phone_number: Mapped[Optional[str]] = mapped_column(PhoneNumberType)
     email: Mapped[Optional[str]] = mapped_column(EmailType)
     country: Mapped[str] = mapped_column(CountryType, default='US')

@@ -48,7 +48,7 @@ async def countries(request: Request):
 @fundamental_router.get("/country/{code}", response_model=CountrySchema)
 async def countries_code(request: Request, code: str):
     try:
-        country = request.user.locale.territories._data[code.upper()]
+        country = TypeLocale(request.user.locale).territories._data[code.upper()]
     except KeyError as ex:
         raise HTTPException(
             status_code=404,
@@ -66,7 +66,7 @@ async def currencies(request: Request):
 @fundamental_router.get("/currency/{code}", response_model=CurrencySchema)
 async def currencies_code(request: Request, code: str):
     try:
-        currency = request.user.locale.currencies._data[code.upper()]
+        currency = TypeLocale(request.user.locale).currencies._data[code.upper()]
     except KeyError as ex:
         raise HTTPException(
             status_code=404,

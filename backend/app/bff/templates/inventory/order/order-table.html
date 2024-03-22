@@ -21,7 +21,7 @@
             <td class="created_at">{{ datetime.fromisoformat(order.created_at).strftime('%Y-%m-%d') }}
                 <small class="text-muted">{{ datetime.fromisoformat(order.created_at).strftime('%H:%M') }}</small>
             </td>
-            <td class="external_id">{{ order.external_id }}</td>
+            <td class="external_number">{{ order.external_number }}</td>
             <td class="origin_number">{{ order.origin }}</td>
             <td class="store"><a href="/basic/store/{{ order.store.id }}"
                                  class="fw-medium link-primary" hx-push-url="true"

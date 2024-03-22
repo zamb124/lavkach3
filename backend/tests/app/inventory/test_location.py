@@ -13,7 +13,7 @@ async def test_crud_location_type(async_inventory_client, headers, stores, compa
         'title': 'Partner Location',
         'location_class': 'partner'
     }
-    response = await async_inventory_client.post("/api/inventory/location_type/create", json=create_data, headers=headers['superadmin'])
+    response = await async_inventory_client.post("/api/inventory/location_type", json=create_data, headers=headers['superadmin'])
     assert response.status_code == 200
     data = response.json()
     location_type_id_1 = data['id']
@@ -50,7 +50,7 @@ async def test_crud_location(async_inventory_client, headers, stores, companies,
         'active': True,
         'location_type_id': location_types['place'].id.__str__(),
     }
-    response = await async_inventory_client.post("/api/inventory/location/create", json=create_data, headers=headers['superadmin'])
+    response = await async_inventory_client.post("/api/inventory/location", json=create_data, headers=headers['superadmin'])
     assert response.status_code == 200
     data = response.json()
     location_id = data['id']

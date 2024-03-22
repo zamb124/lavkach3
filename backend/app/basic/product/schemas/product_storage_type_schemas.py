@@ -13,7 +13,7 @@ from app.basic.company.schemas import CompanyScheme
 class ProductStorageTypeBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: str
-    external_id: Optional[str] = None
+    external_number: Optional[str] = None
 
 
 class ProductStorageTypeUpdateScheme(ProductStorageTypeBaseScheme):
@@ -51,7 +51,7 @@ class ProductStorageTypeFilter(Filter):
         model = ProductStorageType
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["title", "external_id"]
+        search_model_fields = ["title", "external_number"]
 
 
 class ProductStorageTypeListSchema(GenericListSchema):

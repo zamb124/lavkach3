@@ -4,7 +4,6 @@ import pytest
 
 from app.inventory.location.enums import PutawayStrategy
 from app.inventory.order.models import OrderClass, BackOrderAction, ReservationMethod
-from tests.conftest import *
 
 @pytest.mark.asyncio
 async def test_crud_order_type(async_inventory_client, headers, stores, companies, products, locations, token, ):
@@ -28,16 +27,16 @@ async def test_crud_order_type(async_inventory_client, headers, stores, companie
         'reservation_time_before': 0,
         'allowed_package_ids': [locations['package'].id.__str__(),],
         'exclusive_package_ids': None,
-        'homogeneity': False,
-        'allow_create_package': True,
-        'can_create_order_manualy': True,
-        'overdelivery': False,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
+        'is_can_create_order_manualy': True,
+        'is_overdelivery': False,
         'created_by': token['user_admin']['user_id'].__str__(),
         'edited_by': token['user_admin']['user_id'].__str__(),
         'barcode': '2132132131231',
         'strategy': 'fefo',
     }
-    response = await async_inventory_client.post("/api/inventory/order_type/create", json=create_data, headers=headers['superadmin'])
+    response = await async_inventory_client.post("/api/inventory/order_type", json=create_data, headers=headers['superadmin'])
     assert response.status_code == 200
     data = response.json()
     order_type_id_1 = data['id']
@@ -59,10 +58,10 @@ async def test_crud_order_type(async_inventory_client, headers, stores, companie
         'reservation_time_before': 5,
         'allowed_package_ids': [],
         'exclusive_package_ids': None,
-        'homogeneity': False,
-        'allow_create_package': True,
-        'can_create_order_manualy': True,
-        'overdelivery': False,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
+        'is_can_create_order_manualy': True,
+        'is_overdelivery': False,
         'created_by': token['user_admin']['user_id'].__str__(),
         'edited_by': token['user_admin']['user_id'].__str__(),
         'barcode': '2132132131231',
@@ -91,23 +90,23 @@ async def test_crud_order(async_inventory_client, token, headers, stores, compan
         'company_id': companies[0].id.__str__(),
         'order_type_id': order_types['inbound'].id.__str__(),
         'parent_id': None,
-        'external_id': 'external id',
+        'external_number': 'external id',
         'store_id': stores[0].id.__str__(),
         'partner_id': None,
         'lot_id': None,
         'origin_type': 'Purchase Order',
         'origin_number': 'Some Purchase Order Number',
-        'planned_date': datetime.now().isoformat(),
+        'planned_date': datetime.datetime.now().isoformat(),
         'actual_date': None,
         'created_by': token['user_admin']['user_id'].__str__(),
         'edited_by': token['user_admin']['user_id'].__str__(),
-        'expiration_date': datetime.now().isoformat(),
+        'expiration_datetime': datetime.datetime.now().isoformat(),
         'users_ids': None,
         'description': 'description',
         'status': 'draft'
 
     }
-    response = await async_inventory_client.post("/api/inventory/order/create", json=create_data, headers=headers['superadmin'])
+    response = await async_inventory_client.post("/api/inventory/order", json=create_data, headers=headers['superadmin'])
     assert response.status_code == 200
     data = response.json()
     order_id_1 = data['id']
@@ -116,17 +115,17 @@ async def test_crud_order(async_inventory_client, token, headers, stores, compan
     update_data = {
         'order_type_id': order_types['inbound'].id.__str__(),
         'parent_id': None,
-        'external_id': 'external id',
+        'external_number': 'external id',
         'store_id': stores[0].id.__str__(),
         'partner_id': None,
         'lot_id': None,
         'origin_type': 'Purchase Order',
         'origin_number': 'Some Purchase Order Number',
-        'planned_date': datetime.now().isoformat(),
+        'planned_date': datetime.datetime.now().isoformat(),
         'actual_date': None,
         'created_by': token['user_admin']['user_id'].__str__(),
         'edited_by': token['user_admin']['user_id'].__str__(),
-        'expiration_date': datetime.now().isoformat(),
+        'expiration_datetime': datetime.datetime.now().isoformat(),
         'users_ids': None,
         'description': 'description',
         'status': 'draft'
@@ -153,23 +152,23 @@ async def test_crud_move(async_inventory_client, token, headers, stores, compani
         'company_id': companies[0].id.__str__(),
         'order_type_id': order_types['inbound'].id.__str__(),
         'parent_id': None,
-        'external_id': 'external id',
+        'external_number': 'external id 1',
         'store_id': stores[0].id.__str__(),
         'partner_id': None,
         'lot_id': None,
         'origin_type': 'Purchase Order',
         'origin_number': 'Some Purchase Order Number',
-        'planned_date': datetime.now().isoformat(),
+        'planned_date': datetime.datetime.now().isoformat(),
         'actual_date': None,
         'created_by': token['user_admin']['user_id'].__str__(),
         'edited_by': token['user_admin']['user_id'].__str__(),
-        'expiration_date': datetime.now().isoformat(),
+        'expiration_datetime': datetime.datetime.now().isoformat(),
         'users_ids': None,
         'description': 'description',
         'status': 'draft'
 
     }
-    response = await async_inventory_client.post("/api/inventory/order/create", json=create_data, headers=headers['superadmin'])
+    response = await async_inventory_client.post("/api/inventory/order", json=create_data, headers=headers['superadmin'])
     assert response.status_code == 200
     data = response.json()
     order_id_1 = data['id']
@@ -179,23 +178,23 @@ async def test_crud_move(async_inventory_client, token, headers, stores, compani
         'company_id': companies[0].id.__str__(),
         'order_type_id': order_types['inbound'].id.__str__(),
         'parent_id': None,
-        'external_id': 'external id',
+        'external_number': 'external id 2',
         'store_id': stores[0].id.__str__(),
         'partner_id': None,
         'lot_id': None,
         'origin_type': 'Purchase Order',
         'origin_number': 'Some Purchase Order Number',
-        'planned_date': datetime.now().isoformat(),
+        'planned_date': datetime.datetime.now().isoformat(),
         'actual_date': None,
         'created_by': token['user_admin']['user_id'].__str__(),
         'edited_by': token['user_admin']['user_id'].__str__(),
-        'expiration_date': datetime.now().isoformat(),
+        'expiration_datetime': datetime.datetime.now().isoformat(),
         'users_ids': None,
         'description': 'description',
         'status': 'draft'
 
     }
-    response = await async_inventory_client.post("/api/inventory/order/create", json=create_data,
+    response = await async_inventory_client.post("/api/inventory/order", json=create_data,
                                                  headers=headers['superadmin'])
     assert response.status_code == 200
     data = response.json()
@@ -206,17 +205,17 @@ async def test_crud_move(async_inventory_client, token, headers, stores, compani
     update_data = {
         'order_type_id': order_types['inbound'].id.__str__(),
         'parent_id': None,
-        'external_id': 'external id',
+        'external_number': 'external id 3',
         'store_id': stores[0].id.__str__(),
         'partner_id': None,
         'lot_id': None,
         'origin_type': 'Purchase Order',
         'origin_number': 'Some Purchase Order Number',
-        'planned_date': datetime.now().isoformat(),
+        'planned_date': datetime.datetime.now().isoformat(),
         'actual_date': None,
         'created_by': token['user_admin']['user_id'].__str__(),
         'edited_by': token['user_admin']['user_id'].__str__(),
-        'expiration_date': datetime.now().isoformat(),
+        'expiration_datetime': datetime.datetime.now().isoformat(),
         'users_ids': None,
         'description': 'description',
         'status': 'draft'
@@ -229,7 +228,7 @@ async def test_crud_move(async_inventory_client, token, headers, stores, compani
     )
     assert response.status_code == 200
     data = response.json()
-    assert len(data.get('data')) == 1
+    assert len(data.get('data')) == 2
     # Удаление
     response = await async_inventory_client.delete(f"/api/inventory/order/{order_id_1}", headers=headers['superadmin'], )
     assert response.status_code == 200

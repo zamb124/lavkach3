@@ -13,8 +13,8 @@ from app.basic.company.schemas import CompanyScheme
 class ProductCategoryBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: str
-    external_id: Optional[str] = None
-    parent_id: Optional[list[UUID4]] = None
+    external_number: Optional[str] = None
+    parent_list_ids: Optional[list[UUID4]] = None
 
 
 class ProductCategoryUpdateScheme(ProductCategoryBaseScheme):
@@ -52,7 +52,7 @@ class ProductCategoryFilter(Filter):
         model = ProductCategory
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["title", "external_id"]
+        search_model_fields = ["title", "external_number"]
 
 
 class ProductCategoryListSchema(GenericListSchema):

@@ -10,7 +10,7 @@
     <td class="title"><input name="row-title" value="{{ o.title }}"></td>
     <td class="created_at">{{ datetime.fromisoformat(o.created_at).strftime('%Y-%m-%d') }}<small
             class="text-muted">{{ datetime.fromisoformat(o.created_at).strftime('%H:%M') }}</small></td>
-    <td class="external_id">{{ o.external_id }}</td>
+    <td class="external_number">{{ o.external_number }}</td>
     <td class="address">{{ o.address }}</td>
     <td class="source">{{ o.source }}</td>
     <td>

@@ -77,7 +77,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         # Получаем пермишены
         if not user.is_admin:
             result_roles = await self.session.execute(
-                select(Role).where(Role.id.in_(user.roles))
+                select(Role).where(Role.id.in_(user.role_ids))
             )
         else:
             result_roles = await self.session.execute(
@@ -86,29 +86,29 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         roles = result_roles.scalars().all()
         permissions_list = []
         for role in roles:
-            permissions_list += role.permissions_allow
+            permissions_list += role.permission_allow_list
         permissions_cleaned = set(permissions_list)
         permissions_list = []
         for perm in permits:
             if perm in permissions_cleaned:
                 permissions_list.append(perm)
-        companies = [i.__str__() for i in user.companies] if user.companies else []
+        company_ids = [i.__str__() for i in user.company_ids] if user.company_ids else []
         return {
             'token': TokenHelper.encode(payload={
                 "user_id": user.id.__str__(),
-                "companies": companies,
-                "roles": [i.id.__str__() for i in set(roles)],
+                "company_ids": company_ids,
+                "role_ids": [i.id.__str__() for i in set(roles)],
                 "is_admin": user.is_admin,
                 'locale': user.locale.language,
                 'country': user.country.code
             }),
             'refresh_token': TokenHelper.encode(payload={"sub": "refresh"}),
             'user_id': user.id,
-            'companies': companies,
+            'company_ids': company_ids,
             'nickname': user.nickname,
-            'permissions': permissions_list,
+            'permission_list': permissions_list,
             'store_id': user.store_id,
-            'roles': [i.title for i in roles] if not user.is_admin else ['superadmin'],
+            'role_ids': [i.title for i in roles] if not user.is_admin else ['superadmin'],
             'locale': user.locale.language,
             'country': user.country.code
         }
@@ -127,9 +127,9 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
     async def signup(self, obj: SignUpScheme):
         try:
             company = await CompanyService(db_session=self.session).sudo().create(obj.company, commit=False)
-            obj.user.companies = [company.id]
+            obj.user.company_ids = [company.id]
             role = await RoleService(db_session=self.session).sudo().create_company_admin_role(company.id, commit=False)
-            obj.user.roles = [role.id]
+            obj.user.role_ids = [role.id]
             user = await self.sudo().create(obj.user, commit=False)
             login = await self.login(user.email, user.password)
         except Exception as e:

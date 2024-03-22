@@ -62,7 +62,7 @@ class MoveFilter(Filter):
         model = Move
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["external_id", "origin_number"]
+        search_model_fields = ["external_number", "origin_number"]
 
 
 class MoveListSchema(GenericListSchema):

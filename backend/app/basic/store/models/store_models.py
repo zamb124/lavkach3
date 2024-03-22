@@ -19,8 +19,8 @@ class Store(Base, AllMixin):
     lsn_seq = Sequence(f'store_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(index=True)
-    external_id: Mapped[Optional[str]] = mapped_column(unique=True)
+    external_number: Mapped[Optional[str]] = mapped_column(unique=True)
     address: Mapped[str]
     source: Mapped[str] = mapped_column(default=StoreType.INTERNAL)
-    store_users: Mapped[list['User']] = relationship(lazy='selectin')
-    company: Mapped['Company'] = relationship(lazy='immediate', back_populates="stores")
+    store_user_list_rel: Mapped[list['User']] = relationship(lazy='selectin', back_populates="store_rel")
+    company_rel: Mapped['Company'] = relationship(lazy='immediate', back_populates="store_list_rel")

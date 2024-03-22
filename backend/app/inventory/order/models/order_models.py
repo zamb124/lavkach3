@@ -79,7 +79,7 @@ class OrderType(Base, AllMixin):
     exclusive_location_src_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)     # Искличенные зоны из подбора
     allowed_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)      # Разрешенные зона для назначения
     exclusive_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)    # Исключение зон из назначения
-    backorder_order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order_type.id", ondelete='SET NULL'))# Тип Ордера возврата разницы
+    backorder_order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order_type.id", ondelete='CASCADE'))# Тип Ордера возврата разницы
     backorder_action_type: Mapped[BackOrderAction] = mapped_column(default=BackOrderAction.ASK)                 # Поведение возврата разницы
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                     # Склад
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                   # Партнер (если у опредленного партнера своя стратегия)
@@ -87,10 +87,10 @@ class OrderType(Base, AllMixin):
     reservation_time_before: Mapped[Optional[int]] = mapped_column(default=0)                                   # Минуты до начала резервирования
     allowed_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)            # Разрешенные типы упаковок
     exclusive_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)          # Исключение типы упаковок
-    homogeneity: Mapped[bool]                                                                                   # Признак Гомогенности
-    allow_create_package: Mapped[bool]                                                                          # Можно ли создавать упаковки
-    can_create_order_manualy: Mapped[bool]                                                                      # Можно ли создавать Ордер вручную
-    overdelivery: Mapped[bool]                                                                                  # Возможно ли Overdelivery
+    is_homogeneity: Mapped[bool]                                                                                   # Признак Гомогенности
+    is_allow_create_package: Mapped[bool]                                                                          # Можно ли создавать упаковки
+    is_can_create_order_manualy: Mapped[bool]                                                                      # Можно ли создавать Ордер вручную
+    is_overdelivery: Mapped[bool]                                                                                  # Возможно ли Overdelivery
     created_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)                                   # Кем создан/изменен
     edited_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)                                    # Кем создан/изменен
     barcode: Mapped[str]                                                                                        # Штрих-код ордера для быстрого доступа
@@ -113,15 +113,15 @@ class Order(Base, AllMixin):
     """
     __tablename__ = "order"
     __table_args__ = (
-        UniqueConstraint('external_id', 'company_id', name='_order_companyid_external_id_uc'),
+        UniqueConstraint('external_number', 'company_id', name='_order_companyid_external_number_uc'),
     )
     lsn_seq = Sequence(f'order_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     number: Mapped[str] = mapped_column(index=True)    # Человекочитаемый номер присвается по формуле - {ГОД(2)}-{МЕСЯЦ}-{ДЕНЬ}-{LSN}
-    order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='SET NULL'))
+    order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='CASCADE'))
     order_type: Mapped[OrderType] = relationship(lazy='selectin')
     parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order.id", ondelete="CASCADE"))
-    external_id: Mapped[Optional[str]]
+    external_number: Mapped[Optional[str]]
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
     lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
@@ -131,11 +131,11 @@ class Order(Base, AllMixin):
     actual_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     created_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
     edited_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
-    expiration_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     users_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
     description: Mapped[Optional[str]]
     status: Mapped[OrderStatus]
-    moves: Mapped[Optional[list["Move"]]] = relationship(back_populates="order", lazy="selectin")
+    move_list_rel: Mapped[Optional[list["Move"]]] = relationship(back_populates="order_rel", lazy="selectin")
 
 
 class MoveStatus(str, Enum):
@@ -165,7 +165,7 @@ class Move(Base, AllMixin):
     type: Mapped[MoveType]
     parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order.id', ondelete='RESTRICT'))
-    order: Mapped[Order] = relationship(back_populates='moves')
+    order_rel: Mapped[Order] = relationship(back_populates='move_list_rel')
     location_src_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
     location_dest_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
     lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
@@ -208,11 +208,10 @@ class Suggest(Base, AllMixin):
     lsn_seq = Sequence(f'suggest_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     move_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('move.id', ondelete='CASCADE'), index=True)
-
     priority: Mapped[int]
     type: Mapped[SuggestType]
     value: Mapped[Optional[str]]    # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
-    user_done: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
+    user_done_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
 
 class MoveLog(Base, AllMixin):
     """

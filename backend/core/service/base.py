@@ -19,7 +19,7 @@ ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 FilterSchemaType = TypeVar("FilterSchemaType", bound=Filter)
-before_fields = ['roles', 'companies', 'is_admin', 'store_id']
+before_fields = ['role_ids', 'company_ids', 'is_admin', 'store_id']
 
 
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterSchemaType]):

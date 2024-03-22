@@ -89,7 +89,7 @@ async def login(
 
 @index_router.get("/bff/select", response_class=HTMLResponse)
 @htmx(*s('helpers/choices'))
-async def select(request: Request, module: str, model: str, key: str = None, value: str = None, prefix: str = None):
+async def select(request: Request, module: str, model: str, key: str = None, value: str = None, prefix: str = None, required=False):
     """
      Универсальный запрос, который отдает список любого обьекта по его модулю и модели
     """
@@ -103,6 +103,7 @@ async def select(request: Request, module: str, model: str, key: str = None, val
         'module': module,
         'model': model,
         'prefix': prefix,
+        'required': bool(required),
         'key': key,
         'value': value,
         'field': field,
@@ -180,7 +181,7 @@ def recognize_type(module: str, model: str, k: str, fielinfo):
     elif k == 'locale':
         res = 'locale'
         model = 'locale'
-    elif k.endswith('_id') and k not in ('external_id',):
+    elif k.endswith('_id') and k not in ('external_number',):
         res = 'model'
         module = get_module_by_model(model[0:-3])
     elif k.endswith('_ids'):

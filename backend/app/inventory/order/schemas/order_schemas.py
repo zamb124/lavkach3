@@ -19,7 +19,7 @@ from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
 class OrderBaseScheme(BaseModel):
     vars: Optional[dict] = None
     parent_id: Optional[UUID4] = None
-    external_id: Optional[str] = None
+    external_number: Optional[str] = None
     store_id: UUID4
     partner_id: Optional[UUID4] = None
     lot_id: Optional[UUID4] = None
@@ -29,7 +29,7 @@ class OrderBaseScheme(BaseModel):
     actual_date: Optional[datetime]
     created_by: UUID4
     edited_by: UUID4
-    expiration_date: Optional[datetime]
+    expiration_datetime: Optional[datetime]
     users_ids: Optional[list[UUID4]] = []
     description: Optional[str]
     status: OrderStatus
@@ -37,12 +37,12 @@ class OrderBaseScheme(BaseModel):
 
 class OrderUpdateScheme(OrderBaseScheme):
     vars: Optional[dict] = None
-    external_id: Optional[str] = None
+    external_number: Optional[str] = None
     lot_id: Optional[UUID4] = None
     origin_type: Optional[str] = None
     origin_number: Optional[str] = None
     planned_date: Optional[datetime] = None
-    expiration_date: Optional[datetime] = None
+    expiration_datetime: Optional[datetime] = None
     description: Optional[str] = None
     partner_id: Optional[UUID4] = None
     order_type_id: UUID4 = None
@@ -57,7 +57,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
     company_id: UUID4
-    moves: Optional[list[UUID4]] = []
+    moves_list_rel: Optional[list[UUID4]] = []
     number: str
     order_type: 'OrderTypeScheme'
 
@@ -80,7 +80,7 @@ class OrderFilter(BaseFilter):
     class Constants(Filter.Constants):
         model = Order
         ordering_field_name = "order_by"
-        search_model_fields = ["external_id", "origin_number", "number"]
+        search_model_fields = ["external_number", "origin_number", "number"]
 
 
 

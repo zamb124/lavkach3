@@ -30,10 +30,10 @@ class OrderTypeBaseScheme(BaseModel):
     reservation_time_before: Optional[int] = None
     allowed_package_ids: Optional[list[UUID4]] = None
     exclusive_package_ids: Optional[list[UUID4]] = None
-    homogeneity: bool = False
-    allow_create_package: bool = True
-    can_create_order_manualy: bool = True
-    overdelivery: bool = False
+    is_homogeneity: bool = False
+    is_allow_create_package: bool = True
+    is_can_create_order_manualy: bool = True
+    is_overdelivery: bool = False
     barcode: str
     created_by: UUID4
     edited_by: UUID4
@@ -65,15 +65,7 @@ class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
 
 
 class OrderTypeFilter(BaseFilter):
-    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
-    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
-    created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
-    created_at__lt: Optional[datetime] = Field(description="less created", default=None)
-    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
-    updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
-    company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
     store_id__in: Optional[List[UUID4]] = Field(alias="store_id", default=None)
-    search: Optional[str] = None
 
     class Config:
         populate_by_name = True

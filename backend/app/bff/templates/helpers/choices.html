@@ -2,10 +2,10 @@
 <select
         id="{{ select_key }}"
         name="{{ model }}"
-        class="form-control"
+        class="form-select was-validated"
         data-choices data-choices-removeItem name="{{ select_key }}"
         hx-get="/bff/select"
-        required="{{ required or 0 }}"
+        {% if required %} required {% endif %}
         hx-include="next [name='search_terms']"
         hx-vals='{"module": "{{ module }}","model":"{{ model }}", "field":"{{ field }}"}'
         hx-trigger="search delay:0.5s"
@@ -18,4 +18,12 @@
 <script>
     var element = document.getElementById('{{ select_key }}')
     var choices = new Choices(element);
+    console.log('reqired')
+    var value = choices.getValue()
+    console.log(value)
 </script>
+<style>
+    .btn.btn-default.dropdown-toggle.is-invalid {
+  border-color: #dc3545;
+}
+</style>

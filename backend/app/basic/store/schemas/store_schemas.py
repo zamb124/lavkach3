@@ -15,7 +15,7 @@ class StoreBaseScheme(BaseModel):
     company_id: UUID4
     vars: Optional[dict] = None
     title: str
-    external_id: Optional[str] = None
+    external_number: Optional[str] = None
     address: Optional[str] = None
     source: Optional[StoreType] = StoreType.INTERNAL
 
@@ -35,7 +35,7 @@ class StoreCreateScheme(StoreBaseScheme):
 class StoreScheme(StoreCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
-    company: Optional[CompanyScheme]
+    company_rel: Optional[CompanyScheme]
 
     class Config:
         orm_mode = True
@@ -62,7 +62,7 @@ class StoreFilter(Filter):
         model = Store
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["title", "external_id", "address"]
+        search_model_fields = ["title", "external_number", "address"]
 
 
 class StoreListSchema(GenericListSchema):

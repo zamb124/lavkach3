@@ -29,7 +29,8 @@
                             class="row"
                              hx-get="/bff/select"
                              hx-vals='{"module": "{{ v.module }}","model": "{{ v.model }}",
-                                "prefix": "create-modal"
+                                "prefix": "create-modal",
+                                "required": "{{ v.required }}"
                              }'
                              hx-trigger="load">
                         <a href="#" class="btn btn-dark form-control disabled placeholder col-12 htmx-indicator text-start">Select</a>

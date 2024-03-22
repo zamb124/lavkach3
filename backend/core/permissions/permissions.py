@@ -62,11 +62,11 @@ def permit(*arg):
             if not service:
                 raise HTTPException(status_code=403, detail=f"User not found")
             if not service.user.is_admin:
-                service_roles = [UUID(i) for i in service.user.roles]
+                service_roles = [UUID(i) for i in service.user.role_ids]
                 query = select(Role).where(
-                    Role.permissions_allow.contains(arg)
+                    Role.permission_allow_list.contains(arg)
                 ).where(
-                    Role.company_id.in_(service.user.companies)
+                    Role.company_id.in_(service.user.company_ids)
                 )
                 result = await service.session.execute(query)
                 roles = result.scalars().all()
@@ -82,7 +82,7 @@ def permit(*arg):
                         query = select(Role).where(
                             Role.id.in_(parents)
                         ).where(
-                            Role.company_id.in_(service.user.companies)
+                            Role.company_id.in_(service.user.company_ids)
                         )
                         result = await service.session.execute(query)
                         roles = result.scalars().all()
@@ -95,7 +95,7 @@ def permit(*arg):
                                 parents += r.parents
                 if not res:
                     raise HTTPException(status_code=403,
-                                        detail=f"The user ({service.user.id}) does not have permission to {arg}")
+                                        detail=f"The user ({service.user}) does not have permission to {arg}")
             response = f(*args, **kwargs)
             return await response
 

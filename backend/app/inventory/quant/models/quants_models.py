@@ -15,12 +15,12 @@ class Lot(Base, AllMixin):
     или пришедшая от другого поставщика
     """
     __tablename__ = "lot"
-    __table_args__ = (UniqueConstraint('external_id', 'product_id', 'partner_id', name='_lot_ex_pr_par_id_uc'),)
+    __table_args__ = (UniqueConstraint('external_number', 'product_id', 'partner_id', name='_lot_ex_pr_par_id_uc'),)
     lsn_seq = Sequence(f'lot_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    expiration_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=True)
-    external_id: Mapped[Optional[str]] = mapped_column(nullable=False, unique=True)
+    external_number: Mapped[Optional[str]] = mapped_column(nullable=False, unique=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
 
 
@@ -41,7 +41,7 @@ class Quant(Base, AllMixin):
     """
     __tablename__ = "quant"
     __table_args__ = (UniqueConstraint(
-        'store_id', 'location_id', 'lot_id', 'expiration_date', name='_quant_st_loc_lot_ex_id_uc'
+        'store_id', 'location_id', 'lot_id', 'expiration_datetime', name='_quant_st_loc_lot_ex_id_uc'
     ),)
     lsn_seq = Sequence(f'quant_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
@@ -52,5 +52,5 @@ class Quant(Base, AllMixin):
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     quantity: Mapped[float]
     reserved_quantity: Mapped[float]
-    expiration_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     uom_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("uom.id", ondelete="RESTRICT"), index=True)

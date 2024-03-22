@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from sqlalchemy import Sequence
 from sqlalchemy import Uuid
@@ -13,4 +14,4 @@ class UomCategory(Base, AllMixin):
     lsn_seq = Sequence(f'uom_category_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(index=True)
-    uoms: Mapped['Uom'] = relationship(back_populates='category', lazy='selectin')
+    uom_list_rel: Mapped[Optional[list['Uom']]] = relationship(back_populates='category_rel', lazy='selectin')

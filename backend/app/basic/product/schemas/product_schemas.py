@@ -15,12 +15,12 @@ class ProductBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: str
     description: Optional[str] = None
-    external_id: Optional[str] = None
+    external_number: Optional[str] = None
     product_type: str = None
     uom_id: UUID4
     product_category_id: UUID4
     product_storage_type_id: UUID4
-    barcodes: list[str]
+    barcode_list: list[str]
 
 
 class ProductUpdateScheme(ProductBaseScheme):
@@ -29,7 +29,7 @@ class ProductUpdateScheme(ProductBaseScheme):
     uom_id: UUID4 = None
     product_category_id: UUID4 = None
     product_storage_type_id: UUID4 = None
-    barcodes: Optional[list[str]] = None
+    barcode_list: Optional[list[str]] = None
 
 
 class ProductCreateScheme(ProductBaseScheme):
@@ -39,7 +39,7 @@ class ProductCreateScheme(ProductBaseScheme):
 class ProductScheme(ProductCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
-    uom: UomScheme
+    uom_rel: UomScheme
 
     class Config:
         orm_mode = True
@@ -64,7 +64,7 @@ class ProductFilter(Filter):
         model = Product
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["title", "external_id"]
+        search_model_fields = ["title", "external_number"]
 
 
 class ProductListSchema(GenericListSchema):

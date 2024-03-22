@@ -13,7 +13,7 @@ from core.schemas import BaseFilter
 
 class CompanyBaseScheme(BaseModel):
     title: str = Field(description="Title")
-    external_id: Optional[str] = None
+    external_number: Optional[str] = None
     locale: Optional[TypeLocale] = None
     country: Optional[TypeCountry] = None
     currency: TypeCurrency | str = None
@@ -54,7 +54,7 @@ class CompanyFilter(BaseFilter):
         model = Company
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["title", "external_id"]
+        search_model_fields = ["title", "external_number"]
 
 
 class CompanyListSchema(GenericListSchema):

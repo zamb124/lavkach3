@@ -15,7 +15,7 @@ class PartnerBaseScheme(BaseModel):
     company_id: UUID4
     title: str = Field(description="Title")
     type: PartnerType
-    external_id: Optional[str]
+    external_number: Optional[str]
     parent_id: Optional[str]
     phone_number: Optional[TypePhone]
     email: Optional[str]
@@ -40,7 +40,7 @@ class PartnerParent(PartnerBaseScheme, TimeStampScheme):
     currency: TypeCurrency
 
 class PartnerScheme(PartnerParent, TimeStampScheme):
-    partner: Optional[PartnerParent]
+    partner_rel: Optional[PartnerParent]
 
     class Config:
         orm_mode = True
@@ -55,7 +55,7 @@ class PartnerFilter(BaseFilter):
     updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
     title__in: Optional[str] = Field(description="title", default=None)
     type__in: Optional[str] = Field(description="type", default=None)
-    external_id__in: Optional[str] = Field(description="external_id", default=None)
+    external_number__in: Optional[str] = Field(description="external_number", default=None)
     parent_id__in: Optional[UUID4] = Field(description="parent_id", default=None)
     phone_number__in: Optional[str] = Field(description="phone_number", default=None)
     email__in: Optional[str] = Field(description="email", default=None)
@@ -75,7 +75,7 @@ class PartnerFilter(BaseFilter):
         model = Partner
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["title", "external_id", "email", "phone_number"]
+        search_model_fields = ["title", "external_number", "email", "phone_number"]
 
 
 class PartnerListSchema(GenericListSchema):

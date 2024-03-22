@@ -22,17 +22,15 @@ class LocationType(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str]
     location_class: Mapped[LocationClass]
-    product_storage_type_ids: Mapped[Optional[list[str]]] = mapped_column(type_=ARRAY(String),
-                                                                          index=True)  # Температурный режим если пусто значит можно все
-    homogeneity: Mapped[Optional[bool]] = mapped_column(default=False)  # Запрет на 1KU 2х разных партий
-    mix_products: Mapped[Optional[bool]] = mapped_column(default=False)  # Можно смешивать ( положить 2+ разных SKU)
-    allow_create_package: Mapped[Optional[bool]] = mapped_column(default=True)  # Можно ли создавать упаковки# Признак Гомогенности
+    product_storage_type_ids: Mapped[Optional[list[str]]] = mapped_column(type_=ARRAY(String), index=True)  # Температурный режим если пусто значит можно все
+    is_homogeneity: Mapped[Optional[bool]] = mapped_column(default=False)  # Запрет на 1KU 2х разных партий
+    is_mix_products: Mapped[Optional[bool]] = mapped_column(default=False)  # Можно смешивать ( положить 2+ разных SKU)
+    is_allow_create_package: Mapped[Optional[bool]] = mapped_column(default=True)  # Можно ли создавать упаковки# Признак Гомогенности
     allowed_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid),index=True)  # Разрешенные типы упаковок
     exclusive_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid),index=True)  # Исключение типы упаковок
-    allowed_order_types_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid),index=True)  # Разрешенные типы упаковок
-    exclusive_order_types_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid),index=True)  # Разрешенные типы упаковок
+    allowed_order_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid),index=True)  # Разрешенные типы упаковок
+    exclusive_order_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid),index=True)  # Разрешенные типы упаковок
     strategy: Mapped[Optional['PutawayStrategy']] = mapped_column(default=PutawayStrategy.FEFO)  # Стратегия комплектования
-
 
 
 class Location(Base, AllMixin):
@@ -49,6 +47,6 @@ class Location(Base, AllMixin):
     title: Mapped[str]
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
     parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id"), index=True)
-    active: Mapped[Optional[bool]] = mapped_column(default=True)
+    is_active: Mapped[Optional[bool]] = mapped_column(default=True)
     location_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('location_type.id'), index=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)  # Кому принадлежит товар

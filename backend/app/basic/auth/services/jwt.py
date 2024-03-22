@@ -20,8 +20,8 @@ class JwtService:
         return RefreshTokenSchema(
             token=TokenHelper.encode(payload={
                 "user_id": token.get("user_id"),
-                "companies": token.get('companies'),
-                "roles": token.get('roles'),
+                "company_ids": token.get('company_ids'),
+                "role_ids": token.get('role_ids'),
                 "is_admin": token.get('is_admin')
             }),
             refresh_token=TokenHelper.encode(payload={"sub": "refresh"}),

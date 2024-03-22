@@ -13,19 +13,19 @@ from core.schemas.timestamps import TimeStampScheme
 class RoleBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: Optional[str] = None
-    permissions_allow: Optional[List[str]] = None
-    permissions_deny: Optional[List[str]] = None
+    permission_allow_list: Optional[List[str]] = None
+    permission_deny_list: Optional[List[str]] = None
 
 
 class RoleUpdateScheme(RoleBaseScheme):
-    parents: Optional[List[UUID4]]
+    parent_ids: Optional[List[UUID4]]
     title: Optional[str]
 
 
 class RoleCreateScheme(RoleBaseScheme):
     title: str
     company_id: UUID4
-    parents: Optional[List[UUID4]] = None
+    parent_ids: Optional[List[UUID4]] = None
 
 
 class RoleScheme(RoleCreateScheme, TimeStampScheme):
@@ -45,8 +45,8 @@ class RoleFilter(BaseFilter):
     updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
     company_id__in: Optional[List[str]] = Field(alias="company_id", default=None)
     title__in: Optional[List[str]] = Field(alias="title", default=None)
-    permissions_allow__contains: Optional[str] = Field(alias="permissions_allow", default=None)
-    permissions_deny__contains: Optional[str] = Field(alias="permissions_deny", default=None)
+    permission_allow_list__contains: Optional[str] = Field(alias="permissions_allow", default=None)
+    permission_deny_list__contains: Optional[str] = Field(alias="permissions_deny", default=None)
     order_by: Optional[List[str]] = ["created_at"]
     search: Optional[str] = None
     class Config:

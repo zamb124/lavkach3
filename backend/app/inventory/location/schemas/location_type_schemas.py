@@ -4,6 +4,8 @@ from typing import Optional, List
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
+
+from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.location.models import LocationType
@@ -14,13 +16,13 @@ class LocationTypeBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: str
     location_class: LocationClass
-    homogeneity: Optional[bool] = None
-    mix_products: Optional[bool] = None
-    allow_create_package: Optional[bool] = None
+    is_homogeneity: Optional[bool] = None
+    is_mix_products: Optional[bool] = None
+    is_allow_create_package: Optional[bool] = None
     allowed_package_ids: Optional[list[UUID4]] = None
     exclusive_package_ids: Optional[list[UUID4]] = None
-    allowed_order_types_ids: Optional[list[UUID4]] = None
-    exclusive_order_types_ids: Optional[list[UUID4]] = None
+    allowed_order_type_ids: Optional[list[UUID4]] = None
+    exclusive_order_type_ids: Optional[list[UUID4]] = None
     strategy: Optional[PutawayStrategy] = PutawayStrategy.FEFO
     product_storage_type_ids: Optional[list[str]] = None
 
@@ -41,7 +43,7 @@ class LocationTypeScheme(LocationTypeCreateScheme, TimeStampScheme):
         orm_mode = True
 
 
-class LocationTypeFilter(Filter):
+class LocationTypeFilter(BaseFilter):
     lsn__gt: Optional[int] = Field(alias="cursor", default=0)
     id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
     created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None)

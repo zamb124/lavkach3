@@ -10,5 +10,5 @@ class LoginRequest(BaseModel):
 class LoginResponse(BaseModel):
     token: str = Field(..., description="Token")
     refresh_token: str = Field(..., description="Refresh token")
-    companies: Optional[list[UUID4]]
-    roles: Optional[list[str]]
+    company_ids: Optional[list[UUID4]]
+    role_ids: Optional[list[str]]

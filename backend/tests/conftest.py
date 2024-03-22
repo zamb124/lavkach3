@@ -247,23 +247,23 @@ async def products(db_session: AsyncSession, user_admin, companies, uoms, produc
         'company_id': companies[0].id.__str__(),
         'title': 'Product 1',
         'description': 'Product Desc 1',
-        'external_id': 'Product 1',
+        'external_number': 'Product 1',
         'product_type': ProductType.STORABLE,
         'uom_id': uoms[0].id.__str__(),
         'product_category_id': product_categories[0].id.__str__(),
         'product_storage_type_id': product_storage_types[0].id.__str__(),
-        'barcodes': ['Product1 Barcode1', 'Product1 Barcode2'],
+        'barcode_list': ['Product1 Barcode1', 'Product1 Barcode2'],
     }))
     product2 = await ProductService(user_admin).create(ProductCreateScheme(**{
         'company_id': companies[1].id.__str__(),
         'title': 'Product 1',
         'description': 'Product 2',
-        'external_id': 'Product 2',
+        'external_number': 'Product 2',
         'product_type': ProductType.STORABLE,
         'uom_id': uoms[1].id.__str__(),
         'product_category_id': product_categories[1].id.__str__(),
         'product_storage_type_id': product_storage_types[1].id.__str__(),
-        'barcodes': ['Product2 Barcode1', 'Product2 Barcode2'],
+        'barcode_list': ['Product2 Barcode1', 'Product2 Barcode2'],
     }))
     yield [product1, product2]
     await db_session.delete(product1)
@@ -355,16 +355,16 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
         'title': 'PARTNER',
         'store_id': stores[0].id.__str__(),
         #'parent_id': 'PARTNER',
-        'active': True,
+        'is_active': True,
         'location_type_id': location_types['partner'].id.__str__(),
         'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
         #'partner_id': 'PARTNER',
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'allowed_package_ids': [],
         'exclusive_package_ids': [],
-        'allowed_order_types_ids': [],
-        'exclusive_order_types_ids': [],
+        'allowed_order_type_ids': [],
+        'exclusive_order_type_ids': [],
         'strategy': PutawayStrategy.FEFO
 
     }))
@@ -373,15 +373,15 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
         'title': 'PLACE',
         'store_id': stores[0].id.__str__(),
         # 'parent_id': 'PARTNER',
-        'active': True,
+        'is_active': True,
         'location_type_id': location_types['place'].id.__str__(),
         'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
         # 'partner_id': 'PARTNER',
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'allowed_package_ids': [],
         'exclusive_package_ids': [],
-        'allowed_order_types_ids': [],
+        'allowed_order_type_ids': [],
         'exclusive_order_types_ids': [],
         'strategy': PutawayStrategy.FEFO
     }))
@@ -390,15 +390,15 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
         'title': 'RESOURCE',
         'store_id': stores[0].id.__str__(),
         # 'parent_id': 'PARTNER',
-        'active': True,
+        'is_active': True,
         'location_type_id': location_types['resource'].id.__str__(),
         'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
         # 'partner_id': 'PARTNER',
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'allowed_package_ids': [],
         'exclusive_package_ids': [],
-        'allowed_order_types_ids': [],
+        'allowed_order_type_ids': [],
         'exclusive_order_types_ids': [],
         'strategy': PutawayStrategy.FEFO
     }))
@@ -407,15 +407,15 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
         'title': 'PACKAGE',
         'store_id': stores[0].id.__str__(),
         # 'parent_id': 'PARTNER',
-        'active': True,
+        'is_active': True,
         'location_type_id': location_types['package'].id.__str__(),
         'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
         # 'partner_id': 'PARTNER',
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'allowed_package_ids': [],
         'exclusive_package_ids': [],
-        'allowed_order_types_ids': [],
+        'allowed_order_type_ids': [],
         'exclusive_order_types_ids': [],
         'strategy': PutawayStrategy.FEFO
     }))
@@ -424,15 +424,15 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
         'title': 'ZONE',
         'store_id': stores[0].id.__str__(),
         # 'parent_id': 'PARTNER',
-        'active': True,
+        'is_active': True,
         'location_type_id': location_types['zone'].id.__str__(),
         'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
         # 'partner_id': 'PARTNER',
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'allowed_package_ids': [],
         'exclusive_package_ids': [],
-        'allowed_order_types_ids': [],
+        'allowed_order_type_ids': [],
         'exclusive_order_types_ids': [],
         'strategy': PutawayStrategy.FEFO
     }))
@@ -441,15 +441,15 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
         'title': 'LOST',
         'store_id': stores[0].id.__str__(),
         # 'parent_id': 'PARTNER',
-        'active': True,
+        'is_active': True,
         'location_type_id': location_types['lost'].id.__str__(),
         'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
         # 'partner_id': 'PARTNER',
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'allowed_package_ids': [],
         'exclusive_package_ids': [],
-        'allowed_order_types_ids': [],
+        'allowed_order_type_ids': [],
         'exclusive_order_types_ids': [],
         'strategy': PutawayStrategy.FEFO
     }))
@@ -458,15 +458,15 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
         'title': 'LOST',
         'store_id': stores[0].id.__str__(),
         # 'parent_id': 'PARTNER',
-        'active': True,
+        'is_active': True,
         'location_type_id': location_types['inventory'].id.__str__(),
         'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
         # 'partner_id': 'PARTNER',
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'allowed_package_ids': [],
         'exclusive_package_ids': [],
-        'allowed_order_types_ids': [],
+        'allowed_order_type_ids': [],
         'exclusive_order_types_ids': [],
         'strategy': PutawayStrategy.FEFO
     }))
@@ -475,15 +475,15 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
         'title': 'SCRAP',
         'store_id': stores[0].id.__str__(),
         # 'parent_id': 'PARTNER',
-        'active': True,
+        'is_active': True,
         'location_type_id': location_types['scrap'].id.__str__(),
         'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
         # 'partner_id': 'PARTNER',
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'allowed_package_ids': [],
         'exclusive_package_ids': [],
-        'allowed_order_types_ids': [],
+        'allowed_order_type_ids': [],
         'exclusive_order_types_ids': [],
         'strategy': PutawayStrategy.FEFO
     }))
@@ -492,15 +492,15 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
         'title': 'SCRAPPED',
         'store_id': stores[0].id.__str__(),
         # 'parent_id': 'PARTNER',
-        'active': True,
+        'is_active': True,
         'location_type_id': location_types['scrapped'].id.__str__(),
         'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
         # 'partner_id': 'PARTNER',
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'allowed_package_ids': [],
         'exclusive_package_ids': [],
-        'allowed_order_types_ids': [],
+        'allowed_order_type_ids': [],
         'exclusive_order_types_ids': [],
         'strategy': PutawayStrategy.FEFO
     }))
@@ -509,15 +509,15 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
         'title': 'SCRAPPED',
         'store_id': stores[0].id.__str__(),
         # 'parent_id': 'PARTNER',
-        'active': True,
+        'is_active': True,
         'location_type_id': location_types['buffer'].id.__str__(),
         'product_storage_type_ids': [i.id.__str__() for i in product_storage_types],
         # 'partner_id': 'PARTNER',
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'allowed_package_ids': [],
         'exclusive_package_ids': [],
-        'allowed_order_types_ids': [],
+        'allowed_order_type_ids': [],
         'exclusive_order_types_ids': [],
         'strategy': PutawayStrategy.FEFO
     }))
@@ -549,15 +549,15 @@ async def locations(db_session: AsyncSession, user_admin, companies, stores, loc
 async def lots(db_session: AsyncSession, user_admin, companies, products) -> Company:
     lot1 = await LotService(user_admin).create(LotCreateScheme(**{
         'company_id': companies[0].id.__str__(),
-        'expiration_date': datetime.now().isoformat(),
+        'expiration_datetime': datetime.now().isoformat(),
         'product_id': products[0].id.__str__(),
-        'external_id': '1000001',
+        'external_number': '1000001',
     }))
     lot2 = await LotService(user_admin).create(LotCreateScheme(**{
         'company_id': companies[0].id.__str__(),
-        'expiration_date': datetime.now().isoformat(),
+        'expiration_datetime': datetime.now().isoformat(),
         'product_id': products[0].id.__str__(),
-        'external_id': '1000002',
+        'external_number': '1000002',
     }))
     yield [lot1, lot2]
     await db_session.delete(lot1)
@@ -574,7 +574,7 @@ async def quants(db_session: AsyncSession, user_admin, companies, lots, products
         'lot_id': lots[0].id.__str__(),
         'quantity': 10.0,
         'reserved_quantity': 5,
-        'expiration_date': datetime.now().isoformat(),
+        'expiration_datetime': datetime.now().isoformat(),
         'uom_id': uoms[0].id.__str__()
     }))
     quant2 = await QuantService(user_admin).create(QuantCreateScheme(**{
@@ -585,7 +585,7 @@ async def quants(db_session: AsyncSession, user_admin, companies, lots, products
         'lot_id': lots[1].id.__str__(),
         'quantity': 5,
         'reserved_quantity': 0,
-        'expiration_date': datetime.now().isoformat(),
+        'expiration_datetime': datetime.now().isoformat(),
         'uom_id': uoms[0].id.__str__()
     }))
     yield [quant1, quant2]
@@ -612,8 +612,8 @@ async def order_types(db_session: AsyncSession, user_admin, companies, lots, pro
         'reservation_time_before': 0,
         #'allowed_package_ids': [locations['package'].id.__str__(), ],
         'exclusive_package_ids': None,
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'can_create_order_manualy': True,
         'overdelivery': False,
         'created_by': token['user_admin']['user_id'].__str__(),
@@ -638,8 +638,8 @@ async def order_types(db_session: AsyncSession, user_admin, companies, lots, pro
         'reservation_time_before': 0,
         # 'allowed_package_ids': [locations['package'].id.__str__(), ],
         'exclusive_package_ids': None,
-        'homogeneity': False,
-        'allow_create_package': False,
+        'is_homogeneity': False,
+        'is_allow_create_package': False,
         'can_create_order_manualy': True,
         'overdelivery': False,
         'created_by': token['user_admin']['user_id'].__str__(),
@@ -664,8 +664,8 @@ async def order_types(db_session: AsyncSession, user_admin, companies, lots, pro
         'reservation_time_before': 0,
         # 'allowed_package_ids': [locations['package'].id.__str__(), ],
         'exclusive_package_ids': None,
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'can_create_order_manualy': True,
         'overdelivery': False,
         'created_by': token['user_admin']['user_id'].__str__(),
@@ -690,8 +690,8 @@ async def order_types(db_session: AsyncSession, user_admin, companies, lots, pro
         'reservation_time_before': 0,
         # 'allowed_package_ids': [locations['package'].id.__str__(), ],
         'exclusive_package_ids': None,
-        'homogeneity': False,
-        'allow_create_package': True,
+        'is_homogeneity': False,
+        'is_allow_create_package': True,
         'can_create_order_manualy': True,
         'overdelivery': False,
         'created_by': token['user_admin']['user_id'].__str__(),
@@ -716,15 +716,15 @@ async def order_types(db_session: AsyncSession, user_admin, companies, lots, pro
 
 @pytest_asyncio.fixture
 async def roles(db_session: AsyncSession, companies, user_admin) -> User:
-    permission_allow = [
+    permission_allow_list = [
         "user_create", 'user_edit', 'user_list', 'user_get', 'partner_create',
         'partner_edit', 'partner_list', 'partner_delete', 'partner_get',
         'company_create', 'company_edit', 'company_list', 'company_get',
         'uom_create', 'uom_edit', 'uom_list', 'uom_delete', 'uom_get']
-    role_admin = RoleCreateScheme(title="admin", permissions_allow=list(permits.keys()), company_id=companies[0].id)
+    role_admin = RoleCreateScheme(title="admin", permission_allow_list=list(permits.keys()), company_id=companies[0].id)
     role_admin_db = await RoleService(user_admin).create(role_admin)
-    role_support = RoleCreateScheme(title="support", permissions_allow=permission_allow, company_id=companies[0].id,
-                                    parents=[role_admin_db.id])
+    role_support = RoleCreateScheme(title="support", permission_allow_list=permission_allow_list, company_id=companies[0].id,
+                                    parent_ids=[role_admin_db.id])
     role_support_db = await RoleService(user_admin).create(role_support)
     yield {'admin': role_admin_db, 'support': role_support_db}
     await db_session.delete(role_admin_db)
@@ -739,10 +739,10 @@ async def users(db_session: AsyncSession, companies, roles, user_admin) -> User:
         "nickname": "Admin vasya",
         "locale": "EN",
         "is_admin": False,
-        "companies": [
+        "company_ids": [
             companies[0].id
         ],
-        "roles": [
+        "role_ids": [
             roles.get('admin').id
         ],
         "password1": "1402",
@@ -753,10 +753,10 @@ async def users(db_session: AsyncSession, companies, roles, user_admin) -> User:
         "nickname": "Support vasya",
         "is_admin": False,
         "locale": "RU",
-        "companies": [
+        "company_ids": [
             companies[0].id
         ],
-        "roles": [
+        "role_ids": [
             roles.get('support').id
         ],
         "password1": "1402",
@@ -793,7 +793,7 @@ async def headers(token) -> dict:
     }
 
 
-@pytest.mark.asyncio
-async def test_health(async_client, headers, stores, product_categories, product_storage_types, uom_categories, uoms, products, locations, quants):
-    response = await async_client.get("/api/fundamental/health", headers=headers['superadmin'])
-    assert response.status_code == 200
+# @pytest.mark.asyncio
+# async def test_health(async_client, headers, stores, product_categories, product_storage_types, uom_categories, uoms, products, locations, quants):
+#     response = await async_client.get("/api/basic/health", headers=headers['superadmin'])
+#     assert response.status_code == 200

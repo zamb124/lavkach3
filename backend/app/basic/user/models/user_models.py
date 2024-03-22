@@ -23,11 +23,11 @@ class UserType(str, Enum):
 class User(Base, TimestampMixin, VarsMixin, LsnMixin):
     __tablename__ = "user"
     __table_args__ = (
-        UniqueConstraint('email', 'companies', name='_user_company_id_uc'),
+        UniqueConstraint('email', 'company_ids', name='_user_company_id_uc'),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    external_id: Mapped[Optional[str]]
+    external_number: Mapped[Optional[str]]
     lsn_seq = Sequence(f'user_lsn_seq')
     # lsn = Column(BigInteger, lsn_seq, onupdate=lsn_seq.next_value(), index=True)
     password: Mapped[str] = mapped_column(PasswordType(
@@ -45,6 +45,6 @@ class User(Base, TimestampMixin, VarsMixin, LsnMixin):
     is_admin: Mapped[bool] = mapped_column(default=False)
     type: Mapped[str] = mapped_column(default=UserType.COMMON)
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey("store.id"), index=True)
-    store: Mapped['Store'] = relationship(back_populates='store_users', lazy='selectin')
-    companies: Mapped[Optional[uuid.UUID]] = mapped_column(ARRAY(Uuid), index=True)
-    roles: Mapped[Optional[uuid.UUID]] = mapped_column(ARRAY(Uuid), index=True, default=[])
+    store_rel: Mapped['Store'] = relationship(back_populates='store_user_list_rel', lazy='selectin')
+    company_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
+    role_ids: Mapped[Optional[uuid.UUID]] = mapped_column(ARRAY(Uuid), index=True, default=[])
