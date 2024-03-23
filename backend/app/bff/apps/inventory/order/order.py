@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 from fastapi_htmx import htmx
+
 from app.bff.dff_helpers.htmx_decorator import s
 from core.fastapi.adapters.base_adapter import Request
 

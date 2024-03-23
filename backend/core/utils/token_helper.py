@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 import jwt
 
@@ -8,11 +8,11 @@ from core.exceptions import DecodeTokenException, ExpiredTokenException
 
 class TokenHelper:
     @staticmethod
-    def encode(payload: dict, expire_period: int = 3600) -> str:
+    def encode(payload: dict, expire_period: int = 36000) -> str:
         token = jwt.encode(
             payload={
                 **payload,
-                "exp": datetime.utcnow() + timedelta(seconds=expire_period),
+                "exp": datetime.now(UTC) + timedelta(seconds=expire_period),
             },
             key=config.JWT_SECRET_KEY,
             algorithm=config.JWT_ALGORITHM,

@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-import typing
 import uuid
 from typing import Annotated
 
@@ -17,6 +16,7 @@ from starlette.responses import Response
 
 from app.bff.bff_config import config
 from app.bff.dff_helpers.htmx_decorator import s
+from app.bff.dff_helpers.schema_recognizer import get_columns
 from app.bff.template_spec import templates
 
 htmx_init(templates, file_extension='html')
@@ -69,7 +69,7 @@ async def login(request: Request, response: Response):
     "/auth/login",
     responses={"404": {"model": ExceptionResponseSchema}},
 )
-@htmx(*s('helpers/write_ls'))
+@htmx(*s('components/write_ls'))
 async def login(
         request: Request,
         response: Response,
@@ -82,13 +82,18 @@ async def login(
         }
         async with session.post('http://127.0.0.1:8001/api/basic/user/login', json=body) as bresp:
             data = await bresp.json()
-    response.set_cookie(key='token', value=data['token'], httponly=True)
-    response.set_cookie(key='refresh_token', value=data['refresh_token'], httponly=True)
     return {'token': data['token'], 'refresh_token': data['refresh_token']}
 
+class RefreshTokenSchema(BaseModel):
+    token: str
+    refresh_token: str
+@index_router.post("/auth/refresh_token", responses={"404": {"model": ExceptionResponseSchema}},)
+async def refresh_token(request: Request, refresh_schema: RefreshTokenSchema):
+    async with request.scope['env'].basic as a:
+        return await a.refresh_token(refresh_schema)
 
 @index_router.get("/bff/select", response_class=HTMLResponse)
-@htmx(*s('helpers/choices'))
+@htmx(*s('widgets/select/select-htmx'))
 async def select(request: Request, module: str, model: str, key: str = None, value: str = None, prefix: str = None, required=False):
     """
      Универсальный запрос, который отдает список любого обьекта по его модулю и модели
@@ -111,109 +116,11 @@ async def select(request: Request, module: str, model: str, key: str = None, val
     }
 
 
-def get_module_by_model(model):
-    for k, v in config.services.items():
-        if v['schema'].get(model):
-            return k
 
-
-def dict_obj_format(k, val: str, module: dict):
-    return {
-        'type': 'dict_obj',
-        'module': module,
-        'val': val
-    }
-
-
-def date_format(k, val: str, module=None):
-    return {
-        'type': 'datetime',
-        'module': module,
-        'val': datetime.datetime.fromisoformat(val)
-    }
-
-
-def uuid_format(k, v: uuid.UUID, module=None):
-    return {
-        'type': 'uuid',
-        'module': module,
-        'val': v
-    }
-
-
-def str_format(k, v: str, module=None):
-    return {
-        'type': 'str',
-        'module': module,
-        'val': v
-    }
-
-
-def str_link_format(k, v: str, module=None):
-    """
-    Если переменная заканчивает на _id, то понимаем, что это id какой то модели,
-    Ищем в каком она сервисе с помощью get_module_by_model перебирая конфиг
-    """
-    return {
-        'type': 'str_link',
-        'module': module,
-        'val': v,
-        'link_module': get_module_by_model(k[0:-3]),  # подразумевается, что откусываем '_id'
-        'link_model': k[0:-3]
-    }
-
-
-def recognize_type(module: str, model: str, k: str, fielinfo):
-    """
-    Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
-    """
-    res = 'str'
-    if fielinfo.annotation == typing.Optional[str]:
-        res = 'str'
-    elif k == 'country':
-        res = 'country'
-        model = 'country'
-    elif k == 'phone':
-        res = 'phone'
-    elif k == 'currency':
-        res = 'currency'
-        model = 'currency'
-    elif k == 'locale':
-        res = 'locale'
-        model = 'locale'
-    elif k.endswith('_id') and k not in ('external_number',):
-        res = 'model'
-        module = get_module_by_model(model[0:-3])
-    elif k.endswith('_ids'):
-        res = 'list'
-    elif fielinfo.annotation == typing.Optional[datetime.datetime] or fielinfo.annotation == datetime.datetime:
-        res = 'datetime'
-    return {
-        'type': res,
-        'module': module,
-        'model': model,
-        'required': fielinfo.is_required()
-    }
-
-
-def get_columns(module, model, schema, data=None):
-    columns = {}
-    for k, v in schema.model_fields.items():
-        columns.update({
-            k: recognize_type(module, model, k, v)
-        })
-    if data:
-        for row in data:
-            for col, val in row.items():
-                row[col] = {
-                    **columns[col],
-                    'val': datetime.datetime.fromisoformat(val) if columns[col]['type'] == 'datetime' else val
-                }
-    return columns, data
 
 
 @index_router.get("/base/table", response_class=HTMLResponse)
-@htmx(*s('base/table'))
+@htmx(*s('widgets/table/table-htmx'))
 async def table(request: Request, module: str, model: str):
     """
      Универсальный запрос, который отдает таблицу обьекта
@@ -232,7 +139,7 @@ async def table(request: Request, module: str, model: str):
 
 
 @index_router.get("/base/modal-get", response_class=HTMLResponse)
-@htmx(*s('base/modal-edit'))
+@htmx(*s('widgets/modal-crud/modal-edit-htmx'))
 async def modal_update_get(request: Request, module: str, model: str, id: uuid.UUID):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
@@ -253,7 +160,7 @@ async def modal_update_get(request: Request, module: str, model: str, id: uuid.U
 
 
 @index_router.post("/base/modal-post", response_class=HTMLResponse)
-@htmx(*s('base/toast'))
+@htmx(*s('components/message'))
 async def modal_update_post(request: Request, form_module: str = Form(), form_model: str = Form(),
                             form_id: str = Form()):
     """
@@ -276,7 +183,7 @@ async def modal_update_post(request: Request, form_module: str = Form(), form_mo
 
 
 @index_router.get("/base/modal-delete", response_class=HTMLResponse)
-@htmx(*s('base/modal-delete'))
+@htmx(*s('widgets/modal-crud/modal-delete-htmx'))
 async def modal_delete_get(request: Request, module: str, model: str, id: uuid.UUID):
     """
      Универсальный запрос, который отдает модалку на подтвержлении удаления
@@ -289,13 +196,13 @@ async def modal_delete_get(request: Request, module: str, model: str, id: uuid.U
 
 
 @index_router.delete("/base/modal-delete", response_class=HTMLResponse)
-@htmx(*s('base/toast'))
+@htmx(*s('components/message'))
 async def modal_delete_delete(request: Request, module: str, model: str, id: uuid.UUID):
     """
      Универсальный запрос, который отдает модалку на подтвержлении удаления
     """
     async with getattr(request.scope['env'], module) as a:
-        data = await a.delete(id=id, model=model)
+        await a.delete(id=id, model=model)
     return {
         'module': module,
         'model': model,
@@ -304,7 +211,7 @@ async def modal_delete_delete(request: Request, module: str, model: str, id: uui
 
 
 @index_router.get("/base/modal-create", response_class=HTMLResponse)
-@htmx(*s('base/modal-create'))
+@htmx(*s('widgets/modal-crud/modal-create-htmx'))
 async def modal_create_get(request: Request, module: str, model: str):
     """
      Универсальный запрос, который отдает модалку на подтвержлении удаления
@@ -323,7 +230,7 @@ async def modal_create_get(request: Request, module: str, model: str):
 
 
 @index_router.post("/base/modal-create", response_class=HTMLResponse)
-@htmx(*s('base/toast'))
+@htmx(*s('components/message'))
 async def modal_create_post(request: Request, form_module: str = Form(), form_model: str = Form()):
     """
      Принимает форму создание
@@ -345,7 +252,7 @@ async def modal_create_post(request: Request, form_module: str = Form(), form_mo
 
 
 @index_router.get("/base/card", response_class=HTMLResponse)
-@htmx(*s('base/card'))
+@htmx(*s('widgets/card/card-htmx'))
 async def card(request: Request, module: str, model: str, id: str) -> dict:
     """
      Отдать карточку (title, created_at, updated_at)

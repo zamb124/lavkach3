@@ -3866,7 +3866,7 @@ code {
   --vz-semibox-width: 110px;
   --vz-footer-bg: #fff;
   --vz-footer-color: #98a6ad;
-  --vz-input-bg-custom: #fff;
+  --vz-input-bg-custom: #000000;
   --vz-input-border-custom: #ced4da;
 }
 :root[data-topbar=dark] {

@@ -1,12 +1,14 @@
-from fastapi_htmx import htmx_init
+from datetime import datetime
+from uuid import uuid4
+
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
-from datetime import datetime
 
 templates = Jinja2Templates(directory="app/bff/templates/")
 
 templates.env.globals['datetime'] = datetime
+templates.env.globals['uuid'] = uuid4
 templates.env.globals['now'] = datetime.date(datetime.now()).isoformat()
 a=1
 

@@ -14,11 +14,9 @@
         {% block extra_css %}
         {% endblock extra_css %}
         <!-- Layout config Js -->
-        <script src="{{ url_for('static' ,path='js/layout.js') }}"></script>
         <!-- Bootstrap Css -->
         <link href="{{ url_for('static' ,path='css/bootstrap.min.css') }}" id="bootstrap-style" rel="stylesheet"
               type="text/css"/>
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
         <!-- Icons Css -->
         <link href="{{ url_for('static' ,path='css/icons.min.css') }}" rel="stylesheet" type="text/css"/>
         <!-- App Css-->
@@ -26,8 +24,21 @@
         <!-- custom Css-->
         <link href="{{ url_for('static' ,path='css/custom.min.css') }}" id="app-style" rel="stylesheet"
               type="text/css"/>
-        <link href="{{ url_for('static' ,path='libs/sweetalert2/dist/sweetalert2.min.css') }}" rel="stylesheet"
-              type="text/css"/>
+        <style>
+        .card {
+            margin-bottom: 1rem;
+        }
+
+        input[type="date"] {
+    position: relative;
+}
+
+::-webkit-datetime-edit-year-field:not([aria-valuenow]),
+::-webkit-datetime-edit-month-field:not([aria-valuenow]),
+::-webkit-datetime-edit-day-field:not([aria-valuenow]) {
+    color: transparent;
+}
+        </style>
     {% endblock css %}
 </head>
 
@@ -75,28 +86,39 @@
 {% block javascript %}
     <!-- JAVASCRIPT -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <script>
-        const links = document.querySelectorAll('a[class="nav-link"]')
-
-        links.forEach(link => {
-            link.addEventListener('click', function () {
-                links.forEach(link => {
-                    link.classList.remove('active')
-                })
-                this.classList.add('active')
-            })
-        })
-    </script>
+{#    <script>#}
+{#        const links = document.querySelectorAll('a[class="nav-link"]')#}
+{##}
+{#        links.forEach(link => {#}
+{#            link.addEventListener('click', function () {#}
+{#                links.forEach(link => {#}
+{#                    link.classList.remove('active')#}
+{#                })#}
+{#                this.classList.add('active')#}
+{#            })#}
+{#        })#}
+{#    </script>#}
     <script>
         function getCookieValue(name) {
             const nameString = name + "="
 
-            const value = document.cookie.split(";").filter(item => {
+            const values = document.cookie.split(";").filter(item => {
                 return item.includes(nameString)
             })
-
-            if (value.length) {
-                return value[0].substring(nameString.length, value[0].length)
+            if (values.length) {
+                let value = []
+                for (let val in values){
+                    let is_value = values[val].split('=').filter(item => {
+                        return item.replace(' ', '') === name
+                    })
+                    if (is_value.length){
+                        value = values[val]
+                        break
+                    }
+                }
+                if (value.length){
+                    return value.substring(nameString.length, value.length)
+                }
             } else {
                 return null
             }
@@ -131,6 +153,7 @@
             if (authToken == null && !window.location.pathname.includes('login')) {
                 e.preventDefault()
                 window.history.pushState('Login', 'Login', '/auth/login');
+                console.log('redirect login')
                 htmx.ajax('GET', '/auth/login', {
                     target: '#htmx_content', headers: {
                         'HX-Replace-Url': 'true'
@@ -140,33 +163,55 @@
             }
         });
 
-        function checkAuth() {
+        async function refreshToken(){
+            let user = {
+                token: getCookieValue('token').replace('=', ''),
+                refresh_token: getCookieValue('refresh_token').replace('=','')
+            };
+            console.log('refreshing token')
+            let response = await fetch('/auth/refresh_token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            });
+            let result = await response.json();
+            return true
+
+        }
+
+        async function checkAuth() {
             var authToken = getCookieValue('token')
+            if (!authToken){
+                authToken = getCookieValue('refresh_token')
+                if (authToken) {
+                    authToken = refreshToken()
+                    authToken = getCookieValue('token')
+                }
+            }
+            if (!authToken){
+                return false
+            }
             var tokenData = parseJwt(authToken)
             var now = Date.now() / 1000
-            if (tokenData.exp < now) {
-                localStorage.removeItem('token')
+            if (tokenData.exp <= now) {
+                await refreshToken()
             }
+            return true
         }
 
         // add the auth token to the request as a header
         htmx.on("htmx:configRequest", (e) => {
             //e.detail.headers["AUTH"] = authToken
-            var authToken = getCookieValue('token')
-            if (authToken) {
-                var tokenData = parseJwt(authToken)
-                var now = Date.now() / 1000
-                if (tokenData.exp < now) {
-                    removeCookie('token')
-                }
-                console.log(tokenData)
-                e.detail.headers["Authorization"] = getCookieValue('token')
-            }
+            console.log('check cookie')
+            const res = checkAuth()
+            e.detail.headers["Authorization"] = getCookieValue('token')
         })
         htmx.on("htmx:afterRequest", (e) => {
             //e.detail.headers["AUTH"] = authToken
             if (authToken == null) {
-                console.log('afterRequest')
+                //console.log('afterRequest')
                 if (e.detail.xhr.status || 200) {
                     e.detail.shouldSwap = true;
                     e.detail.isError = false;
@@ -221,11 +266,11 @@
                 myToast.showToast();
             }
         });
-        htmx.logger = function (elt, event, data) {
-            if (console) {
-                console.log(event, elt, data);
-            }
-        };
+        //htmx.logger = function (elt, event, data) {
+        //    if (console) {
+        //        console.log(event, elt, data);
+        //    }
+        //};
     </script>
 
 
@@ -235,7 +280,6 @@
     <script src="{{ url_for('static' ,path='libs/feather-icons/dist/feather.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
     <script src="{{ url_for('static' ,path='libs/sweetalert2/dist/sweetalert2.min.js') }}"></script>
-    <script src="{{ url_for('static' ,path='js/plugins.js') }}"></script>
     <script src="{{ url_for('static' ,path='js/plugins.js') }}"></script>
     <script src="{{ url_for('static' ,path='js/app.js') }}"></script>
     {% block extra_js %}

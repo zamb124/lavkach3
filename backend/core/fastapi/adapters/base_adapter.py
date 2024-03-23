@@ -2,6 +2,7 @@ import uuid
 
 import httpx
 from fastapi import HTTPException
+from starlette.datastructures import QueryParams
 from starlette.requests import Request, HTTPConnection
 from fastapi.exceptions import RequestValidationError
 from core.config import config
@@ -9,8 +10,15 @@ from core.config import config
 
 
 class Client(httpx.AsyncClient):
-    async def request(self, method, url, json=None, params=None, timeout=None):
-        responce = await super().request(method=method, url=url, json=json, params=params, timeout=timeout)
+    async def request(self, method: str, url: str, json=None, params=None, timeout=None):
+        query_param_cleaned = {}
+        if params:
+            for name, val in params.items():
+                if val:
+                    query_param_cleaned.update({name: val})
+        responce = await super().request(method=method, url=url, json=json, params=query_param_cleaned, timeout=timeout)
+        if responce.status_code != 200:
+            raise HTTPException(responce.status_code, responce.json())
         return responce
 
     async def get(self, url, *, params):

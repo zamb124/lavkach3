@@ -4,16 +4,18 @@ import os
 from dotenv import load_dotenv
 from pydantic import BaseConfig
 
-from app.basic.company.schemas import CompanyUpdateScheme, CompanyCreateScheme, CompanyScheme
-from app.basic.store.schemas import StoreScheme, StoreCreateScheme, StoreUpdateScheme, StoreListSchema
+from app.basic.company.schemas import CompanyUpdateScheme, CompanyCreateScheme, CompanyScheme, CompanyFilter
+from app.basic.store.schemas import StoreScheme, StoreCreateScheme, StoreUpdateScheme
+from app.bff.adapters.basic_adapter import BasicAdapter
+from app.bff.apps.inventory import InventoryAdapter
 from app.inventory.order.schemas import OrderUpdateScheme, OrderCreateScheme, OrderScheme
 from core.config import Config as CoreConfig
+
 BaseConfig.arbitrary_types_allowed = True
 logging.basicConfig(level=logging.INFO)
-from app.bff.apps.inventory import InventoryAdapter
-from app.bff.apps.basic import BasicAdapter
 
 load_dotenv()
+
 
 def my_import(name):
     """
@@ -24,6 +26,7 @@ def my_import(name):
     for comp in components[1:]:
         mod = getattr(mod, comp)
     return mod
+
 
 class Config(CoreConfig):
     services: dict = {
@@ -41,6 +44,7 @@ class Config(CoreConfig):
                     'base': CompanyScheme,
                     'create': CompanyCreateScheme,
                     'update': CompanyUpdateScheme,
+                    'filter': CompanyFilter,
                 }
             }
         },
@@ -58,6 +62,7 @@ class Config(CoreConfig):
         }
     }
 
+
 class DevelopmentConfig(Config):
     ...
 
@@ -69,11 +74,12 @@ class LocalConfig(Config):
 class ProductionConfig(Config):
     ...
 
+
 def get_config():
     env = os.getenv("ENV", "local")
     for name, value in os.environ.items():
-        #logging.info("{0}: {1}".format(name, value))
-        #print("{0}: {1}".format(name, value))
+        # logging.info("{0}: {1}".format(name, value))
+        # print("{0}: {1}".format(name, value))
         pass
     config_type = {
         "dev": DevelopmentConfig(),

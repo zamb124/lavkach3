@@ -1,0 +1,48 @@
+<div class="card">
+    <div class="card-body">
+        <div class="row g-3" id="filter">
+            {% for key, value in columns.items() %}
+                {% if value.widget.filter %}
+                    {% if value.type == 'search' %}
+                        <div class="col-xxl-2 col-sm-4">
+                            <div class="search-box">
+                                <input type="search"
+                                       name="search"
+                                       id="search"
+                                       value="{{ request.query_params.search }}"
+                                       class="form-control search"
+                                       placeholder="{{ value.title}}"
+                                >
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
+                        </div>
+                    {% elif value.type == 'datetime' %}
+                        <div class="col-xxl-2 col-sm-4">
+                            <div>
+                                <input class="form-control" type="text" name="{{ key }}"
+                                       required aria-required="true"
+                                       onfocus="(this.type='date')"
+                                       placeholder="{{ value.title or key }}" id="{{ key }}"
+                                       value="{{ request.query_params[key]}}">
+                            </div>
+                        </div>
+                    {% elif value.type in ('model', 'country','currency', 'locale') %}
+                        <div class="col-xxl-2 col-sm-4" hx-get="/bff/select"
+                             hx-vals='{"module": "{{ value.module }}", "model":"{{ value.model }}", "title":"{{ value.title }}"}' hx-trigger="load">
+                            <a href="#" class="btn btn-dark form-control disabled placeholder col-12 htmx-indicator text-start">Select</a>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+                <div class="col">
+                    <div>
+                        <button type="button" class="btn btn-primary w-100"
+                                onclick="SearchData();"><i
+                                class="ri-equalizer-fill me-1 align-bottom"></i>
+                        </button>
+                    </div>
+                </div>
+            <!--end col-->
+        </div>
+    </div>
+</div>
