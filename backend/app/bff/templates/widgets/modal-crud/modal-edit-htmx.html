@@ -1,9 +1,34 @@
-<div class="modal-dialog modal-dialog-centered modal-xl">
-  <div class="modal-content modal-lg">
+{% set modal_id = 'modal-' + uuid().hex %}
+<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ modal_id }}" style="min-width: 40rem">
+  <div class="modal-content modal-xl">
     <div class="modal-header">
-      <h5 class="modal-title">Edit {{ model }}</h5>
+      <div class="col-6">
+                <h5 class="modal-title">Edit {{ model }}
+                    <span>
+                            <a href="#" class="text-success" hx-trigger="click" data-bs-dismiss="modal" data-bs-target="#{{ modal_id }}"
+                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-get="/base/modal-view?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                                    class="ri-eye-fill fs-3"></i></a>
+                        </span>
+                    <span>
+                            <a href="#" class="text-secondary" hx-trigger="click" data-bs-target="#{{ modal_id }}"
+                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-get="/base/modal-create?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                                    class="ri-add-box-fill fs-3"></i></a>
+                        </span>
+                    <span>
+                            <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ modal_id }}"
+                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-get="/base/modal-delete?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                                    class="ri-delete-bin-3-fill fs-3"></i></a>
+                        </span>
+                </h5>
+            </div>
+            <div class="bx-pull-right">
+                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
     </div>
-  <form class="was-validated" hx-post="/base/modal-post" hx-include="this" hx-vals='{"form_module": "{{ module }}", "form_model": "{{ model }}", "form_id": "{{ data.id }}"}'>
+  <form class="was-validated" hx-post="/base/modal-post" hx-include="this" hx-vals='{"form_module": "{{ module }}", "form_model": "{{ model }}", "form_id": "{{ columns.id.val }}"}'>
     <div class="modal-body text-center p-5" >
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
         <lord-icon
@@ -11,28 +36,40 @@
                 trigger="loop"
                 style="width:150px;height:150px">
         </lord-icon>
-    {% set count = 0 %}
-            {%  for k, v in columns.items() %}
-                {% if loop.index0 % 2 == 0 %}
-                    <div class="row" style="">
-                {% endif %}
-                <div class="col">
-                    {% if v.type == 'str'%}
-                        <div>
-                        <label for="{{ k }}">{{ k }}</label>
-                            <input class="form-control" name="{{ k }}" value="{{ v.val }}">
-                        </div>
-                    {% else  %}{# v.type == 'model' #}
-                        <div style="padding-top: 20px"
-                            class="row"
-                             hx-get="/bff/select?module={{ v.module }}&model={{ v.model }}&key={{ v.val.id or v.val.language or v.val.code }}&value={{ v.val.title or v.val.english_name or v.val.name }}&prefix=modal-edit"
+            {%  for c, value in columns.items() %}
+                {% if value.type %}
+                    {% if loop.index0 % 2 == 0 %}
+                        <div class="row g-3">
+                    {% endif %}
+                    <div class="col-lg-6">
+                        {% if value.type == 'str'%}
+                                <input class="form-control" name="{{ c }}" placeholder="Enter {{ value.title or c  }}" value="{{ value.val }}">
+                        {% elif value.type in ('country', 'locale', 'currency') %}{# v.type == 'model' #}
+                            <div
+                                 id="{{ c }}"
+                                 hx-get="/bff/select?module={{ value.module }}&model={{ value.model }}&key={{ value.val.id or value.val.language or value.val.code }}&value={{ value.val.title or value.val.english_name or value.val.name }}&prefix=modal-edit"
+                                 hx-trigger="load"
+                            >
+                            <div class="invalid-feedback">Enter valid value</div>
+                            </div>
+                        {% elif value.type == 'model' %}{# v.type == 'model' #}
+                        <div
+                             id="{{ c }}"
+                             hx-get="/bff/select?module={{ value.module }}&model={{ value.model }}&key={{ value.val.id or value.val.language or value.val.code }}&value={{ value.val.title or value.val.english_name or value.val.name }}&prefix=modal-edit"
                              hx-trigger="load"
                         >
                         </div>
-                    {% endif %}
-                </div>
-                {% if loop.index % 2 == 0 %}
+                            {% elif value.type == 'enum' %}
+                            <select name="{{ c }}" class="form-select mb-3" aria-label="Default select example">
+                            {% for s in value.enums %}
+                                <option value="{{ s.value }}"> {{ s.name }} </option>
+                            {% endfor %}
+                            </select>
+                        {% endif %}
                     </div>
+                    {% if loop.index % 2 == 0 %}
+                        </div>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
     </div>

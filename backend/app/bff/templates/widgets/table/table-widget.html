@@ -1,4 +1,4 @@
-<div id="table" class="col-xxl-9"
+<div id="table"
      hx-get="/base/table?module={{ module if module else request.query_params.module }}&model={{ model if model else request.query_params.modele }}"
      hx-trigger="change from:{% if filter %}{{ filter }}{% else %}#filter{% endif %} delay:500ms, load, update"
      hx-include="{% if filter %}{{ filter }}{% else %}#filter{% endif %}"

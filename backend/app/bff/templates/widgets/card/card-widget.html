@@ -1,4 +1,4 @@
-<div id="card" class="col-xxl-3"
+<div id="card"
      hx-get="/base/card?module={{ module if module else request.query_params.module }}&model={{ model if model else request.query_params.modele }}&id={{ id if id else request.query_params.id }}"
      hx-trigger="load">
     <div class="card htmx-placeholder">

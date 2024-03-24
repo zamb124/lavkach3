@@ -1,51 +1,85 @@
-<div class="modal-dialog modal-dialog-centered modal-xl">
-  <div class="modal-content modal-lg">
-    <div class="modal-header">
-      <h5 class="modal-title">Create {{ model|capitalize }}</h5>
-        <script src="https://cdn.lordicon.com/lordicon.js"></script>
-
-    </div>
-  <form class="was-validated" hx-post="/base/modal-create" hx-vals='{"form_module": "{{ module }}", "form_model": "{{ model }}"}'>
-    <div class="modal-body text-center p-5" >
-    <lord-icon
-    src="https://cdn.lordicon.com/wzwygmng.json"
-    trigger="loop"
-    style="width:150px;height:150px">
-</lord-icon>
-    {% set count = 0 %}
-            {%  for k, v in columns.items() %}
-                {% if loop.index0 % 2 == 0 %}
-                    <div class="row" style="">
+{% set modal_id = 'modal-' + uuid().hex %}
+<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ modal_id }}">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+        <div class="col-6">
+            <h5 class="modal-title">Create {{ model }}
+                {% if columns.id %}
+                    <span>
+                        <a href="#" class="text-success" hx-trigger="click" data-bs-target="#{{ modal_id }}"
+                           hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                           hx-get="/base/modal-view?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                                class="ri-eye-fill fs-3"></i></a>
+                    </span>
+                    <span>
+                            <a href="#" class="text-primary" hx-trigger="click" data-bs-target="#{{ modal_id }}"
+                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-get="/base/modal-get?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                                    class="ri-pencil-fill fs-3"></i></a>
+                        </span>
+                    <span>
+                        <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ modal_id }}"
+                           hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                           hx-get="/base/modal-delete?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                                class="ri-delete-bin-3-fill fs-3"></i></a>
+                    </span>
                 {% endif %}
+
+            </h5>
+        </div>
+        <div class="bx-pull-right">
+                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        </div>
+        <form class="was-validated" hx-post="/base/modal-create"
+              hx-vals='{"form_module": "{{ module }}", "form_model": "{{ model }}"}'>
+            <div class="modal-body text-center p-5">
+                <lord-icon
+                        src="https://cdn.lordicon.com/wzwygmng.json"
+                        trigger="loop"
+                        style="width:150px;height:150px">
+                </lord-icon>
+                {% set count = 0 %}
+
+                {% for c, value in columns.items() if c not in ('id') %}
+                    {% if loop.index0 % 2 == 0 %}
+                        <div class="row g-3" style="">
+                    {% endif %}
                 <div class="col">
-                    {% if v.type == 'str'%}
+                    {% if value.type in ('str', 'int','dict') %}
                         <div>
-                        <label for="{{ k }}">{{ k }}</label>
-                            <input class="form-control" required="{{ v.required }}" placeholder="Enter {{ k|capitalize }}" name="{{ k }}">
-                            <div class="invalid-feedback">Enter valid value</div>
+                            <input class="form-control" required="{{ value.required }}"
+                                   placeholder="Enter {{ c|capitalize }}" name="{{ c }}">
                         </div>
-                    {% else  %}{# v.type == 'model' #}
-                        <div style="padding-top: 20px"
-                            class="row"
-                             hx-get="/bff/select"
-                             hx-vals='{"module": "{{ v.module }}","model": "{{ v.model }}",
+                        {% elif value.type == 'enum' %}
+                            <select class="form-select mb-3" aria-label="Default select example">
+                            {% for s in value.enums %}
+                                <option value="{{ s.value }}"> {{ s.name }} </option>
+                            {% endfor %}
+                            </select>
+                        {% else %}{# v.type == 'model' #}
+                        <div
+                                class="row"
+                                hx-get="/bff/select"
+                                hx-vals='{"module": "{{ value.module }}","model": "{{ value.model }}",
                                 "prefix": "create-modal",
-                                "required": "{{ v.required }}"
+                                "required": "{{ value.required }}"
                              }'
-                             hx-trigger="load">
-                        <a href="#" class="btn btn-dark form-control disabled placeholder col-12 htmx-indicator text-start">Select</a>
+                                hx-trigger="load">
+                            <a href="#"
+                               class="btn btn-dark form-control disabled placeholder col-12 htmx-indicator text-start">Select</a>
                         </div>
                     {% endif %}
                 </div>
                 {% if loop.index % 2 == 0 %}
                     </div>
                 {% endif %}
-            {% endfor %}
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Create</button>
+            </div>
+        </form>
     </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
-        <button type="submit" class="btn btn-success" data-bs-dismiss="modal" >Create</button>
-    </div>
-  </form>
-  </div>
 </div>

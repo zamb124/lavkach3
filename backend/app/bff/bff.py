@@ -19,6 +19,7 @@ from app.bff.dff_helpers.htmx_decorator import s
 from app.bff.dff_helpers.schema_recognizer import get_columns
 from app.bff.template_spec import templates
 
+
 htmx_init(templates, file_extension='html')
 
 
@@ -130,7 +131,7 @@ async def table(request: Request, module: str, model: str):
         data = await a.list(params=request.query_params, model=model)
     columns, new_list = get_columns(module, model, schema, data['data'])
     return {
-        'columns': [v.title if v.title else k for k, v in schema.model_fields.items()],
+        'columns': columns,
         'module': module,
         'cursor': data['cursor'],
         'model': model,
@@ -145,17 +146,15 @@ async def modal_update_get(request: Request, module: str, model: str, id: uuid.U
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
     schema = config.services[module]['schema'][model]['update']
-    columns, _ = get_columns(module, model, schema)
+
 
     async with getattr(request.scope['env'], module) as a:
         data = await a.get(id=id, model=model)
-    for k, v in columns.items():
-        v['val'] = data[k]
+    columns, data = get_columns(module, model, schema, data=[data,])
     return {
-        'columns': columns,
+        'columns': data[0],
         'module': module,
         'model': model,
-        'data': data
     }
 
 
@@ -188,10 +187,12 @@ async def modal_delete_get(request: Request, module: str, model: str, id: uuid.U
     """
      Универсальный запрос, который отдает модалку на подтвержлении удаления
     """
+    async with getattr(request.scope['env'], module) as a:
+        data = await a.get(id=id, model=model)
     return {
         'module': module,
         'model': model,
-        'id': id
+        'data': data
     }
 
 
@@ -212,7 +213,7 @@ async def modal_delete_delete(request: Request, module: str, model: str, id: uui
 
 @index_router.get("/base/modal-create", response_class=HTMLResponse)
 @htmx(*s('widgets/modal-crud/modal-create-htmx'))
-async def modal_create_get(request: Request, module: str, model: str):
+async def modal_create_get(request: Request, module: str, model: str, id: str=None):
     """
      Универсальный запрос, который отдает модалку на подтвержлении удаления
     """
@@ -222,6 +223,8 @@ async def modal_create_get(request: Request, module: str, model: str):
 
     schema = config.services[module]['schema'][model]['create']
     columns, _ = get_columns(module, model, schema)
+    if id:
+        columns.update({'id': {'val': id}}) # Если переходы идут от других модалок
     return {
         'columns': columns,
         'module': module,
@@ -248,6 +251,23 @@ async def modal_create_post(request: Request, form_module: str = Form(), form_mo
         'model': form_model,
         'data': data,
         'message': f'{data.get("title")} is Created'
+    }
+
+@index_router.get("/base/modal-view", response_class=HTMLResponse)
+@htmx(*s('widgets/modal-crud/modal-view-htmx'))
+async def modal_view_get(request: Request, module: str, model: str, id: uuid.UUID):
+    """
+     Универсальный запрос, который отдает форму модели на просмотр
+    """
+    schema = config.services[module]['schema'][model]['base']
+
+    async with getattr(request.scope['env'], module) as a:
+        data = await a.get(id=id, model=model)
+    columns, data = get_columns(module, model, schema, [data,])
+    return {
+        'columns': data[0],
+        'module': module,
+        'model': model,
     }
 
 

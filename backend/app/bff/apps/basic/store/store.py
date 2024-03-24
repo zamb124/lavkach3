@@ -22,6 +22,5 @@ async def store(request: Request):
     return {
         'module': 'basic',
         'model': 'store',
-        'id': request.user.store_ids[0],
         'columns': columns,
     }

@@ -12,11 +12,11 @@ from core.schemas import BaseFilter
 
 
 class CompanyBaseScheme(BaseModel):
-    title: str = Field(description="Title")
-    external_number: Optional[str] = None
-    locale: Optional[TypeLocale] = None
-    country: Optional[TypeCountry] = None
-    currency: TypeCurrency | str = None
+    title: str = Field( title='Title', table=True, form=True)
+    external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
+    locale: Optional[TypeLocale] = Field(default=None, title='Locale', table=True, form=True)
+    country: Optional[TypeCountry] = Field(default=None, title='Country', table=True, form=True)
+    currency: TypeCurrency | str = Field(default=None, title='Currency', table=True, form=True)
 
 
 class CompanyUpdateScheme(CompanyBaseScheme):
@@ -31,9 +31,6 @@ class CompanyCreateScheme(CompanyBaseScheme):
 class CompanyScheme(CompanyCreateScheme, TimeStampScheme):
     id: UUID4
     lsn: int
-    country: TypeCountry
-    locale: TypeLocale
-    currency: TypeCurrency
 
     class Config:
         orm_mode = True

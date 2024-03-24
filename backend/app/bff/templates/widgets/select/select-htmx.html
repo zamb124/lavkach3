@@ -9,10 +9,11 @@
         hx-include="next [name='search_terms']"
         hx-vals='{"module": "{{ module }}","model":"{{ model }}", "field":"{{ field }}"}'
         hx-trigger="search delay:0.5s"
->
-    <option value="{{ key or ''}}">{{ value or 'Select ' ~ model|capitalize }}</option>
+>   {% if not value %}
+        <option value="{{ key or ''}}">{{ value or 'Select ' ~ model|capitalize }}</option>
+    {% endif %}
     {% for o in objects %}
-        <option value="{{ o.id or o.language or o.code }}">{{ o.title or o.english_name or o.name }}</option>
+        <option value="{{ o.id or o.language or o.code }}" {% if value==o.id %} selected {% endif %}>{{ o.title or o.english_name or o.name }}</option>
     {% endfor %}
 </select>
 <script>

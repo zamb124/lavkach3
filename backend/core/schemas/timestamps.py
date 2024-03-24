@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 
 class TimeStampScheme(BaseModel):
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime = Field(default=None, title='Created at', table=True)
+    updated_at: datetime = Field(default=None, title='Updated at', table=True)

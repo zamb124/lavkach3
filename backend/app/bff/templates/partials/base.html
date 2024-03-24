@@ -25,31 +25,46 @@
         <link href="{{ url_for('static' ,path='css/custom.min.css') }}" id="app-style" rel="stylesheet"
               type="text/css"/>
         <style>
-        .card {
-            margin-bottom: 1rem;
-        }
+            .card {
+                margin-bottom: 1rem;
+            }
 
-        input[type="date"] {
-    position: relative;
-}
+            input[type="date"] {
+                position: relative;
+            }
 
-::-webkit-datetime-edit-year-field:not([aria-valuenow]),
-::-webkit-datetime-edit-month-field:not([aria-valuenow]),
-::-webkit-datetime-edit-day-field:not([aria-valuenow]) {
-    color: transparent;
-}
+            ::-webkit-datetime-edit-year-field:not([aria-valuenow]),
+            ::-webkit-datetime-edit-month-field:not([aria-valuenow]),
+            ::-webkit-datetime-edit-day-field:not([aria-valuenow]) {
+                color: transparent;
+            }
+
+            .choices {
+                margin-bottom: 0px;
+            }
+            .choices__inner {
+                border: var(--vz-border-width) solid var(--vz-input-border-custom);
+            }
+            .g-3 {
+                padding-top: 1.5rem
+            }
+            select option[selected]{
+            background-color: var(--vz-form-valid-border-color)
+            }
         </style>
     {% endblock css %}
 </head>
 
 <body>
 <div class="position-fixed top-0 end-0 p-3">
-  <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div id="toast-body" class="toast-body"></div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
+         aria-atomic="true">
+        <div class="d-flex">
+            <div id="toast-body" class="toast-body"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
     </div>
-  </div>
 </div>
 <!-- Begin page -->
 
@@ -86,18 +101,18 @@
 {% block javascript %}
     <!-- JAVASCRIPT -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-{#    <script>#}
-{#        const links = document.querySelectorAll('a[class="nav-link"]')#}
-{##}
-{#        links.forEach(link => {#}
-{#            link.addEventListener('click', function () {#}
-{#                links.forEach(link => {#}
-{#                    link.classList.remove('active')#}
-{#                })#}
-{#                this.classList.add('active')#}
-{#            })#}
-{#        })#}
-{#    </script>#}
+    {#    <script>#}
+    {#        const links = document.querySelectorAll('a[class="nav-link"]')#}
+    {##}
+    {#        links.forEach(link => {#}
+    {#            link.addEventListener('click', function () {#}
+    {#                links.forEach(link => {#}
+    {#                    link.classList.remove('active')#}
+    {#                })#}
+    {#                this.classList.add('active')#}
+    {#            })#}
+    {#        })#}
+    {#    </script>#}
     <script>
         function getCookieValue(name) {
             const nameString = name + "="
@@ -107,16 +122,16 @@
             })
             if (values.length) {
                 let value = []
-                for (let val in values){
+                for (let val in values) {
                     let is_value = values[val].split('=').filter(item => {
                         return item.replace(' ', '') === name
                     })
-                    if (is_value.length){
+                    if (is_value.length) {
                         value = values[val]
                         break
                     }
                 }
-                if (value.length){
+                if (value.length) {
                     return value.substring(nameString.length, value.length)
                 }
             } else {
@@ -163,10 +178,10 @@
             }
         });
 
-        async function refreshToken(){
+        async function refreshToken() {
             let user = {
                 token: getCookieValue('token').replace('=', ''),
-                refresh_token: getCookieValue('refresh_token').replace('=','')
+                refresh_token: getCookieValue('refresh_token').replace('=', '')
             };
             console.log('refreshing token')
             let response = await fetch('/auth/refresh_token', {
@@ -183,14 +198,14 @@
 
         async function checkAuth() {
             var authToken = getCookieValue('token')
-            if (!authToken){
+            if (!authToken) {
                 authToken = getCookieValue('refresh_token')
                 if (authToken) {
                     authToken = refreshToken()
                     authToken = getCookieValue('token')
                 }
             }
-            if (!authToken){
+            if (!authToken) {
                 return false
             }
             var tokenData = parseJwt(authToken)
@@ -253,7 +268,7 @@
                 evt.detail.shouldSwap = true;
                 evt.detail.target = htmx.find("#teapot");
 
-            }else {
+            } else {
                 var myToast = Toastify({
                     text: evt.detail.xhr.responseText,
                     duration: 3000,

@@ -5,7 +5,14 @@ from dotenv import load_dotenv
 from pydantic import BaseConfig
 
 from app.basic.company.schemas import CompanyUpdateScheme, CompanyCreateScheme, CompanyScheme, CompanyFilter
-from app.basic.store.schemas import StoreScheme, StoreCreateScheme, StoreUpdateScheme
+from app.basic.partner.schemas import PartnerScheme, PartnerCreateScheme, PartnerUpdateScheme, PartnerFilter
+from app.basic.product.schemas import ProductScheme, ProductCreateScheme, ProductUpdateScheme, ProductFilter, \
+    ProductCategoryScheme, ProductCategoryCreateScheme, ProductCategoryUpdateScheme, ProductCategoryFilter, \
+    ProductStorageTypeScheme, ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, ProductStorageTypeFilter
+from app.basic.store.schemas import StoreScheme, StoreCreateScheme, StoreUpdateScheme, StoreFilter
+from app.basic.uom.schemas import UomScheme, UomCreateScheme, UomUpdateScheme, UomFilter, UomCategoryScheme, \
+    UomCategoryCreateScheme, UomCategoryUpdateScheme, UomCategoryFilter
+from app.basic.user.schemas import UserScheme, UserCreateScheme, UserUpdateScheme, UserFilter
 from app.bff.adapters.basic_adapter import BasicAdapter
 from app.bff.apps.inventory import InventoryAdapter
 from app.inventory.order.schemas import OrderUpdateScheme, OrderCreateScheme, OrderScheme
@@ -39,13 +46,56 @@ class Config(CoreConfig):
                     'base': StoreScheme,
                     'create': StoreCreateScheme,
                     'update': StoreUpdateScheme,
+                    'filter': StoreFilter,
                 },
                 'company': {
                     'base': CompanyScheme,
                     'create': CompanyCreateScheme,
                     'update': CompanyUpdateScheme,
                     'filter': CompanyFilter,
-                }
+                },
+                'partner': {
+                    'base': PartnerScheme,
+                    'create': PartnerCreateScheme,
+                    'update': PartnerUpdateScheme,
+                    'filter': PartnerFilter,
+                },
+                'product_category': {
+                    'base': ProductCategoryScheme,
+                    'create': ProductCategoryCreateScheme,
+                    'update': ProductCategoryUpdateScheme,
+                    'filter': ProductCategoryFilter,
+                },
+                'product_storage_type': {
+                    'base': ProductStorageTypeScheme,
+                    'create': ProductStorageTypeCreateScheme,
+                    'update': ProductStorageTypeUpdateScheme,
+                    'filter': ProductStorageTypeFilter,
+                },
+                'product': {
+                    'base': ProductScheme,
+                    'create': ProductCreateScheme,
+                    'update': ProductUpdateScheme,
+                    'filter': ProductFilter,
+                },
+                'uom_category': {
+                    'base': UomCategoryScheme,
+                    'create': UomCategoryCreateScheme,
+                    'update': UomCategoryUpdateScheme,
+                    'filter': UomCategoryFilter,
+                },
+                'uom': {
+                    'base': UomScheme,
+                    'create': UomCreateScheme,
+                    'update': UomUpdateScheme,
+                    'filter': UomFilter,
+                },
+                'user': {
+                    'base': UserScheme,
+                    'create': UserCreateScheme,
+                    'update': UserUpdateScheme,
+                    'filter': UserFilter,
+                },
             }
         },
         'inventory': {

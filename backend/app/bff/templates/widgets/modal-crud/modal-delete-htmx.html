@@ -1,17 +1,21 @@
 <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
         <div class="modal-body text-center p-5">
-            <lord-icon src="https://cdn.lordicon.com/hrqwmuhr.json" trigger="loop"
-                       colors="primary:#121331,secondary:#08a88a" style="width:120px;height:120px"></lord-icon>
+            <script src="https://cdn.lordicon.com/lordicon.js"></script>
+            <lord-icon
+                    src="https://cdn.lordicon.com/drxwpfop.json"
+                    trigger="loop"
+                    style="width:150px;height:150px">
+            </lord-icon>
             <div class="mt-4">
-                <h4 class="mb-3">Oops something went wrong!</h4>
-                <p class="text-muted mb-4"> The transfer was not successfully received by us. the email of the
-                    recipient wasn't correct.</p>
+                <h4 class="mb-3" style="padding-bottom: 0">Are you sure you want to delete {{ model|capitalize }} -> {{ data.title|capitalize }}</h4>
+                <p class="text-muted mb-1 text-center" style="padding-top: 0"> With id {{ data.id }} </p>
+                <p class="text-muted mb-10"> The record will be permanently deleted, did you really think? </p>
                 <div class="hstack gap-2 justify-content-center">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                     <button type="button" hx-trigger="click"
-                            hx-delete="/base/modal-delete?module={{ module }}&model={{ model }}&id={{ id }}"
-                            hx-target="#td-{{id}}" data-bs-dismiss="modal" class="btn btn-danger">Delete
+                            hx-delete="/base/modal-delete?module={{ module }}&model={{ model }}&id={{ data.id }}"
+                            hx-target="#td-{{ data.id }}" data-bs-dismiss="modal" class="btn btn-danger">Delete
                     </button>
                 </div>
             </div>

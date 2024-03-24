@@ -18,7 +18,7 @@ async def company(request: Request):
         3 - какие фильтры используем на странице (важно, что порядок будет тот же)
     """
     schema = config.services['basic']['schema']['company']['filter']
-    columns, _ = get_columns('basic', 'company', schema, exclude=['updated_at__gte', 'updated_at__lt'])
+    columns, _ = get_columns('basic', 'company', schema, exclude=['updated_at__gte', 'updated_at__lt', 'updated_at'])
     return {
         'module': 'basic',
         'model': 'company',
