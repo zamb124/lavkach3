@@ -31,7 +31,7 @@
                                 {% if value.type == 'str' %}
                                     <td class="{{ c }}">{{ value.val }}</td>
                                 {% elif value.type == 'datetime' %}
-                                    <td class="{{ c }}">{{ value.val.strftime('%Y-%m-%d') }}<small class="text-muted"> {{ value.val.strftime('%H:%M') }}</small>
+                                    <td class="{{ c }}">{{ value.val.strftime('%Y-%m-%d') if value.val  }}<small class="text-muted"> {{ value.val.strftime('%H:%M') if value.val }}</small>
                                 {% elif value.type in ('locale', 'currency', 'country')  %}
                                     <td class="{{ c }}"><a href="#" hx-get="/base/table/row?module={{ value.module }}&model={{ c }}">{{ value.val.title or value.val.code or value.val.english_name}}</a></td>
                                 {% elif value.type == 'model_rel'  %}

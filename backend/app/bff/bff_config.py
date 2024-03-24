@@ -14,8 +14,8 @@ from app.basic.uom.schemas import UomScheme, UomCreateScheme, UomUpdateScheme, U
     UomCategoryCreateScheme, UomCategoryUpdateScheme, UomCategoryFilter
 from app.basic.user.schemas import UserScheme, UserCreateScheme, UserUpdateScheme, UserFilter
 from app.bff.adapters.basic_adapter import BasicAdapter
-from app.bff.apps.inventory import InventoryAdapter
-from app.inventory.order.schemas import OrderUpdateScheme, OrderCreateScheme, OrderScheme
+from app.bff.adapters.inventory_adapter import InventoryAdapter
+from app.inventory.order.schemas import OrderUpdateScheme, OrderCreateScheme, OrderScheme, OrderFilter
 from core.config import Config as CoreConfig
 
 BaseConfig.arbitrary_types_allowed = True
@@ -107,6 +107,7 @@ class Config(CoreConfig):
                     'base': OrderScheme,
                     'create': OrderCreateScheme,
                     'update': OrderUpdateScheme,
+                    'filter': OrderFilter,
                 },
             },
         }

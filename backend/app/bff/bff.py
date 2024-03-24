@@ -124,18 +124,22 @@ async def select(request: Request, module: str, model: str, key: str = None, val
 @htmx(*s('widgets/table/table-htmx'))
 async def table(request: Request, module: str, model: str):
     """
-     Универсальный запрос, который отдает таблицу обьекта
+     Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
     schema = config.services[module]['schema'][model]['base']
     async with getattr(request.scope['env'], module) as a:
         data = await a.list(params=request.query_params, model=model)
-    columns, new_list = get_columns(module, model, schema, data['data'])
+    columns, table = get_columns(module, model, schema, data['data'])
+    for field, value in table.items():
+        """Достаем все релейтед обьекты"""
+        ...
+
     return {
         'columns': columns,
         'module': module,
         'cursor': data['cursor'],
         'model': model,
-        'objects': new_list,
+        'objects': table,
     }
 
 
@@ -171,7 +175,7 @@ async def modal_update_post(request: Request, form_module: str = Form(), form_mo
     schema = config.services[form_module]['schema'][form_model]['update']
     checked_form = schema(**data)
     async with getattr(request.scope['env'], form_module) as a:
-        data = await a.update(id=form_id, json=checked_form.model_dump(), model=form_model)
+        data = await a.update(id=form_id, json=checked_form.model_dump(mode='json'), model=form_model)
     return {
         'columns': columns,
         'module': form_module,
@@ -238,13 +242,14 @@ async def modal_create_post(request: Request, form_module: str = Form(), form_mo
     """
      Принимает форму создание
     """
+    import json
     columns = {}
     form_data = await request.form()
     data = jsonable_encoder(form_data)
     schema = config.services[form_module]['schema'][form_model]['create']
     checked_form = schema(**data)
     async with getattr(request.scope['env'], form_module) as a:
-        data = await a.create(json=checked_form.model_dump(), model=form_model)
+        data = await a.create(json=checked_form.model_dump(mode='json'), model=form_model)
     return {
         'columns': columns,
         'module': form_module,

@@ -41,7 +41,7 @@ class CompanyFilter(BaseFilter):
     title__in: Optional[str] = Field(description="title", default=None)
     country__in: Optional[List[str]] = Field(alias="country", default=None, filter=True)
     currency__in: Optional[List[str]] = Field(alias="currency", default=None, filter=True)
-    locale__in: Optional[List[str]] = Field(alias="locale", default=None, filter=True)
+    locale__in: Optional[list[str]] = Field(alias="locale", default=None, filter=True)
 
 
     class Config:

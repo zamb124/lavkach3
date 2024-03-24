@@ -38,13 +38,25 @@ def recognize_type(module: str, model: str, k: str, fielinfo):
     for i, c in enumerate(class_types):
         if i > 0:
             res += '_'
-        if issubclass(c, Enum):
+        if k == 'search':
+            res += 'search'
+        elif issubclass(class_types[0], TypeLocale) or k.startswith('locale'):
+            res += 'locale'
+            model = 'locale'
+        elif issubclass(class_types[0], TypeCurrency) or k.startswith('currency'):
+            res += 'currency'
+            model = 'currency'
+        elif issubclass(class_types[0], TypeCountry) or k.startswith('country'):
+            res += 'country'
+            model = 'country'
+        elif issubclass(class_types[0], TypePhone) or k.startswith('phone'):
+            res += 'phone'
+            model = 'phone'
+        elif issubclass(c, Enum):
             res += 'enum'
             enums = class_types[0]
         elif issubclass(class_types[0], dict):
             res += 'dict'
-        elif issubclass(class_types[0], str):
-            res += 'str'
         elif issubclass(class_types[0], int):
             res += 'number'
         elif issubclass(class_types[0], uuid.UUID):
@@ -59,18 +71,9 @@ def recognize_type(module: str, model: str, k: str, fielinfo):
             res += 'model_rel'
             module = get_module_by_model(model_name)
             model = model_name
-        elif issubclass(class_types[0], TypeLocale):
-            res += 'locale'
-            model = 'locale'
-        elif issubclass(class_types[0], TypeCurrency):
-            res += 'currency'
-            model = 'currency'
-        elif issubclass(class_types[0], TypeCountry):
-            res += 'country'
-            model = 'country'
-        elif issubclass(class_types[0], TypePhone):
-            res += 'phone'
-            model = 'phone'
+        elif issubclass(class_types[0], str):
+            res += 'str'
+
     return {
         'type': res,
         'module': module,
@@ -100,6 +103,6 @@ def get_columns(module: str, model: str, schema: BaseModel, data: list = None, e
                 if col in exclude: continue
                 row[col] = {
                     **columns.get(col, {}),
-                    'val': datetime.datetime.fromisoformat(val) if columns.get(col, {}).get('type') == 'datetime' else val
+                    'val': datetime.datetime.fromisoformat(val) if columns.get(col, {}).get('type') == 'datetime' and val else val
                 }
     return columns, data
