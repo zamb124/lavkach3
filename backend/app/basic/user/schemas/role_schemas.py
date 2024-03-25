@@ -18,14 +18,14 @@ class RoleBaseScheme(BaseModel):
 
 
 class RoleUpdateScheme(RoleBaseScheme):
-    parent_ids: Optional[List[UUID4]]
+    role_ids: Optional[List[UUID4]]
     title: Optional[str]
 
 
 class RoleCreateScheme(RoleBaseScheme):
     title: str
     company_id: UUID4
-    parent_ids: Optional[List[UUID4]] = None
+    role_ids: Optional[List[UUID4]] = None
 
 
 class RoleScheme(RoleCreateScheme, TimeStampScheme):

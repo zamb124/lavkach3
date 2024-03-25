@@ -11,7 +11,7 @@
                                    value="option">
                         </div>
                     </th>
-                    {% for col, val in columns.items() if val.widget.table %}
+                    {% for col, val in columns.items() if val.widget.table and not col.endswith('_id') and not col.endswith('_by')%}
                             <th>{{ title or col|capitalize }}</th>
                     {% endfor %}
                     <th>Active</th>
@@ -26,7 +26,7 @@
                                 <input class="form-check-input" type="checkbox" name="checkAll" value="">
                             </div>
                         </th>
-                        {% for c, value in o.items() %}
+                        {% for c, value in o.items() if not c.endswith('_id') and not c.endswith('_by') %}
                             {% if value.widget.table %}
                                 {% if value.type == 'str' %}
                                     <td class="{{ c }}">{{ value.val }}</td>

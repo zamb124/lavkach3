@@ -59,14 +59,24 @@ def recognize_type(module: str, model: str, k: str, fielinfo):
             res += 'dict'
         elif issubclass(class_types[0], int):
             res += 'number'
-        elif issubclass(class_types[0], uuid.UUID):
+        elif issubclass(class_types[0], uuid.UUID) and k .endswith('_id'):
             model_name = k.replace('_id', '')
             res += 'model_id'
             module = get_module_by_model(model_name)
             model = model_name
+        elif issubclass(class_types[0], uuid.UUID) and k .endswith('_id__in'):
+            model_name = k.replace('_id__in', '')
+            res += 'model_id'
+            module = get_module_by_model(model_name)
+            model = model_name or model
         elif issubclass(class_types[0], datetime.datetime):
             res += 'datetime'
-        elif issubclass(class_types[0], BaseModel):
+        elif issubclass(class_types[0], BaseModel) and k .endswith('_list_rel'):
+            model_name = k.replace('_list_rel', '')
+            res += 'model_list_rel'
+            module = get_module_by_model(model_name)
+            model = model_name
+        elif issubclass(class_types[0], BaseModel) and k.endswith('_rel'):
             model_name = k.replace('_rel', '')
             res += 'model_rel'
             module = get_module_by_model(model_name)
@@ -105,4 +115,11 @@ def get_columns(module: str, model: str, schema: BaseModel, data: list = None, e
                     **columns.get(col, {}),
                     'val': datetime.datetime.fromisoformat(val) if columns.get(col, {}).get('type') == 'datetime' and val else val
                 }
+                if columns[col]['module'] != module:
+                    """Если модель из другого модуля"""
+                    row[col].update({
+                        'is_miss_table': columns[col]['widget'].get('table', False),
+                        'is_miss_form': columns[col]['widget'].get('form', False),
+                        'is_miss_filter': columns[col]['widget'].get('filter', False)
+                    })
     return columns, data

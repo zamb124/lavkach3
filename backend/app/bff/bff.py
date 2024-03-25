@@ -95,7 +95,17 @@ async def refresh_token(request: Request, refresh_schema: RefreshTokenSchema):
 
 @index_router.get("/bff/select", response_class=HTMLResponse)
 @htmx(*s('widgets/select/select-htmx'))
-async def select(request: Request, module: str, model: str, key: str = None, value: str = None, prefix: str = None, required=False):
+async def select(
+        request: Request,
+        module: str,
+        model: str,
+        key: str = None,
+        value: str = None,
+        prefix: str = None,
+        name: str = None,
+        required=False
+
+     ):
     """
      Универсальный запрос, который отдает список любого обьекта по его модулю и модели
     """
@@ -105,7 +115,7 @@ async def select(request: Request, module: str, model: str, key: str = None, val
     async with getattr(request.scope['env'], module) as a:
         data = await a.list(params=params, model=model)
     return {
-        'name': f'{module}_{model}_{field}',
+        'name': name or model,
         'module': module,
         'model': model,
         'prefix': prefix,
@@ -126,13 +136,39 @@ async def table(request: Request, module: str, model: str):
     """
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
+    from collections import defaultdict
+    missing_fields = defaultdict(list)
     schema = config.services[module]['schema'][model]['base']
     async with getattr(request.scope['env'], module) as a:
         data = await a.list(params=request.query_params, model=model)
     columns, table = get_columns(module, model, schema, data['data'])
-    for field, value in table.items():
+    for line in table:
         """Достаем все релейтед обьекты"""
-        ...
+        for field, value in line.items():
+            if value.get('is_miss_table'):
+                if value['val']:
+                    missing_fields[f'{field}.{value["module"]}.{value["model"]}'].append(value['val'])
+    for miss_key, miss_value in missing_fields.items():
+        _field, _module, _model = miss_key.split('.')
+        async with getattr(request.scope['env'], _module) as a:
+            qp = QueryParams({'id__in': miss_value})
+            _data = await a.list(params=qp, model=_model)
+        _join_lines = {i['id']: i for i in _data['data']}
+        new_field = _field.replace('_id', '_rel')
+        columns.update({new_field: {'widget': {'table': True}}})
+        for line in table:
+            line.update({
+                new_field: {
+                    'model': _model,
+                    'module': _module,
+                    'required': False,
+                    'enums': [],
+                    'title': columns[_field]['title'],
+                    'type': 'model_rel',
+                    'widget': {'table': True},
+                    'val': _join_lines[line[_field]['val']]
+                }
+            })
 
     return {
         'columns': columns,

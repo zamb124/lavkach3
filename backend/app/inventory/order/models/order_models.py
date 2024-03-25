@@ -120,7 +120,7 @@ class Order(Base, AllMixin):
     number: Mapped[str] = mapped_column(index=True)    # Человекочитаемый номер присвается по формуле - {ГОД(2)}-{МЕСЯЦ}-{ДЕНЬ}-{LSN}
     order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='CASCADE'))
     order_type_rel: Mapped[OrderType] = relationship(lazy='selectin')
-    parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order.id", ondelete="CASCADE"))
+    order_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order.id", ondelete="CASCADE"))
     external_number: Mapped[Optional[str]]
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
@@ -163,7 +163,7 @@ class Move(Base, AllMixin):
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     type: Mapped[MoveType]
-    parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
+    move_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order.id', ondelete='RESTRICT'))
     order_rel: Mapped[Order] = relationship(back_populates='move_list_rel')
     location_src_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))

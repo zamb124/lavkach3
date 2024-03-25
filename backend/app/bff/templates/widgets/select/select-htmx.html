@@ -1,7 +1,7 @@
 {% set select_key  = (prefix or 'select') ~ '-' ~ model %}
 <select
         id="{{ select_key }}"
-        name="{{ model }}"
+        name="{{ name or model }}"
         class="form-select was-validated"
         data-choices data-choices-removeItem name="{{ select_key }}"
         hx-get="/bff/select"

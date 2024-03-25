@@ -14,7 +14,7 @@ class ProductCategoryBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: str
     external_number: Optional[str] = None
-    parent_list_ids: Optional[list[UUID4]] = None
+    product_category_ids: Optional[list[UUID4]] = None
 
 
 class ProductCategoryUpdateScheme(ProductCategoryBaseScheme):

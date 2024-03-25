@@ -18,7 +18,7 @@ class Role(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     lsn_seq = Sequence(f'role_lsn_seq')
     title: Mapped[str] = mapped_column(index=True)
-    parent_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
+    role_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
     permission_allow_list: Mapped[Optional[list[str]]] = mapped_column(ARRAY(String), index=True, default=[])
     permission_deny_list: Mapped[Optional[list[str]]] = mapped_column(ARRAY(String), index=False, default=[])
 

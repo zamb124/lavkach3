@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator, model_s
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import PutawayStrategy
+from app.inventory.order.schemas.move_schemas import MoveScheme
 from core.schemas import BaseFilter
 
 from core.schemas.list_schema import GenericListSchema
@@ -18,7 +19,7 @@ from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
 
 class OrderBaseScheme(BaseModel):
     vars: Optional[dict] = None
-    parent_id: Optional[UUID4] = Field(default=None, title='Parent', table=True, form=True)
+    order_id: Optional[UUID4] = Field(default=None, title='Parent', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
     store_id: UUID4 = Field(title='Store', table=True, form=True)
     partner_id: Optional[UUID4] = Field(default=None, title='Partner', table=True, form=True)
@@ -49,7 +50,7 @@ class OrderUpdateScheme(OrderBaseScheme):
 
 class OrderCreateScheme(OrderBaseScheme):
     company_id: UUID4
-    order_type_rel = OrderTypeScheme
+
 
     class Config:
         extra = 'allow'
@@ -58,9 +59,9 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
     company_id: UUID4
-    moves_list_rel: Optional[list[UUID4]] = []
+    move_list_rel: Optional[list[MoveScheme]] = Field(default=[], title='Order Movies',  form=True)
+    order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True)
     number: str
-    order_type: 'OrderTypeScheme'
 
     class Config:
         orm_mode = True
@@ -71,12 +72,11 @@ def empty_erray(val):
         return val
 
 class OrderFilter(BaseFilter):
-    planned_date__gte: Optional[datetime] = Field(alias='planned_date_from', description="bigger or equal planned date", default=None, filter=True)
-    planned_date__lt: Optional[datetime] = Field(alias='planned_date_to', description="less planned date", default=None, filter=True)
-    status__in: Optional[List[OrderStatus]] = Field(alias="status", default=None, filter=True)
-    date_planned_range: Optional[str] = Field(alias="date_planned_range", default=None)
-    store_id__in: Optional[List[UUID4]] = Field(alias="store_id", default=None, filter=True)
-    order_type_id__in: Optional[List[UUID4]] = Field(alias="order_type_id", default=None, filter=True)
+    planned_date__gte: Optional[datetime] = Field(description="bigger or equal planned date", default=None, filter=True)
+    planned_date__lt: Optional[datetime] = Field(description="less planned date", default=None, filter=True)
+    status__in: Optional[List[OrderStatus]] = Field(default=None, filter=True)
+    store_id__in: Optional[List[UUID4]] = Field(default=None, filter=True)
+    order_type_id__in: Optional[List[UUID4]] = Field(default=None, filter=True)
 
     class Constants(Filter.Constants):
         model = Order

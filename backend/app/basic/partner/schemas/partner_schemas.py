@@ -17,7 +17,7 @@ class PartnerBaseScheme(BaseModel):
     title: str = Field(description="Title")
     type: PartnerType
     external_number: Optional[str]
-    parent_id: Optional[str]
+    partner_id: Optional[str]
     phone_number: Optional[TypePhone]
     email: Optional[str]
     country: Optional[TypeCountry]
@@ -51,7 +51,7 @@ class PartnerFilter(BaseFilter):
     title__in: Optional[str] = Field(default=None, title='Title')
     type__in: Optional[str] = Field(default=None, title='Type')
     external_number__in: Optional[str] = Field(default=None, title='External ID')
-    parent_id__in: Optional[UUID4] = Field(default=None, title='Parent')
+    partner_id__in: Optional[UUID4] = Field(default=None, title='Parent')
     phone_number__in: Optional[str] = Field(default=None, title='Phone')
     email__in: Optional[str] = Field(default=None, title='Email')
     created_user_id__in: Optional[UUID4] = Field(default=None, title='User')

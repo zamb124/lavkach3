@@ -14,7 +14,7 @@ from app.inventory.order.models.order_models import MoveStatus, ReservationMetho
 
 class MoveBaseScheme(BaseModel):
     type: MoveType
-    parent_id: Optional[UUID4] = None
+    move_id: Optional[UUID4] = None
     order_id: UUID4
     location_src_id: Optional[UUID4] = None
     location_dest_id: Optional[UUID4] = None

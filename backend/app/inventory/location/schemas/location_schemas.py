@@ -15,7 +15,7 @@ class LocationBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: str
     store_id: UUID4
-    parent_id: Optional[UUID4] = None
+    location_id: Optional[UUID4] = None
     is_active: bool = None
     location_type_id: UUID4
     partner_id: Optional[UUID4] = None

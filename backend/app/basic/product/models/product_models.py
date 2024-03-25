@@ -15,7 +15,7 @@ class ProductCategory(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     external_number: Mapped[Optional[str]]
     title: Mapped[str] = mapped_column(index=True)
-    parent_list_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
+    product_category_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
 
 class ProductStorageType(Base, AllMixin):
     __tablename__ = "product_storage_type"
