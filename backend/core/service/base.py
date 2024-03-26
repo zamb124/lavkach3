@@ -46,6 +46,9 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         return sql_obj
 
     async def list(self, _filter: FilterSchemaType, size: int):
+
+        if self.model.__tablename__ != 'company':
+            setattr(_filter, 'company_id__in', [self.user.company_id])
         query_filter = _filter.filter(select(self.model)).limit(size)
         if getattr(_filter, 'order_by'):
             query_filter = _filter.sort(query_filter)
@@ -54,6 +57,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
         entity = self.model(**obj.dict())
+        entity.company_id = self.user.company_id
         self.session.add(entity)
         if commit:
             try:

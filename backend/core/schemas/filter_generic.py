@@ -43,6 +43,7 @@ class BaseFilter(Filter):
 
     class Config:
         populate_by_name = True
+        extra = 'allow'
 
     class Constants(Filter.Constants):
         ordering_field_name = "order_by"

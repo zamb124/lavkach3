@@ -22,22 +22,20 @@ async def get_token(
         websocket: WebSocket,
         token: Annotated[str | None, Query()] = None,
 ):
-    if token is None:
-        raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
-    user = await AuthBackend().authenticate(websocket)
-    return user[1]
+    _, user = await AuthBackend().authenticate(websocket)
+    return user
 
 
 @ws_router.websocket("/ws/bus")
-async def websocket_endpoint(
-        websocket: WebSocket,
-        user: Annotated[str, Depends(get_token)],
-):
+async def websocket_endpoint(websocket: WebSocket,user: Annotated[str, Depends(get_token)],):
+    """
+        API получение сообщений
+    """
     if not user.user_id:
         raise WebSocketException(code=status.HTTP_401_UNAUTHORIZED)
     try:
 
-        await ws_manager.connect(user.id.hex, websocket)
+        await ws_manager.connect(user.user_id, websocket)
         await ws_manager.send_personal_message(
             {"message": "connection accepted"},
             user.user_id,
@@ -49,4 +47,4 @@ async def websocket_endpoint(
                 user.user_id,
             )
     except WebSocketDisconnect:
-        ws_manager.disconnect(user.id.hex)
+        await ws_manager.disconnect(user.user_id)

@@ -15,6 +15,7 @@ from starlette.datastructures import QueryParams
 from starlette.responses import Response
 
 from app.bff.bff_config import config
+from app.bff.bff_service import BffService
 from app.bff.dff_helpers.htmx_decorator import s
 from app.bff.dff_helpers.schema_recognizer import get_columns
 from app.bff.template_spec import templates
@@ -325,3 +326,12 @@ async def card(request: Request, module: str, model: str, id: str) -> dict:
         'created_at': datetime.datetime.fromisoformat(data['created_at']),
         'updated_at': datetime.datetime.fromisoformat(data['created_at']),
     }
+
+@index_router.get("/base/dropdown-ids", response_class=HTMLResponse)
+@htmx(*s('widgets/widgets/dropdown-ids-named-htmx'))
+async def dropdown_ids(request: Request, module: str, model: str, id: str, itemlink: str, is_named=False) -> dict:
+    """
+     Виджет на вход получает модуль-модель-ид- и обратную ссылку если нужно, если нет будет /module/model/{id}
+     _named означает, что так же будет отдат name для отрисовки на тайтле кнопки
+    """
+    return await BffService.dropdown_ids(request,module, model, id, itemlink, is_named)

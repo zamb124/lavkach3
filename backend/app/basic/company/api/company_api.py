@@ -50,3 +50,6 @@ async def company_update(request: Request, company_id: uuid.UUID, schema: Compan
 @company_router.delete("/{company_id}")
 async def company_delete(request: Request, company_id: uuid.UUID):
     return await CompanyService(request).delete(id=company_id)
+
+
+

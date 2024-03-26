@@ -34,8 +34,8 @@ class Config(BaseSettings):
     JWT_ALGORITHM: str = os.environ.get("JWT_ALGORITHM") or 'HS256'
     #SENTRY_SDN: str = os.environ.get("SENTRY_SDN")
     CELERY_BROKER_URL: str = "amqp://user:bitnami@localhost:5672/"
-    CELERY_BACKEND_URL: str = "redis://:password123@localhost:6379/0"
-    REDIS_HOST: str = os.environ.get("REDIS_HOST") or 'redis'
+    CELERY_BACKEND_URL: str = "redis://:password123@localhost:5370/0"
+    REDIS_HOST: str = os.environ.get("REDIS_HOST") or 'localhost'
     REDIS_PORT: int = os.environ.get("REDIS_PORT") or '5370'
     REDIS_PASSWORD: str = os.environ.get("REDIS_PASSWORD") or ''
     REDIS_SSL: bool = os.environ.get("REDIS_SSL") or False

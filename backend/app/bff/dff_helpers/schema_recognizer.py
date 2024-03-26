@@ -115,11 +115,12 @@ def get_columns(module: str, model: str, schema: BaseModel, data: list = None, e
                     **columns.get(col, {}),
                     'val': datetime.datetime.fromisoformat(val) if columns.get(col, {}).get('type') == 'datetime' and val else val
                 }
-                if columns[col]['module'] != module:
-                    """Если модель из другого модуля"""
-                    row[col].update({
-                        'is_miss_table': columns[col]['widget'].get('table', False),
-                        'is_miss_form': columns[col]['widget'].get('form', False),
-                        'is_miss_filter': columns[col]['widget'].get('filter', False)
-                    })
+                if columns.get(col):
+                    if columns[col]['module'] != module:
+                        """Если модель из другого модуля"""
+                        row[col].update({
+                            'is_miss_table': columns[col]['widget'].get('table', False),
+                            'is_miss_form': columns[col]['widget'].get('form', False),
+                            'is_miss_filter': columns[col]['widget'].get('filter', False)
+                        })
     return columns, data

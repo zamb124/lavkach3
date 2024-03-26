@@ -4,42 +4,12 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
 from typing import Optional, List
 
-from app.basic.company.schemas import CompanyCreateScheme
+from app.basic.company.schemas import CompanyCreateScheme, CompanyScheme
 from app.basic.user.models.user_models import UserType, User
 from app.basic.store.schemas.store_schemas import StoreScheme
+from core.schemas.timestamps import TimeStampScheme
 from core.types.types import *
 from core.schemas.list_schema import GenericListSchema
-
-
-class GetUserListResponseSchema(BaseModel):
-    id: UUID4 = Field(..., description="ID")
-    email: str = Field(..., description="Email")
-    nickname: str = Field(..., description="Nickname")
-    type: Optional[UserType]
-    store: Optional[StoreScheme]
-
-    class Config:
-        orm_mode = True
-
-
-class CreateUserRequestSchema(BaseModel):
-    email: str = Field(..., description="Email")
-    password1: str = Field(..., description="Password1")
-    password2: str = Field(..., description="Password2")
-    nickname: str = Field(..., description="Nickname")
-    type: Optional[UserType]
-    store_rel: Optional[UUID4]
-
-    class Config:
-        orm_mode = True
-
-
-class CreateUserResponseSchema(BaseModel):
-    email: str = Field(..., description="Email")
-    nickname: str = Field(..., description="Nickname")
-
-    class Config:
-        orm_mode = True
 
 
 class LoginResponseSchema(BaseModel):
@@ -53,10 +23,6 @@ class LoginResponseSchema(BaseModel):
     role_ids: Optional[List[str]]
     locale: Optional[str]
     country: Optional[str]
-
-
-from pydantic import BaseModel, Field, UUID4
-from core.schemas.timestamps import TimeStampScheme
 
 
 class UserBaseScheme(BaseModel):
@@ -93,6 +59,8 @@ class UserScheme(UserBaseScheme, TimeStampScheme):
     phone_number: Optional[TypePhone]
     locale: Optional[TypeLocale]
     country: Optional[TypeCountry]
+    company_id: Optional[UUID4]
+    company_rel: Optional[CompanyScheme]
     store_rel: Optional[StoreScheme]
 
     class Config:
@@ -132,3 +100,8 @@ class UserListSchema(GenericListSchema):
 class SignUpScheme(BaseModel):
     user: UserCreateScheme
     company: CompanyCreateScheme
+
+
+class ChangeCompanyScheme(BaseModel):
+    user_id: UUID4
+    company_id: UUID4

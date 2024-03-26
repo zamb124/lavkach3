@@ -9,7 +9,7 @@ from starlette.requests import Request
 from app.basic.company.services import CompanyService
 from app.basic.user.models.user_models import User
 from app.basic.user.models.role_models import Role
-from app.basic.user.schemas.user_schemas import LoginResponseSchema, SignUpScheme
+from app.basic.user.schemas.user_schemas import LoginResponseSchema, SignUpScheme, ChangeCompanyScheme
 from app.basic.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme, UserFilter
 from app.basic.user.services.role_service import RoleService
 from core.db.session import session
@@ -97,6 +97,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             'token': TokenHelper.encode(payload={
                 "user_id": user.id.__str__(),
                 "company_ids": company_ids,
+                "company_id": user.company_id.__str__(),
                 "role_ids": [i.id.__str__() for i in set(roles)],
                 "is_admin": user.is_admin,
                 'locale': user.locale.language,
@@ -105,6 +106,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             'refresh_token': TokenHelper.encode(payload={"sub": "refresh"}),
             'user_id': user.id,
             'company_ids': company_ids,
+            "company_id": user.company_id.__str__(),
             'nickname': user.nickname,
             'permission_list': permissions_list,
             'store_id': user.store_id,
@@ -140,20 +142,11 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         await self.session.commit()
         return login
 
-# class UserService:
-#
-#     @Transactional(propagation=Propagation.REQUIRED)
-#     async def create_user(
-#         self, email: str, password1: str, password2: str, nickname: str, type:str, store_id: uuid.UUID
-#     ) -> None:
-#         if password1 != password2:
-#             raise PasswordDoesNotMatchException
-#
-#         query = select(User).where(or_(User.email == email, User.nickname == nickname))
-#         result = await session.execute(query)
-#         is_exist = result.scalars().first()
-#         if is_exist:
-#             raise DuplicateEmailOrNicknameException
-#
-#         user = User(email=email, password=password1, nickname=nickname)
-#         session.add(user)
+    @permit('company_change')
+    async def company_change(self, obj: ChangeCompanyScheme, commit=True) -> ModelType:
+        user = await self.get(obj.user_id)
+        user.company_id = obj.company_id
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)
+        return user

@@ -21,7 +21,7 @@ from core.fastapi.dependencies import (
     IsAuthenticated,
 )
 from .schemas import LoginRequest
-from ..schemas.user_schemas import SignUpScheme
+from ..schemas.user_schemas import SignUpScheme, ChangeCompanyScheme
 from fastapi import Response
 
 user_router = APIRouter()
@@ -85,4 +85,9 @@ async def login(request: Request, obj: LoginRequest, response: Response):
 @user_router.post("/signup", response_model=LoginResponseSchema)
 async def signup(request: Request, schema: SignUpScheme):
     return await UserService(request).signup(obj=schema)
+
+
+@user_router.post("/company_change", response_model=UserScheme)
+async def company_change(request: Request, schema: ChangeCompanyScheme):
+    return await UserService(request).company_change(schema)
 

@@ -13,7 +13,6 @@ from app.basic.store.models.store_models import Store
 
 
 class StoreBaseScheme(BaseModel):
-    company_id: UUID
     vars: Optional[dict] = None
     title: str = Field(title='Title', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
@@ -26,7 +25,6 @@ class StoreBaseScheme(BaseModel):
         if v == '':
             return {}
 class StoreUpdateScheme(StoreBaseScheme):
-    company_id: Optional[UUID] = None
     vars: Optional[dict] = None
     title: str = Field(default=None, title='Title', table=True, form=True)
     address: Optional[str] = Field(default=None, title='Address', table=True, form=True)
@@ -38,6 +36,7 @@ class StoreCreateScheme(StoreBaseScheme):
 
 
 class StoreScheme(StoreCreateScheme, TimeStampScheme):
+    company_id: UUID
     lsn: int
     id: UUID
     company_rel: Optional[CompanyScheme] = Field(table=True, form=True, title='Company')
