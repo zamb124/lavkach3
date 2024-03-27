@@ -9,8 +9,8 @@ from .redis_backend import redis_backend
 
 class CacheManager:
     def __init__(self):
-        self.backend = redis_backend
-        self.key_maker = cache_kay_maker
+        self.backend = None
+        self.key_maker = None
 
     def init(self, *, backend: BaseBackend, key_maker: BaseKeyMaker) -> None:
         self.backend = backend

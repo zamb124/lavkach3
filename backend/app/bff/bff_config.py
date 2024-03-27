@@ -18,6 +18,7 @@ from app.bff.adapters.inventory_adapter import InventoryAdapter
 from app.inventory.order.schemas import OrderUpdateScheme, OrderCreateScheme, OrderScheme, OrderFilter, OrderTypeFilter, \
     OrderTypeUpdateScheme, OrderTypeCreateScheme, OrderTypeScheme
 from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme, MoveFilter
+from app.inventory.quant.schemas import LotScheme, LotCreateScheme, LotUpdateScheme, LotFilter
 from core.config import Config as CoreConfig
 
 BaseConfig.arbitrary_types_allowed = True
@@ -122,6 +123,12 @@ class Config(CoreConfig):
                     'create': MoveCreateScheme,
                     'update': MoveUpdateScheme,
                     'filter': MoveFilter,
+                },
+                'lot': {
+                    'base': LotScheme,
+                    'create': LotCreateScheme,
+                    'update': LotUpdateScheme,
+                    'filter': LotFilter,
                 },
                 # 'suggest': {
                 #     'base': SuggestScheme,

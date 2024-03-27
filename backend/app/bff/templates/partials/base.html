@@ -56,6 +56,7 @@
 </head>
 
 <body>
+<div id="websocket_bus" hx-ext="ws" ws-connect="ws://127.0.0.1:8001/api/basic/ws/bus"></div>
 <div class="position-fixed top-0 end-0 p-3">
     <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
          aria-atomic="true">
@@ -133,7 +134,7 @@
                     }
                 }
                 if (value.length) {
-                    return value.substring(nameString.length, value.length)
+                    return value.substring(nameString.length, value.length).replace('=', '')
                 }
             } else {
                 return null
@@ -185,7 +186,7 @@
                 refresh_token: getCookieValue('refresh_token').replace('=', '')
             };
             console.log('refreshing token')
-            let response = await fetch('/auth/refresh_token', {
+            let response = await fetch('/basic/user/refresh', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -193,6 +194,10 @@
                 body: JSON.stringify(user)
             });
             let result = await response.json();
+            const parsed = parseJwt(result.token)
+            const expires = await new Date(parsed.exp*1000)
+            document.cookie = "token="+result.token+"; expires=" + expires  + ";path=/;"
+            document.cookie = "refresh_token="+result.token+"; expires=" + expires  + ";path=/;"
             return true
 
         }
@@ -287,6 +292,20 @@
         //        console.log(event, elt, data);
         //    }
         //};
+        htmx.on('htmx:wsConfigSend', (e) => {
+            console.log('wsConfigSend')
+            console.log(e);
+            e.detail.headers["Authorization"] = getCookieValue('token')
+        })
+        htmx.on('htmx:wsBeforeMessage', (e) => {
+            console.log('wsBeforeMessage')
+            const message = JSON.parse(e.detail.message)
+            console.log(message)
+            if (message.message_type === 'COMPANY_CHANGED') {
+                refreshToken()
+                htmx.trigger("#table", "update");
+            }
+        })
     </script>
 
 

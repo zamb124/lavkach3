@@ -47,7 +47,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def list(self, _filter: FilterSchemaType, size: int):
 
-        if self.model.__tablename__ != 'company':
+        if self.model.__tablename__ not in ('company', 'user'):
             setattr(_filter, 'company_id__in', [self.user.company_id])
         query_filter = _filter.filter(select(self.model)).limit(size)
         if getattr(_filter, 'order_by'):

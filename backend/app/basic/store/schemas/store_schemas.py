@@ -25,7 +25,6 @@ class StoreBaseScheme(BaseModel):
         if v == '':
             return {}
 class StoreUpdateScheme(StoreBaseScheme):
-    vars: Optional[dict] = None
     title: str = Field(default=None, title='Title', table=True, form=True)
     address: Optional[str] = Field(default=None, title='Address', table=True, form=True)
     source: Optional[StoreType] = Field(default=None, title='Source', table=True, form=True)

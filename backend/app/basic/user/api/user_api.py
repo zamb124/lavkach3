@@ -2,7 +2,7 @@ import json
 import uuid
 
 import starlette
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, BackgroundTasks
 from fastapi_filter import FilterDepends
 from starlette.requests import Request
 
@@ -23,6 +23,9 @@ from core.fastapi.dependencies import (
 from .schemas import LoginRequest
 from ..schemas.user_schemas import SignUpScheme, ChangeCompanyScheme
 from fastapi import Response
+
+from ...auth.api.schemas import RefreshTokenRequest
+from ...bus.managers import ws_manager
 
 user_router = APIRouter()
 
@@ -87,7 +90,26 @@ async def signup(request: Request, schema: SignUpScheme):
     return await UserService(request).signup(obj=schema)
 
 
+@user_router.post(
+    "/refresh",
+    response_model=LoginResponseSchema,
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def refresh_token(request: Request):
+    return await UserService(request).login(
+        user=request.user
+    )
+async def send_ws_company_changed(user_id):
+    a = await ws_manager.send_personal_message(
+        message='Company was changed',
+        user_id=user_id,
+        message_type='COMPANY_CHANGED'
+    )
+    a=1
 @user_router.post("/company_change", response_model=UserScheme)
-async def company_change(request: Request, schema: ChangeCompanyScheme):
-    return await UserService(request).company_change(schema)
+async def company_change(request: Request, schema: ChangeCompanyScheme, background_tasks: BackgroundTasks):
+    res = await UserService(request).company_change(schema)
+    background_tasks.add_task(send_ws_company_changed, res.id)
+    return res
+
 

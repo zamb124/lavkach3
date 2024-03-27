@@ -11,7 +11,7 @@
                                    value="option">
                         </div>
                     </th>
-                    {% for col, val in columns.items() if val.widget.table and not col.endswith('_id') and not col.endswith('_by')%}
+                    {% for col, val in columns.items() if val.widget.table  %}
                             <th>{{ title or col|capitalize }}</th>
                     {% endfor %}
                     <th>Active</th>
@@ -26,22 +26,20 @@
                                 <input class="form-check-input" type="checkbox" name="checkAll" value="">
                             </div>
                         </th>
-                        {% for c, value in o.items() if not c.endswith('_id') and not c.endswith('_by') %}
-                            {% if value.widget.table %}
+                        {% for c, value in o.items() if value.widget.table %}
                                 {% if value.type == 'str' %}
                                     <td class="{{ c }}">{{ value.val }}</td>
                                 {% elif value.type == 'datetime' %}
-                                    <td class="{{ c }}">{{ value.val.strftime('%Y-%m-%d') if value.val  }}<small class="text-muted"> {{ value.val.strftime('%H:%M') if value.val }}</small>
+                                    <td class="{{ c }}">{{ datetime.fromisoformat(value.val).strftime('%Y-%m-%d') if value.val  }}<small class="text-muted"> {{datetime.fromisoformat(value.val).strftime('%H:%M') if value.val }}</small>
                                 {% elif value.type in ('locale', 'currency', 'country')  %}
                                     <td class="{{ c }}"><a href="#" hx-get="/base/table/row?module={{ value.module }}&model={{ c }}">{{ value.val.title or value.val.code or value.val.english_name}}</a></td>
                                 {% elif value.type == 'model_rel'  %}
-                                    <td class="{{ c }}"><a href="#" data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ value.module }}&model={{ value.model }}&id={{ value.val.id }}">{{ value.val.title }}</a></td>
+                                    <td class="{{ c }}"><a href="#" data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ value.module }}&model={{ value.model }}&id={{ value.val.id }}">{{ value.val.title or value.val.nickname}}</a></td>
                                 {% elif value.type == 'model_id' %}
                                     <td class="{{ c }}">{{ value.val }}</td>
                                 {% else %}
                                     <td class="{{ c }}">{{ value.val }}</td>
                                 {% endif %}
-                            {% endif %}
                         {% endfor %}
                         <td>
                             <ul class="list-inline hstack gap-2 mb-0">

@@ -26,8 +26,7 @@
                 </h5>
             </div>
             <div>
-                <span><p
-                        class="text-muted fw-normal right">Created: <span>{{ columns.created_at.val.strftime('%Y-%m-%d') }}</span><span> Updated: {{ columns.updated_at.val.strftime('%Y-%m-%d') }}</span></p></span>
+                <span><p class="text-muted fw-normal right">Created: <span>{{ datetime.fromisoformat(columns.created_at.val).strftime('%Y-%m-%d') }}</span><span> Updated: {{ datetime.fromisoformat(columns.updated_at.val).strftime('%Y-%m-%d') }}</span></p></span>
             </div>
             <div class="bx-pull-right">
                 <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -42,8 +41,10 @@
                         trigger="loop"
                         style="width:150px;height:150px">
                 </lord-icon>
-                {% for c, value in columns.items() %}
-                    {% if value.widget.form %}
+                {% for c, value in columns.items() if value.widget.form %}
+                        {%  if loop.length % 2 != 0 and loop.first %}
+                            <div class="row g-3">
+                        {% endif %}
                         {% if loop.index0 % 2 == 0 %}
                             <div class="row g-3">
                         {% endif %}
@@ -67,7 +68,6 @@
                         {% if loop.index % 2 == 0 %}
                             </div>
                         {% endif %}
-                    {% endif %}
                 {% endfor %}
             </div>
         </div>

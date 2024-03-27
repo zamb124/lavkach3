@@ -131,7 +131,7 @@
                                 </form>
                             </div>
                         </div>
-                        <div hx-trigger="load" hx-get="/base/dropdown-ids?is_named=true" hx-vals='{"id":"{{ request.user.company_id if request.user or False }}", "module":"basic","model":"company", "itemlink":"/basic/user/company_change"}'>
+                        <div hx-trigger="load" id="company_changer" hx-get="/base/dropdown-ids?is_named=true" hx-vals='{"id":"{{ request.user.company_id if request.user or False }}", "module":"basic","model":"company", "itemlink":"/basic/user/company_change"}'>
                         </div>
                         <div class="dropdown ms-1 topbar-head-dropdown header-item">
                             <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"

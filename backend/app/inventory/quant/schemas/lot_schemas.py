@@ -6,12 +6,13 @@ from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
 from core.schemas import BaseFilter
+from core.schemas.filter_generic import CustomBaseModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.quant.models import Lot
 
 
-class LotBaseScheme(BaseModel):
+class LotBaseScheme(CustomBaseModel):
     vars: Optional[dict] = None
     expiration_datetime: Optional[datetime] = None
     product_id: UUID4

@@ -14,7 +14,8 @@ def get_module_by_model(model):
         if v['schema'].get(model):
             return k
 
-def get_types(annotation, _class = []):
+
+def get_types(annotation, _class=[]):
     """
         Рекурсивно берем типы в типах
     """
@@ -28,6 +29,8 @@ def get_types(annotation, _class = []):
             _class.append(origin)
         get_types(annotate[0], _class)
     return _class
+
+
 def recognize_type(module: str, model: str, k: str, fielinfo):
     """
     Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
@@ -38,7 +41,11 @@ def recognize_type(module: str, model: str, k: str, fielinfo):
     for i, c in enumerate(class_types):
         if i > 0:
             res += '_'
-        if k == 'search':
+        if k.endswith('_by'):
+            res += 'model_id'
+            model = 'user'
+            module = 'basic'
+        elif k == 'search':
             res += 'search'
         elif issubclass(class_types[0], TypeLocale) or k.startswith('locale'):
             res += 'locale'
@@ -59,19 +66,19 @@ def recognize_type(module: str, model: str, k: str, fielinfo):
             res += 'dict'
         elif issubclass(class_types[0], int):
             res += 'number'
-        elif issubclass(class_types[0], uuid.UUID) and k .endswith('_id'):
+        elif issubclass(class_types[0], uuid.UUID) and k.endswith('_id'):
             model_name = k.replace('_id', '')
             res += 'model_id'
             module = get_module_by_model(model_name)
             model = model_name
-        elif issubclass(class_types[0], uuid.UUID) and k .endswith('_id__in'):
+        elif issubclass(class_types[0], uuid.UUID) and k.endswith('_id__in'):
             model_name = k.replace('_id__in', '')
             res += 'model_id'
             module = get_module_by_model(model_name)
             model = model_name or model
         elif issubclass(class_types[0], datetime.datetime):
             res += 'datetime'
-        elif issubclass(class_types[0], BaseModel) and k .endswith('_list_rel'):
+        elif issubclass(class_types[0], BaseModel) and k.endswith('_list_rel'):
             model_name = k.replace('_list_rel', '')
             res += 'model_list_rel'
             module = get_module_by_model(model_name)
@@ -81,7 +88,7 @@ def recognize_type(module: str, model: str, k: str, fielinfo):
             res += 'model_rel'
             module = get_module_by_model(model_name)
             model = model_name
-        elif issubclass(class_types[0], str):
+        else:
             res += 'str'
 
     return {
@@ -103,24 +110,23 @@ def get_columns(module: str, model: str, schema: BaseModel, data: list = None, e
     """
     columns = {}
     for k, v in schema.model_fields.items():
-        if k in exclude: continue
+        if k in exclude:
+            continue
         columns.update({
             k: recognize_type(module, model, k, v)
         })
+    new_data = []
     if data:
         for row in data:
-            for col, val in row.items():
-                if col in exclude: continue
-                row[col] = {
-                    **columns.get(col, {}),
-                    'val': datetime.datetime.fromisoformat(val) if columns.get(col, {}).get('type') == 'datetime' and val else val
-                }
-                if columns.get(col):
-                    if columns[col]['module'] != module:
-                        """Если модель из другого модуля"""
-                        row[col].update({
-                            'is_miss_table': columns[col]['widget'].get('table', False),
-                            'is_miss_form': columns[col]['widget'].get('form', False),
-                            'is_miss_filter': columns[col]['widget'].get('filter', False)
-                        })
-    return columns, data
+            new_line = {}
+            for col, val in columns.items():
+                val.update({'val': row[col]})
+                if val['module'] != module:
+                    val.update({
+                        'is_miss_table': columns[col]['widget'].get('table', False),
+                        'is_miss_form': columns[col]['widget'].get('form', False),
+                        'is_miss_filter': columns[col]['widget'].get('filter', False)
+                    })
+                new_line.update({col: val})
+            new_data.append(new_line)
+    return columns, new_data

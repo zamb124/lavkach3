@@ -89,7 +89,7 @@ async def login(
 class RefreshTokenSchema(BaseModel):
     token: str
     refresh_token: str
-@index_router.post("/auth/refresh_token", responses={"404": {"model": ExceptionResponseSchema}},)
+@index_router.post("/basic/user/refresh", responses={"404": {"model": ExceptionResponseSchema}},)
 async def refresh_token(request: Request, refresh_schema: RefreshTokenSchema):
     async with request.scope['env'].basic as a:
         return await a.refresh_token(refresh_schema)
@@ -155,7 +155,10 @@ async def table(request: Request, module: str, model: str):
             qp = QueryParams({'id__in': miss_value})
             _data = await a.list(params=qp, model=_model)
         _join_lines = {i['id']: i for i in _data['data']}
-        new_field = _field.replace('_id', '_rel')
+        if _field.endswith('_by'):
+            new_field = _field.replace('_by', '_rel')
+        else:
+            new_field = _field.replace('_id', '_rel')
         columns.update({new_field: {'widget': {'table': True}}})
         for line in table:
             line.update({
@@ -170,6 +173,8 @@ async def table(request: Request, module: str, model: str):
                     'val': _join_lines[line[_field]['val']]
                 }
             })
+            line.pop(_field)
+        columns.pop(_field)
 
     return {
         'columns': columns,
@@ -196,6 +201,7 @@ async def modal_update_get(request: Request, module: str, model: str, id: uuid.U
         'columns': data[0],
         'module': module,
         'model': model,
+        'id': id
     }
 
 

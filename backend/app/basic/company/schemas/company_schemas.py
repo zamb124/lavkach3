@@ -12,7 +12,7 @@ from core.schemas import BaseFilter
 
 
 class CompanyBaseScheme(BaseModel):
-    title: str = Field( title='Title', table=True, form=True)
+    title: str = Field(title='Title', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
     locale: Optional[TypeLocale] = Field(default=None, title='Locale', table=True, form=True)
     country: Optional[TypeCountry] = Field(default=None, title='Country', table=True, form=True)

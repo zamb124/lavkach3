@@ -19,6 +19,7 @@ class LoginResponseSchema(BaseModel):
     refresh_token: str = Field(..., description="Refresh token")
     user_id: Optional[UUID4]
     company_ids: Optional[List[UUID4]]
+    company_id: Optional[UUID4] = None
     permission_list: Optional[List[str]]
     role_ids: Optional[List[str]]
     locale: Optional[str]

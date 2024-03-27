@@ -22,6 +22,6 @@ async def company(request: Request):
     return {
         'module': 'basic',
         'model': 'company',
-        'id': request.user.company_ids[0],
+        'id': request.user.company_ids[0] if request.user.company_ids else [],
         'columns': columns,
     }

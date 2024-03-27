@@ -18,16 +18,13 @@ from core.fastapi.middlewares import AuthBackend
 ws_router = APIRouter()
 
 
-async def get_token(
-        websocket: WebSocket,
-        token: Annotated[str | None, Query()] = None,
-):
+async def get_token(websocket: WebSocket):
     _, user = await AuthBackend().authenticate(websocket)
     return user
 
 
 @ws_router.websocket("/ws/bus")
-async def websocket_endpoint(websocket: WebSocket,user: Annotated[str, Depends(get_token)],):
+async def websocket_endpoint(websocket: WebSocket, user: Annotated[str, Depends(get_token)],):
     """
         API получение сообщений
     """
@@ -36,10 +33,7 @@ async def websocket_endpoint(websocket: WebSocket,user: Annotated[str, Depends(g
     try:
 
         await ws_manager.connect(user.user_id, websocket)
-        await ws_manager.send_personal_message(
-            {"message": "connection accepted"},
-            user.user_id,
-        )
+        await ws_manager.send_personal_message("connection accepted", user.user_id,)
         while True:
             message = await websocket.receive_text()
             await ws_manager.send_personal_message(

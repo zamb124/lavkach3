@@ -1,11 +1,13 @@
 from typing import List, Dict, Any, Optional
 
+from fastapi import BackgroundTasks
 from sqlalchemy import select, and_, Row, RowMapping
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 
+from app.basic.bus.managers import ws_manager
 from app.basic.company.services import CompanyService
 from app.basic.user.models.user_models import User
 from app.basic.user.models.role_models import Role
@@ -19,6 +21,8 @@ from core.exceptions import (
     DuplicateEmailOrNicknameException,
     UserNotFoundException,
 )
+from core.fastapi.schemas import CurrentUser
+from core.helpers.celery import celery
 from core.service.base import BaseService, ModelType, FilterSchemaType
 from core.utils.token_helper import TokenHelper
 from core.permissions.permissions import permit, permits
@@ -62,18 +66,24 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         return entity
 
-    async def login(self, email: str, password: str):
+    async def login(self, email: str = None, password: str = None, user: CurrentUser | None = None):
         # Получаем юзера из бд
-        result_user = await self.session.execute(
-            select(User).where(User.email == email)
-        )
-        user = result_user.scalars().first()
-
         if not user:
-            raise UserNotFoundException
+            result_user = await self.session.execute(
+                select(User).where(User.email == email)
+            )
+            user = result_user.scalars().first()
 
-        if not user.password == password:
-            raise PasswordDoesNotMatchException
+            if not user:
+                raise UserNotFoundException
+
+            if not user.password == password:
+                raise PasswordDoesNotMatchException
+        else:
+            result_user = await self.session.execute(
+                select(User).where(User.id == user.user_id)
+            )
+            user = result_user.scalars().first()
         # Получаем пермишены
         if not user.is_admin:
             result_roles = await self.session.execute(
@@ -97,7 +107,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             'token': TokenHelper.encode(payload={
                 "user_id": user.id.__str__(),
                 "company_ids": company_ids,
-                "company_id": user.company_id.__str__(),
+                "company_id": user.company_id.__str__() if user.company_id else None,
                 "role_ids": [i.id.__str__() for i in set(roles)],
                 "is_admin": user.is_admin,
                 'locale': user.locale.language,
@@ -106,7 +116,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             'refresh_token': TokenHelper.encode(payload={"sub": "refresh"}),
             'user_id': user.id,
             'company_ids': company_ids,
-            "company_id": user.company_id.__str__(),
+            "company_id": user.company_id if user.company_id else None,
             'nickname': user.nickname,
             'permission_list': permissions_list,
             'store_id': user.store_id,

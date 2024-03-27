@@ -4,26 +4,24 @@
         <div class="modal-header">
         <div class="col-6">
             <h5 class="modal-title">Create {{ model }}
-                {% if columns.id %}
                     <span>
                         <a href="#" class="text-success" hx-trigger="click" data-bs-target="#{{ modal_id }}"
                            hx-target="#{{ modal_id }}" hx-swap="innerHTML"
-                           hx-get="/base/modal-view?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                           hx-get="/base/modal-view?module={{ module }}&model={{ model }}&id={{ id }}"><i
                                 class="ri-eye-fill fs-3"></i></a>
                     </span>
                     <span>
                             <a href="#" class="text-primary" hx-trigger="click" data-bs-target="#{{ modal_id }}"
                                hx-target="#{{ modal_id }}" hx-swap="innerHTML"
-                               hx-get="/base/modal-get?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                               hx-get="/base/modal-get?module={{ module }}&model={{ model }}&id={{ id }}"><i
                                     class="ri-pencil-fill fs-3"></i></a>
                         </span>
                     <span>
                         <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ modal_id }}"
                            hx-target="#{{ modal_id }}" hx-swap="innerHTML"
-                           hx-get="/base/modal-delete?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                           hx-get="/base/modal-delete?module={{ module }}&model={{ model }}&id={{ id }}"><i
                                 class="ri-delete-bin-3-fill fs-3"></i></a>
                     </span>
-                {% endif %}
 
             </h5>
         </div>
@@ -41,8 +39,11 @@
                 </lord-icon>
                 {% set count = 0 %}
 
-                {% for c, value in columns.items() if c not in ('id') %}
-                    {% if loop.index0 % 2 == 0 %}
+                {% for c, value in columns.items() %}
+                    {%  if loop.length % 3 != 0 and loop.first %}
+                            <div class="row g-3">
+                        {% endif %}
+                    {% if loop.index0 % 3 == 0 %}
                         <div class="row g-3" style="">
                     {% endif %}
                 <div class="col">
@@ -57,7 +58,7 @@
                                 <option value="{{ s.value }}"> {{ s.name }} </option>
                             {% endfor %}
                             </select>
-                        {% else %}{# v.type == 'model' #}
+                        {% else %}
                         <div
                                 class="row"
                                 hx-get="/bff/select"
@@ -71,7 +72,7 @@
                         </div>
                     {% endif %}
                 </div>
-                {% if loop.index % 2 == 0 %}
+                {% if loop.index % 3 == 0 %}
                     </div>
                 {% endif %}
                 {% endfor %}
