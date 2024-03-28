@@ -1,6 +1,6 @@
 {% set modal_id = 'modal-' + uuid().hex %}
 
-<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ modal_id }}" style="min-width: 50rem">
+<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ modal_id }}"  style="min-width: 60rem">
     <div class="modal-content modal-lg">
         <div class="modal-header">
             <div class="col-6">
@@ -43,10 +43,10 @@
                 </lord-icon>
                 {% for c, value in columns.items() if value.widget.form %}
                         {%  if loop.length % 2 != 0 and loop.first %}
-                            <div class="row g-3">
+                            <div class="row g-2">
                         {% endif %}
-                        {% if loop.index0 % 2 == 0 %}
-                            <div class="row g-3">
+                        {% if loop.index0 % 3 == 0 %}
+                            <div class="row g-2">
                         {% endif %}
                             <div class="col">
                         {% if value.type == 'model_rel' %}
@@ -65,7 +65,7 @@
 
                         {% endif %}
                         </div>
-                        {% if loop.index % 2 == 0 %}
+                        {% if loop.index % 3 == 0 %}
                             </div>
                         {% endif %}
                 {% endfor %}

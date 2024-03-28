@@ -1,5 +1,6 @@
 {% set modal_id = 'modal-' + uuid().hex %}
-<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ modal_id }}" style="min-width: 40rem">
+{% set prefix = 'modal_update:' %}
+<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ modal_id }}" style="min-width: 60rem">
   <div class="modal-content modal-xl">
     <div class="modal-header">
       <div class="col-6">
@@ -28,7 +29,7 @@
                 <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
     </div>
-  <form class="was-validated" hx-post="/base/modal-post" hx-include="this" hx-vals='{"form_module": "{{ module }}", "form_model": "{{ model }}", "form_id": "{{ id }}"}'>
+  <form class="was-validated"  hx-trigger="submit" hx-post="/base/modal-post" hx-ext="json-enc" hx-include="this" hx-vals='{"modal_update_module": "{{ module }}", "modal_update_model": "{{ model }}", "modal_update_id": "{{ id }}"}'>
     <div class="modal-body text-center p-5" >
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
         <lord-icon
@@ -39,32 +40,48 @@
         <div class="row g-3">
             {%  for c, value in columns.items() %}
                     {%  if loop.length % 2 != 0 and loop.first %}
-                            <div class="row g-3">
+                            <div class="row g-2">
                         {% endif %}
                     {% if loop.index0 % 3 == 0 %}
-                        <div class="row g-3">
+                        <div class="row g-2">
                     {% endif %}
                     <div class="col">
                         {% if value.type == 'str' %}
-                                <input class="form-control" name="{{ c }}" placeholder="Enter {{ value.title or c  }}" value="{{ value.val }}">
+                                <input class="form-control" name="{{ prefix }}{{ c }}" placeholder="Enter {{ value.title or c  }}" value="{{ value.val }}">
                         {% elif value.type in ('country', 'locale', 'currency') %}{# v.type == 'model' #}
                             <div
-                                 id="{{ c }}"
-                                 hx-get="/bff/select?module={{ value.module }}&model={{ value.model }}&key={{ value.val.id or value.val.language or value.val.code }}&value={{ value.val.title or value.val.english_name or value.val.name }}&prefix=modal-edit"
+                                 hx-ext="json-enc"
+                                 hx-post="/bff/select"
+                                 hx-vals='{
+                                    "module": "{{ value.module }}",
+                                    "model": "{{ value.model }}",
+                                    "value": "{{ value.val.id }}",
+                                    "prefix": "{{ prefix }}",
+                                    "name": "{{ value.model }}"
+                                 }'
                                  hx-trigger="load"
                             >
                             <div class="invalid-feedback">Enter valid value</div>
                             </div>
                         {% elif value.type == 'model_id' %}{# v.type == 'model' #}
                             <div
-                                 id="{{ c }}"
-                                 hx-get="/bff/select?module={{ value.module }}&model={{ value.model }}&key={{ (value.val.id or value.val.language or value.val.code) if value.val else '' }}&value={{ (value.title  or value.val.english_name  or value.val.name) if value.val else '' }}&prefix=modal-edit"
+                                 id="modal_edit_{{ c }}"
+                                 hx-post="/bff/select"
+                                 hx-ext="json-enc"
+                                 hx-vals='{
+                                    "module": "{{ value.module }}",
+                                    "model": "{{ value.model }}",
+                                    "key": "{{ value.val }}",
+                                    "value": "{{value.val}}",
+                                    "prefix": "{{ prefix }}",
+                                    "name": "{{ value.model }}_id"
+                                 }'
                                  hx-trigger="load"
                             >
                             </div>
                         {% elif value.type == 'enum' %}
                             <div>
-                                <select name="{{ c }}" class="form-select mb-3" aria-label="Default select example">
+                                <select name="{{ prefix }}{{ c }}" class="form-select mb-3" aria-label="Default select example">
                                 {% for s in value.enums %}
                                     <option value="{{ s.value }}"> {{ s.name }} </option>
                                 {% endfor %}
@@ -72,10 +89,11 @@
                             </div>
                         {% elif value.type == 'datetime'%}
                             <div>
-                                <input class="form-control" type="text" name="{{ c }}"
+                                <input class="form-control" type="text" name="{{ prefix }}{{ c }}"
                                        required aria-required="true"
-                                       placeholder="{{ value.title or c }}" id="modal-{{ c }}"
-                                       value="">
+                                       onfocus="(this.type='date')"
+                                       placeholder="{{ value.title or c }}" id="{{ c }}"
+                                       value="{{ request.query_params[key]}}">
                             </div>
                         {% else %}
                             <input class="form-control" name="{{ c }}" placeholder="Enter {{ value.title or c  }}" value="{{ value.val }}">
@@ -88,7 +106,7 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
-        <button type="submit" class="btn btn-success" data-bs-toggle="modal" >Save</button>
+        <button type="submit"  class="btn btn-success" data-bs-dismiss="modal" >Save</button>
     </div>
   </form>
   </div>

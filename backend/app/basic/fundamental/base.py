@@ -7,8 +7,9 @@ from pydantic import BaseModel
 
 from app.basic.fundamental.schemas.dundamental_shemas import Image
 from core.helpers.s3.s3 import s3_client
-from core.schemas.basic_schemes import CurrencySchema, CountrySchema, LocaleSchema
-from core.types.types import TypeLocale
+from core.schemas.basic_schemes import CurrencySchema, CountrySchema, LocaleSchema, CountryListSchema, \
+    CurrencyListSchema, LocaleListSchema
+from core.types.types import TypeLocale, TypeCurrency, TypeCountry
 from babel.core import UnknownLocaleError
 
 class ExceptionResponseSchema(BaseModel):
@@ -35,14 +36,12 @@ def upload(request: Request, schema: Image):
         f.write(img_recovered)
     return {"message": f"Successfuly uploaded {schema.filename}"}
 
-@fundamental_router.get("/country", response_model=list[CountrySchema])
+@fundamental_router.get("/country", response_model=CountryListSchema)
 async def countries(request: Request):
-    currencies = [
-        {
-            'code': k, 'name': v
-        } for k, v in TypeLocale(request.user.locale).territories._data.items()
+    countries = [
+        CountrySchema(code=k, name=v, lsn=0, id=k) for k, v in TypeLocale(request.user.locale).territories._data.items()
     ]
-    return currencies
+    return {'size': 999, 'cursor': 0, 'data': countries}
 
 
 @fundamental_router.get("/country/{code}", response_model=CountrySchema)
@@ -57,10 +56,10 @@ async def countries_code(request: Request, code: str):
     return {'name': country, 'code': code}
 
 
-@fundamental_router.get("/currency", response_model=list[CurrencySchema])
+@fundamental_router.get("/currency", response_model=CurrencyListSchema)
 async def currencies(request: Request):
-    currencies = [{'code': k, 'name': v} for k, v in TypeLocale(request.user.locale).currencies._data.items()]
-    return currencies
+    currencies = [CurrencySchema(code=k, name=v, id=k, lsn=0) for k, v in TypeLocale(request.user.locale).currencies._data.items()]
+    return {'size': 999, 'cursor': 0, 'data': currencies}
 
 
 @fundamental_router.get("/currency/{code}", response_model=CurrencySchema)
@@ -75,11 +74,24 @@ async def currencies_code(request: Request, code: str):
     return {'name': currency, 'code': code}
 
 
-@fundamental_router.get("/locale", response_model=list[LocaleSchema])
+@fundamental_router.get("/locale", response_model=LocaleListSchema)
 async def locales(request: Request):
+    a = LocaleSchema
     l = TypeLocale('en', 'US')
     locales = [TypeLocale(i) for i in LOCALE_ALIASES]
-    return [i.validate(i) for i in locales]
+    return {
+        'size': 999,
+        'cursor': 0,
+        'data': [
+            LocaleSchema(
+                language=i.language,
+                territory=i.territory,
+                display_name=i.display_name,
+                english_name=i.english_name,
+                language_name=i.language_name,
+                id=i.language,
+                lsn=0) for i in locales
+        ]}
 
 
 @fundamental_router.get("/locale/my", response_model=LocaleSchema)

@@ -1,13 +1,14 @@
-<div class="card">
+{% set prefix = 'filter:' %}
+<div class="card accordion-collapse collapse" id="filter">
     <div class="card-body">
-        <div class="row g-3" id="filter">
+        <div class="row g-3" >
             {% for c, value in columns.items() %}
                 {% if value.widget.filter %}
                     {% if value.type == 'search' %}
                         <div class="col-xxl-2 col-sm-4">
                             <div class="search-box">
                                 <input type="search"
-                                       name="search"
+                                       name="{{ prefix }}search"
                                        id="search"
                                        value="{{ request.query_params.search }}"
                                        class="form-control search"
@@ -19,7 +20,7 @@
                     {% elif value.type == 'datetime' %}
                         <div class="col-xxl-2 col-sm-4">
                             <div>
-                                <input class="form-control" type="text" name="{{ c }}"
+                                <input class="form-control" type="text" name="{{ prefix }}{{ c }}"
                                        required aria-required="true"
                                        onfocus="(this.type='date')"
                                        placeholder="{{ value.title or c }}" id="{{ c }}"
@@ -27,18 +28,21 @@
                             </div>
                         </div>
                     {% elif value.type in ('model', 'country','currency', 'locale') %}
-                        <div class="col-xxl-2 col-sm-4" hx-get="/bff/select"
+                        <div
+                             class="col-xxl-2 col-sm-4"
+                             hx-ext="json-enc"
+                             hx-post="/bff/select"
                              hx-vals='{
-                                 "module": "{{ value.module }}",
-                                 "model":"{{ value.model }}",
-                                 "title":"{{ value.title }}",
-                                 "name": "{{ c }}"
-                             }' hx-trigger="load">
-                            <a href="#" class="btn btn-dark form-control disabled placeholder col-12 htmx-indicator text-start">Select</a>
+                                "module": "{{ value.module }}",
+                                "model": "{{ value.model }}",
+                                "prefix": "{{ prefix }}",
+                                "name": "{{ c }}"
+                             }'
+                             hx-trigger="load">
                         </div>
                     {% elif value.type == 'enum' %}
                         <div class="col-xxl-2 col-sm-4">
-                            <select name="{{ c }}" class="data-choices form-control" aria-label="Default select example">
+                            <select name="{{ prefix }}{{ c }}" class="data-choices form-control" aria-label="Default select example">
                             <option value="">Select Status</option>
                                 {% for s in value.enums %}
                                     <option value="{{ s.value }}"> {{ s.name }} </option>
@@ -46,12 +50,14 @@
                             </select>
                         </div>
                     {% elif value.type == 'model_id' %}
-                        <div class="col-xxl-2 col-sm-4" hx-get="/bff/select"
+                        <div class="col-xxl-2 col-sm-4"
+                             hx-post="/bff/select"
+                             hx-ext="json-enc"
                              hx-vals='{
                              "module": "{{ value.module }}",
                              "model":"{{ value.model }}",
-                             "title":"{{ value.title }}",
-                             "name":"{{ c }}"
+                             "name":"{{ c }}",
+                             "prefix":"{{ prefix }}"
                              }' hx-trigger="load">
                             <a href="#" class="btn btn-dark form-control disabled placeholder col-12 htmx-indicator text-start">Select</a>
                         </div>

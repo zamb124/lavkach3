@@ -41,7 +41,10 @@ def recognize_type(module: str, model: str, k: str, fielinfo):
     for i, c in enumerate(class_types):
         if i > 0:
             res += '_'
-        if k.endswith('_by'):
+        if k == 'order_by':
+            res += 'order_by'
+            enums = fielinfo.default
+        elif k.endswith('_by'):
             res += 'model_id'
             model = 'user'
             module = 'basic'
@@ -118,8 +121,9 @@ def get_columns(module: str, model: str, schema: BaseModel, data: list = None, e
     new_data = []
     if data:
         for row in data:
-            new_line = {}
+            new_line = dict()
             for col, val in columns.items():
+                val = val.copy()
                 val.update({'val': row[col]})
                 if val['module'] != module:
                     val.update({

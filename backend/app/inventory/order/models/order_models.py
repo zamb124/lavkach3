@@ -134,7 +134,7 @@ class Order(Base, AllMixin):
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     users_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
     description: Mapped[Optional[str]]
-    status: Mapped[OrderStatus] = OrderStatus.DRAFT
+    status: Mapped['OrderStatus'] = OrderStatus.DRAFT
     move_list_rel: Mapped[Optional[list["Move"]]] = relationship(back_populates="order_rel", lazy="selectin")
 
 

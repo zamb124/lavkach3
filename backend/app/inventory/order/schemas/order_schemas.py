@@ -20,7 +20,6 @@ from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
 
 
 class OrderBaseScheme(CustomBaseModel):
-    vars: Optional[dict] = None
     number: str
     order_id: Optional[UUID4] = Field(default=None, title='Parent', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
@@ -31,13 +30,9 @@ class OrderBaseScheme(CustomBaseModel):
     origin_type: Optional[str] = Field(default=None, title='Original Type', table=True, form=True)
     origin_number: Optional[str] = Field(default=None, title='Original', table=True, form=True)
     planned_date: Optional[datetime] = Field(default=None, title='Planned Date', table=True, form=True)
-    actual_date: Optional[datetime] = Field(title='Actual Date', table=True, form=True)
     expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=True, form=True)
-    users_ids: Optional[list[UUID4]] = Field(default=[], title='Users', form=True)
     description: Optional[str] = Field(default=None, title='Description', table=True, form=True)
     status: OrderStatus = Field(title='Status', table=True, form=True)
-    created_by: UUID4 = Field(title='Created By', table=True)
-    edited_by: UUID4 = Field(title='Edit By', table=True)
 
 
 class OrderUpdateScheme(OrderBaseScheme):
@@ -55,6 +50,11 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
     company_id: UUID4
+    vars: Optional[dict] = None
+    actual_date: Optional[datetime] = Field(title='Actual Date', table=True, form=True)
+    created_by: UUID4 = Field(title='Created By', table=True)
+    edited_by: UUID4 = Field(title='Edit By', table=True)
+    users_ids: Optional[list[UUID4]] = Field(default=[], title='Users', form=True)
     move_list_rel: Optional[list[MoveScheme]] = Field(default=[], title='Order Movements', form=True)
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True)
 
@@ -75,9 +75,9 @@ def empty_erray(val):
 class OrderFilter(BaseFilter):
     planned_date__gte: Optional[datetime] = Field(description="bigger or equal planned date", default=None, filter=True)
     planned_date__lt: Optional[datetime] = Field(description="less planned date", default=None, filter=True)
-    status__in: Optional[List[OrderStatus]] = Field(default=None, filter=True)
-    store_id__in: Optional[List[UUID4]] = Field(default=None, filter=True)
-    order_type_id__in: Optional[List[UUID4]] = Field(default=None, filter=True)
+    status__in: Optional[List[str]] = Field(default=None, filter=True)
+    store_id__in: Optional[List[str]] = Field(default=None, filter=True)
+    order_type_id__in: Optional[List[str]] = Field(default=None, filter=True)
 
     class Constants(Filter.Constants):
         model = Order

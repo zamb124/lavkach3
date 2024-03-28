@@ -1,5 +1,6 @@
 {% set modal_id = 'modal-' + uuid().hex %}
-<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ modal_id }}">
+{% set prefix = 'modal_create:' %}
+<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ modal_id }}" style="min-width: 60rem">
     <div class="modal-content modal-lg">
         <div class="modal-header">
         <div class="col-6">
@@ -29,8 +30,11 @@
                 <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
         </div>
-        <form class="was-validated" hx-post="/base/modal-create"
-              hx-vals='{"form_module": "{{ module }}", "form_model": "{{ model }}"}'>
+        <form id="create" class="was-validated" hx-post="/base/modal-create" hx-ext="json-enc"
+              hx-vals='{
+              "modal_create_module": "{{ module }}",
+              "modal_create_model": "{{ model }}"
+              }'>
             <div class="modal-body text-center p-5">
                 <lord-icon
                         src="https://cdn.lordicon.com/wzwygmng.json"
@@ -39,47 +43,73 @@
                 </lord-icon>
                 {% set count = 0 %}
 
-                {% for c, value in columns.items() %}
-                    {%  if loop.length % 3 != 0 and loop.first %}
-                            <div class="row g-3">
+                {%  for c, value in columns.items() %}
+                    {%  if loop.length % 2 != 0 and loop.first %}
+                            <div class="row g-2">
                         {% endif %}
                     {% if loop.index0 % 3 == 0 %}
-                        <div class="row g-3" style="">
+                        <div class="row g-2">
                     {% endif %}
-                <div class="col">
-                    {% if value.type in ('str', 'int','dict') %}
-                        <div>
-                            <input class="form-control" {% if value.required %} required {% endif %}
-                                   placeholder="Enter {{ c|capitalize }}" name="{{ c }}">
-                        </div>
+                    <div class="col">
+                        {% if value.type == 'str' %}
+                                <input class="form-control" name="{{ prefix }}{{ c }}" placeholder="Enter {{ value.title or c  }}" value="{{ value.val }}">
+                        {% elif value.type in ('country', 'locale', 'currency') %}{# v.type == 'model' #}
+                            <div
+                                 hx-ext="json-enc"
+                                 hx-post="/bff/select"
+                                 hx-vals='{
+                                    "module": "{{ value.module }}",
+                                    "model": "{{ value.model }}",
+                                    "prefix": "{{ prefix }}",
+                                    "name": "{{ value.model }}"
+                                 }'
+                                 hx-trigger="load"
+                            >
+                            <div class="invalid-feedback">Enter valid value</div>
+                            </div>
+                        {% elif value.type == 'model_id' %}{# v.type == 'model' #}
+                            <div
+                                 id="modal_create-{{ c }}"
+                                 hx-post="/bff/select"
+                                 hx-ext="json-enc"
+                                 hx-vals='{
+                                    "module": "{{ value.module }}",
+                                    "model": "{{ value.model }}",
+                                    "key": "{{ value.val }}",
+                                    "prefix": "{{ prefix }}",
+                                    "name": "{{ value.model }}_id"
+                                 }'
+                                 hx-trigger="load"
+                            >
+                            </div>
                         {% elif value.type == 'enum' %}
-                            <select class="form-select mb-3" aria-label="Default select example">
-                            {% for s in value.enums %}
-                                <option value="{{ s.value }}"> {{ s.name }} </option>
-                            {% endfor %}
-                            </select>
+                            <div>
+                                <select name="{{ prefix }}{{ c }}" class="form-select mb-3" aria-label="Default select example">
+                                {% for s in value.enums %}
+                                    <option value="{{ s.value }}"> {{ s.name }} </option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                        {% elif value.type == 'datetime'%}
+                            <div>
+                                <input class="form-control" type="text" name="{{ prefix }}{{ c }}"
+                                       required aria-required="true"
+                                       onfocus="(this.type='date')"
+                                       placeholder="{{ value.title or c }}" id="{{ c }}"
+                                       value="{{ request.query_params[key]}}">
+                            </div>
                         {% else %}
-                        <div
-                                class="row"
-                                hx-get="/bff/select"
-                                hx-vals='{"module": "{{ value.module }}","model": "{{ value.model }}",
-                                "prefix": "create-modal",
-                                "required": "{{ value.required }}"
-                             }'
-                                hx-trigger="load">
-                            <a href="#"
-                               class="btn btn-dark form-control disabled placeholder col-12 htmx-indicator text-start">Select</a>
+                            <input class="form-control" name="{{ c }}" placeholder="Enter {{ value.title or c  }}" value="{{ value.val }}">
+                        {% endif %}
+                    </div>
+                    {% if loop.index % 3 == 0 %}
                         </div>
                     {% endif %}
-                </div>
-                {% if loop.index % 3 == 0 %}
-                    </div>
-                {% endif %}
-                {% endfor %}
+            {% endfor %}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Create</button>
+                <button type="submit" class="btn btn-success">Create</button>
             </div>
         </form>
     </div>

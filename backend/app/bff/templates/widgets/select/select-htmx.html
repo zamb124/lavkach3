@@ -1,19 +1,19 @@
-{% set select_key  = (prefix or 'select') ~ '-' ~ model %}
+{% set select_key  = prefix ~ name %}
 <select
         id="{{ select_key }}"
-        name="{{ name or model }}"
-        class="form-select was-validated"
+        name="{{ select_key }}"
+        class="form-select valid-tooltip"
         data-choices data-choices-removeItem name="{{ select_key }}"
-        hx-get="/bff/select"
+        hx-post="/bff/select"
         {% if required %} required {% endif %}
         hx-include="next [name='search_terms']"
-        hx-vals='{"module": "{{ module }}","model":"{{ model }}", "field":"{{ field }}"}'
+        hx-vals='{"module": "{{ module }}","model":"{{ model }}"}'
         hx-trigger="search delay:0.5s"
 >
-        <option value="{{ key or ''}}">{{ value or 'Select ' ~ model|capitalize }}</option>
+        <option value="{{ value or ''}}">{{'Select ' ~ model|capitalize }}</option>
 
     {% for o in objects %}
-        <option value="{{ o.id or o.language or o.code }}" {% if value==o.id %} selected {% endif %}>{{ o.title or o.english_name or o.name }}</option>
+        <option value="{{ o.id or o.language or o.code }}" {% if value==o.id %} selected {% endif %}>{{ o.title or o.english_name or o.name or o.nickname }}</option>
     {% endfor %}
 </select>
 <script>
@@ -23,8 +23,3 @@
     var value = choices.getValue()
     console.log(value)
 </script>
-<style>
-    .btn.btn-default.dropdown-toggle.is-invalid {
-  border-color: #dc3545;
-}
-</style>

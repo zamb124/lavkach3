@@ -26,8 +26,12 @@ class TypeCountry(Country):
         elif isinstance(v, Country):
             return CountrySchema(**{
                 'code': v.code,
-                'name': v.name
+                'id': v.code,
+                'name': v.name,
+                'lsn': 0
             })
+        elif v is None:
+            return None
         raise TypeError("Type sqlalchemy_utils.types.country.Country or String")
 
     @classmethod
@@ -58,12 +62,16 @@ class TypeLocale(Locale):
         elif isinstance(v, Locale):
             return LocaleSchema(**{
                 'language': v.language,
-                'territory': 'RU',
+                'territory': v.territory,
+                'id': v.language,
                 'display_name': v.display_name,
                 'english_name': v.english_name,
-                'language_name': v.language_name
+                'language_name': v.language_name,
+                'lsn': 0
 
             })
+        elif v is None:
+            return None
         raise TypeError("Type babel.Locale or String")
 
     @classmethod
@@ -92,8 +100,12 @@ class TypeCurrency(Currency):
         elif isinstance(v, Currency):
             return CurrencySchema(**{
                 'code': v.code,
-                'name': v.name
+                'id': v.code,
+                'name': v.name,
+                'lsn': 0
             })
+        elif v is None:
+            return None
         raise TypeError("Type sqlalchemy_utils.types.country.Country or String")
 
     @classmethod

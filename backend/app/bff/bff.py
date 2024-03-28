@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import uuid
+from collections import defaultdict
 from typing import Annotated
 
 import aiohttp
@@ -10,16 +11,16 @@ from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from fastapi_htmx import htmx_init, htmx
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, UUID4
 from starlette.datastructures import QueryParams
 from starlette.responses import Response
 
 from app.bff.bff_config import config
 from app.bff.bff_service import BffService
+from app.bff.dff_helpers.filters_cleaner import clean_filter
 from app.bff.dff_helpers.htmx_decorator import s
 from app.bff.dff_helpers.schema_recognizer import get_columns
 from app.bff.template_spec import templates
-
 
 htmx_init(templates, file_extension='html')
 
@@ -94,36 +95,44 @@ async def refresh_token(request: Request, refresh_schema: RefreshTokenSchema):
     async with request.scope['env'].basic as a:
         return await a.refresh_token(refresh_schema)
 
-@index_router.get("/bff/select", response_class=HTMLResponse)
-@htmx(*s('widgets/select/select-htmx'))
-async def select(
-        request: Request,
-        module: str,
-        model: str,
-        key: str = None,
-        value: str = None,
-        prefix: str = None,
-        name: str = None,
-        required=False
+class SelectSchema(BaseModel):
+    module: str
+    model: str
+    prefix: str
+    name: str
+    value: str = None
+    required: str = False
+    title: str = None
+    search_terms: str = ''
 
-     ):
+    @field_validator('required')
+    @classmethod
+    def name_must_contain_space(cls, v: str) -> str:
+        if ' ' not in v:
+            raise ValueError('must contain a space')
+        return v.title()
+@index_router.post("/bff/select", response_class=HTMLResponse)
+@htmx(*s('widgets/select/select-htmx'))
+async def select(request: Request, selschema: SelectSchema):
     """
      Универсальный запрос, который отдает список любого обьекта по его модулю и модели
     """
-    field = request.query_params.get('field') or 'search'
-    v = request.query_params.get('search_terms')
-    params = QueryParams({field: v if v else ''})
-    async with getattr(request.scope['env'], module) as a:
-        data = await a.list(params=params, model=model)
+    v = selschema.search_terms
+    params = QueryParams({'search': v if v else ''})
+    async with getattr(request.scope['env'], selschema.module) as a:
+        data = await a.list(params=params, model=selschema.model)
+    if selschema.value:
+        for i in data['data']:
+            if selschema.value == i['id']:
+                selschema.title = i.get('title') or i.get('code') or i.get('english_language') or i.get('nickname')
     return {
-        'name': name or model,
-        'module': module,
-        'model': model,
-        'prefix': prefix,
-        'required': bool(required),
-        'key': key,
-        'value': value,
-        'field': field,
+        'name': selschema.name,
+        'module': selschema.module,
+        'model': selschema.model,
+        'prefix': selschema.prefix,
+        'required': selschema.required,
+        'value': selschema.value,
+        'title': selschema.title,
         'objects': data if type(data) is list else data.get('data')
     }
 
@@ -131,17 +140,19 @@ async def select(
 
 
 
+
 @index_router.get("/base/table", response_class=HTMLResponse)
 @htmx(*s('widgets/table/table-htmx'))
-async def table(request: Request, module: str, model: str):
+async def table(request: Request, module: str, model: str, filter='filter:'):
     """
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
-    from collections import defaultdict
+
     missing_fields = defaultdict(list)
     schema = config.services[module]['schema'][model]['base']
     async with getattr(request.scope['env'], module) as a:
-        data = await a.list(params=request.query_params, model=model)
+        qp = clean_filter(request.query_params, filter)
+        data = await a.list(params=qp, model=model)
     columns, table = get_columns(module, model, schema, data['data'])
     for line in table:
         """Достаем все релейтед обьекты"""
@@ -186,7 +197,7 @@ async def table(request: Request, module: str, model: str):
 
 
 @index_router.get("/base/modal-get", response_class=HTMLResponse)
-@htmx(*s('widgets/modal-crud/modal-edit-htmx'))
+@htmx(*s('widgets/modal-crud/modal-update-htmx'))
 async def modal_update_get(request: Request, module: str, model: str, id: uuid.UUID):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
@@ -204,27 +215,33 @@ async def modal_update_get(request: Request, module: str, model: str, id: uuid.U
         'id': id
     }
 
+class FormUpdateSchema(BaseModel):
+    modal_update_module: str
+    modal_update_model: str
+    modal_update_id: UUID4
+
+    class Config:
+        extra = 'allow'
 
 @index_router.post("/base/modal-post", response_class=HTMLResponse)
 @htmx(*s('components/message'))
-async def modal_update_post(request: Request, form_module: str = Form(), form_model: str = Form(),
-                            form_id: str = Form()):
+async def modal_update_post(request: Request, schema: FormUpdateSchema):
     """
      Принимает форму на обновление модели
     """
     columns = {}
-    form_data = await request.form()
-    data = jsonable_encoder(form_data)
-    schema = config.services[form_module]['schema'][form_model]['update']
-    checked_form = schema(**data)
-    async with getattr(request.scope['env'], form_module) as a:
-        data = await a.update(id=form_id, json=checked_form.model_dump(mode='json'), model=form_model)
+    form_data = await request.json()
+    data = clean_filter(form_data, 'modal_update:')
+    module_schema = config.services[schema.modal_update_module]['schema'][schema.modal_update_model]['update']
+    checked_form = module_schema(**data)
+    async with getattr(request.scope['env'], schema.modal_update_module) as a:
+        data = await a.update(id=schema.modal_update_id, json=checked_form.model_dump(mode='json'), model=schema.modal_update_model)
     return {
         'columns': columns,
-        'module': form_module,
-        'model': form_model,
+        'module': schema.modal_update_module,
+        'model': schema.modal_update_model,
         'data': data,
-        'message': f'{form_model.capitalize()} is updated'
+        'message': f'{schema.modal_update_model.capitalize()} is updated'
     }
 
 
@@ -239,7 +256,7 @@ async def modal_delete_get(request: Request, module: str, model: str, id: uuid.U
     return {
         'module': module,
         'model': model,
-        'data': data
+        'data': data,
     }
 
 
@@ -254,7 +271,8 @@ async def modal_delete_delete(request: Request, module: str, model: str, id: uui
     return {
         'module': module,
         'model': model,
-        'background': 'linear-gradient(to right, #00b09b, #96c93d)',
+        'background': 'linear-gradient(to right, #e94e1d, #e94e1d)',
+        'message': f'{model.capitalize()} is deleted'
     }
 
 
@@ -270,33 +288,34 @@ async def modal_create_get(request: Request, module: str, model: str, id: str=No
 
     schema = config.services[module]['schema'][model]['create']
     columns, _ = get_columns(module, model, schema)
-    if id:
-        columns.update({'id': {'val': id}}) # Если переходы идут от других модалок
     return {
         'columns': columns,
         'module': module,
         'model': model,
+        'id': id
     }
 
+class FormCreateSchema(BaseModel):
+    modal_create_module: str
+    modal_create_model: str
 
 @index_router.post("/base/modal-create", response_class=HTMLResponse)
 @htmx(*s('components/message'))
-async def modal_create_post(request: Request, form_module: str = Form(), form_model: str = Form()):
+async def modal_create_post(request: Request, schema: FormCreateSchema):
     """
      Принимает форму создание
     """
-    import json
     columns = {}
-    form_data = await request.form()
-    data = jsonable_encoder(form_data)
-    schema = config.services[form_module]['schema'][form_model]['create']
-    checked_form = schema(**data)
-    async with getattr(request.scope['env'], form_module) as a:
-        data = await a.create(json=checked_form.model_dump(mode='json'), model=form_model)
+    form_data = await request.json()
+    data = clean_filter(form_data, 'modal_create:')
+    create_schema = config.services[schema.modal_create_module]['schema'][schema.modal_create_model]['create']
+    checked_form = create_schema(**data)
+    async with getattr(request.scope['env'], schema.modal_create_module) as a:
+        data = await a.create(json=checked_form.model_dump(mode='json'), model=schema.modal_create_model)
     return {
         'columns': columns,
-        'module': form_module,
-        'model': form_model,
+        'module': schema.modal_create_module,
+        'model': schema.modal_create_model,
         'data': data,
         'message': f'{data.get("title")} is Created'
     }
