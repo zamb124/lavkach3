@@ -3,7 +3,8 @@ import uuid
 from enum import Enum
 from typing import Optional
 import datetime
-from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint, ARRAY
+from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint, ARRAY, \
+    String
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from core.db import Base
@@ -127,14 +128,14 @@ class Order(Base, AllMixin):
     lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
     origin_type: Mapped[Optional[str]] = mapped_column(index=True)
     origin_number: Mapped[Optional[str]] = mapped_column(index=True)
-    planned_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
-    actual_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    planned_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    actual_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     created_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
     edited_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     users_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
     description: Mapped[Optional[str]]
-    status: Mapped['OrderStatus'] = OrderStatus.DRAFT
+    status: Mapped['OrderStatus'] = mapped_column(default=OrderStatus.DRAFT)
     move_list_rel: Mapped[Optional[list["Move"]]] = relationship(back_populates="order_rel", lazy="selectin")
 
 

@@ -1,8 +1,10 @@
 {% set modal_id = 'modal-' + uuid().hex %}
 <div class="card">
     <div class="card-body">
-        <div class="table-responsive" style="width: auto; min-height: 400px">
-            <table class="table table-hover table-striped" id="table">
+        <div class="table-responsive " style="width: auto; min-height: 400px"  data-show-columns="true">
+            <table class="table table-hover table-striped" id="table"
+                   data-show-columns="true"
+            >
                 <thead class="text-muted table-light">
                 <tr class="text-uppercase fs-13">
                     <th scope="col">
@@ -12,14 +14,14 @@
                         </div>
                     </th>
                     {% for col, val in columns.items() if val.widget.table  %}
-                            <th>{{ title or col|capitalize }}</th>
+                            <th data-bs-visible="false" data-bs-sortable="true" class="{{ col }}">{{ val.title or col|capitalize }}</th>
                     {% endfor %}
                     <th>Active</th>
                 </tr>
                 </thead>
             <div class="rows">
                 {% for o in objects %}
-                    <tr id="td-{{o.id.val}}" >
+                    <tr id="td-{{o.id.val}}" class="mb-0 fw-semibold text-muted">
                         <th scope="row">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="checkAll" value="">
@@ -27,17 +29,17 @@
                         </th>
                         {% for c, value in o.items() if value.widget.table %}
                                 {% if value.type == 'str' %}
-                                    <td class="{{ c }}">{{ value.val }}</td>
+                                    <td class="{{ c }}">{{ value.val if value.val else '' }}</td>
                                 {% elif value.type == 'datetime' %}
                                     <td class="{{ c }}">{{ datetime.fromisoformat(value.val).strftime('%Y-%m-%d') if value.val  }}<small class="text-muted"> {{datetime.fromisoformat(value.val).strftime('%H:%M') if value.val }}</small>
                                 {% elif value.type in ('locale', 'currency', 'country')  %}
                                     <td class="{{ c }}"><a href="#" hx-get="/base/table/row?module={{ value.module }}&model={{ c }}">{{ value.val.title or value.val.code or value.val.english_name}}</a></td>
                                 {% elif value.type == 'model_rel'  %}
-                                    <td class="{{ c }}"><a href="#" data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ value.module }}&model={{ value.model }}&id={{ value.val.id }}">{{ value.val.title or value.val.nickname}}</a></td>
+                                    <td class="{{ c }}"><i class="ri-links-fill fs-6"></i><a class="text-danger py-3" href="#" data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ value.module }}&model={{ value.model }}&id={{ value.val.id }}">{{ value.val.title or value.val.nickname}}</a></td>
                                 {% elif value.type == 'model_id' %}
-                                    <td class="{{ c }}">{{ value.val }}</td>
+                                    <td class="{{ c }}">{{ value.val if value.val else '' }}</td>
                                 {% else %}
-                                    <td class="{{ c }}">{{ value.val }}</td>
+                                    <td class="{{ c }}">{{ value.val if value.val else ''}}</td>
                                 {% endif %}
                         {% endfor %}
                         <td>
@@ -48,7 +50,7 @@
                                         <i class="ri-eye-fill fs-16"></i></a>
                                 </li>
                                 <li class="list-inline-item edit" title="Edit">
-                                    <a href="#" data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-get?module={{ module }}&model={{ model }}&id={{ o.id.val }}"
+                                    <a href="#" data-bs-toggle="modal" hx-include="this" hx-trigger="click"  data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-get?module={{ module }}&model={{ model }}&id={{ o.id.val }}"
                                        class="text-primary d-inline-block edit-item-btn"> <i
                                             class="ri-pencil-fill fs-16"></i></a>
                                 </li>
@@ -72,7 +74,7 @@
     </div>
 </div>
 
-<div id="{{modal_id}}" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
+<div id="{{modal_id}}" class="modal modal-blur fade" data-bs-backdrop="false" style="display: none" aria-hidden="false" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content"></div>
     </div>

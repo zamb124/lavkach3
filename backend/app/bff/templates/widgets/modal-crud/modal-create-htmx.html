@@ -13,7 +13,7 @@
                     </span>
                     <span>
                             <a href="#" class="text-primary" hx-trigger="click" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-target="#{{ modal_id }}" hx-swap="outerHTML"
                                hx-get="/base/modal-get?module={{ module }}&model={{ model }}&id={{ id }}"><i
                                     class="ri-pencil-fill fs-3"></i></a>
                         </span>
@@ -42,8 +42,8 @@
                         style="width:150px;height:150px">
                 </lord-icon>
                 {% set count = 0 %}
-
-                {%  for c, value in columns.items() %}
+        <div class="row g-2">
+            {%  for c, value in columns.items() %}
                     {%  if loop.length % 2 != 0 and loop.first %}
                             <div class="row g-2">
                         {% endif %}
@@ -52,7 +52,13 @@
                     {% endif %}
                     <div class="col">
                         {% if value.type == 'str' %}
-                                <input class="form-control" name="{{ prefix }}{{ c }}" placeholder="Enter {{ value.title or c  }}" value="{{ value.val }}">
+                                <input
+                                        class="form-control"
+                                        {% if value.required %}required{% endif %}
+                                        name="{{ prefix }}{{ c }}"
+                                        placeholder="Enter {{ value.title or c  }}"
+                                        value="{{ value.val if value.val else "" }}"
+                                >
                         {% elif value.type in ('country', 'locale', 'currency') %}{# v.type == 'model' #}
                             <div
                                  hx-ext="json-enc"
@@ -60,6 +66,7 @@
                                  hx-vals='{
                                     "module": "{{ value.module }}",
                                     "model": "{{ value.model }}",
+                                    "value": "{{ value.val.id if value.val else None }}",
                                     "prefix": "{{ prefix }}",
                                     "name": "{{ value.model }}"
                                  }'
@@ -69,34 +76,39 @@
                             </div>
                         {% elif value.type == 'model_id' %}{# v.type == 'model' #}
                             <div
-                                 id="modal_create-{{ c }}"
+                                 id="modal_edit_{{ c }}"
                                  hx-post="/bff/select"
                                  hx-ext="json-enc"
                                  hx-vals='{
                                     "module": "{{ value.module }}",
                                     "model": "{{ value.model }}",
-                                    "key": "{{ value.val }}",
+                                    "value": "{{value.val if value.val else None}}",
                                     "prefix": "{{ prefix }}",
-                                    "name": "{{ value.model }}_id"
+                                    "name": "{{ value.model }}_id",
+                                    "required": "{{ value.required }}"
                                  }'
                                  hx-trigger="load"
                             >
                             </div>
                         {% elif value.type == 'enum' %}
                             <div>
-                                <select name="{{ prefix }}{{ c }}" class="form-select mb-3" aria-label="Default select example">
-                                {% for s in value.enums %}
-                                    <option value="{{ s.value }}"> {{ s.name }} </option>
-                                {% endfor %}
+                                <select
+                                        name="{{ prefix }}{{ c }}"
+                                        class="form-select mb-3 form-control"
+                                        aria-label="Default select example"
+                                >
+                                    {% for s in value.enums %}
+                                        <option value="{{ s.value }}"> {{ s.name }} </option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         {% elif value.type == 'datetime'%}
                             <div>
                                 <input class="form-control" type="text" name="{{ prefix }}{{ c }}"
-                                       required aria-required="true"
+                                       {% if value.required %} aria-required="true" {% endif %}
                                        onfocus="(this.type='date')"
                                        placeholder="{{ value.title or c }}" id="{{ c }}"
-                                       value="{{ request.query_params[key]}}">
+                                       value="{{datetime.fromisoformat(value.val).strftime('%Y-%m-%d') if value.val else ''}}">
                             </div>
                         {% else %}
                             <input class="form-control" name="{{ c }}" placeholder="Enter {{ value.title or c  }}" value="{{ value.val }}">
@@ -106,11 +118,11 @@
                         </div>
                     {% endif %}
             {% endfor %}
-            </div>
+        </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-success">Create</button>
-            </div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+        <button id="submit-{{ modal_id }}" type="submit" class="btn btn-success" >Save</button>
+    </div>
         </form>
     </div>
 </div>

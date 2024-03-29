@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import uuid
 from collections import defaultdict
-from typing import Annotated
+from typing import Annotated, Optional, Any
 
 import aiohttp
 from fastapi import APIRouter
@@ -101,16 +101,24 @@ class SelectSchema(BaseModel):
     prefix: str
     name: str
     value: str = None
-    required: str = False
+    required: bool = False
     title: str = None
-    search_terms: str = ''
+    search_terms: Any = None
 
-    @field_validator('required')
+    @field_validator('value')
     @classmethod
-    def name_must_contain_space(cls, v: str) -> str:
-        if ' ' not in v:
-            raise ValueError('must contain a space')
-        return v.title()
+    def check_none(cls, v: Any):
+        if v == 'None':
+            return None
+        return v
+
+    @field_validator('required', 'value')
+    @classmethod
+    def check_none(cls, v: Any):
+        if v == 'None':
+            return None
+        return v
+
 @index_router.post("/bff/select", response_class=HTMLResponse)
 @htmx(*s('widgets/select/select-htmx'))
 async def select(request: Request, selschema: SelectSchema):
