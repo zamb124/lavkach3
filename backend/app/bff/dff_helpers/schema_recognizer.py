@@ -413,7 +413,9 @@ class HtmxConstructor:
         if not self.data:
             async with getattr(self.request.scope['env'], self.module) as a:
                 self.data = await a.list(params=self.params, model=self.model)
-            self._check_data(self.data)
+
+        if not self.data.get('data'):
+            return [], 0
         lines = []
         htmx_line_temp = header.model_dump()
         for row in self.data['data']:

@@ -33,7 +33,7 @@
                                     {% elif field.type == 'datetime' %}
                                         <td class="{{ field.field_name }}">{{ field.val.strftime('%Y-%m-%d') if field.val  }}<small class="text-muted"> {{field.val.strftime('%H:%M') if field.val }}</small>
                                     {% elif field.type in ('locale', 'currency', 'country')  %}
-                                        <td class="{{ field.field_name }}"><a href="#" hx-get="/base/table/row?module={{ field.module }}&model={{ field.model }}">{{ field.title or field.val.code or field.val.english_name}}</a></td>
+                                        <td class="{{ field.field_name }}"><a href="#" hx-get="/base/table/row?module={{ field.module }}&model={{ field.model }}">{{ field.val.code or field.val.english_name}}</a></td>
                                     {% elif field.type == 'model_rel'  %}
                                         <td class="{{ field.field_name }}"><i class="ri-links-fill fs-6"></i><a class="text-danger py-3" href="#" data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ field.module }}&model={{ field.model }}&id={{ field.val.id }}">{{ field.val.title or field.val.nickname}}</a></td>
                                     {% elif field.type == 'model_id' %}

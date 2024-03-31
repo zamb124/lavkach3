@@ -261,7 +261,7 @@ async def table(request: Request, schema: TableSchema):
     qp = request.query_params
     if form_data.get('prefix'):
         data = clean_filter(form_data, form_data['prefix'])
-        qp = {i:v for i, v in data.items if v}
+        qp = {i:v for i, v in data.items() if v}
     htmx_orm = HtmxConstructor(request, params=qp, module=schema.module, model=schema.model)
     await htmx_orm.get_table()
     return {'model': htmx_orm}
