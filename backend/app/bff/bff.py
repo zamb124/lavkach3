@@ -1,26 +1,23 @@
 import asyncio
 import datetime
 import uuid
-from collections import defaultdict
 from typing import Annotated, Optional, Any
 
 import aiohttp
 from fastapi import APIRouter
 from fastapi import Form
 from fastapi import Request
-from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse
 from fastapi_htmx import htmx_init, htmx
 from pydantic import BaseModel, field_validator, UUID4
 from starlette.datastructures import QueryParams
-from starlette.exceptions import HTTPException
 from starlette.responses import Response
 
 from app.bff.bff_config import config
 from app.bff.bff_service import BffService
 from app.bff.dff_helpers.filters_cleaner import clean_filter
 from app.bff.dff_helpers.htmx_decorator import s
-from app.bff.dff_helpers.schema_recognizer import HtmxTable, HtmxField, HtmxConstructor
+from app.bff.dff_helpers.schema_recognizer import HtmxConstructor
 from app.bff.template_spec import templates
 
 htmx_init(templates, file_extension='html')
@@ -88,13 +85,17 @@ async def login(
             data = await bresp.json()
     return {'token': data['token'], 'refresh_token': data['refresh_token']}
 
+
 class RefreshTokenSchema(BaseModel):
     token: str
     refresh_token: str
-@index_router.post("/basic/user/refresh", responses={"404": {"model": ExceptionResponseSchema}},)
+
+
+@index_router.post("/basic/user/refresh", responses={"404": {"model": ExceptionResponseSchema}}, )
 async def refresh_token(request: Request, refresh_schema: RefreshTokenSchema):
     async with request.scope['env'].basic as a:
         return await a.refresh_token(refresh_schema)
+
 
 class SelectSchema(BaseModel):
     module: str
@@ -119,6 +120,7 @@ class SelectSchema(BaseModel):
         if v == 'None':
             return None
         return v
+
 
 @index_router.post("/bff/select", response_class=HTMLResponse)
 @htmx(*s('widgets/select/select-htmx'))
@@ -145,9 +147,12 @@ async def select(request: Request, selschema: SelectSchema):
         'objects': data if type(data) is list else data.get('data')
     }
 
+
 class FilterSchema(BaseModel):
     module: str
     model: str
+
+
 @index_router.post("/bff/filter", response_class=HTMLResponse)
 @htmx(*s('widgets/filter/filter-htmx'))
 async def filter(request: Request, filschema: FilterSchema):
@@ -177,6 +182,7 @@ async def filter(request: Request, filschema: FilterSchema):
         'objects': data if type(data) is list else data.get('data')
     }
 
+
 class MultiSelectSchema(BaseModel):
     module: str
     model: str
@@ -191,9 +197,11 @@ class MultiSelectSchema(BaseModel):
     @classmethod
     def check_none(cls, v: Any):
         try:
-            return eval(v)
+            return list(set(eval(v)))
         except Exception as ex:
             pass
+
+
 @index_router.post("/bff/multiselect", response_class=HTMLResponse)
 @htmx(*s('widgets/select/multiselect-htmx'))
 async def multiselect(request: Request, selschema: MultiSelectSchema):
@@ -201,13 +209,24 @@ async def multiselect(request: Request, selschema: MultiSelectSchema):
      Универсальный запрос, который отдает список любого обьекта по его модулю и модели
     """
     v = max(selschema.search_terms) if selschema.search_terms else []
+    form_data = await request.json()
+    clean_data = clean_filter(form_data, selschema.prefix)
+    values = clean_data.get(selschema.name)
     params = QueryParams({'search': v if v else '', 'size': 100})
     async with getattr(request.scope['env'], selschema.module) as a:
         data = await a.list(params=params, model=selschema.model)
-    if selschema.value:
-        for i in data['data']:
-            if selschema.value == i['id']:
-                selschema.title = i.get('title') or i.get('code') or i.get('english_language') or i.get('nickname')
+        if values:
+            _ids_value = []
+            data_vals = [i['id'] for i in data['data']]
+            for v in values:
+                if v not in data_vals:
+                    _ids_value.append(v)
+            if _ids_value:
+                v_qp = ','.join(_ids_value)
+                v_params = QueryParams({'id__in': v_qp})
+                value_data = await a.list(params=v_params, model=selschema.model)
+                data['data'] += value_data['data']
+            selschema.value = values
     return {
         'name': selschema.name,
         'module': selschema.module,
@@ -218,10 +237,12 @@ async def multiselect(request: Request, selschema: MultiSelectSchema):
         'title': selschema.title,
         'objects': data if type(data) is list else data.get('data')
     }
+
+
 class BadgesSchema(BaseModel):
     model: str
     module: str
-    value: str|dict = None
+    value: str | dict = None
 
     @field_validator('value')
     @classmethod
@@ -232,6 +253,8 @@ class BadgesSchema(BaseModel):
             except Exception as ex:
                 pass
         return None
+
+
 @index_router.post("/bff/badges", response_class=HTMLResponse)
 @htmx(*s('widgets/select/badge_ids-htmx'))
 async def badge_ids_view(request: Request, badschema: BadgesSchema):
@@ -247,10 +270,13 @@ async def badge_ids_view(request: Request, badschema: BadgesSchema):
 
     return {'model': htmx_con}
 
+
 class TableSchema(BaseModel):
     module: str
     model: str
     cursor: Optional[int] = 0
+
+
 @index_router.post("/base/table", response_class=HTMLResponse)
 @htmx(*s('widgets/table/table-htmx'))
 async def table(request: Request, schema: TableSchema):
@@ -261,7 +287,7 @@ async def table(request: Request, schema: TableSchema):
     qp = request.query_params
     if form_data.get('prefix'):
         data = clean_filter(form_data, form_data['prefix'])
-        qp = {i:v for i, v in data.items() if v}
+        qp = {i: v for i, v in data.items() if v}
     htmx_orm = HtmxConstructor(request, params=qp, module=schema.module, model=schema.model)
     await htmx_orm.get_table()
     return {'model': htmx_orm}
@@ -278,6 +304,7 @@ async def modal_update_get(request: Request, module: str, model: str, id: uuid.U
 
     return {'model': htmx_con}
 
+
 class FormUpdateSchema(BaseModel):
     modal_update_module: str
     modal_update_model: str
@@ -285,6 +312,7 @@ class FormUpdateSchema(BaseModel):
 
     class Config:
         extra = 'allow'
+
 
 @index_router.post("/base/modal-post", response_class=HTMLResponse)
 @htmx(*s('components/message'))
@@ -297,7 +325,8 @@ async def modal_update_post(request: Request, schema: FormUpdateSchema):
     module_schema = config.services[schema.modal_update_module]['schema'][schema.modal_update_model]['update']
     checked_form = module_schema(**data)
     async with getattr(request.scope['env'], schema.modal_update_module) as a:
-        await a.update(id=schema.modal_update_id, json=checked_form.model_dump(mode='json'), model=schema.modal_update_model)
+        await a.update(id=schema.modal_update_id, json=checked_form.model_dump(mode='json'),
+                       model=schema.modal_update_model)
     return {
         'message': f'{schema.modal_update_model.capitalize()} is updated'
     }
@@ -336,7 +365,7 @@ async def modal_delete_delete(request: Request, module: str, model: str, id: uui
 
 @index_router.get("/base/modal-create", response_class=HTMLResponse)
 @htmx(*s('widgets/modal-crud/modal-create-htmx'))
-async def modal_create_get(request: Request, module: str, model: str, id: str=None):
+async def modal_create_get(request: Request, module: str, model: str, id: str = None):
     """
      Универсальный запрос, который отдает модалку на подтвержлении удаления
     """
@@ -349,9 +378,11 @@ async def modal_create_get(request: Request, module: str, model: str, id: str=No
 
     return {'model': htmx_con}
 
+
 class FormCreateSchema(BaseModel):
     modal_create_module: str
     modal_create_model: str
+
 
 @index_router.post("/base/modal-create", response_class=HTMLResponse)
 @htmx(*s('components/message'))
@@ -373,6 +404,7 @@ async def modal_create_post(request: Request, schema: FormCreateSchema):
         'data': data,
         'message': f'{data.get("title")} is Created'
     }
+
 
 @index_router.get("/base/modal-view", response_class=HTMLResponse)
 @htmx(*s('widgets/modal-crud/modal-view-htmx'))
@@ -400,6 +432,7 @@ async def card(request: Request, module: str, model: str, id: str) -> dict:
         'updated_at': datetime.datetime.fromisoformat(data['created_at']),
     }
 
+
 @index_router.get("/base/dropdown-ids", response_class=HTMLResponse)
 @htmx(*s('widgets/widgets/dropdown-ids-named-htmx'))
 async def dropdown_ids(request: Request, module: str, model: str, id: str, itemlink: str, is_named=False) -> dict:
@@ -407,4 +440,4 @@ async def dropdown_ids(request: Request, module: str, model: str, id: str, iteml
      Виджет на вход получает модуль-модель-ид- и обратную ссылку если нужно, если нет будет /module/model/{id}
      _named означает, что так же будет отдат name для отрисовки на тайтле кнопки
     """
-    return await BffService.dropdown_ids(request,module, model, id, itemlink, is_named)
+    return await BffService.dropdown_ids(request, module, model, id, itemlink, is_named)

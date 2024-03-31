@@ -101,6 +101,7 @@
                                  id="modal_edit_{{ field.field_name }}"
                                  hx-post="/bff/multiselect"
                                  hx-ext="json-enc"
+                                 hx-include="this"
                                  hx-vals='{
                                     "module": "{{ field.module }}",
                                     "model": "{{ field.model }}",

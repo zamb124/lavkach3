@@ -5,7 +5,9 @@
         name="{{ select_key }}"
         class="form-control"
         aria-required="true"
-        data-choices data-choices-removeItem multiple
+        data-choices
+        data-choices-removeItem
+        multiple
         hx-post="/bff/multiselect"
         {% if required %} required {% endif %}
         hx-target='closest .choices'
@@ -13,7 +15,6 @@
         hx-vals='{"module": "{{ module }}","model":"{{ model }}"}'
         hx-trigger="search delay:0.5s"
 >
-
         <option value="">{{'Select ' ~ model|capitalize }}</option>
 
     {% for o in objects %}
