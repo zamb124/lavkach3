@@ -12,5 +12,5 @@ store_router = APIRouter()
 @store_router.get("", response_class=HTMLResponse)
 @htmx(*s('widgets/list'))
 async def store(request: Request):
-    model = HtmxConstructor(request, 'basic', 'company')
+    model = HtmxConstructor(request, 'basic', 'store')
     return {'model': model}

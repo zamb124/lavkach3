@@ -367,7 +367,12 @@ class HtmxConstructor:
 
 
 
-    async def get_table(self, params: QueryParams | dict = None, exclude: list = None, join_related: str = True, join_field : list = None) -> HtmxTable:
+    async def get_table(self,
+                        params: QueryParams | dict = None,
+                        exclude: list = None,
+                        join_related: str = True,
+                        join_field : list = None
+                        ) -> HtmxTable:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """

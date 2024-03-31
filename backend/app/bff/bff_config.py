@@ -16,7 +16,8 @@ from app.basic.user.schemas import UserScheme, UserCreateScheme, UserUpdateSchem
 from app.basic.user.schemas.role_schemas import RoleFilter, RoleUpdateScheme, RoleCreateScheme
 from app.bff.adapters.basic_adapter import BasicAdapter
 from app.bff.adapters.inventory_adapter import InventoryAdapter
-from app.inventory.location.schemas import LocationScheme, LocationCreateScheme, LocationUpdateScheme, LocationFilter
+from app.inventory.location.schemas import LocationScheme, LocationCreateScheme, LocationUpdateScheme, LocationFilter, \
+    LocationTypeScheme, LocationTypeFilter, LocationTypeUpdateScheme, LocationTypeCreateScheme
 from app.inventory.order.schemas import OrderUpdateScheme, OrderCreateScheme, OrderScheme, OrderFilter, OrderTypeFilter, \
     OrderTypeUpdateScheme, OrderTypeCreateScheme, OrderTypeScheme
 from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme, MoveFilter
@@ -144,6 +145,12 @@ class Config(CoreConfig):
                     'create': LocationCreateScheme,
                     'update': LocationUpdateScheme,
                     'filter': LocationFilter,
+                },
+                'location_type': {
+                    'base': LocationTypeScheme,
+                    'create': LocationTypeCreateScheme,
+                    'update': LocationTypeUpdateScheme,
+                    'filter': LocationTypeFilter,
                 },
                 # 'suggest': {
                 #     'base': SuggestScheme,

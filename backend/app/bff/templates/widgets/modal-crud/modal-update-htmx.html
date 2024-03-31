@@ -77,7 +77,7 @@
                                  }'
                                  hx-trigger="load"
                             >
-                            <div class="invalid-feedback">Enter valid value</div>
+                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
                             </div>
                         {% elif field.type == 'model_id' %}{# v.type == 'model' #}
                             <div
@@ -94,6 +94,7 @@
                                  }'
                                  hx-trigger="load"
                             >
+                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
                             </div>
                         {% elif field.type == 'ids' %}{# v.type == 'model' #}
                             <div
@@ -105,11 +106,12 @@
                                     "model": "{{ field.model }}",
                                     "value": "{{field.val if field.val else None}}",
                                     "prefix": "{{ model.update.prefix }}",
-                                    "name": "{{ field.field_name }}_id",
+                                    "name": "{{ field.field_name }}",
                                     "required": "{{ field.required }}"
                                  }'
                                  hx-trigger="load"
                             >
+                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
                             </div>
                         {% elif field.type == 'enum' %}
                             <div>
@@ -132,14 +134,21 @@
                                        value="{{field.val.strftime('%Y-%m-%d') if field.val else ''}}">
                             </div>
                         {% elif field.type =='number' %}
-                            <input class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title }}" value="{{ field.val }}">
+                            <input type="number" class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title }}" value="{{ field.val }}">
                         {% elif field.type =='bool' %}
                             <div class="form-check form-switch mb-3">
                                 <label class="form-check-label" for="{{ model.update.prefix }}{{ field.field_name }}">{{ field.title}}</label>
-                                <input class="form-check-input" type="checkbox" role="switch" id="{{ model.update.prefix }}{{ field.field_name }}" checked="{{ field.val}}">
+                                <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        role="switch"
+                                        id="{{ model.update.prefix }}{{ field.field_name }}"
+                                        name="{{ model.update.prefix }}{{ field.field_name }}"
+                                        {% if field.val == True %}checked {% endif %}
+                                >
                             </div>
                         {% else %}
-                            <input type="number" class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title or c  }}" value="{{ field.val }}">
+                            <input  class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title or c  }}" value="{{ field.val }}">
                         {% endif %}
                     </div>
                     {% if loop.index % 3 == 0 %}

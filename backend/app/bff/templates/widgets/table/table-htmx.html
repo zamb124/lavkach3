@@ -63,7 +63,19 @@
                                 </ul>
                             </td>
                         </tr>
-                    {% if loop.last %} <div  hx-include="#filter" hx-get="/base/table?module={{ model.module }}&model={{ model.model }}&cursor={{ line.lsn }}" hx-trigger="revealed" hx-swap="afterend" hx-select="#rows"></div>{% endif %}
+                    {% if loop.last %}
+                        <div
+                            hx-include="#filter"
+                            hx-post="/base/table"
+                            hx-ext="json-enc"
+                            hx-trigger="revealed" hx-swap="afterend" hx-select="#rows"
+                                 hx-vals='{
+                                    "module": "{{ model.module }}",
+                                    "model": "{{ model.model }}",
+                                    "cursor": "{{ line.lsn }}"
+                                 }'
+                        ></div>
+                    {% endif %}
                 {% endfor %}
 
             </div>

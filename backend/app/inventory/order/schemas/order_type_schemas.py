@@ -36,7 +36,8 @@ class OrderTypeBaseScheme(BaseModel):
     barcode: str = Field(title='Barcode', table=True, form=True)
     reservation_method: ReservationMethod = Field(default=ReservationMethod.AT_CONFIRM, title='Reservation method', table=True, form=True)
     strategy: PutawayStrategy = Field(default=PutawayStrategy.FEFO, title='Strategy', form=True)
-
+    class Config:
+        extra = 'allow'
 class OrderTypeUpdateScheme(OrderTypeBaseScheme):
     ...
 

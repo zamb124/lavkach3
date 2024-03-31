@@ -247,14 +247,22 @@ async def badge_ids_view(request: Request, badschema: BadgesSchema):
 
     return {'model': htmx_con}
 
-@index_router.get("/base/table", response_class=HTMLResponse)
+class TableSchema(BaseModel):
+    module: str
+    model: str
+    cursor: Optional[int] = 0
+@index_router.post("/base/table", response_class=HTMLResponse)
 @htmx(*s('widgets/table/table-htmx'))
-async def table(request: Request, module: str, model: str, filter='filter:'):
+async def table(request: Request, schema: TableSchema):
     """
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
-
-    htmx_orm = HtmxConstructor(request, module, model)
+    form_data = await request.json()
+    qp = request.query_params
+    if form_data.get('prefix'):
+        data = clean_filter(form_data, form_data['prefix'])
+        qp = {i:v for i, v in data.items if v}
+    htmx_orm = HtmxConstructor(request, params=qp, module=schema.module, model=schema.model)
     await htmx_orm.get_table()
     return {'model': htmx_orm}
 

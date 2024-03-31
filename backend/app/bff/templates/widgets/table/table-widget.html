@@ -1,5 +1,10 @@
 <div id="table"
-     hx-get="/base/table?module={{ model.module if model.module else request.query_params.module }}&model={{ model.model if model.model else request.query_params.modele }}"
+     hx-post="/base/table"
+     hx-ext="json-enc"
+     hx-vals='{
+        "module": "{{ model.module }}",
+        "model": "{{ model.model }}"
+     }'
      hx-trigger="change from:#filter delay:500ms, load, update delay:500ms"
      hx-include="{% if filter %}{{ filter }}{% else %}#filter{% endif %}"
 >
