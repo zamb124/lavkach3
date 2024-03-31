@@ -2,28 +2,31 @@
 {% set select_id = 'select-' + uuid().hex %}
 <select
         id="{{ select_id }}"
-        name="{{ select_key }}"
+        name="{{ model.select.prefix }}{{ model.select.field.field_name }}"
         class="form-control"
-        aria-required="true"
         data-choices
         data-choices-removeItem
         multiple
         hx-post="/bff/multiselect"
-        {% if required %} required {% endif %}
+        {% if model.select.field.required %} required {% endif %}
         hx-target='closest .choices'
         hx-include="[name='search_terms']"
-        hx-vals='{"module": "{{ module }}","model":"{{ model }}"}'
+        hx-vals='{
+            "module": "{{ model.select.field.module }}",
+            "model":"{{ model.select.field.model }}",
+            "select_in": "select_in"
+        }'
         hx-trigger="search delay:0.5s"
 >
-        <option value="">{{'Select ' ~ model|capitalize }}</option>
+        <option value="">{{'Select ' ~ model.select.field.title }}</option>
 
-    {% for o in objects %}
-        <option value="{{ o.id }}" {% if o.id in value %} selected {% endif %}>{{ o.title or o.english_name or o.name or o.nickname }}</option>
+    {% for line in model.select.lines %}
+        <option value="{{ line.id }}" {% if line.selected %} selected {% endif %}>{{ line.display_title }}</option>
     {% endfor %}
 </select>
 <script>
     var element = document.getElementById('{{ select_id }}')
-    var choices = new Choices(element);
+    var choices = new Choices(element, {removeItems: true, removeItemButton: true});
     choices.id = 'choices-{{ select_id }}'
     console.log(element)
     console.log(choices)

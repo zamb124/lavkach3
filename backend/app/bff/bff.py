@@ -208,35 +208,9 @@ async def multiselect(request: Request, selschema: MultiSelectSchema):
     """
      Универсальный запрос, который отдает список любого обьекта по его модулю и модели
     """
-    v = max(selschema.search_terms) if selschema.search_terms else []
-    form_data = await request.json()
-    clean_data = clean_filter(form_data, selschema.prefix)
-    values = clean_data.get(selschema.name)
-    params = QueryParams({'search': v if v else '', 'size': 100})
-    async with getattr(request.scope['env'], selschema.module) as a:
-        data = await a.list(params=params, model=selschema.model)
-        if values:
-            _ids_value = []
-            data_vals = [i['id'] for i in data['data']]
-            for v in values:
-                if v not in data_vals:
-                    _ids_value.append(v)
-            if _ids_value:
-                v_qp = ','.join(_ids_value)
-                v_params = QueryParams({'id__in': v_qp})
-                value_data = await a.list(params=v_params, model=selschema.model)
-                data['data'] += value_data['data']
-            selschema.value = values
-    return {
-        'name': selschema.name,
-        'module': selschema.module,
-        'model': selschema.model,
-        'prefix': selschema.prefix,
-        'required': selschema.required,
-        'value': selschema.value or [],
-        'title': selschema.title,
-        'objects': data if type(data) is list else data.get('data')
-    }
+    htmx_conn = HtmxConstructor(request, module=selschema.module, model=selschema.model)
+    await htmx_conn.multiselect()
+    return {'model': htmx_conn}
 
 
 class BadgesSchema(BaseModel):

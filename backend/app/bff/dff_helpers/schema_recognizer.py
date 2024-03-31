@@ -29,6 +29,11 @@ async def get_module_by_model(model):
         if v['schema'].get(model):
             return k
 
+def list_from_str(v: Any)-> list:
+    try:
+        return list(set(eval(v)))
+    except Exception as ex:
+        return []
 
 async def get_types(annotation, _class=[]):
     """
@@ -59,9 +64,6 @@ class HtmxField(BaseModel):
     enums: Optional[list] = []
     widget: Optional[dict]
     val: Any = None
-    is_miss_table: Optional[bool] = False
-    is_miss_form: Optional[bool] = False
-    is_miss_filter: Optional[bool] = False
     sort_idx: Optional[int] = 0
 
 
@@ -98,7 +100,11 @@ class HtmxLine(HtmxHeader):
     vars: Optional[dict] = None
     company_id: Optional[uuid.UUID] = None
     display_title: Optional[str] = None
-
+    selected: Optional[bool] = False
+class HtmxSelect(BaseModel):
+    field: HtmxField
+    lines: list[HtmxLine] = []
+    prefix: str
 
 class HtmxTable(BaseModel):
     """
@@ -145,6 +151,7 @@ class HtmxConstructor:
     params: Optional[QueryParams] = None
     param_filter: Optional[str] = None
     table: Optional[HtmxTable] = None
+    select: Optional[HtmxSelect] = None
     form: Optional[BaseModel] = None
     header: Optional[HtmxHeader] = None
     filter: Optional[HtmxFilter] = None
@@ -321,6 +328,47 @@ class HtmxConstructor:
         """
         fields = await self._get_schema_fields(exclude, schema)
         return HtmxHeader(fields=fields)
+
+    async def multiselect(self) -> HtmxSelect:
+        """
+            Отдает поле для multiselect и + варианты выбора
+            Сначала ищем по параметрам, и если есть уже введенные значения, то доискиваем по ним
+        """
+        request_data = await self.request.json()
+        v = max(request_data['search_terms']) if request_data.get('search_terms') else []
+        init_values = list_from_str(request_data.get('values'))
+        prefix = request_data.get('prefix')
+        clean_data = clean_filter(request_data, prefix)
+        field_name = clean_data.get('name')
+        field_values = clean_data.get(field_name, [])
+        if request_data.get('select_in'): # Значит селект уже идет
+            current_values = field_values
+        else:
+            current_values =init_values
+        params = QueryParams({'search': v if v else '', 'size': 100})
+        field = await self.get_field(field_name, self.schemas.base)
+        field_chema = self.services[field.module]['schema'][field.model]['base']
+        self.module, self.model = field.module, field.model
+        lines, _ = await self._get_data(schema=field_chema, params=params, join_related=False)
+        if current_values:
+            _ids_value = []
+            data_vals = [str(i.id) for i in lines]
+            for v in current_values:
+                if v not in data_vals:
+                    _ids_value.append(v)
+            if _ids_value:
+                v_qp = ','.join(_ids_value)
+                v_params = QueryParams({'id__in': v_qp})
+                _lines,_ = await self._get_data(schema=field_chema, params=v_params,  join_related=False)
+                lines += _lines
+        for line in lines:
+            if str(line.id) in current_values:
+                line.selected = True
+        field.module = request_data['module']       # Возвращяем оригинальный
+        field.model = request_data['model']        # Возвращяем оригинальный
+        self.select = HtmxSelect(field=field, lines=lines, prefix=prefix)
+        return self.select
+
     async def get_header(self, exclude: list = None, model_id:uuid.UUID = None) -> HtmxHeader:
         """
             Метод отдает хидер , те столбцы с типами для HTMX шаблонов
@@ -402,8 +450,8 @@ class HtmxConstructor:
             Метод отдает таблицу для формата HTMX и Jinja
         """
         if exclude: self.exclude = exclude
-        if params:
-            self._check_params(params)
+        if not params:
+            params = self.params
         if data: self._check_data(data)
         if filter: self.param_filter = filter
         if data: self._check_data(data)
@@ -411,9 +459,9 @@ class HtmxConstructor:
             self.join_related = join_related
         if join_field: self.join_fields = join_field or []
         header = await self._get_header(schema, exclude=exclude)
-        if not self.data:
-            async with getattr(self.request.scope['env'], self.module) as a:
-                self.data = await a.list(params=self.params, model=self.model)
+
+        async with getattr(self.request.scope['env'], self.module) as a:
+            self.data = await a.list(params=params, model=self.model)
 
         if not self.data.get('data'):
             return [], 0

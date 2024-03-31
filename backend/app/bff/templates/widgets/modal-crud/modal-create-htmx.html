@@ -136,6 +136,8 @@
                             </div>
                         {% elif field.type =='number' %}
                             <input class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title }}" value="">
+                        {% elif field.type =='phone' %}
+                            <input class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title }}" value="">
                         {% elif field.type =='bool' %}
                             <div class="form-check form-switch mb-3">
                                 <label class="form-check-label" for="{{ model.create.prefix }}{{ field.field_name }}">{{ field.title}}</label>

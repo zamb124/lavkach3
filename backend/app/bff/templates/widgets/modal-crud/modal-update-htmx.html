@@ -47,7 +47,7 @@
                 style="width:150px;height:150px">
         </lord-icon>
         <div class="row g-2">
-            {%  for field in model.update.line.fields %}
+            {%  for field in model.update.line.fields if not field.type =='dict' %}
                     {%  if loop.length % 2 != 0 and loop.first %}
                             <div class="row g-2">
                         {% endif %}
@@ -63,7 +63,9 @@
                                         placeholder="Enter {{ field.title }}"
                                         value="{{ field.val if field.val else "" }}"
                                 >
-                        {% elif field.type in ('country', 'locale', 'currency') %}{# v.type == 'model' #}
+                        {% elif field.type =='phone' %}
+                            <input type="number" class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title }}" value="{{ field.val.national_number }}">
+                        {% elif field.type in ('country', 'locale', 'currency') %}
                             <div
                                  hx-ext="json-enc"
                                  hx-post="/bff/select"
@@ -98,17 +100,15 @@
                             </div>
                         {% elif field.type == 'ids' %}{# v.type == 'model' #}
                             <div
-                                 id="modal_edit_{{ field.field_name }}"
                                  hx-post="/bff/multiselect"
                                  hx-ext="json-enc"
                                  hx-include="this"
                                  hx-vals='{
-                                    "module": "{{ field.module }}",
-                                    "model": "{{ field.model }}",
-                                    "value": "{{field.val if field.val else None}}",
+                                    "module": "{{ model.module }}",
+                                    "model": "{{ model.model }}",
+                                    "values": "{{field.val if field.val else None}}",
                                     "prefix": "{{ model.update.prefix }}",
-                                    "name": "{{ field.field_name }}",
-                                    "required": "{{ field.required }}"
+                                    "name": "{{ field.field_name }}"
                                  }'
                                  hx-trigger="load"
                             >
@@ -148,6 +148,8 @@
                                         {% if field.val == True %}checked {% endif %}
                                 >
                             </div>
+                        {% elif field.type == 'dict' %}
+                            {# DICT #}
                         {% else %}
                             <input  class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title or c  }}" value="{{ field.val }}">
                         {% endif %}
