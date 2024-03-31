@@ -8,7 +8,6 @@ from fastapi_htmx import htmx
 from app.bff.bff_server import config
 from app.bff.bff_service import BffService
 from app.bff.dff_helpers.htmx_decorator import s
-from app.bff.dff_helpers.schema_recognizer import get_columns
 
 user_router = APIRouter()
 

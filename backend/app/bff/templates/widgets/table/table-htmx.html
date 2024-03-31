@@ -13,57 +13,57 @@
                                    value="option">
                         </div>
                     </th>
-                    {% for col, val in columns.items() if val.widget.table  %}
-                            <th data-bs-visible="false" data-bs-sortable="true" class="{{ col }}">{{ val.title or col|capitalize }}</th>
+                    {% for field in model.header.fields if field.widget.table %}
+                            <th  class="{{ field.field_name }}">{{ field.title }}</th>
                     {% endfor %}
                     <th>Active</th>
                 </tr>
                 </thead>
             <div class="rows">
-                {% for o in objects %}
-                    <tr id="td-{{o.id.val}}" class="mb-0 fw-semibold text-muted">
-                        <th scope="row">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="checkAll" value="">
-                            </div>
-                        </th>
-                        {% for c, value in o.items() if value.widget.table %}
-                                {% if value.type == 'str' %}
-                                    <td class="{{ c }}">{{ value.val if value.val else '' }}</td>
-                                {% elif value.type == 'datetime' %}
-                                    <td class="{{ c }}">{{ datetime.fromisoformat(value.val).strftime('%Y-%m-%d') if value.val  }}<small class="text-muted"> {{datetime.fromisoformat(value.val).strftime('%H:%M') if value.val }}</small>
-                                {% elif value.type in ('locale', 'currency', 'country')  %}
-                                    <td class="{{ c }}"><a href="#" hx-get="/base/table/row?module={{ value.module }}&model={{ c }}">{{ value.val.title or value.val.code or value.val.english_name}}</a></td>
-                                {% elif value.type == 'model_rel'  %}
-                                    <td class="{{ c }}"><i class="ri-links-fill fs-6"></i><a class="text-danger py-3" href="#" data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ value.module }}&model={{ value.model }}&id={{ value.val.id }}">{{ value.val.title or value.val.nickname}}</a></td>
-                                {% elif value.type == 'model_id' %}
-                                    <td class="{{ c }}">{{ value.val if value.val else '' }}</td>
-                                {% else %}
-                                    <td class="{{ c }}">{{ value.val if value.val else ''}}</td>
-                                {% endif %}
-                        {% endfor %}
-                        <td>
-                            <ul class="list-inline hstack gap-2 mb-0">
-                                <li class="list-inline-item" data-bs-toggle="tooltip" title="View">
-                                    <a href="#"  hx-get="/base/card?module={{ module }}&model={{ model }}&id={{ o.id.val }}" hx-target="#card" hx-swap="innerHTML"
-                                       class="text-success d-inline-block">
-                                        <i class="ri-eye-fill fs-16"></i></a>
-                                </li>
-                                <li class="list-inline-item edit" title="Edit">
-                                    <a href="#" data-bs-toggle="modal" hx-include="this" hx-trigger="click"  data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-get?module={{ module }}&model={{ model }}&id={{ o.id.val }}"
-                                       class="text-primary d-inline-block edit-item-btn"> <i
-                                            class="ri-pencil-fill fs-16"></i></a>
-                                </li>
-                                <li class="list-inline-item" title="Remove">
-                                    <a class="text-danger d-inline-block remove-item-btn"  data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{modal_id}}" hx-target="#{{modal_id}}" hx-swap="innerHTML"
-                                        hx-get="/base/modal-delete?module={{ module }}&model={{ model }}&id={{ o.id.val }}">
-                                        <i class="ri-delete-bin-3-fill fs-16"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
-                    {% if loop.last %} <div  hx-include="#filter" hx-get="/base/table?module={{ module }}&model={{ model }}&cursor={{ cursor }}" hx-trigger="revealed" hx-swap="afterend" hx-select="#rows"></div>{% endif %}
+                {% for line in model.table.lines %}
+                        <tr id="td-{{line.id}}" class="mb-0 fw-semibold text-muted">
+                            <th scope="row">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="checkAll" value="">
+                                </div>
+                            </th>
+                            {% for field in line.fields if field.widget.table %}
+                                    {% if field.type == 'str' %}
+                                        <td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
+                                    {% elif field.type == 'datetime' %}
+                                        <td class="{{ field.field_name }}">{{ field.val.strftime('%Y-%m-%d') if field.val  }}<small class="text-muted"> {{field.val.strftime('%H:%M') if field.val }}</small>
+                                    {% elif field.type in ('locale', 'currency', 'country')  %}
+                                        <td class="{{ field.field_name }}"><a href="#" hx-get="/base/table/row?module={{ field.module }}&model={{ field.model }}">{{ field.title or field.val.code or field.val.english_name}}</a></td>
+                                    {% elif field.type == 'model_rel'  %}
+                                        <td class="{{ field.field_name }}"><i class="ri-links-fill fs-6"></i><a class="text-danger py-3" href="#" data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ field.module }}&model={{ field.model }}&id={{ field.val.id }}">{{ field.val.title or field.val.nickname}}</a></td>
+                                    {% elif field.type == 'model_id' %}
+                                        <td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
+                                    {% else %}
+                                        <td class="{{ field.field_name }}">{{ field.val if field.val else ''}}</td>
+                                    {% endif %}
+                            {% endfor %}
+                            <td>
+                                <ul class="list-inline hstack gap-2 mb-0">
+                                    <li class="list-inline-item edit" title="Edit">
+                                        <a href="#" data-bs-toggle="modal" hx-include="this" hx-trigger="click"  data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ model.module }}&model={{ model.model }}&id={{ line.id }}"
+                                           class="text-success d-inline-block edit-item-btn"> <i
+                                                class="ri-eye-fill fs-16"></i></a>
+                                    </li>
+                                    <li class="list-inline-item edit" title="Edit">
+                                        <a href="#" data-bs-toggle="modal" hx-include="this" hx-trigger="click"  data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-get?module={{ model.module }}&model={{ model.model }}&id={{ line.id }}"
+                                           class="text-primary d-inline-block edit-item-btn"> <i
+                                                class="ri-pencil-fill fs-16"></i></a>
+                                    </li>
+                                    <li class="list-inline-item" title="Remove">
+                                        <a class="text-danger d-inline-block remove-item-btn"  data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{modal_id}}" hx-target="#{{modal_id}}" hx-swap="innerHTML"
+                                            hx-get="/base/modal-delete?module={{ model.module }}&model={{ model.model }}&id={{ line.id }}">
+                                            <i class="ri-delete-bin-3-fill fs-16"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    {% if loop.last %} <div  hx-include="#filter" hx-get="/base/table?module={{ model.module }}&model={{ model.model }}&cursor={{ line.lsn }}" hx-trigger="revealed" hx-swap="afterend" hx-select="#rows"></div>{% endif %}
                 {% endfor %}
 
             </div>

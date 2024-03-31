@@ -15,46 +15,39 @@ from app.inventory.order.models.order_models import OrderClass, BackOrderAction,
 
 
 class OrderTypeBaseScheme(BaseModel):
-    vars: Optional[dict] = None
-    prefix: str
-    order_class: OrderClass
-    title: str
-    allowed_location_src_ids: Optional[list[UUID4]] = None
-    exclusive_location_src_ids: Optional[list[UUID4]] = None
-    allowed_location_dest_ids: Optional[list[UUID4]] = None
-    exclusive_location_dest_ids: Optional[list[UUID4]] = None
-    backorder_order_type_id: Optional[UUID4] = None
-    backorder_action_type: BackOrderAction
-    store_id: Optional[UUID4] = None
-    partner_id: Optional[UUID4] = None
-    reservation_time_before: Optional[int] = None
-    allowed_package_ids: Optional[list[UUID4]] = None
-    exclusive_package_ids: Optional[list[UUID4]] = None
-    is_homogeneity: bool = False
-    is_allow_create_package: bool = True
-    is_can_create_order_manualy: bool = True
-    is_overdelivery: bool = False
-    barcode: str
-    created_by: UUID4
-    edited_by: UUID4
-    reservation_method: ReservationMethod
+    prefix: str = Field(title='Prefix', table=True, form=True)
+    order_class: OrderClass = Field(title='Order Class', table=True, form=True)
+    title: str = Field(title='Titile', table=True, form=True)
+    allowed_location_src_ids: Optional[list[UUID4]] = Field(default=None, title='Allowed locations source', form=True)
+    exclusive_location_src_ids: Optional[list[UUID4]] = Field(default=None, title='Exclude locations source', form=True)
+    allowed_location_dest_ids: Optional[list[UUID4]] = Field(default=None, title='Allowed locations dest', form=True)
+    exclusive_location_dest_ids: Optional[list[UUID4]] = Field(default=None, title='Exclude locations dest', form=True)
+    order_type_id: Optional[UUID4] = Field(default=None, title='Back Order', form=True)
+    backorder_action_type: BackOrderAction = Field(default=BackOrderAction.ASK, title='Backorder action', form=True)
+    store_id: Optional[UUID4] = Field(default=None, title='Store', table=True, form=True)
+    partner_id: Optional[UUID4] = Field(default=None, title='Partner', table=True, form=True)
+    reservation_time_before: Optional[int] = Field(default=None, title='Reserve time before', form=True)
+    allowed_package_ids: Optional[list[UUID4]] = Field(default=None, title='Allowed packages dest', form=True)
+    exclusive_package_ids: Optional[list[UUID4]] = Field(default=None, title='Exclude packages dest', form=True)
+    is_homogeneity: bool = Field(default=False, title='Is homogeneity', form=True)
+    is_allow_create_package: bool = Field(default=True, title='Is allow create package', form=True)
+    is_can_create_order_manualy: bool = Field(default=True, title='Can create order manualy', form=True)
+    is_overdelivery: bool = Field(default=False, title='Is overdelivery', form=True)
+    barcode: str = Field(title='Barcode', table=True, form=True)
+    reservation_method: ReservationMethod = Field(default=ReservationMethod.AT_CONFIRM, title='Reservation method', table=True, form=True)
+    strategy: PutawayStrategy = Field(default=PutawayStrategy.FEFO, title='Strategy', form=True)
 
 class OrderTypeUpdateScheme(OrderTypeBaseScheme):
-    prefix: Optional[str] = None
-    backorder_action_type: BackOrderAction = BackOrderAction.ASK
-    strategy: PutawayStrategy = PutawayStrategy.FEFO
-    reservation_method: ReservationMethod = ReservationMethod.AT_CONFIRM
-    title: str = None
-    barcode: str = None
-    created_by: UUID4 = None
-    edited_by: UUID4 = None
+    ...
 
 
 class OrderTypeCreateScheme(OrderTypeBaseScheme):
-    company_id: UUID4
+    ...
 
 
 class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
+    vars: Optional[dict] = None
+    company_id: UUID4
     lsn: int
     id: UUID4
     created_by: UUID4
@@ -65,7 +58,7 @@ class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
 
 
 class OrderTypeFilter(BaseFilter):
-    store_id__in: Optional[List[UUID4]] = Field(alias="store_id", default=None)
+    store_id__in: Optional[List[UUID4]] = Field(default=None, filter=True)
 
     class Config:
         populate_by_name = True

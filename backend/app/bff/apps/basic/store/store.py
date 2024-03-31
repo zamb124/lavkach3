@@ -3,24 +3,14 @@ from fastapi import Request
 from fastapi.responses import HTMLResponse
 from fastapi_htmx import htmx
 
-from app.bff.bff_server import config
 from app.bff.dff_helpers.htmx_decorator import s
-from app.bff.dff_helpers.schema_recognizer import get_columns
+from app.bff.dff_helpers.schema_recognizer import HtmxConstructor
 
 store_router = APIRouter()
+
+
 @store_router.get("", response_class=HTMLResponse)
-@htmx(*s('basic/store/store'))
+@htmx(*s('widgets/list'))
 async def store(request: Request):
-    """
-        Для построения фронта нам нужно передать в шаблон
-        1 - схему
-        2 - модуль/сервис и модель lля фильтрации
-        3 - какие фильтры используем на странице (важно, что порядок будет тот же)
-    """
-    schema = config.services['basic']['schema']['store']['filter']
-    columns, _ = get_columns('basic', 'store', schema)
-    return {
-        'module': 'basic',
-        'model': 'store',
-        'columns': columns,
-    }
+    model = HtmxConstructor(request, 'basic', 'company')
+    return {'model': model}

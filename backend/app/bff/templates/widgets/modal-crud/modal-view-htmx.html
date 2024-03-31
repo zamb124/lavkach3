@@ -4,29 +4,29 @@
     <div class="modal-content modal-lg">
         <div class="modal-header">
             <div class="col-6">
-                <h5 class="modal-title">View {{ model }}
+                <h5 class="modal-title">View {{ model.model }}
                     <span>
                             <a href="#" class="text-primary" hx-trigger="click"  data-bs-target="#{{ modal_id }}"
                                hx-target="#{{ modal_id }}" hx-swap="innerHTML"
-                               hx-get="/base/modal-get?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                               hx-get="/base/modal-get?module={{ model.module }}&model={{ model.model }}&id={{ model.view.line.id }}"><i
                                     class="ri-pencil-fill fs-3"></i></a>
                         </span>
                     <span>
                             <a href="#" class="text-secondary" hx-trigger="click" data-bs-target="#{{ modal_id }}"
                                hx-target="#{{ modal_id }}" hx-swap="innerHTML"
-                               hx-get="/base/modal-create?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                               hx-get="/base/modal-create?module={{ model.module }}&model={{ model.model }}&id={{ model.view.line.id }}"><i
                                     class="ri-add-box-fill fs-3"></i></a>
                         </span>
                     <span>
                             <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ modal_id }}"
                                hx-target="#{{ modal_id }}" hx-swap="innerHTML"
-                               hx-get="/base/modal-delete?module={{ module }}&model={{ model }}&id={{ columns.id.val }}"><i
+                               hx-get="/base/modal-delete?module={{ model.module }}&model={{ model.model }}&id={{ model.view.line.id }}"><i
                                     class="ri-delete-bin-3-fill fs-3"></i></a>
                         </span>
                 </h5>
             </div>
             <div>
-                <span><p class="text-muted fw-normal right">Created: <span>{{ datetime.fromisoformat(columns.created_at.val).strftime('%Y-%m-%d') }}</span><span> Updated: {{ datetime.fromisoformat(columns.updated_at.val).strftime('%Y-%m-%d') }}</span></p></span>
+
             </div>
             <div class="bx-pull-right">
                 <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -41,7 +41,8 @@
                         trigger="loop"
                         style="width:150px;height:150px">
                 </lord-icon>
-                {% for c, value in columns.items() if value.widget.form %}
+            <div class="row g-2">
+                {% for field in model.view.line.fields if not field.field_name.endswith('id')  %}
                         {%  if loop.length % 2 != 0 and loop.first %}
                             <div class="row g-2">
                         {% endif %}
@@ -49,18 +50,46 @@
                             <div class="row g-2">
                         {% endif %}
                             <div class="col">
-                        {% if value.type == 'model_rel' %}
+                        {% if field.type == 'model_rel' %}
                             <div>
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ value.title or k }}</p>
+                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title}}</p>
                                 <h5 class="fs-3 mb-0"> <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ modal_id }}"
                                hx-target="#{{ modal_id }}" hx-swap="innerHTML"
-                               hx-get="/base/modal-view?module={{ value.module }}&model={{ value.model }}&id={{ value.val.id }}"><i
-                                    class="ri-links-fill fs-3"></i>  {{ value.val.title }}</a></h5>
+                               hx-get="/base/modal-view?module={{ field.module }}&model={{ field.model }}&id={{ field.val.id }}"><i
+                                    class="ri-links-fill fs-3"></i>  {{ field.val.title }}</a></h5>
+                            </div>
+                        {% elif field.type == 'ids' %}
+                            <div>
+                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title}}</p>
+                            <div
+                                 hx-ext="json-enc"
+                                 hx-post="/bff/badges"
+                                 hx-vals='{
+                                    "module": "{{ field.module }}",
+                                    "model": "{{ field.model }}",
+                                    "value": "{{ field.val if field.val else '' }}",
+                                    "prefix": "{{ model.update.prefix }}",
+                                    "name": "{{ field.model }}_ids",
+                                    "required": "{{ field.required }}"
+                                 }'
+                                 hx-include="this"
+                                 hx-trigger="load"
+                            ></div>
+                            </div>
+                        {% elif field.type == 'datetime'%}
+                            <div>
+                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
+                                <h5 class="fs-3 mb-0">{{field.val.strftime('%Y-%m-%d') if field.val else ''}}</h5>
+                            </div>
+                        {% elif field.type == 'phone'%}
+                            <div>
+                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
+                                <h5 class="fs-3 mb-0">{{ field.val.international if field.val else ''}}</h5>
                             </div>
                         {% else %}
                             <div>
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ value.title or k }}</p>
-                                <h5 class="fs-3 mb-0">{{ value.val.english_name or value.val.name or value.val}}</h5>
+                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
+                                <h5 class="fs-3 mb-0">{{ field.val.english_name or field.val.name or field.val}}</h5>
                             </div>
 
                         {% endif %}
@@ -69,6 +98,7 @@
                             </div>
                         {% endif %}
                 {% endfor %}
+                </div>
             </div>
         </div>
     </div>

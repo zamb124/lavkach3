@@ -1,6 +1,6 @@
 <div id="table"
-     hx-get="/base/table?module={{ module if module else request.query_params.module }}&model={{ model if model else request.query_params.modele }}"
-     hx-trigger="change from:{% if filter %}{{ filter }}{% else %}#filter{% endif %} delay:500ms, load, update delay:500ms"
+     hx-get="/base/table?module={{ model.module if model.module else request.query_params.module }}&model={{ model.model if model.model else request.query_params.modele }}"
+     hx-trigger="change from:#filter delay:500ms, load, update delay:500ms"
      hx-include="{% if filter %}{{ filter }}{% else %}#filter{% endif %}"
 >
     <div class="card htmx-indicator ">

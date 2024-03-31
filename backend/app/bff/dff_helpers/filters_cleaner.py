@@ -1,7 +1,7 @@
 from httpx import QueryParams
 
 
-def clean_filter(qp: QueryParams, filter:str):
+def clean_filter(qp: QueryParams|dict, filter:str):
     """
         Отбирает параметры согласно фильтру
     """
@@ -11,4 +11,7 @@ def clean_filter(qp: QueryParams, filter:str):
         if k.startswith(filter):
             k = k.split(filter)[1]
         new_qp.update({k: v})
+    new_qp.pop('prefix')
+    if new_qp.get('search_terms'):
+        new_qp.pop('search_terms')
     return new_qp

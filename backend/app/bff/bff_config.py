@@ -12,9 +12,11 @@ from app.basic.product.schemas import ProductScheme, ProductCreateScheme, Produc
 from app.basic.store.schemas import StoreScheme, StoreCreateScheme, StoreUpdateScheme, StoreFilter
 from app.basic.uom.schemas import UomScheme, UomCreateScheme, UomUpdateScheme, UomFilter, UomCategoryScheme, \
     UomCategoryCreateScheme, UomCategoryUpdateScheme, UomCategoryFilter
-from app.basic.user.schemas import UserScheme, UserCreateScheme, UserUpdateScheme, UserFilter
+from app.basic.user.schemas import UserScheme, UserCreateScheme, UserUpdateScheme, UserFilter, RoleScheme
+from app.basic.user.schemas.role_schemas import RoleFilter, RoleUpdateScheme, RoleCreateScheme
 from app.bff.adapters.basic_adapter import BasicAdapter
 from app.bff.adapters.inventory_adapter import InventoryAdapter
+from app.inventory.location.schemas import LocationScheme, LocationCreateScheme, LocationUpdateScheme, LocationFilter
 from app.inventory.order.schemas import OrderUpdateScheme, OrderCreateScheme, OrderScheme, OrderFilter, OrderTypeFilter, \
     OrderTypeUpdateScheme, OrderTypeCreateScheme, OrderTypeScheme
 from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme, MoveFilter
@@ -99,6 +101,12 @@ class Config(CoreConfig):
                     'update': UserUpdateScheme,
                     'filter': UserFilter,
                 },
+                'role': {
+                    'base': RoleScheme,
+                    'create': RoleCreateScheme,
+                    'update': RoleUpdateScheme,
+                    'filter': RoleFilter,
+                },
             }
         },
         'inventory': {
@@ -111,6 +119,7 @@ class Config(CoreConfig):
                     'create': OrderCreateScheme,
                     'update': OrderUpdateScheme,
                     'filter': OrderFilter,
+                    'sort': ['number', 'planned_datetime']
                 },
                 'order_type': {
                     'base': OrderTypeScheme,
@@ -129,6 +138,12 @@ class Config(CoreConfig):
                     'create': LotCreateScheme,
                     'update': LotUpdateScheme,
                     'filter': LotFilter,
+                },
+                'location': {
+                    'base': LocationScheme,
+                    'create': LocationCreateScheme,
+                    'update': LocationUpdateScheme,
+                    'filter': LocationFilter,
                 },
                 # 'suggest': {
                 #     'base': SuggestScheme,

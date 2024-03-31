@@ -1,0 +1,81 @@
+
+    <div class="card">
+    <div class="card-body">
+        <div class="row g-3">
+            {% for field in model.filter.fields %}
+                {% if field.widget.filter %}
+                    {% if field.type == 'search' %}
+                        <div class="col-xxl-2 col-sm-4">
+                            <div class="search-box">
+                                <input type="search"
+                                       name="{{ model.filter.prefix }}search"
+                                       id="search"
+                                       value="{{ request.query_params.search }}"
+                                       class="form-control search"
+                                       placeholder="{{ field.title }}"
+                                >
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
+                        </div>
+                    {% elif field.type == 'datetime' %}
+                        <div class="col-xxl-2 col-sm-4">
+                            <div>
+                                <input class="form-control" type="text" name="{{ model.filter.prefix }}{{ field.field_name }}"
+                                       required aria-required="true"
+                                       onfocus="(this.type='date')"
+                                       placeholder="{{ field.title or field.field_name }}"
+                                       id="{{ field.field_name }}"
+                                       value="{{ request.query_params[key] }}">
+                            </div>
+                        </div>
+                    {% elif field.type in ('model', 'country','currency', 'locale') %}
+                        <div
+                                class="col-xxl-2 col-sm-4"
+                                hx-ext="json-enc"
+                                hx-post="/bff/select"
+                                hx-vals='{
+                                "module": "{{ field.module }}",
+                                "model": "{{ field.model }}",
+                                "prefix": "{{ model.filter.prefix }}",
+                                "name": "{{ field.field_name }}"
+                             }'
+                                hx-trigger="load">
+                        </div>
+                    {% elif field.type == 'enum' %}
+                        <div class="col-xxl-2 col-sm-4">
+                            <select name="{{ model.filter.prefix }}{{ field.field_name }}" class="data-choices form-control"
+                                    aria-label="Default select example">
+                                <option value="">Select Status</option>
+                                {% for enum in field.enums %}
+                                    <option value="{{ enum.value }}"> {{ enum.name }} </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% elif field.type == 'model_id' %}
+                        <div class="col-xxl-2 col-sm-4"
+                             hx-post="/bff/select"
+                             hx-ext="json-enc"
+                             hx-vals='{
+                             "module": "{{ field.module }}",
+                             "model":"{{ field.model }}",
+                             "name":"{{ field.field_name }}",
+                             "prefix":"{{ model.filter.prefix }}"
+                             }' hx-trigger="load">
+                            <a href="#"
+                               class="btn btn-dark form-control disabled placeholder col-12 htmx-indicator text-start">Select</a>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            <div class="col">
+                <div>
+                    <button type="button" class="btn btn-primary w-100"
+                            onclick="SearchData();"><i
+                            class="ri-equalizer-fill me-1 align-bottom"></i>
+                    </button>
+                </div>
+            </div>
+            <!--end col-->
+        </div>
+    </div>
+</div>

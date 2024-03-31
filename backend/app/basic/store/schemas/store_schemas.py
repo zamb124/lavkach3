@@ -16,7 +16,7 @@ class StoreBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: str = Field(title='Title', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
-    address: Optional[str] = Field(default=None, title='Address', table=True, form=True)
+    address: Optional[str] = Field(title='Address', table=True, form=True)
     source: Optional[StoreType] = Field(default=StoreType.INTERNAL, title='Source', table=True, form=True)
 
     @field_validator('vars', mode='before')
@@ -26,7 +26,6 @@ class StoreBaseScheme(BaseModel):
             return {}
 class StoreUpdateScheme(StoreBaseScheme):
     title: str = Field(default=None, title='Title', table=True, form=True)
-    address: Optional[str] = Field(default=None, title='Address', table=True, form=True)
     source: Optional[StoreType] = Field(default=None, title='Source', table=True, form=True)
 
 

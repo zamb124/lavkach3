@@ -18,11 +18,11 @@ class BaseFilter(Filter):
     """
     search: Optional[str] = Field(default=None, filter=True, title='Search')
     lsn__gt: Optional[int] = Field(alias="cursor", default=0)
-    id__in: Optional[List[UUID4]] = Field(alias="id", default=None, title='ID')
-    created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None, filter=True, title='Created at from')
-    created_at__lt: Optional[datetime] = Field(description="less created", default=None, filter=True, title='Created at to')
-    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None, filter=True, title='Updated at from')
-    updated_at__lt: Optional[datetime] = Field(description="less updated", default=None, filter=True, title='Created at to')
+    id__in: Optional[List[UUID4]] = Field(default=None, title='ID')
+    created_at__gte: Optional[datetime] = Field(default=None, filter=True, title='Created at from')
+    created_at__lt: Optional[datetime] = Field(default=None, filter=True, title='Created at to')
+    updated_at__gte: Optional[datetime] = Field(default=None, filter=True, title='Updated at from')
+    updated_at__lt: Optional[datetime] = Field(default=None, filter=True, title='Updated at to')
     company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None, title='Company')
     order_by: Optional[List[str]] = Field(default=["lsn", ], filter=True, title='Order by')
 
@@ -52,6 +52,5 @@ class BaseFilter(Filter):
 
 class CustomBaseModel(BaseModel):
 
-    @computed_field
-    def title(self) -> str:
-        return 'display_title'
+    def ui_sort(self):
+        return self

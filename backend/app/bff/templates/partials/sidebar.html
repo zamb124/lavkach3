@@ -83,8 +83,15 @@
                                                     Orders </a>
                                             </li>
                                             <li class="nav-item">
-                                                <a href="/basic/order-types" class="nav-link"
-                                                   data-key="t-order-types"> Order Types </a>
+                                                <a
+                                                        href="/inventory/order_type"
+                                                        hx-target="#htmx_content"
+                                                        hx-push-url="true"
+                                                        hx-get="/inventory/order_type"
+                                                        class="nav-link"
+                                                        data-key="t-orders"
+                                                >
+                                                    Order Types </a>
                                             </li>
                                         </ul>
                                     </div>

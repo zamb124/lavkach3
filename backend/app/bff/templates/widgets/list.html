@@ -5,8 +5,6 @@
     <!-- Start right Content here -->
     <!-- ============================================================== -->
     <div class="main-content">
-
-
         <div class="page-content">
             <div class="container-fluid">
                 <!-- start page title -->
@@ -15,16 +13,13 @@
                 <div class="row">
                     <div class="col-lg-12">
                         {% include 'widgets/header-widget.html'%}
-                        {% include 'widgets/filter-widget.html' %}
+                        {% include 'widgets/filter/filter-widget.html' %}
                     </div>
                     <!--end col-->
-                    <div class="col-xxl-9">
+                    <div class="col-xxl-12">
                         {% include 'widgets/table/table-widget.html' %}
                     </div>
                     <!--end col-->
-                    <div class="col-xxl-3">
-                        {% include 'widgets/card/card-widget.html' %}
-                    </div>
                     <!--end col-->
                 </div>
                 <!--end row-->
