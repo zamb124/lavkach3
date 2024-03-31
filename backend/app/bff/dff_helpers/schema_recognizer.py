@@ -371,7 +371,7 @@ class HtmxConstructor:
                         params: QueryParams | dict = None,
                         exclude: list = None,
                         join_related: str = True,
-                        join_field : list = None
+                        join_field: list = None
                         ) -> HtmxTable:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
@@ -385,6 +385,7 @@ class HtmxConstructor:
             join_field=join_field
         )
         self.table = HtmxTable(module=self.module, model=self.model, lines=lines, cursor=cursor)
+        await self._sort_columns()
         return self.table
 
     async def _get_data(

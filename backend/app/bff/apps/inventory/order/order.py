@@ -19,5 +19,4 @@ async def order(request: Request):
         3 - какие фильтры используем на странице (важно, что порядок будет тот же)
     """
     model = HtmxOrm(request, 'inventory', 'order')
-
     return {'model': model}

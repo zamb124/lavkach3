@@ -7,19 +7,19 @@
                 <h5 class="modal-title">Edit {{ model.model|capitalize }}
                     <span>
                             <a href="#" class="text-success" hx-trigger="click" data-bs-dismiss="modal" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
                                hx-get="/base/modal-view?module={{ model.module }}&model={{ model.model }}&id={{ model.update.line.id }}"><i
                                     class="ri-eye-fill fs-3"></i></a>
                         </span>
                     <span>
                             <a href="#" class="text-secondary" hx-trigger="click" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="outerHTML"
+                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="outerHTML"
                                hx-get="/base/modal-create?module={{ model   .module }}&model={{ model.model }}&id={{ model.update.line.id }}"><i
                                     class="ri-add-box-fill fs-3"></i></a>
                         </span>
                     <span>
                             <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
                                hx-get="/base/modal-delete?module={{ model.module }}&model={{ model.model }}&id={{ model.update.line.id }}"><i
                                     class="ri-delete-bin-3-fill fs-3"></i></a>
                         </span>

@@ -7,19 +7,19 @@
                 <h5 class="modal-title">View {{ model.model }}
                     <span>
                             <a href="#" class="text-primary" hx-trigger="click"  data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
                                hx-get="/base/modal-get?module={{ model.module }}&model={{ model.model }}&id={{ model.view.line.id }}"><i
                                     class="ri-pencil-fill fs-3"></i></a>
                         </span>
                     <span>
                             <a href="#" class="text-secondary" hx-trigger="click" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
                                hx-get="/base/modal-create?module={{ model.module }}&model={{ model.model }}&id={{ model.view.line.id }}"><i
                                     class="ri-add-box-fill fs-3"></i></a>
                         </span>
                     <span>
                             <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
                                hx-get="/base/modal-delete?module={{ model.module }}&model={{ model.model }}&id={{ model.view.line.id }}"><i
                                     class="ri-delete-bin-3-fill fs-3"></i></a>
                         </span>
@@ -53,8 +53,8 @@
                         {% if field.type == 'model_rel' %}
                             <div>
                                 <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title}}</p>
-                                <h5 class="fs-3 mb-0"> <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                                <h5 class="fs-3 mb-0"> <a href="#" class="text-danger"  hx-trigger="click" data-bs-target="#{{ modal_id }}"
+                               hx-target="#{{ modal_id }}" hx-swap="innerHTML" hx-params="none"
                                hx-get="/base/modal-view?module={{ field.module }}&model={{ field.model }}&id={{ field.val.id }}"><i
                                     class="ri-links-fill fs-3"></i>  {{ field.val.title }}</a></h5>
                             </div>

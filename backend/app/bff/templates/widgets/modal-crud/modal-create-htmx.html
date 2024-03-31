@@ -7,19 +7,19 @@
                 <h5 class="modal-title">Create {{ model.model|capitalize }}
                     <span>
                             <a href="#" class="text-success" hx-trigger="click" data-bs-dismiss="modal" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
                                hx-get="/base/modal-view?module={{ model.module }}&model={{ model.model }}&id={{ model.create.id }}"><i
                                     class="ri-eye-fill fs-3"></i></a>
                         </span>
                     <span>
                             <a href="#" class="text-primary" hx-trigger="click"  data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
                                hx-get="/base/modal-get?module={{ model.module }}&model={{ model.model }}&id={{ model.create.id }}"><i
                                     class="ri-pencil-fill fs-3"></i></a>
                         </span>
                     <span>
                             <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML"
+                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
                                hx-get="/base/modal-delete?module={{ model.module }}&model={{ model.model }}&id={{ model.create.id }}"><i
                                     class="ri-delete-bin-3-fill fs-3"></i></a>
                         </span>
@@ -76,6 +76,7 @@
                                  }'
                                  hx-trigger="load"
                             >
+                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
                             <div class="invalid-feedback">Enter valid value</div>
                             </div>
                         {% elif field.type == 'model_id' %}{# v.type == 'model' #}
@@ -93,6 +94,7 @@
                                  }'
                                  hx-trigger="load"
                             >
+                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
                             </div>
                         {% elif field.type == 'ids' %}{# v.type == 'model' #}
                             <div
@@ -109,6 +111,7 @@
                                  }'
                                  hx-trigger="load"
                             >
+                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
                             </div>
                         {% elif field.type == 'enum' %}
                             <div>
@@ -121,6 +124,7 @@
                                         <option value="{{ s.value }}"> {{ s.name }} </option>
                                     {% endfor %}
                                 </select>
+                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
                             </div>
                         {% elif field.type == 'datetime'%}
                             <div>
@@ -128,6 +132,7 @@
                                        {% if field.required %} aria-required="true" {% endif %}
                                        onfocus="(this.type='date')"
                                        placeholder="{{ field.title }}" id="{{ field.field_name }}">
+                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
                             </div>
                         {% elif field.type =='number' %}
                             <input class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title }}" value="">
