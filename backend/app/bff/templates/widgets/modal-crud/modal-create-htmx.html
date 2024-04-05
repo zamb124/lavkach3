@@ -46,106 +46,17 @@
                 trigger="loop"
                 style="width:150px;height:150px">
         </lord-icon>
-        <div class="row g-2">
-            {%  for field in model.create.fields %}
+        <div class="row">
+            {%  for field in model.create.fields if not field.type =='dict' %}
                     {%  if loop.length % 2 != 0 and loop.first %}
-                            <div class="row g-2">
-                        {% endif %}
+                            <div class="row">
+                    {% endif %}
                     {% if loop.index0 % 3 == 0 %}
-                        <div class="row g-2">
+                        <div class="row">
                     {% endif %}
                     <div class="col">
-                        {% if field.type == 'str' %}
-                                <input
-                                        class="form-control"
-                                        {% if field.required %}required{% endif %}
-                                        name="{{ model.create.prefix }}{{ field.field_name }}"
-                                        placeholder="Enter {{ field.title }}"
-                                >
-                        {% elif field.type in ('country', 'locale', 'currency') %}{# v.type == 'model' #}
-                            <div
-                                 hx-ext="json-enc"
-                                 hx-post="/bff/select"
-                                 hx-vals='{
-                                    "module": "{{ field.module }}",
-                                    "model": "{{ field.model }}",
+                     {{ field.as_form()|safe }}
 
-                                    "prefix": "{{ model.create.prefix }}",
-                                    "name": "{{ field.model }}",
-                                    "required": "{{ field.required }}"
-                                 }'
-                                 hx-trigger="load"
-                            >
-                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
-                            <div class="invalid-feedback">Enter valid value</div>
-                            </div>
-                        {% elif field.type == 'model_id' %}{# v.type == 'model' #}
-                            <div
-                                 id="modal_edit_{{ field.field_name }}"
-                                 hx-post="/bff/select"
-                                 hx-ext="json-enc"
-                                 hx-vals='{
-                                    "module": "{{ field.module }}",
-                                    "model": "{{ field.model }}",
-
-                                    "prefix": "{{ model.create.prefix }}",
-                                    "name": "{{ field.field_name }}",
-                                    "required": "{{ field.required }}"
-                                 }'
-                                 hx-trigger="load"
-                            >
-                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
-                            </div>
-                        {% elif field.type == 'ids' %}{# v.type == 'model' #}
-                            <div
-                                 id="modal_edit_{{ field.field_name }}"
-                                 hx-post="/bff/multiselect"
-                                 hx-ext="json-enc"
-                                 hx-vals='{
-                                    "module": "{{ field.module }}",
-                                    "model": "{{ field.model }}",
-
-                                    "prefix": "{{ model.create.prefix }}",
-                                    "name": "{{ field.field_name }}_id",
-                                    "required": "{{ field.required }}"
-                                 }'
-                                 hx-trigger="load"
-                            >
-                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
-                            </div>
-                        {% elif field.type == 'enum' %}
-                            <div>
-                                <select
-                                        name="{{ model.create.prefix }}{{ field.field_name }}"
-                                        class="form-select mb-3 form-control"
-                                        aria-label="Default select example"
-                                >
-                                    {% for s in field.enums %}
-                                        <option value="{{ s.value }}"> {{ s.name }} </option>
-                                    {% endfor %}
-                                </select>
-                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
-                            </div>
-                        {% elif field.type == 'datetime'%}
-                            <div>
-                                <input class="form-control" type="text" name="{{ model.create.prefix }}{{ field.field_name }}"
-                                       {% if field.required %} aria-required="true" {% endif %}
-                                       onfocus="(this.type='date')"
-                                       placeholder="{{ field.title }}" id="{{ field.field_name }}">
-                            <input href="#" tabindex="-1" class="input form-control disabled placeholder col htmx-indicator" ></input>
-                            </div>
-                        {% elif field.type =='number' %}
-                            <input class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title }}" value="">
-                        {% elif field.type =='phone' %}
-                            <input class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title }}" value="">
-                        {% elif field.type =='bool' %}
-                            <div class="form-check form-switch mb-3">
-                                <label class="form-check-label" for="{{ model.create.prefix }}{{ field.field_name }}">{{ field.title}}</label>
-                                <input class="form-check-input" type="checkbox" role="switch" id="{{ model.create.prefix }}{{ field.field_name }}" checked="">
-                            </div>
-                        {% else %}
-                            <input type="number" class="form-control" name="{{ field.field_name }}" placeholder="Enter {{ field.title or c  }}" value="">
-                        {% endif %}
                     </div>
                     {% if loop.index % 3 == 0 %}
                         </div>

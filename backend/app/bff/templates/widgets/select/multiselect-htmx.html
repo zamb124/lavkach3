@@ -12,8 +12,6 @@
         hx-target='closest .choices'
         hx-include="[name='search_terms']"
         hx-vals='{
-            "module": "{{ model.select.field.module }}",
-            "model":"{{ model.select.field.model }}",
             "select_in": "select_in"
         }'
         hx-trigger="search delay:0.5s"

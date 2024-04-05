@@ -1,12 +1,12 @@
-<div id="table"
+<div id="{{ table.prefix }}"
      hx-post="/base/table"
      hx-ext="json-enc"
      hx-vals='{
-        "module": "{{ model.module }}",
-        "model": "{{ model.model }}"
+        "module": "{{ table.module }}",
+        "model": "{{ table.model }}",
      }'
-     hx-trigger="change from:#filter delay:500ms, load, update delay:500ms"
-     hx-include="{% if filter %}{{ filter }}{% else %}#filter{% endif %}"
+     hx-trigger="change from:{{ '#' ~ table.filter.prefix }} delay:500ms, load, update delay:500ms"
+     hx-include="{{ '#' ~ table.filter.prefix }}"
 >
     <div class="card htmx-indicator ">
         <table class="table ">

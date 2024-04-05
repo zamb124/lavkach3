@@ -41,63 +41,23 @@
                         trigger="loop"
                         style="width:150px;height:150px">
                 </lord-icon>
-            <div class="row g-2">
-                {% for field in model.view.line.fields if not field.field_name.endswith('id')  %}
+            <div class="row">
+               {% for field in model.view.line.fields if not field.type =='dict' and field.field_name not in ('id', 'lsn') %}
                         {%  if loop.length % 2 != 0 and loop.first %}
-                            <div class="row g-2">
+                            <div class="row">
                         {% endif %}
                         {% if loop.index0 % 3 == 0 %}
-                            <div class="row g-2">
+                            <div class="row">
                         {% endif %}
                             <div class="col">
-                        {% if field.type == 'model_rel' %}
-                            <div>
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title}}</p>
-                                <h5 class="fs-3 mb-0"> <a href="#" class="text-danger"  hx-trigger="click" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-swap="innerHTML" hx-params="none"
-                               hx-get="/base/modal-view?module={{ field.module }}&model={{ field.model }}&id={{ field.val.id }}"><i
-                                    class="ri-links-fill fs-3"></i>  {{ field.val.title }}</a></h5>
-                            </div>
-                        {% elif field.type == 'ids' %}
-                            <div>
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title}}</p>
-                            <div
-                                 hx-ext="json-enc"
-                                 hx-post="/bff/badges"
-                                 hx-vals='{
-                                    "module": "{{ field.module }}",
-                                    "model": "{{ field.model }}",
-                                    "value": "{{ field.val if field.val else '' }}",
-                                    "prefix": "{{ model.update.prefix }}",
-                                    "name": "{{ field.model }}_ids",
-                                    "required": "{{ field.required }}"
-                                 }'
-                                 hx-include="this"
-                                 hx-trigger="load"
-                            ></div>
-                            </div>
-                        {% elif field.type == 'datetime'%}
-                            <div>
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
-                                <h5 class="fs-3 mb-0">{{field.val.strftime('%Y-%m-%d') if field.val else ''}}</h5>
-                            </div>
-                        {% elif field.type == 'phone'%}
-                            <div>
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
-                                <h5 class="fs-3 mb-0">{{ field.val.international if field.val else ''}}</h5>
-                            </div>
-                        {% else %}
-                            <div>
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
-                                <h5 class="fs-3 mb-0">{{ field.val.english_name or field.val.name or field.val}}</h5>
-                            </div>
 
-                        {% endif %}
+                       {{ field.as_view()|safe }}
+
                         </div>
                         {% if loop.index % 3 == 0 %}
                             </div>
                         {% endif %}
-                {% endfor %}
+                    {% endfor %}
                 </div>
             </div>
         </div>

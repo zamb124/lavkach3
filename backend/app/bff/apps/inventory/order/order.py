@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from fastapi_htmx import htmx
 
 from app.bff.dff_helpers.htmx_decorator import s
-from app.bff.dff_helpers.schema_recognizer import HtmxConstructor as HtmxOrm
+from app.bff.dff_helpers.schema_recognizer import ModelView as HtmxOrm
 
 order_router = APIRouter()
 

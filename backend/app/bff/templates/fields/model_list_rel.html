@@ -1,0 +1,22 @@
+{% block as_view %}
+{% set modal_id = 'modal-' + field.prefix %}
+    <div class="row">
+        <p style="border-top-width: 10px; margin-top: 10px;margin-bottom: 0px;" class="text-muted text-uppercase text-start">{{ field.title|capitalize}}:</p>
+    </div>
+<div class="row">
+    <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title}}</p>
+    <h5 class="fs-3 mb-0"> <a href="#" class="text-danger" data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{ modal_id }}"
+   hx-target="#{{ modal_id }}" hx-swap="innerHTML" hx-params="none"
+   hx-get="/base/modal-view?module={{ field.module }}&model={{ field.model }}&id={{ field.val.id }}"><i
+        class="ri-links-fill fs-3"></i>  {{ field.val.title }}</a></h5>
+</div>
+
+<div id="{{modal_id}}" class="modal modal-blur fade" data-bs-backdrop="false" style="display: none" aria-hidden="false" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
+{% endblock %}
+{% block as_table %}
+<td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% block as_form %}
+    <div class="row">
+        <p style="border-top-width: 10px; margin-top: 10px;margin-bottom: 0px;" class="text-muted text-uppercase text-start">{{ field.title|capitalize}}:</p>
+    </div>
+    <div class="row" style="margin-right: 0px; margin-left: 0px;">
+        <input
+                class="form-control"
+                {% if field.required %} required {% endif %}
+                name="{{ field.prefix ~ field.field_name }}"
+                placeholder="Enter {{ field.title }}"
+                value="{{ field.val if field.val else "" }}"
+        >
+    </div>
+{% endblock %}
+{% block as_view %}
+    <div>
+        <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
+        <h5 class="fs-5 mb-0">{{ field.val.english_name or field.val.name or field.val }}</h5>
+    </div>
+{% endblock %}
+
+{% block as_table_header %}
+    <th  class="{{ field.field_name }}">{{ field.title }}</th>
+{% endblock %}
+
+{% block as_table %}
+    <td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
+{% endblock %}

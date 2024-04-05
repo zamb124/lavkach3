@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from fastapi_htmx import htmx
 
 from app.bff.dff_helpers.htmx_decorator import s
-from app.bff.dff_helpers.schema_recognizer import HtmxConstructor
+from app.bff.dff_helpers.schema_recognizer import ModelView
 
 order_type_router = APIRouter()
 
@@ -18,6 +18,6 @@ async def order_type(request: Request):
         2 - модуль/сервис и модель lля фильтрации
         3 - какие фильтры используем на странице (важно, что порядок будет тот же)
     """
-    model = HtmxConstructor(request, 'inventory', 'order_type')
+    model = ModelView(request, 'inventory', 'order_type')
 
     return {'model': model}

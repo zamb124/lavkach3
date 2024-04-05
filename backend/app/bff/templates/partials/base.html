@@ -39,6 +39,7 @@
                 color: transparent;
             }
 
+
             .choices {
                 position: relative;
                 margin-bottom: 0px;
@@ -58,57 +59,76 @@
                 font-size: 20px;
                 right: 40px;
             }
+
             .is-valid {
                 border: 1px solid var(--vz-form-valid-border-color) !important;
                 border-radius: 10px !important;
             }
+
             .is-valid::after {
                 position: absolute;
                 font-weight: 900;
                 background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%233cd188' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
                 background-position: right calc(1.375em + 1.5rem) center !important;
-                padding-right: 4.95rem;
                 color: var(--vz-form-valid-border-color);
                 font-size: 20px;
                 right: 40px;
             }
+
+            .choices[data-type*=select-one] .choices__inner {
+                border-radius: 10px !important;
+            }
+
+            .choices[data-type*=select-one] .choices__input {
+                border-radius: 10px !important;
+            }
+
             .card {
                 border-radius: 20px;
             }
+
             .card-header {
                 border-radius: 20px;
             }
+
             .btn {
                 border-radius: 10px;
             }
+
             .card-header:first-child {
                 border-radius: 10px;
             }
+
             .table {
                 border-radius: 20px;
             }
+
             .table-responsive {
                 border-radius: 20px;
             }
+
             .form-control {
                 border-radius: 10px;
             }
+
             .form-control.is-valid {
                 border-radius: 10px;
                 background-position: right calc(1.375em + 1.5rem) center !important;
             }
+
             .app-menu {
                 border-bottom-left-radius: 20px;
                 border-bottom-right-radius: 20px;
             }
+
             .page-title-box {
                 border-bottom-left-radius: 20px;
                 border-bottom-right-radius: 20px;
             }
 
 
-            select option[selected]{
-            background-color: var(--vz-form-valid-border-color)
+            select option[selected] {
+                background-color: var(--vz-form-valid-border-color)
             }
         </style>
     {% endblock css %}
@@ -255,9 +275,9 @@
             });
             let result = await response.json();
             const parsed = parseJwt(result.token)
-            const expires = await new Date(parsed.exp*1000)
-            document.cookie = "token="+result.token+"; expires=" + expires  + ";path=/;"
-            document.cookie = "refresh_token="+result.token+"; expires=" + expires  + ";path=/;"
+            const expires = await new Date(parsed.exp * 1000)
+            document.cookie = "token=" + result.token + "; expires=" + expires + ";path=/;"
+            document.cookie = "refresh_token=" + result.token + "; expires=" + expires + ";path=/;"
             return true
 
         }
@@ -366,6 +386,7 @@
                 htmx.trigger("#table", "update");
             }
         })
+
     </script>
 
 

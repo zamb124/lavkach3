@@ -1,4 +1,40 @@
-{% set modal_id = 'modal-' + model.prefix %}
+{% block widget %}
+<div id="{{ 'table_' ~ table.prefix }}"
+     hx-post="/base/table"
+     hx-ext="json-enc"
+     hx-vals='{
+        "module": "{{ table.module }}",
+        "model": "{{ table.model }}",
+        "prefix": "{{ table.prefix }}"
+     }'
+     hx-trigger="change from:{{ '#filter_' ~ table.prefix }} delay:500ms, load, update delay:500ms"
+     hx-include="{{ '#filter_' ~ table.prefix }}"
+>
+    <div class="card htmx-indicator ">
+        <table class="table ">
+            <thead class="text-muted table-light">
+            <tr class="placeholder-lg placeholder-glow">
+                {% for i in range(8) %}
+                    <th><span class="placeholder col-12"></span></th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in range(8) %}
+                <tr class="placeholder-glow">
+                    {% for i in range(8) %}
+                        <td><span class="placeholder col-12"></span></td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!--end card-->
+</div>
+{% endblock %}
+
+{% block table %}
 <div class="card">
     <div class="card-body">
         <div class="table-responsive " style="width: auto; min-height: 400px"  data-show-columns="true">
@@ -14,7 +50,7 @@
                         </div>
                     </th>
                     {% for field in table.header.fields if field.widget.table %}
-                            <th  class="{{ field.field_name }}">{{ field.title }}</th>
+                            {{ field.as_table_header()|safe }}
                     {% endfor %}
                     <th>Active</th>
                 </tr>
@@ -33,18 +69,18 @@
                             <td>
                                 <ul class="list-inline hstack gap-2 mb-0">
                                     <li class="list-inline-item edit" title="Edit">
-                                        <a href="#" data-bs-toggle="modal" hx-include="this" hx-trigger="click"  data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ model.module }}&model={{ model.model }}&id={{ line.id }}"
+                                        <a href="#" data-bs-toggle="modal" hx-include="this" hx-trigger="click"  data-bs-target="{{'#modal_' ~ table.prefix}}" hx-target="{{'#modal_' ~ table.prefix}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ table.module }}&model={{ table.model }}&id={{ line.id }}"
                                            class="text-success d-inline-block edit-item-btn"> <i
                                                 class="ri-eye-fill fs-16"></i></a>
                                     </li>
                                     <li class="list-inline-item edit" title="Edit">
-                                        <a href="#" data-bs-toggle="modal" hx-include="this" hx-trigger="click"  data-bs-target="#{{ modal_id }}" hx-target="#{{modal_id}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-get?module={{ model.module }}&model={{ model.model }}&id={{ line.id }}"
+                                        <a href="#" data-bs-toggle="modal" hx-include="this" hx-trigger="click"  data-bs-target="{{'#modal_' ~ table.prefix}}" hx-target="{{'#modal_' ~ table.prefix}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-get?module={{ table.module }}&model={{ table.model }}&id={{ line.id }}"
                                            class="text-primary d-inline-block edit-item-btn"> <i
                                                 class="ri-pencil-fill fs-16"></i></a>
                                     </li>
                                     <li class="list-inline-item" title="Remove">
-                                        <a class="text-danger d-inline-block remove-item-btn"  data-bs-toggle="modal" hx-trigger="click" data-bs-target="#{{modal_id}}" hx-target="#{{modal_id}}" hx-swap="innerHTML"
-                                            hx-get="/base/modal-delete?module={{ model.module }}&model={{ model.model }}&id={{ line.id }}">
+                                        <a class="text-danger d-inline-block remove-item-btn"  data-bs-toggle="modal" hx-trigger="click" data-bs-target="{{'#modal_' ~ table.prefix}}" hx-target="{{'#modal_' ~ table.prefix}}" hx-swap="innerHTML"
+                                            hx-get="/base/modal-delete?module={{ table.module }}&model={{ table.model }}&id={{ line.id }}">
                                             <i class="ri-delete-bin-3-fill fs-16"></i>
                                         </a>
                                     </li>
@@ -53,14 +89,15 @@
                         </tr>
                     {% if loop.last %}
                         <div
-                            hx-include="#filter"
+                            hx-include="{{ '#filter_' ~ table.prefix }}"
                             hx-post="/base/table"
                             hx-ext="json-enc"
                             hx-trigger="revealed" hx-swap="afterend" hx-select="#rows"
                                  hx-vals='{
-                                    "module": "{{ model.module }}",
-                                    "model": "{{ model.model }}",
-                                    "cursor": "{{ line.lsn }}"
+                                    "module": "{{ table.module }}",
+                                    "model": "{{ table.model }}",
+                                    "cursor": "{{ line.lsn }}",
+                                    "prefix": "{{ table.prefix }}"
                                  }'
                         ></div>
                     {% endif %}
@@ -74,8 +111,9 @@
     </div>
 </div>
 
-<div id="{{modal_id}}" class="modal modal-blur fade" data-bs-backdrop="false" style="display: none" aria-hidden="false" tabindex="-1">
+<div id="{{'modal_' ~ table.prefix}}" class="modal modal-blur fade" data-bs-backdrop="false" style="display: none" aria-hidden="false" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content"></div>
     </div>
 </div>
+{% endblock %}

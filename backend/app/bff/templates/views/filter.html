@@ -1,7 +1,22 @@
+{% block widget %}
+<div id="{{ 'filter_' ~ filter.prefix }}"
+      hx-ext="json-enc"
+      hx-post="/bff/filter"
+      hx-trigger="load"
+      hx-vars='{
+        "module": "{{ filter.module }}",
+        "model": "{{ filter.model }}",
+        "prefix": "{{ filter.prefix }}"
+      }'
+>
+    <!--HTMX CONTENT-->
+</div>
+{% endblock %}
+{% block filter %}
 <div class="card">
     <div class="card-body">
         <div class="row g-3">
-            {% for field in model.filter.fields %}
+            {% for field in filter.fields %}
                 {% if field.widget.filter and field.field_name != 'order_by' %}
                     <div class="col-xxl-2 col-sm-4">
                         {{ field.as_filter()|safe }}
@@ -20,3 +35,4 @@
         </div>
     </div>
 </div>
+{% endblock %}

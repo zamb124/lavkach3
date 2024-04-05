@@ -4,20 +4,20 @@ import uuid
 from typing import Annotated, Optional, Any
 
 import aiohttp
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi import Form
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from fastapi_htmx import htmx_init, htmx
-from pydantic import BaseModel, field_validator, UUID4
+from pydantic import BaseModel, field_validator, UUID4, model_validator
 from starlette.datastructures import QueryParams
-from starlette.responses import Response
+from starlette.responses import Response, JSONResponse
 
 from app.bff.bff_config import config
 from app.bff.bff_service import BffService
 from app.bff.dff_helpers.filters_cleaner import clean_filter
 from app.bff.dff_helpers.htmx_decorator import s
-from app.bff.dff_helpers.schema_recognizer import HtmxConstructor
+from app.bff.dff_helpers.schema_recognizer import ModelView
 from app.bff.template_spec import templates
 
 htmx_init(templates, file_extension='html')
@@ -151,56 +151,47 @@ async def select(request: Request, selschema: SelectSchema):
 class FilterSchema(BaseModel):
     module: str
     model: str
+    prefix: str
 
 
 @index_router.post("/bff/filter", response_class=HTMLResponse)
-@htmx(*s('widgets/filter/filter-htmx'))
 async def filter(request: Request, filschema: FilterSchema):
     """
      Универсальный запрос, который отдает список любого обьекта по его модулю и модели
     """
-    htmx_orm = HtmxConstructor(request, filschema.module, filschema.model)
-    await htmx_orm.get_filter()
-    return {'model': htmx_orm}
-
-    v = selschema.search_terms
-    params = QueryParams({'search': v if v else ''})
-    async with getattr(request.scope['env'], selschema.module) as a:
-        data = await a.list(params=params, model=selschema.model)
-    if selschema.value:
-        for i in data['data']:
-            if selschema.value == i['id']:
-                selschema.title = i.get('title') or i.get('code') or i.get('english_language') or i.get('nickname')
-    return {
-        'name': selschema.name,
-        'module': selschema.module,
-        'model': selschema.model,
-        'prefix': selschema.prefix,
-        'required': selschema.required,
-        'value': selschema.value,
-        'title': selschema.title,
-        'objects': data if type(data) is list else data.get('data')
-    }
+    htmx_orm = ModelView(request, filschema.module, filschema.model, prefix=filschema.prefix)
+    return htmx_orm.get_filter()
 
 
 class MultiSelectSchema(BaseModel):
     module: str
     model: str
     prefix: str
-    name: str
-    value: Any = []
-    required: bool = False
-    title: str = None
-    search_terms: Any = None
+    field_name: str
+    select_in: str | None
+    values: list[UUID4] = []
+    search_terms: str
 
-    @field_validator('value')
     @classmethod
-    def check_none(cls, v: Any):
+    def parse_values(cls, v: str):
         try:
             return list(set(eval(v)))
         except Exception as ex:
             pass
-
+    @model_validator(mode='before')
+    @classmethod
+    def check_card_number_omitted(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            prefix = data['prefix']
+            field_name = data['field_name']
+            values = cls.parse_values(data['values'])
+            select_in = data.get('select_in')
+            if select_in:
+                values = data[f'{prefix}{field_name}']
+            data['select_in'] = select_in
+            data['values'] = values
+            data['search_terms'] = max(data['search_terms']) if data.get('search_terms') else ''
+        return data
 
 @index_router.post("/bff/multiselect", response_class=HTMLResponse)
 @htmx(*s('widgets/select/multiselect-htmx'))
@@ -208,9 +199,56 @@ async def multiselect(request: Request, selschema: MultiSelectSchema):
     """
      Универсальный запрос, который отдает список любого обьекта по его модулю и модели
     """
-    htmx_conn = HtmxConstructor(request, module=selschema.module, model=selschema.model)
-    await htmx_conn.multiselect()
+    htmx_conn = ModelView(request, module=selschema.module, model=selschema.model)
+    await htmx_conn.multiselect(
+        prefix=selschema.prefix,
+        field_name=selschema.field_name,
+        search=selschema.search_terms,
+        current_values=selschema.values
+    )
     return {'model': htmx_conn}
+
+class SearchSchema(BaseModel):
+    module: str
+    model: str
+    query: str = ''
+@index_router.get("/bff/search", response_class=JSONResponse)
+async def search(request: Request, schema:SearchSchema = Depends(SearchSchema)):
+    """
+     Универсальный запрос поиска
+    """
+    params = QueryParams({'search': schema.query})
+    async with getattr(request.scope['env'], schema.module) as a:
+        data = await a.list(params=params, model=schema.model)
+    return [
+        {
+            'value': i['id'],
+            'label': i.get('title') or i.get('name') or i.get('english_name')
+        }
+        for i in data['data']
+    ]
+
+class SearchIds(BaseModel):
+    module: str
+    model: str
+    id__in: str
+@index_router.get("/bff/get_by_ids", response_class=JSONResponse)
+async def get_by_ids(request: Request, schema: SearchSchema = Depends(SearchIds)):
+    """
+     Универсальный запрос поиска
+    """
+    if not schema.id__in:
+        return []
+    params = QueryParams({'id__in': schema.id__in})
+    async with getattr(request.scope['env'], schema.module) as a:
+        data = await a.list(params=params, model=schema.model)
+    return [
+        {
+            'value': i['id'],
+            'label': i.get('title') or i.get('name') or i.get('english_name')
+        }
+        for i in data['data']
+    ]
 
 
 class BadgesSchema(BaseModel):
@@ -235,13 +273,12 @@ async def badge_ids_view(request: Request, badschema: BadgesSchema):
     """
      Отдает баджики для _ids
     """
-    htmx_con = HtmxConstructor(request, badschema.module, badschema.model, join_related=False)
+    htmx_con = ModelView(request, badschema.module, badschema.model, join_related=False)
     if badschema.value:
         params = QueryParams({'id__in': ','.join(badschema.value)})
         await htmx_con.get_table(params=params)
     else:
-        await htmx_con.get_header()
-
+         htmx_con.get_header()
     return {'model': htmx_con}
 
 
@@ -249,10 +286,10 @@ class TableSchema(BaseModel):
     module: str
     model: str
     cursor: Optional[int] = 0
+    prefix: str
 
 
 @index_router.post("/base/table", response_class=HTMLResponse)
-@htmx(*s('widgets/table/table-htmx'))
 async def table(request: Request, schema: TableSchema):
     """
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
@@ -262,9 +299,8 @@ async def table(request: Request, schema: TableSchema):
     if form_data.get('prefix'):
         data = clean_filter(form_data, form_data['prefix'])
         qp = {i: v for i, v in data.items() if v}
-    htmx_orm = HtmxConstructor(request, params=qp, module=schema.module, model=schema.model)
-    await htmx_orm.get_table()
-    return {'model': htmx_orm}
+    view = ModelView(request, params=qp, module=schema.module, model=schema.model, prefix=schema.prefix)
+    return await view.get_table()
 
 
 @index_router.get("/base/modal-get", response_class=HTMLResponse)
@@ -273,7 +309,7 @@ async def modal_update_get(request: Request, module: str, model: str, id: uuid.U
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    htmx_con = HtmxConstructor(request, module, model)
+    htmx_con = ModelView(request, module, model)
     await htmx_con.get_update(model_id=id)
 
     return {'model': htmx_con}
@@ -347,8 +383,8 @@ async def modal_create_get(request: Request, module: str, model: str, id: str = 
          Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
         """
 
-    htmx_con = HtmxConstructor(request, module, model)
-    await htmx_con.get_create(model_id=id)
+    htmx_con = ModelView(request, module, model)
+    htmx_con.get_create(model_id=id)
 
     return {'model': htmx_con}
 
@@ -386,7 +422,7 @@ async def modal_view_get(request: Request, module: str, model: str, id: uuid.UUI
     """
      Универсальный запрос, который отдает форму модели на просмотр
     """
-    htmx_con = HtmxConstructor(request, module, model)
+    htmx_con = ModelView(request, module, model)
     await htmx_con.get_view(model_id=id)
 
     return {'model': htmx_con}
