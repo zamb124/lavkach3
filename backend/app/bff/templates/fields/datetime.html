@@ -19,5 +19,5 @@
     </div>
 {% endblock %}
 {% block as_table %}
-<td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
+<td class="{{ field.field_name }}">{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}<small class="text-muted"> {{ field.val.strftime('%H-%M') if field.val else '' }}</small></td>
 {% endblock %}

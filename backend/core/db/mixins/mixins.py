@@ -80,4 +80,4 @@ class LsnMixin:
 
 
 class AllMixin(LsnMixin, CompanyMixin, TimestampMixin, VarsMixin):
-    pass
+    ...

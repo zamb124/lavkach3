@@ -38,8 +38,7 @@
 <div class="card">
     <div class="card-body">
         <div class="table-responsive " style="width: auto; min-height: 400px"  data-show-columns="true">
-            <table class="table table-hover table-striped" id="table"
-                   data-show-columns="true"
+            <table class="table table-hover table-striped" id="{{'table_' ~ table.prefix }}"
             >
                 <thead class="text-muted table-light">
                 <tr class="text-uppercase fs-13">
@@ -116,4 +115,17 @@
         <div class="modal-content"></div>
     </div>
 </div>
+    <script>
+  var table = document.getElementById('{{'table_' ~ table.prefix }}')
+{#  function toggleColumnVisibility(columnIndex) {#}
+{#      debugger#}
+{#  // Получаем столбцы таблицы#}
+{#  var cols = document.querySelectorAll(`td:nth-child(${columnIndex}), th:nth-child(${columnIndex})`);#}
+{#  cols.forEach(function (col) {#}
+{#    // Теперь управляем видимостью#}
+{#    col.style.display = col.style.display === 'none' ? '' : 'none';#}
+{#  });#}
+{#}#}
+{#toggleColumnVisibility(1)#}
+</script>
 {% endblock %}

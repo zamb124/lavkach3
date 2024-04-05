@@ -90,7 +90,10 @@
                     } catch (err) {
                         console.error(err);
                     }
-                })
+                }).then(() => {
+                    choices.input.element.focus()
+                });
+
             });
 
             check_valid()
