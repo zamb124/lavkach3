@@ -67,18 +67,46 @@
                             {% endfor %}
                             <td>
                                 <ul class="list-inline hstack gap-2 mb-0">
-                                    <li class="list-inline-item edit" title="Edit">
-                                        <a href="#" data-bs-toggle="modal" hx-include="this" hx-trigger="click"  data-bs-target="{{'#modal_' ~ table.prefix}}" hx-target="{{'#modal_' ~ table.prefix}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ table.module }}&model={{ table.model }}&id={{ line.id }}"
-                                           class="text-success d-inline-block edit-item-btn"> <i
-                                                class="ri-eye-fill fs-16"></i></a>
+                                    <li class="list-inline-item view-btn" title="View">
+                                        <a href="#"
+                                           data-bs-toggle="modal"
+                                           hx-include="none"
+                                           hx-trigger="click"
+                                           data-bs-target="{{'#modal_' ~ table.prefix}}"
+                                           hx-target="{{'#modal_' ~ table.prefix}}"
+                                           hx-ext="json-enc"
+                                           hx-post="/base/modal-update"
+                                           hx-vars='{
+                                           "module": "{{ table.module }}",
+                                           "model": "{{ table.model }}",
+                                           "id": "{{ line.id }}",
+                                           "prefix": "{{ table.prefix }}",
+                                           }'
+                                           class="text-success d-inline-block edit-item-btn">
+                                            <i class="ri-eye-fill fs-16"></i>
+                                        </a>
                                     </li>
                                     <li class="list-inline-item edit" title="Edit">
-                                        <a href="#" data-bs-toggle="modal" hx-include="this" hx-trigger="click"  data-bs-target="{{'#modal_' ~ table.prefix}}" hx-target="{{'#modal_' ~ table.prefix}}" hx-swap="innerHTML transition:true" hx-get="/base/modal-get?module={{ table.module }}&model={{ table.model }}&id={{ line.id }}"
-                                           class="text-primary d-inline-block edit-item-btn"> <i
-                                                class="ri-pencil-fill fs-16"></i></a>
+                                        <a href="#"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="{{'#modal_' ~ table.prefix}}"
+                                           hx-include="none"
+                                           hx-trigger="click"
+                                           hx-target="{{'#modal_' ~ table.prefix}}"
+                                           hx-ext="json-enc"
+                                           hx-post="/base/modal-update"
+                                           hx-vars='{
+                                           "module": "{{ table.module }}",
+                                           "model": "{{ table.model }}",
+                                           "id": "{{ line.id }}",
+                                           "prefix": "{{ table.prefix }}",
+                                           }'
+                                           class="text-success d-inline-block edit-item-btn">
+                                            <i class="ri-pencil-fill fs-16"></i>
+                                        </a>
                                     </li>
                                     <li class="list-inline-item" title="Remove">
-                                        <a class="text-danger d-inline-block remove-item-btn"  data-bs-toggle="modal" hx-trigger="click" data-bs-target="{{'#modal_' ~ table.prefix}}" hx-target="{{'#modal_' ~ table.prefix}}" hx-swap="innerHTML"
+                                        <a class="text-danger d-inline-block remove-item-btn"  data-bs-toggle="modal" data-bs-target="{{'#modal_' ~ table.prefix}}" hx-trigger="click"  hx-target="{{'#modal_' ~ table.prefix}}"
                                             hx-get="/base/modal-delete?module={{ table.module }}&model={{ table.model }}&id={{ line.id }}">
                                             <i class="ri-delete-bin-3-fill fs-16"></i>
                                         </a>
@@ -110,22 +138,7 @@
     </div>
 </div>
 
-<div id="{{'modal_' ~ table.prefix}}" class="modal modal-blur fade" data-bs-backdrop="false" style="display: none" aria-hidden="false" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content"></div>
-    </div>
-</div>
-    <script>
-  var table = document.getElementById('{{'table_' ~ table.prefix }}')
-{#  function toggleColumnVisibility(columnIndex) {#}
-{#      debugger#}
-{#  // Получаем столбцы таблицы#}
-{#  var cols = document.querySelectorAll(`td:nth-child(${columnIndex}), th:nth-child(${columnIndex})`);#}
-{#  cols.forEach(function (col) {#}
-{#    // Теперь управляем видимостью#}
-{#    col.style.display = col.style.display === 'none' ? '' : 'none';#}
-{#  });#}
-{#}#}
-{#toggleColumnVisibility(1)#}
-</script>
+
+
+
 {% endblock %}

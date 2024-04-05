@@ -14,6 +14,7 @@ from starlette.requests import Request
 
 from app.bff.bff_config import config
 from app.bff.dff_helpers.filters_cleaner import clean_filter
+from core.fastapi.adapters import BaseAdapter
 from core.types import TypeLocale, TypePhone, TypeCountry, TypeCurrency
 from random import random
 
@@ -203,7 +204,8 @@ class HtmxUpdate(BaseModel):
     """"
         Описание строчки
     """
-    ...
+    module:str
+    model:str
     line: HtmxLine = Field(default=[], description='Строка')
     prefix: str
 
@@ -233,6 +235,7 @@ class ModelView:
     module: str
     model: str
     schemas: HtmxConstructorSchemas = HtmxConstructorSchemas()
+    adapter: BaseAdapter
     data: Optional[dict] = None
     params: Optional[QueryParams] = None
     param_filter: Optional[str] = None
@@ -270,6 +273,8 @@ class ModelView:
         self.schemas.create = self.services[self.module]['schema'][self.model]['create']
         self.schemas.update = self.services[self.module]['schema'][self.model]['update']
         self.schemas.filter = self.services[self.module]['schema'][self.model]['filter']
+        adapter = self.services[self.module]['adapter']
+        self.adapter = adapter(self.request, self.module, self.model)
 
         if data: self._check_data(data)
         if params:
@@ -468,7 +473,7 @@ class ModelView:
         return self.create
 
     async def get_update(self, model_id: uuid.UUID, module: str = None, model: str = None,
-                         exclude: list = None) -> HtmxUpdate:
+                         exclude: list = None) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
@@ -484,8 +489,12 @@ class ModelView:
             exclude=exclude
         )
         assert len(lines) == 1 or 0
-        self.update = HtmxUpdate(line=lines[0], prefix=lines[0].prefix)
-        return self.update
+        self.update = HtmxUpdate(model=self.model, module=self.module, line=lines[0], prefix=lines[0].prefix)
+        return render_block(
+            environment=templates.env,
+            template_name=f'views/modal-update.html',
+            block_name='widget', update=self.update
+        )
 
     async def get_view(self, model_id: uuid.UUID, exclude: list = None) -> HtmxView:
         """
@@ -713,4 +722,22 @@ class ModelView:
             template_name=f'views/filter.html',
             block_name='widget',
             filter=filter
+        )
+
+    def as_header(self):
+        header = self.get_header()
+        return render_block(
+            environment=templates.env,
+            template_name=f'views/header.html',
+            block_name='widget',
+            header=header
+        )
+
+    def send_message(self, message:str):
+        return render_block(
+            environment=templates.env,
+            template_name=f'components/message.html',
+            block_name='success',
+            model=self,
+            message=message
         )

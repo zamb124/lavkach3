@@ -1,13 +1,14 @@
+{% block widget %}
 <div class="card">
     <div class="card-header">
         <div class="d-flex align-items-center flex-wrap gap-2">
             <div class="flex-grow-1">
                 <button class="btn btn-secondary add-btn"
-                        hx-get="/base/modal-create?module={{ model.module }}&model={{ model.model }}"
+                        hx-get="/base/modal-create?module={{ header.module }}&model={{ header.model }}&prefix={{ header.prefix }}"
                         data-bs-toggle="modal" hx-trigger="click"
-                        data-bs-target="#{{ modal_id }}" hx-target="#{{ modal_id }}"
+                        data-bs-target="{{'#modal_' ~ header.prefix}}" hx-target="{{'#modal_' ~ header.prefix}}"
                         hx-swap="innerHTML">
-                    <i class="ri-add-fill me-1 align-bottom"></i> Add {{ model.model|capitalize }}
+                    <i class="ri-add-fill me-1 align-bottom"></i> Add {{ header.model|capitalize }}
                 </button>
             </div>
             <div class="flex-shrink-0">
@@ -15,7 +16,7 @@
                     <button class="btn btn-soft-danger" id="remove-actions"
                             onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i>
                     </button>
-                    <button class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#filter"><i
+                    <button class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="{{ '#filter_' ~ header.prefix }}"><i
                             class="ri-filter-2-line me-1 align-bottom"></i> Filters
                     </button>
                     <button class="btn btn-soft-success">Import</button>
@@ -33,3 +34,4 @@
         </div>
     </div>
 </div>
+{% endblock %}

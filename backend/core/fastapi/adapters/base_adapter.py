@@ -58,6 +58,7 @@ class BaseAdapter:
             self.model = model
         self.domain = f"http://{config.services[self.module]['DOMAIN']}:{config.services[self.module]['PORT']}"
         self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token')}
+        self.client = Client(headers=self.headers)
 
     async def __aenter__(self):
         self.client = Client(headers=self.headers)

@@ -302,23 +302,34 @@ async def table(request: Request, schema: TableSchema):
     view = ModelView(request, params=qp, module=schema.module, model=schema.model, prefix=schema.prefix)
     return await view.get_table()
 
+class ModalUpdateSchema(BaseModel):
+    prefix: str
+    module: str
+    model: str
+    id: UUID4
+    class Config:
+        extra = 'allow'
 
-@index_router.get("/base/modal-get", response_class=HTMLResponse)
-@htmx(*s('widgets/modal-crud/modal-update-htmx'))
-async def modal_update_get(request: Request, module: str, model: str, id: uuid.UUID):
+@index_router.post("/base/modal-update", response_class=HTMLResponse)
+async def modal_update(request: Request, schema: ModalUpdateSchema):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    htmx_con = ModelView(request, module, model)
-    await htmx_con.get_update(model_id=id)
+    model = ModelView(request, schema.module, schema.model, prefix=schema.prefix)
+    if data := schema.model_extra:
+        data = clean_filter(data, schema.prefix)
+        update = model.schemas.update(**data)
+        responce = await model.adapter.update(id=schema.id, model=schema.model, json=update.model_dump(mode='json'))
+        return model.send_message(f'{model.model.capitalize()}: is Updated')
+    else:
+        return await model.get_update(model_id=schema.id)
 
-    return {'model': htmx_con}
 
 
 class FormUpdateSchema(BaseModel):
-    modal_update_module: str
-    modal_update_model: str
-    modal_update_id: UUID4
+    module: str
+    model: str
+    id: UUID4
 
     class Config:
         extra = 'allow'
@@ -418,29 +429,14 @@ async def modal_create_post(request: Request, schema: FormCreateSchema):
 
 @index_router.get("/base/modal-view", response_class=HTMLResponse)
 @htmx(*s('widgets/modal-crud/modal-view-htmx'))
-async def modal_view_get(request: Request, module: str, model: str, id: uuid.UUID):
+async def modal_view_get(request: Request, module: str, model: str, id: uuid.UUID, prefix):
     """
      Универсальный запрос, который отдает форму модели на просмотр
     """
-    htmx_con = ModelView(request, module, model)
+    htmx_con = ModelView(request, module, model, prefix=prefix)
     await htmx_con.get_view(model_id=id)
 
     return {'model': htmx_con}
-
-
-@index_router.get("/base/card", response_class=HTMLResponse)
-@htmx(*s('widgets/card/card-htmx'))
-async def card(request: Request, module: str, model: str, id: str) -> dict:
-    """
-     Отдать карточку (title, created_at, updated_at)
-    """
-    async with getattr(request.scope['env'], module) as a:
-        data = await a.get(id=id, model=model)
-    return {
-        'title': data['title'],
-        'created_at': datetime.datetime.fromisoformat(data['created_at']),
-        'updated_at': datetime.datetime.fromisoformat(data['created_at']),
-    }
 
 
 @index_router.get("/base/dropdown-ids", response_class=HTMLResponse)

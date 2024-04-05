@@ -24,7 +24,6 @@
             });
             function check_valid(event) {
                 if (element.required) {
-
                     if (event){
                         if (event.type === 'choice') {
                             if (event.detail.choice.value) {
@@ -37,9 +36,10 @@
                                 choices.containerInner.element.classList.remove('is-valid');
                             }
                         }
+
                     } else {
-                        choices.containerInner.element.classList.add('is-invalid');
-                        choices.containerInner.element.classList.remove('is-valid');
+                        choices.containerInner.element.classList.remove('is-invalid');
+                        choices.containerInner.element.classList.add('is-valid');
                     }
                 } else {
                     choices.containerInner.element.classList.remove('is-invalid');
