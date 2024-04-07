@@ -111,7 +111,7 @@ class Config(CoreConfig):
             }
         },
         'inventory': {
-            'DOMAIN': '127.0.0.1',
+            'DOMAIN': 'inventory',
             'PORT': '8002',
             'adapter': InventoryAdapter,
             'schema': {
