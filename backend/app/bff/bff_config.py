@@ -111,7 +111,7 @@ class Config(CoreConfig):
             }
         },
         'inventory': {
-            'DOMAIN': 'inventory',
+            'DOMAIN': os.environ.get("INVENTORY_DOMAIN") or '127.0.0.1',
             'PORT': '8002',
             'adapter': InventoryAdapter,
             'schema': {
