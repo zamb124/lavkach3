@@ -37,7 +37,7 @@ class AdapterMidlleWare:
         conn = HTTPConnection(scope)
         e = env()
         for i, v in config.services.items():
-            e.__setattr__(i, v['adapter'](conn, i))
+            e.__setattr__(i, v['adapter'](conn, v, i))
         scope['env'] = e
         await self.app(scope, receive, send)
 

@@ -1,9 +1,5 @@
-import asyncio
-import datetime
-import uuid
 from typing import Annotated, Optional, Any
 
-import aiohttp
 from fastapi import APIRouter, Depends
 from fastapi import Form
 from fastapi import Request
@@ -12,12 +8,10 @@ from pydantic import BaseModel, field_validator, UUID4, model_validator
 from starlette.datastructures import QueryParams
 from starlette.responses import Response, JSONResponse
 
-from app.bff.bff_config import config
 from app.bff.bff_service import BffService
 from app.bff.dff_helpers.filters_cleaner import clean_filter
 from app.bff.dff_helpers.schema_recognizer import ModelView
 from app.bff.template_spec import templates
-
 
 
 class ExceptionResponseSchema(BaseModel):
@@ -60,16 +54,11 @@ async def login(request: Request, response: Response):
 )
 async def login(
         request: Request,
-        response: Response,
         username: Annotated[str, Form()],
         password: Annotated[str, Form()]):
-    async with aiohttp.ClientSession() as session:
-        body = {
-            'email': username,
-            'password': password
-        }
-        async with session.post('http://127.0.0.1:8001/api/basic/user/login', json=body) as bresp:
-            data = await bresp.json()
+
+    async with request.scope['env'].basic as a:
+        data = await a.login(username, password)
     return templates.TemplateResponse(request, 'components/write_ls.html', context={'token': data['token'], 'refresh_token': data['refresh_token']})
 
 

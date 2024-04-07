@@ -7,7 +7,9 @@ from starlette.requests import Request, HTTPConnection
 from fastapi.exceptions import RequestValidationError
 from core.config import config
 
+import logging
 
+logging.basicConfig(level=logging.INFO)
 
 class Client(httpx.AsyncClient):
     async def request(self, method: str, url: str, json=None, params=None, timeout=None):
@@ -18,6 +20,7 @@ class Client(httpx.AsyncClient):
                     query_param_cleaned.update({name: val})
         qp = QueryParams(query_param_cleaned)
         print('LOG::::',method, url, json, params)
+
         responce = await super().request(method=method, url=url, json=json, params=qp, timeout=timeout)
 
         if responce.status_code != 200:
@@ -47,18 +50,16 @@ class BaseAdapter:
     Так же при создании можно сразу указать и модуль и модель, если нужно много раз ходить
     """
     headers: dict
-    module: str
-    model: str = None
     client: Client = None
     domain: str = None
     request: Request
 
-    def __init__(self, conn: HTTPConnection, module: str = None, model: str = None):
+    def __init__(self, conn: HTTPConnection, config: dict, module: str = None, model: str = None):
         if module:
             self.module = module
         if model:
             self.model = model
-        self.domain = f"http://{config.services[self.module]['DOMAIN']}:{config.services[self.module]['PORT']}"
+        self.domain = f"http://{config['DOMAIN']}:{config['PORT']}"
         self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token')}
         if self.headers.get('Authorization'):
             self.client = Client(headers=self.headers)
