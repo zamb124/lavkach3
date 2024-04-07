@@ -26,7 +26,7 @@ class Config(BaseSettings):
     DB_USER_TEST: str = os.environ.get("DB_USER_TEST") or 'taxi'
     DB_PASS: str = os.environ.get("DB_PASS") or 'test'
     DB_PASS_TEST: str = os.environ.get("DB_PASS_TEST") or 'test'
-    DB_SSL: str = os.environ.get('DB_SSL') or 'false'
+    DB_SSL: str = os.environ.get('DB_SSL') or 'prefer'
     POSTGRES_TEST_DATABASE_URL: str = f'postgresql+asyncpg://{DB_USER_TEST}:{DB_PASS_TEST}@{DB_HOST_TEST}/postgres'
     TEST_WRITER_DB_URL: str = f'postgresql+asyncpg://{DB_USER_TEST}:{DB_PASS_TEST}@{DB_HOST_TEST}:{DB_PORT_TEST}/{DB_NAME_TEST}'
     WRITER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}?ssl={DB_SSL}'
