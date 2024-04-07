@@ -24,7 +24,7 @@ class BasicAdapter(BaseAdapter):
     async def login(self, username, password):
         path = f'/api/basic/user/login'
         body = {
-            'username': username,
+            'email': username,
             'password': password
         }
         responce = await self.client.post(self.domain + path, json=body, params=None)
