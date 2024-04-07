@@ -28,8 +28,8 @@ class Config(BaseSettings):
     DB_PASS_TEST: str = os.environ.get("DB_PASS_TEST") or 'test'
     POSTGRES_TEST_DATABASE_URL: str = f'postgresql+asyncpg://{DB_USER_TEST}:{DB_PASS_TEST}@{DB_HOST_TEST}/postgres'
     TEST_WRITER_DB_URL: str = f'postgresql+asyncpg://{DB_USER_TEST}:{DB_PASS_TEST}@{DB_HOST_TEST}:{DB_PORT_TEST}/{DB_NAME_TEST}'
-    WRITER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-    READER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    WRITER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require'
+    READER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require'
     JWT_SECRET_KEY: str = os.environ.get("JWT_SECRET_KEY") or 'secret'
     JWT_ALGORITHM: str = os.environ.get("JWT_ALGORITHM") or 'HS256'
     #SENTRY_SDN: str = os.environ.get("SENTRY_SDN")

@@ -44,7 +44,7 @@ def my_import(name):
 class Config(CoreConfig):
     services: dict = {
         'basic': {
-            'DOMAIN': '127.0.0.1',
+            'DOMAIN': 'basic',
             'PORT': '8001',
             'adapter': BasicAdapter,
             'schema': {
