@@ -25,7 +25,7 @@ from ..schemas.user_schemas import SignUpScheme, ChangeCompanyScheme
 from fastapi import Response
 
 from ...auth.api.schemas import RefreshTokenRequest
-from ...bus.managers import ws_manager
+#from ...bus.managers import ws_manager
 
 user_router = APIRouter()
 
@@ -105,7 +105,7 @@ async def send_ws_company_changed(user_id):
         user_id=user_id,
         message_type='COMPANY_CHANGED'
     )
-    a=1
+
 @user_router.post("/company_change", response_model=UserScheme)
 async def company_change(request: Request, schema: ChangeCompanyScheme, background_tasks: BackgroundTasks):
     res = await UserService(request).company_change(schema)

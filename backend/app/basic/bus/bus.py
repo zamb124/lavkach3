@@ -12,7 +12,7 @@ from fastapi import (
 from starlette.requests import Request
 
 from core.db.session import session
-from app.basic.bus.managers import ws_manager
+#from app.basic.bus.managers import ws_manager
 from core.fastapi.middlewares import AuthBackend
 
 ws_router = APIRouter()

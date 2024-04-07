@@ -1,31 +1,24 @@
-from typing import List, Dict, Any, Optional
+from typing import Any
 
-from fastapi import BackgroundTasks
-from sqlalchemy import select, and_, Row, RowMapping
+from sqlalchemy import select, Row, RowMapping
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
-from starlette.requests import Request
 
-from app.basic.bus.managers import ws_manager
 from app.basic.company.services import CompanyService
-from app.basic.user.models.user_models import User
 from app.basic.user.models.role_models import Role
-from app.basic.user.schemas.user_schemas import LoginResponseSchema, SignUpScheme, ChangeCompanyScheme
+from app.basic.user.models.user_models import User
+from app.basic.user.schemas.user_schemas import SignUpScheme, ChangeCompanyScheme
 from app.basic.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme, UserFilter
 from app.basic.user.services.role_service import RoleService
-from core.db.session import session
-from core.db.transactional import Transactional
 from core.exceptions import (
     PasswordDoesNotMatchException,
     DuplicateEmailOrNicknameException,
     UserNotFoundException,
 )
 from core.fastapi.schemas import CurrentUser
-from core.helpers.celery import celery
+from core.permissions.permissions import permit, permits
 from core.service.base import BaseService, ModelType, FilterSchemaType
 from core.utils.token_helper import TokenHelper
-from core.permissions.permissions import permit, permits
 
 
 class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilter]):
