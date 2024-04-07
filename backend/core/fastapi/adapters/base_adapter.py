@@ -17,7 +17,9 @@ class Client(httpx.AsyncClient):
                 if val:
                     query_param_cleaned.update({name: val})
         qp = QueryParams(query_param_cleaned)
+        print('LOG::::',method, url, json, params)
         responce = await super().request(method=method, url=url, json=json, params=qp, timeout=timeout)
+
         if responce.status_code != 200:
             raise HTTPException(responce.status_code, detail=responce.json())
         return responce
