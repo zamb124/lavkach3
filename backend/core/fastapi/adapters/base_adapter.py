@@ -62,7 +62,7 @@ class BaseAdapter:
         if model:
             self.model = model
         self.domain = f"http://{config['DOMAIN']}:{config['PORT']}"
-        self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token')}
+        self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token') or ''}
         if self.headers.get('Authorization'):
             self.client = Client(headers=self.headers)
 
