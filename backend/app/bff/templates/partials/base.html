@@ -166,7 +166,7 @@
         {% endblock footer %}
     </div>
 
-
+<div id="trash"></div>
 </div>
 
 {% block extra_content %}
@@ -386,6 +386,23 @@
             }
         })
 
+        function hideModals(){
+        var $modals = document.querySelectorAll('.modal')
+        $modals.forEach(modal => {
+            let currentModal = bootstrap.Modal.getInstance(modal)
+            if (currentModal) {
+                currentModal.hide()
+            }
+        })
+        var $modals = document.querySelectorAll('.modal-backdrop')
+        $modals.forEach(back => {
+            if (back) {
+                back.remove()
+            }
+           var body =  document.body
+            body.style.removeProperty('overflow');
+        })
+    }
     </script>
 
 

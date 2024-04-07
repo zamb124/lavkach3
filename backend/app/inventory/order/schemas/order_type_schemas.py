@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Any
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
@@ -44,7 +44,6 @@ class OrderTypeUpdateScheme(OrderTypeBaseScheme):
 
 class OrderTypeCreateScheme(OrderTypeBaseScheme):
     ...
-
 
 class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
     vars: Optional[dict] = None

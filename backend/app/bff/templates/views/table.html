@@ -1,14 +1,14 @@
 {% block widget %}
-<div id="{{ 'table_' ~ table.prefix }}"
+<div id="{{ 'table_' ~ model.prefix }}"
      hx-post="/base/table"
      hx-ext="json-enc"
      hx-vals='{
-        "module": "{{ table.module }}",
-        "model": "{{ table.model }}",
-        "prefix": "{{ table.prefix }}"
+        "module": "{{ model.module }}",
+        "model": "{{ model.model }}",
+        "prefix": "{{ model.prefix }}"
      }'
-     hx-trigger="change from:{{ '#filter_' ~ table.prefix }} delay:500ms, load, update delay:500ms"
-     hx-include="{{ '#filter_' ~ table.prefix }}"
+     hx-trigger="change from:{{ '#filter_' ~ model.prefix }} delay:500ms, load, update delay:500ms"
+     hx-include="{{ '#filter_' ~ model.prefix }}"
 >
     <div class="card htmx-indicator ">
         <table class="table ">
@@ -48,7 +48,7 @@
                                    value="option">
                         </div>
                     </th>
-                    {% for field in table.header.fields if field.widget.table %}
+                    {% for field in table.line.fields if field.widget.table %}
                             {{ field.as_table_header()|safe }}
                     {% endfor %}
                     <th>Active</th>
@@ -56,7 +56,8 @@
                 </thead>
             <div class="rows">
                 {% for line in table.lines %}
-                        <tr id="td-{{line.id}}" class="mb-0 fw-semibold text-muted">
+                    {% set line_id = "td-"~line.id %}
+                        <tr id="{{line_id}}" class="mb-0 fw-semibold text-muted">
                             <th scope="row">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="checkAll" value="">
@@ -68,48 +69,13 @@
                             <td>
                                 <ul class="list-inline hstack gap-2 mb-0">
                                     <li class="list-inline-item view-btn" title="View">
-                                        <a href="#"
-                                           data-bs-toggle="modal"
-                                           hx-include="none"
-                                           hx-trigger="click"
-                                           data-bs-target="{{'#modal_' ~ table.prefix}}"
-                                           hx-target="{{'#modal_' ~ table.prefix}}"
-                                           hx-ext="json-enc"
-                                           hx-post="/base/modal-update"
-                                           hx-vars='{
-                                           "module": "{{ table.module }}",
-                                           "model": "{{ table.model }}",
-                                           "id": "{{ line.id }}",
-                                           "prefix": "{{ table.prefix }}",
-                                           }'
-                                           class="text-success d-inline-block edit-item-btn">
-                                            <i class="ri-eye-fill fs-16"></i>
-                                        </a>
+                                        {{ line.as_button_view()|safe }}
                                     </li>
                                     <li class="list-inline-item edit" title="Edit">
-                                        <a href="#"
-                                           data-bs-toggle="modal"
-                                           data-bs-target="{{'#modal_' ~ table.prefix}}"
-                                           hx-include="none"
-                                           hx-trigger="click"
-                                           hx-target="{{'#modal_' ~ table.prefix}}"
-                                           hx-ext="json-enc"
-                                           hx-post="/base/modal-update"
-                                           hx-vars='{
-                                           "module": "{{ table.module }}",
-                                           "model": "{{ table.model }}",
-                                           "id": "{{ line.id }}",
-                                           "prefix": "{{ table.prefix }}",
-                                           }'
-                                           class="text-success d-inline-block edit-item-btn">
-                                            <i class="ri-pencil-fill fs-16"></i>
-                                        </a>
+                                        {{ line.as_button_update()|safe }}
                                     </li>
                                     <li class="list-inline-item" title="Remove">
-                                        <a class="text-danger d-inline-block remove-item-btn"  data-bs-toggle="modal" data-bs-target="{{'#modal_' ~ table.prefix}}" hx-trigger="click"  hx-target="{{'#modal_' ~ table.prefix}}"
-                                            hx-get="/base/modal-delete?module={{ table.module }}&model={{ table.model }}&id={{ line.id }}">
-                                            <i class="ri-delete-bin-3-fill fs-16"></i>
-                                        </a>
+                                        {{ line.as_button_delete(line_id)|safe }}
                                     </li>
                                 </ul>
                             </td>
@@ -137,8 +103,27 @@
 
     </div>
 </div>
+{% endblock %}
 
-
-
-
+{% block badges %}
+<div class="d-flex flex-wrap gap-2">
+    {% for line in table.lines %}
+        <a href="#"
+       hx-params="module, model, id, prefix, method"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vars='{
+"module": "{{ line.module }}",
+"model": "{{ line.model }}",
+"method": "view",
+"id": "{{ line.id }}",
+"prefix": "{{ line.prefix }}"
+}'
+       class="text-success d-inline-block edit-item-btn">
+        <span class="badge bg-secondary">{{ line.display_title }}</span>
+    </a>
+    {% endfor %}
+</div>
 {% endblock %}

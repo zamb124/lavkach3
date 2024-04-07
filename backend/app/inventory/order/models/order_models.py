@@ -81,7 +81,6 @@ class OrderType(Base, AllMixin):
     allowed_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)      # Разрешенные зона для назначения
     exclusive_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)    # Исключение зон из назначения
     order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order_type.id", ondelete='CASCADE'))# Тип Ордера возврата разницы
-    order_type_rel: Mapped['OrderType'] = relationship(lazy='selectin')
     backorder_action_type: Mapped[BackOrderAction] = mapped_column(default=BackOrderAction.ASK)                 # Поведение возврата разницы
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                     # Склад
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                   # Партнер (если у опредленного партнера своя стратегия)

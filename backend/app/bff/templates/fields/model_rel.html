@@ -1,18 +1,49 @@
 {% block as_view %}
-<div class="row">
-    <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title}}</p>
-    <h5 class="fs-3 mb-0"> <a href="#" class="text-danger" data-bs-toggle="modal" hx-trigger="click" data-bs-target="{{ '#modal_'~field.prefix }}"
-   hx-target="{{ '#modal_'~field.prefix }}" hx-swap="innerHTML" hx-params="none"
-   hx-get="/base/modal-view?module={{ field.module }}&model={{ field.model }}&id={{ field.val.id }}"><i
-        class="ri-links-fill fs-3"></i>  {{ field.val.title }}</a></h5>
-</div>
-
-<div id="{{modal_id}}" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content"></div>
+    <div class="row">
+        <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
+        <h5 class="fs-3 mb-0">
+            <a class="text-danger py-3"
+           href="#"
+           hx-include="none"
+           hx-trigger="click"
+           hx-target="#modal"
+           hx-ext="json-enc"
+           hx-post="/base/modal"
+           hx-vals='{
+"module": "{{ field.module }}",
+"model": "{{ field.model }}",
+"method": "view",
+"id": "{{ field.val.id }}",
+"prefix": "{{ field.prefix }}"
+}'
+>{{ field.val.title or field.val.nickname }}
+        </a>
+        </h5>
     </div>
-</div>
+
+    <div id="{{ modal_id }}" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
 {% endblock %}
 {% block as_table %}
-    <td class="{{ field.field_name }}"><i class="ri-links-fill fs-6"></i><a class="text-danger py-3" href="#" hx-params="none" data-bs-toggle="modal" hx-trigger="click" data-bs-target="{{ '#modal_'~field.prefix }}" hx-target="{{ '#modal_'~field.prefix }}" hx-swap="innerHTML transition:true" hx-get="/base/modal-view?module={{ field.module }}&model={{ field.model }}&id={{ field.val.id }}">{{ field.val.title or field.val.nickname}}</a></td>
+    <td class="{{ field.field_name }}"><i class="ri-links-fill fs-6"></i>
+        <a class="text-danger py-3"
+           href="#"
+           hx-include="none"
+           hx-trigger="click"
+           hx-target="#modal"
+           hx-ext="json-enc"
+           hx-post="/base/modal"
+           hx-vals='{
+"module": "{{ field.module }}",
+"model": "{{ field.model }}",
+"method": "view",
+"id": "{{ field.val.id }}",
+"prefix": "{{ field.prefix }}"
+}'
+>{{ field.val.title or field.val.nickname }}
+        </a>
+    </td>
 {% endblock %}

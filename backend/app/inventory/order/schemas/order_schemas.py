@@ -21,7 +21,7 @@ from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
 
 class OrderBaseScheme(BaseModel):
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
-    order_type_id: UUID4 = Field(title='Order Type', form=True)
+
     store_id: UUID4 = Field(title='Store', table=True, form=True)
     partner_id: Optional[UUID4] = Field(default=None, title='Partner', table=True, form=True)
     lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True, form=True)

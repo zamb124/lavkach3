@@ -1,19 +1,20 @@
-{% set modal_id = 'modal-' + uuid().hex %}
 <div class="d-flex flex-wrap gap-2">
-    {% for line in model.table.lines %}
+    {% for line in table.lines %}
         <a href="#"
-           data-bs-target="#{{ modal_id }}"
-           data-bs-toggle="modal"
-           hx-get="/base/modal-view?module={{ model.module }}&model={{ model.model }}&id={{ line.id }}"
-           hx-target="#{{ modal_id }}"
-           hx-swap="innerHTML"
-        >
-            <span class="badge bg-secondary">{{ line.display_title }}</span>
-        </a>
+       hx-params="module, model, id, prefix, method"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vars='{
+"module": "{{ line.module }}",
+"model": "{{ line.model }}",
+"method": "view",
+"id": "{{ line.id }}",
+"prefix": "{{ line.prefix }}"
+}'
+       class="text-success d-inline-block edit-item-btn">
+        <span class="badge bg-secondary">{{ line.display_title }}</span>
+    </a>
     {% endfor %}
-</div>
-<div id="{{modal_id}}" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content"></div>
-    </div>
 </div>

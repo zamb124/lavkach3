@@ -1,49 +1,49 @@
-{% set modal_id = 'modal-' + uuid().hex %}
-
-<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ modal_id }}"  style="min-width: 60rem">
-    <div class="modal-content modal-lg">
+{% block widget %}
+<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ 'modal_'~view.prefix }}">
+    <div class="modal-content modal-xl">
         <div class="modal-header">
             <div class="col-6">
-                <h5 class="modal-title">View {{ model.model }}
+                <h5 class="modal-title">Edit {{ view.model|capitalize }}
                     <span>
-                            <a href="#" class="text-primary" hx-trigger="click"  data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
-                               hx-get="/base/modal-get?module={{ model.module }}&model={{ model.model }}&id={{ model.view.line.id }}"><i
-                                    class="ri-pencil-fill fs-3"></i></a>
+                            <a href="#"
+                               class="text-success"
+                               hx-trigger="click"
+                               data-bs-dismiss="modal"
+                               data-bs-target="#{{ 'modal_'~view.prefix }}"
+                               hx-target="#{{ 'modal_'~view.prefix }}"
+                               hx-params="none"
+                               hx-swap="innerHTML"
+                               hx-get="/base/modal-view?module={{ view.module }}&model={{ view.model }}&id={{ view.line.id }}">
+                                <i class="ri-eye-fill fs-3"></i>
+                            </a>
                         </span>
                     <span>
-                            <a href="#" class="text-secondary" hx-trigger="click" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
-                               hx-get="/base/modal-create?module={{ model.module }}&model={{ model.model }}&id={{ model.view.line.id }}"><i
+                            <a href="#" class="text-secondary" hx-trigger="click" data-bs-target="#{{ 'modal_'~view.prefix }}"
+                               hx-target="#{{ 'modal_'~view.prefix }}" hx-params="none" hx-swap="innerHTML"
+                               hx-get="/base/modal-create?module={{ view.module }}&model={{ view.model }}&id={{ view.line.id }}"><i
                                     class="ri-add-box-fill fs-3"></i></a>
                         </span>
                     <span>
-                            <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ modal_id }}"
-                               hx-target="#{{ modal_id }}" hx-params="none" hx-swap="innerHTML"
-                               hx-get="/base/modal-delete?module={{ model.module }}&model={{ model.model }}&id={{ model.view.line.id }}"><i
+                            <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ 'modal_'~view.prefix }}"
+                               hx-target="#{{ 'modal_'~view.prefix }}" hx-params="none" hx-swap="innerHTML"
+                               hx-get="/base/modal-delete?module={{ view.module }}&model={{ view.model }}&id={{ view.line.id }}"><i
                                     class="ri-delete-bin-3-fill fs-3"></i></a>
                         </span>
                 </h5>
             </div>
-            <div>
-
-            </div>
             <div class="bx-pull-right">
                 <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
         </div>
-        <div>
-            <div class="modal-body text-center p-5 ">
-                <script src="https://cdn.lordicon.com/lordicon.js"></script>
+            <div class="modal-body text-center p-5">
                 <lord-icon
-                        src="https://cdn.lordicon.com/vfczflna.json"
+                        src="https://cdn.lordicon.com/ghhwiltn.json"
                         trigger="loop"
                         style="width:150px;height:150px">
                 </lord-icon>
-            <div class="row">
-               {% for field in model.view.line.fields if not field.type =='dict' and field.field_name not in ('id', 'lsn') %}
-                        {%  if loop.length % 2 != 0 and loop.first %}
+                <div class="row">
+                    {% for field in view.line.fields if not field.type =='dict' %}
+                        {%  if loop.length % 3 != 0 and loop.first %}
                             <div class="row">
                         {% endif %}
                         {% if loop.index0 % 3 == 0 %}
@@ -51,16 +51,17 @@
                         {% endif %}
                             <div class="col">
 
-                       {{ field.as_view()|safe }}
+                       {{ field.as_form()|safe }}
 
                         </div>
                         {% if loop.index % 3 == 0 %}
                             </div>
                         {% endif %}
                     {% endfor %}
-                </div>
-            </div>
-        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
     </div>
 </div>
-
+{% endblock %}

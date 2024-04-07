@@ -1,0 +1,88 @@
+{% block button_view %}
+    <script>
+    hideModals()
+    </script>
+    <a href="#"
+       hx-include="none"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vars='{
+"module": "{{ line.module }}",
+"model": "{{ line.model }}",
+"method": "view",
+"id": "{{ line.id }}",
+"prefix": "{{ line.prefix }}"
+}'
+       class="text-success d-inline-block edit-item-btn">
+        <i class="ri-eye-fill fs-16"></i>
+    </a>
+{% endblock %}
+
+{% block button_update %}
+        <script>
+    hideModals()
+    </script>
+    <a href="#"
+       hx-include="none"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vars='{
+"module": "{{ line.module }}",
+"model": "{{ line.model }}",
+"method": "update",
+"id": "{{ line.id }}",
+"prefix": "{{ line.prefix }}",
+}'
+       class="text-primary d-inline-block edit-item-btn">
+        <i class="ri-pencil-fill fs-16"></i>
+    </a>
+{% endblock %}
+
+{% block button_create %}
+        <script>
+    hideModals()
+    </script>
+    <a href="#"
+       hx-include="none"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vars='{
+"module": "{{ line.module }}",
+"model": "{{ line.model }}",
+"method": "create",
+"id": "{{ line.id }}",
+"prefix": "{{ line.prefix }}",
+}'
+       class="text-secondary d-inline-block edit-item-btn">
+        <i class="ri-add-box-fill fs-16"></i>
+    </a>
+{% endblock %}
+
+{% block button_delete %}
+        <script>
+    hideModals()
+    </script>
+    <a href="#"
+       hx-include="none"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vars='{
+"module": "{{ line.module }}",
+"model": "{{ line.model }}",
+"method": "delete",
+"id": "{{ line.id }}",
+"prefix": "{{ line.prefix }}",
+"target_id": "{{ target_id }}"
+}'
+       class="text-danger d-inline-block edit-item-btn">
+        <i class="ri-delete-bin-2-fill fs-16"></i>
+    </a>
+{% endblock %}

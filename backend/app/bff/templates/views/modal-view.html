@@ -1,33 +1,32 @@
-
 {% block widget %}
-<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ 'modal_'~update.prefix }}">
+<div class="modal-dialog modal-dialog-centered modal-xl" id="{{ 'modal_'~view.prefix }}">
     <div class="modal-content modal-xl">
         <div class="modal-header">
             <div class="col-6">
-                <h5 class="modal-title">Edit {{ update.model|capitalize }}
+                <h5 class="modal-title">View {{ view.model|capitalize }}
                     <span>
                             <a href="#"
                                class="text-success"
                                hx-trigger="click"
                                data-bs-dismiss="modal"
-                               data-bs-target="#{{ 'modal_'~update.prefix }}"
-                               hx-target="#{{ 'modal_'~update.prefix }}"
+                               data-bs-target="#{{ 'modal_'~view.prefix }}"
+                               hx-target="#{{ 'modal_'~view.prefix }}"
                                hx-params="none"
                                hx-swap="innerHTML"
-                               hx-get="/base/modal-view?module={{ update.module }}&model={{ update.model }}&id={{ update.line.id }}">
+                               hx-get="/base/modal-view?module={{ view.module }}&model={{ view.model }}&id={{ view.line.id }}">
                                 <i class="ri-eye-fill fs-3"></i>
                             </a>
                         </span>
                     <span>
-                            <a href="#" class="text-secondary" hx-trigger="click" data-bs-target="#{{ 'modal_'~update.prefix }}"
-                               hx-target="#{{ 'modal_'~update.prefix }}" hx-params="none" hx-swap="innerHTML"
-                               hx-get="/base/modal-create?module={{ update.module }}&model={{ update.model }}&id={{ update.line.id }}"><i
+                            <a href="#" class="text-secondary" hx-trigger="click" data-bs-target="#{{ 'modal_'~view.prefix }}"
+                               hx-target="#{{ 'modal_'~view.prefix }}" hx-params="none" hx-swap="innerHTML"
+                               hx-get="/base/modal-create?module={{ view.module }}&model={{ view.model }}&id={{ view.line.id }}"><i
                                     class="ri-add-box-fill fs-3"></i></a>
                         </span>
                     <span>
-                            <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ 'modal_'~update.prefix }}"
-                               hx-target="#{{ 'modal_'~update.prefix }}" hx-params="none" hx-swap="innerHTML"
-                               hx-get="/base/modal-delete?module={{ update.module }}&model={{ update.model }}&id={{ update.line.id }}"><i
+                            <a href="#" class="text-danger" hx-trigger="click" data-bs-target="#{{ 'modal_'~view.prefix }}"
+                               hx-target="#{{ 'modal_'~view.prefix }}" hx-params="none" hx-swap="innerHTML"
+                               hx-get="/base/modal-delete?module={{ view.module }}&model={{ view.model }}&id={{ view.line.id }}"><i
                                     class="ri-delete-bin-3-fill fs-3"></i></a>
                         </span>
                 </h5>
@@ -36,19 +35,6 @@
                 <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
         </div>
-        <form class="was-validated"
-              hx-post="/base/modal-update"
-              hx-ext="json-enc"
-              hx-include="this"
-              hx-target="#{{ 'modal_'~update.prefix }}"
-              hx-swap="outerHTML"
-              hx-vals='{
-                "module": "{{ update.module }}",
-                "model": "{{ update.model }}",
-                "id": "{{ update.line.id }}",
-                "prefix": "{{ update.prefix }}"
-              }'
-        >
             <div class="modal-body text-center p-5">
                 <lord-icon
                         src="https://cdn.lordicon.com/ghhwiltn.json"
@@ -56,7 +42,7 @@
                         style="width:150px;height:150px">
                 </lord-icon>
                 <div class="row">
-                    {% for field in update.line.fields if not field.type =='dict' %}
+                    {% for field in view.line.fields if not field.type =='dict' %}
                         {%  if loop.length % 3 != 0 and loop.first %}
                             <div class="row">
                         {% endif %}
@@ -65,7 +51,7 @@
                         {% endif %}
                             <div class="col">
 
-                       {{ field.as_form()|safe }}
+                       {{ field.as_view()|safe }}
 
                         </div>
                         {% if loop.index % 3 == 0 %}
@@ -75,9 +61,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button id="{{ 'submit_'~update.prefix }}" type="submit" class="btn btn-success">Save</button>
                     </div>
-        </form>
     </div>
 </div>
 {% endblock %}

@@ -1,16 +1,14 @@
 from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-from fastapi_htmx import htmx
 
-from app.bff.dff_helpers.htmx_decorator import s
 from app.bff.dff_helpers.schema_recognizer import ModelView
+from app.bff.template_spec import templates
 
 order_type_router = APIRouter()
 
 
 @order_type_router.get("", response_class=HTMLResponse)
-@htmx(*s('widgets/list'))
 async def order_type(request: Request):
     """
         Для построения фронта нам нужно передать в шаблон
@@ -20,4 +18,4 @@ async def order_type(request: Request):
     """
     model = ModelView(request, 'inventory', 'order_type')
 
-    return {'model': model}
+    return templates.TemplateResponse(request,'widgets/list-full.html', context={'model': model})

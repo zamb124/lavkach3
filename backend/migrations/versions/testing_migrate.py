@@ -341,11 +341,7 @@ def upgrade():
                            "is_admin": True,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
-                           "password": '1402',
-                           'company_ids': [
-                               company_1_id,
-                               company_2_id
-                           ]
+                           "password": '1402'
                        },
                        {
                            "id": user_1_company_1_id,

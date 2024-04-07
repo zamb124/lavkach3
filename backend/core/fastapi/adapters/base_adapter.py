@@ -58,7 +58,8 @@ class BaseAdapter:
             self.model = model
         self.domain = f"http://{config.services[self.module]['DOMAIN']}:{config.services[self.module]['PORT']}"
         self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token')}
-        self.client = Client(headers=self.headers)
+        if self.headers.get('Authorization'):
+            self.client = Client(headers=self.headers)
 
     async def __aenter__(self):
         self.client = Client(headers=self.headers)
@@ -80,7 +81,7 @@ class BaseAdapter:
         responce = await self.client.get(self.domain + path, params=params)
         return await self.common_exception_handler(responce)
 
-    async def create(self, json: dict, model: str = None, params=None, **kwargs):
+    async def create(self, json: dict, model: str = None, params=None,id:uuid.UUID = None, **kwargs):
         path = f'/api/{self.module}/{model or self.model}'
         responce = await self.client.post(self.domain + path, json=json, params=params)
         return await self.common_exception_handler(responce)

@@ -1,7 +1,7 @@
 {% block as_form %}
     <div>
     <div class="form-check form-switch mb-3">
-        <label class="form-check-label"
+        <label class="form-check-label text-start"
                for="{{ field.prefix }}{{ field.field_name }}">{{ field.title }}</label>
         <input
                 class="form-check-input"
@@ -16,9 +16,21 @@
 {% endblock %}
 {% block as_view %}
 <div>
-        <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
-        <h5 class="fs-3 mb-0">{{ field.val.english_name or field.val.name or field.val}}</h5>
-</div>
+<p class="text-muted text-uppercase fw-semibold text-start">{{ field.title }}</p>
+    <div class="form-check form-switch mb-3">
+        <label class="form-check-label text-start"
+               for="{{ field.prefix }}{{ field.field_name }}">{{ field.title }}</label>
+        <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                disabled
+                id="{{ field.prefix }}{{ field.field_name }}"
+                name="{{ field.prefix }}{{ field.field_name }}"
+                {% if field.val == True %} checked {% endif %}
+        >
+    </div>
+    </div>
 {% endblock %}
 {% block as_table %}
 <td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>

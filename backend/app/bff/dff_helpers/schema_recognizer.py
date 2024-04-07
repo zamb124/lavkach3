@@ -8,7 +8,7 @@ from typing import Optional, Any, get_args, get_origin
 from copy import deepcopy
 from fastapi import HTTPException
 from pydantic import BaseModel
-from pydantic.fields import Field
+from pydantic.fields import Field, computed_field
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
@@ -23,6 +23,9 @@ from jinja2_fragments import render_block, render_block_async
 from jinja2.async_utils import auto_await
 from app.bff.template_spec import templates
 
+
+class DeleteSchema(BaseModel):
+    delete_id: uuid.UUID
 
 def _get_prefix():
     return f'{uuid.uuid4().hex[:10]}_'
@@ -126,63 +129,85 @@ class HtmxField(BaseModel):
         return self.render(block_name='as_table')
 
 
-class HtmxHeader(BaseModel):
+
+class HtmxLine(BaseModel):
     """"
         Описание строчки
     """
     module: str
     model: str
+    prefix: str
     fields: list[HtmxField]
-    prefix: str
     id: Optional[uuid.UUID] = None
-
-
-
-
-class HtmxFilter(HtmxHeader):
-    """"
-        Описание строчки
-    """
-    ...
-
-
-class HtmxCreate(HtmxHeader):
-    """"
-        Описание строчки
-    """
-    prefix: str
-    id: Optional[uuid.UUID] = None
-
-
-class HtmxLine(HtmxHeader):
-    """"
-        Описание строчки
-    """
-    id: uuid.UUID
-    lsn: int
+    lsn: Optional[int] = None
     vars: Optional[dict] = None
     company_id: Optional[uuid.UUID] = None
     display_title: Optional[str] = None
     selected: Optional[bool] = False
 
 
-class HtmxSelect(BaseModel):
-    field: HtmxField
-    lines: list[HtmxLine] = []
-    prefix: str
+    def render(self, block_name:str, target_id:str = None):
+        try:
+            rendered_html = render_block(
+                environment=templates.env,
+                template_name=f'views/line.html',
+                block_name=block_name,
+                line=self,
+                target_id=target_id
+            )
+        except Exception as ex:
+            raise
+        return rendered_html
 
+    def as_button_view(self):
+        return self.render('button_view')
+    def as_button_update(self):
+        return self.render('button_update')
+    def as_button_create(self):
+        return self.render('button_create')
+    def as_button_delete(self, target_id:str = None):
+        return self.render(block_name='button_delete', target_id=target_id)
 
-class HtmxTable(BaseModel):
-    """
-        Описание таблицы
+class HtmxCreate(BaseModel):
+    """"
+        Описание строчки
     """
     module: str
     model: str
-    cursor: int = None
-    header: HtmxHeader = None
-    filter: HtmxFilter = None
     prefix: str
+    line: HtmxLine
+    id: Optional[uuid.UUID] = None
+
+
+
+class HtmxFilter(HtmxCreate):
+    """"
+        Описание строчки
+    """
+    ...
+class HtmxUpdate(HtmxCreate):
+    """"
+        Редактирование
+    """
+    line: HtmxLine
+    id: uuid.UUID
+
+
+class HtmxView(HtmxCreate):
+    """"
+        Cоздание
+    """
+    line: HtmxLine
+    id: uuid.UUID
+
+
+class HtmxTable(HtmxView):
+    """
+        Описание таблицы
+    """
+    cursor: int
     lines: list[HtmxLine] = Field(default=[], description='Строки таблицы')
+    id: Optional[uuid.UUID] = None
 
     def render(self):
         try:
@@ -200,30 +225,13 @@ class HtmxTable(BaseModel):
         return self.render()
 
 
-class HtmxUpdate(BaseModel):
-    """"
-        Описание строчки
-    """
-    module:str
-    model:str
-    line: HtmxLine = Field(default=[], description='Строка')
-    prefix: str
-
-
-class HtmxView(BaseModel):
-    """"
-        Описание строчки
-    """
-    ...
-    line: HtmxLine = Field(default=[], description='Строка')
-    prefix: str
-
 
 class HtmxConstructorSchemas:
     base: BaseModel
     create: BaseModel
     update: BaseModel
     filter: BaseModel
+    delete: DeleteSchema
 
 
 class ModelView:
@@ -236,15 +244,13 @@ class ModelView:
     model: str
     schemas: HtmxConstructorSchemas = HtmxConstructorSchemas()
     adapter: BaseAdapter
-    data: Optional[dict] = None
-    params: Optional[QueryParams] = None
-    param_filter: Optional[str] = None
+    params: Optional[QueryParams]
     table: Optional[HtmxTable] = None
-    select: Optional[HtmxSelect] = None
     create: Optional[HtmxCreate] = None
     update: Optional[HtmxUpdate] = None
+    filter: Optional[HtmxFilter] = None
     view: Optional[HtmxView] = None
-    exclude: Optional[list] = None
+    exclude: Optional[list] = [None]
     join_related: Optional[bool] = True  # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
     sort: Optional[dict] = {}
@@ -254,9 +260,7 @@ class ModelView:
                  request,
                  module: str,
                  model: str,
-                 prefix:str = None,
-                 param_filter: str = None,
-                 data: list | dict = None,
+                 prefix: str = None,
                  params: QueryParams | dict = None,
                  exclude: list = None,
                  join_related: bool = True,
@@ -266,21 +270,19 @@ class ModelView:
         self.request = request
         self.module = module
         self.model = model
-        self.param_filter = param_filter
         self.prefix = prefix or _get_prefix()
         self.exclude = exclude or []
         self.schemas.base = self.services[self.module]['schema'][self.model]['base']
         self.schemas.create = self.services[self.module]['schema'][self.model]['create']
         self.schemas.update = self.services[self.module]['schema'][self.model]['update']
         self.schemas.filter = self.services[self.module]['schema'][self.model]['filter']
+        self.schemas.delete = DeleteSchema
         adapter = self.services[self.module]['adapter']
         self.adapter = adapter(self.request, self.module, self.model)
-
-        if data: self._check_data(data)
         if params:
-            self._check_params(params)
+            self.params = params
         else:
-            self._check_params(request.query_params)
+            self.params = request.query_params
         self.join_related = join_related
         self.join_fields = join_fields or []
         if sort:
@@ -290,30 +292,14 @@ class ModelView:
             if config_sort:
                 self.sort = {v: i for i, v in enumerate(config_sort)}
 
-    def _check_data(self, data: list | dict = None):
-        if isinstance(self.data, list):
-            self.data = {'data': data, 'cursor': 0}
-        elif isinstance(self.data, dict):
-            self.data = data if data.get('cursor') else {'cursor': 0, 'data': [data, ]}
-        else:
-            self.data = None
-
-    def _check_params(self, params: QueryParams | dict = None):
-        if isinstance(params, QueryParams):
-            self.params = clean_filter(params, self.param_filter) if self.param_filter else params
-        elif isinstance(params, dict):
-            self.params = clean_filter(params, self.param_filter) if self.param_filter else QueryParams(params)
-        else:
-            self.params = None
-        return self.params
-
-    def _get_field(self, prefix, field_name, schema: BaseModel, module: str = None, model: str = None, ):
+    def _get_field(self, field_name, schema: BaseModel):
         """
         Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
         """
         fielinfo = schema.model_fields[field_name]
-        module = module or self.module
-        model = model or self.model
+        module = self.module
+        model = self.model
+        prefix = self.prefix
         res = ''
         enums = []
         class_types = get_types(fielinfo.annotation, [])
@@ -398,187 +384,164 @@ class ModelView:
             'prefix': prefix
         })
 
-    def _get_schema_fields(self, prefix: str, schema: BaseModel, module: str = None, model: str = None,
-                           exclude: list = None, ) -> list[HtmxField]:
+    def _get_schema_fields(self, schema: BaseModel) -> list[HtmxField]:
         """
             base, filte, update, create
             Отдает ту модель, которая нужна или базовую
         """
-        if exclude:
-            self.exclude = exclude
         fields = []
         for k, v in schema.model_fields.items():
             if k in self.exclude:
                 continue
             fields.append(
-                self._get_field(prefix, module=module, model=model, field_name=k, schema=schema)
+                self._get_field(field_name=k, schema=schema)
             )
         return fields
 
-    def _get_header(self, module: str, model: str, schema: BaseModel, exclude: list = None) -> HtmxHeader:
-        """
-            Метод отдает хидер , те столбцы с типами для HTMX шаблонов
-        """
-        module = module or self.module
-        model = model or self.model
-        prefix = self.prefix
-        fields = self._get_schema_fields(
-            prefix=prefix,
-            module=module,
-            model=model,
-            exclude=exclude,
-            schema=schema
-        )
-        return HtmxHeader(module=module, model=model, fields=fields, prefix=prefix)
+    def _get_line(self, schema: BaseModel, **kwargs) -> HtmxLine:
+        id = kwargs.get('model_id')
+        fields = self._get_schema_fields(schema=schema)
+        return HtmxLine(module=self.module, model=self.model, prefix=self.prefix, fields=fields, id=id)
 
-    def get_header(self, exclude: list = None, model_id: uuid.UUID = None) -> HtmxHeader:
-        """
-            Метод отдает хидер , те столбцы с типами для HTMX шаблонов
-        """
-        prefix = self.prefix
-        fields = self._get_schema_fields(
-            prefix=prefix, exclude=exclude, schema=self.schemas.base, module=self.module, model=self.model
-        )
-        self.header = HtmxHeader(
-            fields=fields, id=model_id, prefix=prefix,module=self.module, model=self.model
-        )
-        return self.header
-
-    def get_filter(self, module: str = None, model: str = None, exclude: list = None) -> str:
+    def get_filter(self) -> str:
         """
             Метод отдает фильтр , те столбцы с типами для HTMX шаблонов
         """
-        module = module or self.module
-        model = model or self.model
-        prefix = self.prefix
-        fields = self._get_schema_fields(prefix=prefix, module=module, model=model, exclude=exclude,
-                                         schema=self.schemas.filter)
-        self.filter = HtmxFilter(module=module, model=model,fields=fields, prefix=prefix)
+        line = self._get_line(schema=self.schemas.filter)
+        self.filter = HtmxFilter(module=self.module, model=self.model, line=line, prefix=self.prefix)
         return render_block(
             environment=templates.env, template_name=f'views/filter.html',
             block_name='filter', filter=self.filter
         )
 
-    def get_create(self, module: str = None, model: str = None, exclude: list = None,
-                   model_id: uuid.UUID = None) -> HtmxCreate:
+    async def get_create(self, model_id: uuid.UUID = None, **kwargs) -> str:
         """
             Метод отдает создать схему , те столбцы с типами для HTMX шаблонов
         """
-        module = module or self.module
-        model = model or self.model
         prefix = self.prefix
-        fields = self._get_schema_fields(prefix=prefix, module=module, model=model, exclude=exclude,
-                                               schema=self.schemas.create)
-        self.create = HtmxCreate(fields=fields, id=model_id, prefix=prefix, module=module, model=model)
-        return self.create
+        line = self._get_line(schema=self.schemas.create, model_id=model_id)
+        self.create = HtmxCreate(line=line, id=model_id, prefix=prefix, module=self.module, model=self.model)
+        return render_block(
+            environment=templates.env,
+            template_name=f'views/modal.html',
+            block_name='create', view=self.create
+        )
 
-    async def get_update(self, model_id: uuid.UUID, module: str = None, model: str = None,
-                         exclude: list = None) -> str:
+    async def get_update(self, model_id: uuid.UUID, **kwargs) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
-        module = module or self.module
-        model = model or self.model
-        params = self._check_params({'id__in': model_id})
+        params = QueryParams({'id__in': model_id})
         lines, _ = await self._get_data(
-            module=module,
-            model=model,
             params=params,
             schema=self.schemas.update,
             join_related=False,
-            exclude=exclude
         )
         assert len(lines) == 1 or 0
-        self.update = HtmxUpdate(model=self.model, module=self.module, line=lines[0], prefix=lines[0].prefix)
+        self.update = HtmxUpdate(model=self.model, module=self.module, line=lines[0], prefix=self.prefix, id=lines[0].id)
         return render_block(
             environment=templates.env,
-            template_name=f'views/modal-update.html',
-            block_name='widget', update=self.update
+            template_name=f'views/modal.html',
+            block_name='update', view=self.update
         )
 
-    async def get_view(self, model_id: uuid.UUID, exclude: list = None) -> HtmxView:
+    async def get_view(self, model_id: uuid.UUID, **kwargs) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
-        self._check_params({'id__in': model_id})
-        lines, _ = await self._get_data(schema=self.schemas.base, join_related=True, exclude=exclude)
+        params = QueryParams({'id__in': model_id})
+        lines, _ = await self._get_data(
+            params=params,
+            schema=self.schemas.base,
+            join_related=True,
+        )
         assert len(lines) == 1 or 0
-        self.view = HtmxView(line=lines[0], prefix=lines[0].prefix)
-        return self.view
-
-    async def get_table(self,
-                  module: str = None,
-                  model: str = None,
-                  params: QueryParams | dict = None,
-                  exclude: list = None,
-                  join_related: str = True,
-                  join_field: list = None
-                  ) -> str:
+        self.view = HtmxView(
+            module=self.module,
+            model=self.model,
+            line=lines[0],
+            prefix=self.prefix,
+            id=lines[0].id
+        )
+        return render_block(
+            environment=templates.env,
+            template_name=f'views/modal.html',
+            block_name='view',
+            view=self.view
+        )
+    async def get_delete(self, model_id: uuid.UUID, target_id: str = None) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
-        module = module or self.module
-        model = model or self.model
-        filter = self.get_filter(module=module, model=model, exclude=exclude)
-        header = self._get_header(module=module, model=model, schema=self.schemas.base, exclude=exclude)
+        params = QueryParams({'id__in': model_id})
+        lines, _ = await self._get_data(
+            params=params,
+            schema=self.schemas.base,
+            join_related=True,
+        )
+        assert len(lines) == 1 or 0
+        self.view = HtmxView(
+            module=self.module,
+            model=self.model,
+            line=lines[0],
+            prefix=self.prefix,
+            id=lines[0].id
+        )
+        return render_block(
+            environment=templates.env,
+            template_name=f'views/modal.html',
+            block_name='delete',
+            view=self.view,
+            target_id=target_id
+        )
+
+    async def get_table(self, params: QueryParams | dict = None, join_related: bool = True, join_field: list = None, widget:str = 'table') -> str:
+        """
+            Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
+        """
+        line = self._get_line(schema=self.schemas.base)
         lines, cursor = await self._get_data(
-            module=module,
-            model=model,
             schema=self.schemas.base,
             params=params,
             join_related=join_related,
-            exclude=exclude,
             join_field=join_field
         )
         self.table = HtmxTable(
-            prefix=self.prefix, module=module,model=model,lines=lines,
-            cursor=cursor,header=header
+            prefix=self.prefix, module=self.module, model=self.model, lines=lines,
+            cursor=cursor, line=line
         )
         self._sort_columns()
         return render_block(
             environment=templates.env, template_name=f'views/table.html',
-            block_name='table', table=self.table
+            block_name=widget, table=self.table
         )
-
 
     async def _get_data(
             self,
             schema: BaseModel,
-            module: str = None,
-            model: str = None,
-            exclude: list = None,
             params: QueryParams | dict = None,
-            filter: str = None,
-            data: list | dict = None,
             join_related: bool = True,
             join_field: list = None
     ):
         """
             Метод отдает таблицу для формата HTMX и Jinja
         """
-        if exclude: self.exclude = exclude
         if not params:
             params = self.params
-        if data:
-            self._check_data(data)
-        if filter:
-            self.param_filter = filter
-        if data:
-            self._check_data(data)
         if join_related:
             self.join_related = join_related
         if join_field:
             self.join_fields = join_field or []
-        module = module or self.module
-        model = model or self.model
-        header = self._get_header(module, model, schema=schema, exclude=exclude)
+        module = self.module
+        model = self.model
+        line = self._get_line(schema=schema)
         async with getattr(self.request.scope['env'], module) as a:
             data = await a.list(params=params, model=model)
 
         if not data.get('data'):
             return [], 0
         lines = []
-        htmx_line_temp = header.model_dump()
+        htmx_line_temp = line.model_dump()
         for row in data['data']:
             line_dict = deepcopy(htmx_line_temp)
             for col in line_dict['fields']:
@@ -607,7 +570,7 @@ class ModelView:
             for line in lines:
                 """Достаем все релейтед обьекты у которых модуль отличается"""
                 for field in line.fields:
-                    if field.module != module:
+                    if field.module != module or self.model == field.field_name.replace('_id',''):
                         # if field.widget.get('table'):  # TODO: может все надо а не ток table
                         if not self.join_fields:
                             missing_fields[field.field_name].append((field.val, field))
@@ -659,7 +622,7 @@ class ModelView:
                 else:
                     raise HTMXException(status_code=500,
                                         detail=f'Wrong field name {col} in table model {self.header.model}')
-                for _header_col in header.fields:
+                for _header_col in line.fields:
                     if col == _header_col.field_name:
                         _header_col.field_name = new_field_name
                         _header_col.type = _header_col.type.replace('_id', '_rel')
@@ -682,7 +645,6 @@ class ModelView:
         if data: self._check_data(data)
         if join_related: self.join_related = join_related
         if join_field: self.join_fields = join_field or []
-        self.header = self.get_header()
         self.create = self.get_create()
         self.view = self.get_view()
         # self.update = await self.get_update()
@@ -691,7 +653,7 @@ class ModelView:
 
     def _sort_columns(self):
         if self.table:
-            self.table.header.fields.sort(key=lambda x: x.sort_idx)
+            self.table.line.fields.sort(key=lambda x: x.sort_idx)
             for line in self.table.lines:
                 line.fields.sort(key=lambda x: x.sort_idx)
         if self.create:
@@ -699,38 +661,27 @@ class ModelView:
         if self.update:
             self.update.fields.sort(key=lambda x: x.sort_idx)
 
-    def as_table(self):
-        table = HtmxTable(module=self.module, model=self.model, prefix=self.prefix)
+    def as_table_widget(self):
         return render_block(
             environment=templates.env,
             template_name=f'views/table.html',
             block_name='widget',
-            table=table
+            model=self
         )
-    def as_filter(self):
-        fields = self._get_schema_fields(prefix=self.prefix,
-                                         module=self.module,
-                                         model=self.model,
-                                         exclude=self.exclude,
-                                         schema=self.schemas.filter)
-        filter=HtmxFilter(model=self.model,
-                          module=self.module,
-                          fields=fields,
-                          prefix=self.prefix)
+    def as_filter_widget(self):
         return render_block(
             environment=templates.env,
             template_name=f'views/filter.html',
             block_name='widget',
-            filter=filter
+            model=self
         )
 
-    def as_header(self):
-        header = self.get_header()
+    def as_header_widget(self):
         return render_block(
             environment=templates.env,
             template_name=f'views/header.html',
             block_name='widget',
-            header=header
+            model=self
         )
 
     def send_message(self, message:str):

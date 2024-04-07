@@ -1,18 +1,19 @@
 {% block as_form %}
     <div class="row">
-    <p style="border-top-width: 10px; margin-top: 10px;margin-bottom: 0px;" class="text-muted text-uppercase text-start">{{ field.title|capitalize}}:</p>
+        <p style="border-top-width: 10px; margin-top: 10px;margin-bottom: 0px;"
+           class="text-muted text-uppercase text-start">{{ field.title|capitalize }}:</p>
     </div>
     <div class="row">
-    <select class="form-control is-valid"
-            id="{{ field.prefix }}{{ field.field_name }}"
-            name="{{ field.prefix }}{{ field.field_name }}"
-            data-choices multiple
-    >   {% if field.val  %}
+        <select class="form-control is-valid"
+                id="{{ field.prefix }}{{ field.field_name }}"
+                name="{{ field.prefix }}{{ field.field_name }}"
+                data-choices multiple
+        >   {% if field.val %}
             {% for val in field.val %}
                 <option value="{{ val }}" selected></option>
             {% endfor %}
         {% endif %}
-    </select>
+        </select>
     </div>
     <script>
         (async function () {
@@ -22,6 +23,7 @@
                 placeholderValue: "Enter {{ field.title }}",
                 removeItemButton: true
             });
+
             function check_valid() {
                 if (element.required) {
                     choices.containerInner.element.classList.add('is-invalid');
@@ -31,7 +33,9 @@
                     choices.containerInner.element.classList.add('is-valid');
                 }
             }
+
             check_valid()
+
             async function getValues() {
                 var id__in = ''
                 let values = await choices.getValue();
@@ -93,24 +97,36 @@
 {% endblock %}
 
 {% block as_view %}
-    <div>
-        <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
-        <div
-                hx-ext="json-enc"
-                hx-post="/bff/badges"
-                hx-vals='{
-                        "module": "{{ field.module }}",
-                        "model": "{{ field.model }}",
-                        "value": "{{ field.val if field.val else '' }}",
-                        "prefix": "{{ field.prefix }}",
-                        "name": "{{ field.model }}_ids",
-                        "required": "{{ field.required }}"
-                     }'
-                hx-include="this"
-                hx-trigger="load"
-        ></div>
+    <div class="row">
+        <p style="border-top-width: 10px; margin-top: 0px;margin-bottom: 0px;"
+           class="text-muted text-uppercase text-start">{{ field.title|capitalize }}:</p>
     </div>
-{% endblock %}
-{% block as_table %}
-<td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
+    <div class="row">
+        <div id="{{ field.prefix }}{{ field.field_name }}">
+        </div>
+    </div>
+    <script>
+        (async function () {
+            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+            async function getValues() {
+                var id__in = "{{ ','.join(field.val) }}"
+                try {
+                    const items = await fetch('/bff/get_by_ids?module={{ field.module }}&model={{ field.model }}&id__in=' + encodeURIComponent(id__in));
+                    const results = await items.json();
+                    if (0 === results.length) { // Handle error from result, for example.
+                        return []
+                    } else {
+                        results.forEach(function (line) {
+                            console.log(line);
+                            element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary">' +line.label+ '</span>');
+                        });
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+
+            }
+            getValues()
+        })();
+    </script>
 {% endblock %}
