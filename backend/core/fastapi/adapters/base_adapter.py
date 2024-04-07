@@ -49,6 +49,8 @@ class BaseAdapter:
     При создании нужно указать модуль, или отнаследоваться с указанием модуля
     Так же при создании можно сразу указать и модуль и модель, если нужно много раз ходить
     """
+    module: str = None
+    model: str = None
     headers: dict
     client: Client = None
     domain: str = None

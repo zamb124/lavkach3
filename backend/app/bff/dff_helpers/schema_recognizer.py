@@ -277,8 +277,7 @@ class ModelView:
         self.schemas.update = self.services[self.module]['schema'][self.model]['update']
         self.schemas.filter = self.services[self.module]['schema'][self.model]['filter']
         self.schemas.delete = DeleteSchema
-        adapter = self.services[self.module]['adapter']
-        self.adapter = adapter(self.request, self.module, self.model)
+        self.adapter = getattr(self.request.scope['env'], self.module)
         if params:
             self.params = params
         else:
