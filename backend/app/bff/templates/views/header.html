@@ -3,6 +3,7 @@
     <div class="card-header">
         <div class="d-flex align-items-center flex-wrap gap-2">
             <div class="flex-grow-1">
+                {{ model.as_button_create()|safe }}
                 <button class="btn btn-secondary add-btn"
                         hx-get="/base/modal-create?module={{ model.module }}&model={{ model.model }}&prefix={{ model.prefix }}"
                         data-bs-toggle="modal" hx-trigger="click"

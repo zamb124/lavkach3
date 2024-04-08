@@ -1,27 +1,23 @@
 import datetime
 import uuid
-import operator
 from collections import defaultdict
+from copy import deepcopy
 from enum import Enum
 from inspect import isclass
 from typing import Optional, Any, get_args, get_origin
-from copy import deepcopy
+
 from fastapi import HTTPException
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2_fragments import render_block, render_block_async
 from pydantic import BaseModel
-from pydantic.fields import Field, computed_field
+from pydantic.fields import Field
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
 from app.bff.bff_config import config
-from app.bff.dff_helpers.filters_cleaner import clean_filter
+from app.bff.template_spec import templates
 from core.fastapi.adapters import BaseAdapter
 from core.types import TypeLocale, TypePhone, TypeCountry, TypeCurrency
-from random import random
-
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-from jinja2_fragments import render_block, render_block_async
-from jinja2.async_utils import auto_await
-from app.bff.template_spec import templates
 
 
 class DeleteSchema(BaseModel):
@@ -682,6 +678,18 @@ class ModelView:
             block_name='widget',
             model=self
         )
+    def as_button_create(self):
+        line = self._get_line(schema=self.schemas.create)
+        try:
+            rendered_html = render_block(
+                environment=templates.env,
+                template_name=f'views/line.html',
+                block_name='button_create',
+                line=line,
+            )
+        except Exception as ex:
+            raise
+        return rendered_html
 
     def send_message(self, message:str):
         return render_block(

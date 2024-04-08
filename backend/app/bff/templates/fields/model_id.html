@@ -38,8 +38,8 @@
                         }
 
                     } else {
-                        choices.containerInner.element.classList.remove('is-invalid');
-                        choices.containerInner.element.classList.add('is-valid');
+                        choices.containerInner.element.classList.add('is-invalid');
+                        choices.containerInner.element.classList.remove('is-valid');
                     }
                 } else {
                     choices.containerInner.element.classList.remove('is-invalid');
@@ -102,7 +102,7 @@
                 check_valid(event)
             });
             element.addEventListener('removeItem', function (event) {
-                console.log('choice')
+                console.log('removeItem')
                 check_valid(event)
             });
         })();

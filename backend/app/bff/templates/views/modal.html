@@ -101,8 +101,8 @@
                       hx-vals='{
                 "module": "{{ view.module }}",
                 "model": "{{ view.model }}",
-                "method": "update",
-                "id": "{{ view.line.id }}",
+                "method": "create",
+                {% if view.id %}"id": "{{ view.id }}", {% endif %}
                 "prefix": "{{ view.prefix }}"
               }'
                 >

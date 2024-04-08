@@ -241,7 +241,7 @@
 
         // await the auth token and store it somewhere
 
-        let authToken = null
+        var authToken = null
         // gate htmx requests on the auth token
         htmx.on("htmx:confirm", (e) => {
             let authToken = getCookieValue('token');
