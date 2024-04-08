@@ -1,3 +1,5 @@
+import logging
+from datetime import datetime
 from typing import Any, Generic, List, Optional, Type, TypeVar, Dict, Sequence
 from functools import wraps
 from uuid import uuid4
@@ -15,12 +17,15 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from core.fastapi.middlewares.authentication import CurrentUser
 import math
 
+from core.utils.timeit import timed
+
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 FilterSchemaType = TypeVar("FilterSchemaType", bound=Filter)
 before_fields = ['role_ids', 'company_ids', 'is_admin', 'store_id']
 
+from logging import getLogger
 
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterSchemaType]):
     def __init__(self, request=None, model: Type[ModelType] = None, db_session: AsyncSession = session):
@@ -45,6 +50,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             raise HTTPException(status_code=404, detail=f"Not found")
         return sql_obj
 
+    @timed
     async def list(self, _filter: FilterSchemaType, size: int):
         if self.model.__tablename__ not in ('company', 'user'):
             setattr(_filter, 'company_id__in', [self.user.company_id])
@@ -52,8 +58,10 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         if getattr(_filter, 'order_by'):
             query_filter = _filter.sort(query_filter)
         executed_data = await self.session.execute(query_filter)
-        return executed_data.scalars().all()
+        result =  executed_data.scalars().all()
+        return result
 
+    @timed
     async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
         entity = self.model(**obj.dict())
         entity.company_id = self.user.company_id
@@ -74,6 +82,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             await self.session.flush([entity])
         return entity
 
+    @timed
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
         entity = await self.get(id)
         if not entity:
@@ -97,6 +106,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             await self.session.flush([entity])
         return entity
 
+    @timed
     async def delete(self, id: Any):
         entity = await self.get(id)
         await self.session.delete(entity)
@@ -111,3 +121,4 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         return True
+

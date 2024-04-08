@@ -9,9 +9,12 @@ from core.config import config
 
 import logging
 
+from core.utils.timeit import timed
+
 logging.basicConfig(level=logging.INFO)
 
 class Client(httpx.AsyncClient):
+    @timed
     async def request(self, method: str, url: str, json=None, params=None, timeout=None):
         query_param_cleaned = {}
         if params:
@@ -27,6 +30,7 @@ class Client(httpx.AsyncClient):
             raise HTTPException(responce.status_code, detail=responce.json())
         return responce
 
+    @timed
     async def get(self, url, *, params):
         responce = await self.request('GET', url=url, params=params)
         return responce
@@ -81,6 +85,7 @@ class BaseAdapter:
             )
         return responce.json()
 
+    @timed
     async def list(self, model: str = None, params=None, **kwargs):
         path = f'/api/{self.module}/{model or self.model}'
         responce = await self.client.get(self.domain + path, params=params)

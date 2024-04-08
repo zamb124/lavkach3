@@ -35,6 +35,6 @@ class ConnectionManager:
             await connection.send_text(message)
 
 
-#ws_manager = ConnectionManager()
+ws_manager = ConnectionManager()
 
 

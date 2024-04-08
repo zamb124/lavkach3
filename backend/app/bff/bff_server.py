@@ -24,7 +24,10 @@ from core.helpers.cache import RedisBackend
 class env:
     ...
 
-
+async def redis_cache_sync():
+    services = config.services.items()
+    for service, vals in config.services.items():
+        pass
 class AdapterMidlleWare:
     """
     Адартер кладется в request для удобства

@@ -1,4 +1,5 @@
 import datetime
+import logging
 import uuid
 from collections import defaultdict
 from copy import deepcopy
@@ -9,6 +10,7 @@ from typing import Optional, Any, get_args, get_origin
 from fastapi import HTTPException
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2_fragments import render_block, render_block_async
+from profilehooks import profile
 from pydantic import BaseModel
 from pydantic.fields import Field
 from starlette.datastructures import QueryParams
@@ -18,6 +20,7 @@ from app.bff.bff_config import config
 from app.bff.template_spec import templates
 from core.fastapi.adapters import BaseAdapter
 from core.types import TypeLocale, TypePhone, TypeCountry, TypeCurrency
+from core.utils.timeit import timed
 
 
 class DeleteSchema(BaseModel):
@@ -205,6 +208,7 @@ class HtmxTable(HtmxView):
     lines: list[HtmxLine] = Field(default=[], description='Строки таблицы')
     id: Optional[uuid.UUID] = None
 
+    @timed
     def render(self):
         try:
             rendered_html = render_block(
@@ -252,6 +256,7 @@ class ModelView:
     sort: Optional[dict] = {}
     prefix: str
 
+    @timed
     def __init__(self,
                  request,
                  module: str,
@@ -379,6 +384,7 @@ class ModelView:
             'prefix': prefix
         })
 
+    @timed
     def _get_schema_fields(self, schema: BaseModel) -> list[HtmxField]:
         """
             base, filte, update, create
@@ -393,11 +399,13 @@ class ModelView:
             )
         return fields
 
+    @timed
     def _get_line(self, schema: BaseModel, **kwargs) -> HtmxLine:
         id = kwargs.get('model_id')
         fields = self._get_schema_fields(schema=schema)
         return HtmxLine(module=self.module, model=self.model, prefix=self.prefix, fields=fields, id=id)
 
+    @timed
     def get_filter(self) -> str:
         """
             Метод отдает фильтр , те столбцы с типами для HTMX шаблонов
@@ -409,6 +417,7 @@ class ModelView:
             block_name='filter', filter=self.filter
         )
 
+    @timed
     async def get_create(self, model_id: uuid.UUID = None, **kwargs) -> str:
         """
             Метод отдает создать схему , те столбцы с типами для HTMX шаблонов
@@ -464,6 +473,7 @@ class ModelView:
             block_name='view',
             view=self.view
         )
+
     async def get_delete(self, model_id: uuid.UUID, target_id: str = None) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
@@ -511,6 +521,7 @@ class ModelView:
             block_name=widget, table=self.table
         )
 
+    @timed
     async def _get_data(
             self,
             schema: BaseModel,
@@ -521,6 +532,8 @@ class ModelView:
         """
             Метод отдает таблицу для формата HTMX и Jinja
         """
+        time_start = datetime.datetime.now()
+        logging.info(f"_GET_DATA START: {time_start}")
         if not params:
             params = self.params
         if join_related:
@@ -530,9 +543,10 @@ class ModelView:
         module = self.module
         model = self.model
         line = self._get_line(schema=schema)
+
         async with getattr(self.request.scope['env'], module) as a:
             data = await a.list(params=params, model=model)
-
+        logging.info(f"_GET_DATA END REQUEST: {datetime.datetime.now() - time_start}")
         if not data.get('data'):
             return [], 0
         lines = []
@@ -558,7 +572,7 @@ class ModelView:
                 fields=line_dict['fields'],
                 prefix=line_dict['prefix']
             ))
-
+        logging.info(f"_GET_DATA LINES SERIALIZE: {datetime.datetime.now() - time_start}")
         ### Если необходимо сджойнить
         if join_related:
             missing_fields = defaultdict(list)
@@ -571,19 +585,26 @@ class ModelView:
                             missing_fields[field.field_name].append((field.val, field))
                         elif field.field_name in self.join_fields:
                             missing_fields[field.field_name].append((field.val, field))
+            to_serialize = []
             for miss_key, miss_value in missing_fields.items():
-                if miss_key == 'user_ids':
-                    a = 1
+                _data = []
                 _vals, _fields = [i[0] for i in miss_value], [i[1] for i in miss_value]
-                async with getattr(self.request.scope['env'], _fields[0].module) as a:
-                    miss_value_str = ''
-                    _join_lines = {}
-                    if isinstance(_vals, list):
-                        miss_value_str = ','.join([i for i in _vals if i])
-                    if miss_value_str:
-                        qp = QueryParams({'id__in': miss_value_str})
-                        _data = await a.list(params=qp, model=_fields[0].model)
-                        _join_lines = {i['id']: i for i in _data['data']}
+                a = getattr(self.request.scope['env'], _fields[0].module)
+                miss_value_str = ''
+                _corutine_data = None
+                if isinstance(_vals, list):
+                    miss_value_str = ','.join([i for i in _vals if i])
+                if miss_value_str:
+                    qp = QueryParams({'id__in': miss_value_str})
+                    _corutine_data = a.list(params=qp, model=_fields[0].model)
+                    #_join_lines = {i['id']: i for i in _data['data']}
+                to_serialize.append((_vals, _fields, _corutine_data))
+            logging.info(f"_GET_DATA GET CORUTINE CREATED: {datetime.datetime.now() - time_start}")
+            for _vals, _fields, _corutine_data in to_serialize:
+                _join_lines = {}
+                if _corutine_data:
+                    _data = await _corutine_data
+                    _join_lines = {i['id']: i for i in _data['data']}
                 for _val, _field in zip(_vals, _fields):
                     if isinstance(_val, list):
                         _new_vals = []
@@ -606,7 +627,7 @@ class ModelView:
                     else:
                         raise HTMXException(status_code=500,
                                             detail=f'Wrong field name {_field.field_name} in table model {_field.model}')
-
+            logging.info(f"_GET_DATA GET CORUTINE REALEASE: {datetime.datetime.now() - time_start}")
             for col in missing_fields.keys():
                 if col.endswith('_by'):
                     new_field_name = col.replace('_by', '_rel')
