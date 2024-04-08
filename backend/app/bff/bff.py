@@ -12,6 +12,7 @@ from app.bff.bff_service import BffService
 from app.bff.dff_helpers.filters_cleaner import clean_filter
 from app.bff.dff_helpers.schema_recognizer import ModelView
 from app.bff.template_spec import templates
+from core.utils.timeit import timed
 
 
 class ExceptionResponseSchema(BaseModel):
@@ -148,6 +149,8 @@ class SearchSchema(BaseModel):
     module: str
     model: str
     query: str = ''
+
+
 @index_router.get("/bff/search", response_class=JSONResponse)
 async def search(request: Request, schema:SearchSchema = Depends(SearchSchema)):
     """

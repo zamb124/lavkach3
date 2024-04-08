@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from fastapi import FastAPI, Request, Depends
@@ -19,7 +20,10 @@ from core.fastapi.middlewares import (
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
+from core.utils.timeit import add_timing_middleware
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class env:
     ...
@@ -114,4 +118,5 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+add_timing_middleware(app, record=logger.info, prefix="app", exclude="untimed")
 app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
