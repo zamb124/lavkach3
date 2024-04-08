@@ -683,7 +683,7 @@ class ModelView:
         try:
             rendered_html = render_block(
                 environment=templates.env,
-                template_name=f'views/line.html',
+                template_name=f'views/model.html',
                 block_name='button_create',
                 line=line,
             )
