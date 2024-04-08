@@ -50,6 +50,7 @@ packaging==23.2
 passlib==1.7.4
 phonenumbers==8.13.24
 pluggy==1.3.0
+profilehooks==1.12.0
 prometheus_client==0.20.0
 prompt-toolkit==3.0.43
 pycparser==2.21
