@@ -95,7 +95,6 @@
             element.addEventListener('search', async e => {
                 element.focus()
                 let value = e.detail.value;
-                console.log(value);
                 choices.clearChoices()// Test!
                 choices.setChoices(
                     await searchChoices(value)
