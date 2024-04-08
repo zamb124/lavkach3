@@ -23,7 +23,18 @@
                 placeholderValue: "Enter {{ field.title }}",
                 removeItemButton: true
             });
-
+            async function searchChoices(value){
+                    try {
+                        const items = await fetch('/bff/search?module={{ field.module }}&model={{ field.model }}&query=' + encodeURIComponent(value));
+                        const results = await items.json();
+                        if (0 === results.length) { // Handle error from result, for example.
+                            throw 'Empty!';
+                        }
+                        return results;
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }
             function check_valid(event) {
                 if (element.required) {
                     if (event) {
@@ -86,30 +97,23 @@
                 let value = e.detail.value;
                 console.log(value);
                 choices.clearChoices()// Test!
-                choices.setChoices(async () => {
-                    try {
-                        const items = await fetch('/bff/search?module={{ field.module }}&model={{ field.model }}&query=' + encodeURIComponent(value));
-                        const results = await items.json();
-                        if (0 === results.length) { // Handle error from result, for example.
-                            throw 'Empty!';
-                        }
-                        return results;
-                    } catch (err) {
-                        console.error(err);
-                    }
-                }).then(() => {
-                    choices.input.element.focus()
-                });
-
+                choices.setChoices(
+                    await searchChoices(value)
+                )
             });
 
             check_valid()
             element.addEventListener('choice', function (event) {
-                console.log('choice')
                 check_valid(event)
             });
+            element.addEventListener('showDropdown', async e=> {
+                choices.clearChoices()// Test!
+                choices.setChoices(
+                    await searchChoices('')
+                )
+            });
+
             element.addEventListener('removeItem', function (event) {
-                console.log('removeItem')
                 check_valid(event)
             });
         })();
