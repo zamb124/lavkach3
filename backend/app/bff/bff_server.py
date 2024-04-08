@@ -6,7 +6,6 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi_restful.tasks import repeat_every
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 

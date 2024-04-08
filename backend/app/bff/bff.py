@@ -264,5 +264,5 @@ async def dropdown_ids(request: Request, module: str, model: str, id: str, iteml
      Виджет на вход получает модуль-модель-ид- и обратную ссылку если нужно, если нет будет /module/model/{id}
      _named означает, что так же будет отдат name для отрисовки на тайтле кнопки
     """
-    data = await BffService.dropdown_ids(request, module, model, id, itemlink, is_named)
+    data = await request.scope['env'].basic.dropdown_ids(model, id, itemlink, is_named)
     return templates.TemplateResponse(request, 'widgets/widgets/dropdown-ids-named-htmx.html', context=data)

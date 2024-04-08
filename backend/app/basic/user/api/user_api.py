@@ -25,7 +25,7 @@ from ..schemas.user_schemas import SignUpScheme, ChangeCompanyScheme
 from fastapi import Response
 
 from ...auth.api.schemas import RefreshTokenRequest
-#from ...bus.managers import ws_manager
+from ...bus.managers import ws_manager
 
 user_router = APIRouter()
 
