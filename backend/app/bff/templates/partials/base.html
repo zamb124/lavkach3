@@ -247,6 +247,7 @@
             let authToken = getCookieValue('token');
             // if there is no auth token
             if (authToken == null && !window.location.pathname.includes('login')) {
+                debugger
                 e.preventDefault()
                 window.history.pushState('Login', 'Login', '/auth/login');
                 console.log('redirect login')
@@ -339,8 +340,9 @@
                 evt.detail.target = errors
                 evt.detail.shouldSwap = true;
                 evt.detail.isError = false;
-            } else if (evt.detail.xhr.status === 401) {
+            } else if (evt.detail.xhr.status === 401 && !window.location.pathname.includes('login')) {
                 // Запрещено
+                debugger
                 window.history.pushState('Login', 'Login', '/auth/login');
                 htmx.ajax('GET', '/auth/login', {
                     target: '#htmx_content', headers: {

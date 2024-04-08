@@ -82,7 +82,6 @@ async def login(request: Request, obj: LoginRequest, response: Response):
         email=obj.email,
         password=obj.password,
     )
-    response.set_cookie(key='token', value='helloworld', httponly=True)
     return a
 
 @user_router.post("/signup", response_model=LoginResponseSchema)
