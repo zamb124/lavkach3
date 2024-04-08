@@ -4,7 +4,6 @@ from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
-from app.bff.bff_service import BffService
 from app.bff.template_spec import templates
 
 user_router = APIRouter()
@@ -17,6 +16,6 @@ async def company_change(request: Request, company_id: uuid.UUID):
 
     async with request.scope['env'].basic as ba:
         data = await ba.user_company_change(user_id=request.user.user_id.hex, company_id=company_id.hex)
-    message = "Company changed"
-    data = await BffService.dropdown_ids(request, 'basic', 'company', data['company_id'], '/basic/user/company_change', message=message)
+        message = "Company changed"
+        data = await ba.dropdown_ids(request, 'basic', 'company', data['company_id'], '/basic/user/company_change', message=message)
     return templates.TemplateResponse(request, 'widgets/widgets/dropdown-ids-named-htmx.html', context=data)

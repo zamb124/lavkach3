@@ -500,6 +500,7 @@ class ModelView:
             target_id=target_id
         )
 
+    @timed
     async def get_table(self, params: QueryParams | dict = None, join_related: bool = True, join_field: list = None, widget:str = 'table') -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
