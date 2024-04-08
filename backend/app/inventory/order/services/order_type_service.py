@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,6 +24,8 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
 
     @permit('order_type_create')
     async def create(self, obj: CreateSchemaType) -> ModelType:
+        obj.created_by = self.user.user_id
+        obj.edited_by = self.user.user_id
         return await super(OrderTypeService, self).create(obj)
 
     @permit('order_type_delete')
