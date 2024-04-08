@@ -72,9 +72,9 @@ def empty_erray(val):
 class OrderFilter(BaseFilter):
     planned_datetime__gte: Optional[datetime] = Field(title="bigger or equal planned date", default=None, filter=True)
     planned_datetime__lt: Optional[datetime] = Field(title="less planned date", default=None, filter=True)
-    status__in: Optional[List[str]] = Field(default=None, filter=True)
-    store_id__in: Optional[List[str]] = Field(default=None, filter=True)
-    order_type_id__in: Optional[List[str]] = Field(default=None, filter=True)
+    status__in: Optional[List[OrderStatus]] = Field(default=None, title='Order Status', filter=True)
+    store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', filter=True)
+    order_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Order Type', filter=True)
 
     class Constants(Filter.Constants):
         model = Order

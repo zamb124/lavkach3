@@ -1,18 +1,19 @@
 {% block as_form %}
     <div class="row">
-        <p style="border-top-width: 10px; margin-top: 10px;margin-bottom: 0px;" class="text-muted text-uppercase text-start">{{ field.title|capitalize}}:</p>
+        <p style="border-top-width: 10px; margin-top: 10px;margin-bottom: 0px;"
+           class="text-muted text-uppercase text-start">{{ field.title|capitalize }}:</p>
     </div>
     <div class="row">
-    <select class="form-control is-valid"
-            id="{{ field.prefix ~ field.field_name }}"
-            name="{{ field.prefix ~ field.field_name }}"
-            {% if field.required %} required {% endif %}
-            data-choices
-    >
-                {% if field.val %}
-                    <option value="{{ field.val }}" selected></option>
-                {% endif %}
-    </select>
+        <select class="form-control is-valid"
+                id="{{ field.prefix ~ field.field_name }}"
+                name="{{ field.prefix ~ field.field_name }}"
+                {% if field.required %} required {% endif %}
+                data-choices
+        >
+            {% if field.val %}
+                <option value="{{ field.val }}" selected></option>
+            {% endif %}
+        </select>
     </div>
     <script>
         (async function () {
@@ -22,9 +23,10 @@
                 placeholderValue: "Enter {{ field.title }}",
                 removeItemButton: true
             });
+
             function check_valid(event) {
                 if (element.required) {
-                    if (event){
+                    if (event) {
                         if (event.type === 'choice') {
                             if (event.detail.choice.value) {
                                 choices.containerInner.element.classList.remove('is-invalid');
@@ -41,12 +43,17 @@
                         choices.containerInner.element.classList.add('is-invalid');
                         choices.containerInner.element.classList.remove('is-valid');
                     }
+                } else if (element.id.includes('__in')) {
+                    choices.containerInner.element.classList.remove('is-invalid');
+                    choices.containerInner.element.classList.remove('is-invalid');
                 } else {
                     choices.containerInner.element.classList.remove('is-invalid');
                     choices.containerInner.element.classList.add('is-valid');
                 }
             }
+
             check_valid()
+
             async function getValues() {
                 var id__in = ''
                 let value = await choices.getValue();
@@ -115,5 +122,5 @@
     </div>
 {% endblock %}
 {% block as_table %}
-<td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
+    <td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
 {% endblock %}
