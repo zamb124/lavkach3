@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 
+from app.inventory.order.api.move_api import move_router
 from app.inventory.quant.api import quant_router, lot_router
 from app.inventory.order.api import order_router, order_type_router
 from app.inventory.location.api import location_router, location_type_router
@@ -11,4 +12,5 @@ inventory_router.include_router(lot_router, prefix="/api/inventory/lot", tags=["
 inventory_router.include_router(location_type_router, prefix="/api/inventory/location_type", tags=["LocationType"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 inventory_router.include_router(location_router, prefix="/api/inventory/location", tags=["Location"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 inventory_router.include_router(order_router, prefix="/api/inventory/order", tags=["Order"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+inventory_router.include_router(move_router, prefix="/api/inventory/move", tags=["Order"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 inventory_router.include_router(order_type_router, prefix="/api/inventory/order_type", tags=["OrderType"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])

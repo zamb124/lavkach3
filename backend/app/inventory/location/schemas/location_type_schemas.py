@@ -40,7 +40,7 @@ class LocationTypeScheme(LocationTypeCreateScheme, TimeStampScheme):
     id: UUID4
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class LocationTypeFilter(BaseFilter):

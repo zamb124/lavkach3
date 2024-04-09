@@ -47,6 +47,7 @@ class Config(CoreConfig):
             'DOMAIN': os.environ.get("BASIC_DOMAIN") or '127.0.0.1',
             'PORT': '8001',
             'adapter': BasicAdapter,
+            'cache': ['store', 'company', 'partner', 'product_category', 'product_storage_type', 'product_storage_type', 'product', 'uom_category', 'uom'],
             'schema': {
                 'store': {
                     'base': StoreScheme,

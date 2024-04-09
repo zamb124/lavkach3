@@ -54,7 +54,7 @@ class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
     edited_by: UUID4
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class OrderTypeFilter(BaseFilter):

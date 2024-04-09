@@ -44,7 +44,7 @@ class PartnerScheme(PartnerParent, TimeStampScheme):
     partner_rel: Optional[PartnerParent]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         arbitrary_types_allowed = True
 
 class PartnerFilter(BaseFilter):

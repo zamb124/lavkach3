@@ -66,7 +66,7 @@ class UserScheme(UserBaseScheme, TimeStampScheme):
     store_rel: Optional[StoreScheme]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserFilter(BaseFilter):

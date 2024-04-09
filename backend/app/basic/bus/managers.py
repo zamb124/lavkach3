@@ -21,10 +21,10 @@ class ConnectionManager:
 
     async def disconnect(self, user_id: str):
         await self.cache.remove_by_tag(tag=CacheTag.WS_SESSION, key=user_id)
-        self.active_connections.pop(f'{CacheTag.WS_SESSION.value}::{user_id}')
+        self.active_connections.pop(f'{CacheTag.WS_SESSION.value}:{user_id}')
 
     async def send_personal_message(self, message: str, user_id: str, message_type='other'):
-        if websocket := self.active_connections.get(f'{CacheTag.WS_SESSION.value}::{user_id}'):
+        if websocket := self.active_connections.get(f'{CacheTag.WS_SESSION.value}:{user_id}'):
             await websocket.send_json({
                 'message_type': message_type,
                 'message': message

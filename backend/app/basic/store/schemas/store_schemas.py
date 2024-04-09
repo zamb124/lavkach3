@@ -40,7 +40,7 @@ class StoreScheme(StoreCreateScheme, TimeStampScheme):
     company_rel: Optional[CompanyScheme] = Field(table=True, form=True, title='Company')
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class StoreFilter(BaseFilter):

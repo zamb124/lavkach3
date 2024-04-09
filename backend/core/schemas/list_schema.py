@@ -31,7 +31,7 @@ class GenericListSchema(BaseModel):
         return data
 
     class Config:
-        orm_mode = False
+        from_attributes = False
         arbitrary_types_allowed = True
         extra = 'allow'
 

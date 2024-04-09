@@ -57,12 +57,13 @@ class BaseAdapter:
     domain: str = None
     request: Request
 
-    def __init__(self, conn: HTTPConnection, config: dict, module: str = None, model: str = None):
+    def __init__(self, conn: HTTPConnection = None, conf: dict = None, module: str = None, model: str = None):
         if module:
             self.module = module
         if model:
             self.model = model
-        self.domain = f"http://{config['DOMAIN']}:{config['PORT']}"
+        self.domain = f"http://{conf['DOMAIN']}:{conf['PORT']}"
+
         self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token') or ''}
         if self.headers.get('Authorization'):
             self.client = Client(headers=self.headers)

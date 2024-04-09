@@ -31,20 +31,14 @@ class UomScheme(UomCreateScheme, TimeStampScheme):
     lsn: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         arbitrary_types_allowed = True
 
 
 class UomFilter(BaseFilter):
-    lsn__gt: Optional[int] = Field(alias="cursor")
-    id__in: Optional[List[UUID4]] = Field(alias="id")
-    created_at__gte: Optional[datetime] = Field(description="bigger or equal created")
-    created_at__lt: Optional[datetime] = Field(description="less created")
-    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated")
-    updated_at__lt: Optional[datetime] = Field(description="less updated")
-    title__in: Optional[List[str]] = Field(description="title")
-    category_id__in: Optional[List[str]] = Field(description="category_id")
-    type__in: Optional[List[str]] = Field(description="type")
+    title__in: Optional[List[str]] = Field(default=None, description="title")
+    category_id__in: Optional[List[str]] = Field(default=None,description="category_id")
+    type__in: Optional[List[str]] = Field(default=None, description="type")
 
     class Config:
         populate_by_name = True

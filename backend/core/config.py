@@ -46,6 +46,8 @@ class Config(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str = os.environ.get("AWS_SECRET_ACCESS_KEY") or ''
     AWS_DEFAULT_BUCKET: str = os.environ.get("AWS_DEFAULT_BUCKET") or 'us-east-1'
     AWS_ENDPOINT_URL: str = os.environ.get("AWS_ENDPOINT_URL") or 'https://storage.yandexcloud.net'
+    SUPERUSER_EMAIL: str = os.environ.get("SUPERUSER_EMAIL") or ''
+    SUPERUSER_PASSWORD: str = os.environ.get("SUPERUSER_PASSWORD") or ''
 
 
 class DevelopmentConfig(Config):

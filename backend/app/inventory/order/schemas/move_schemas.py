@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import PutawayStrategy
+from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import Move, MoveType
@@ -42,18 +43,11 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
     status: MoveStatus
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
-class MoveFilter(Filter):
-    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
-    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
-    created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
-    created_at__lt: Optional[datetime] = Field(description="less created", default=None)
-    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
-    updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
-    company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
-    store_id__in: Optional[List[UUID4]] = Field(alias="store_id", default=None)
+class MoveFilter(BaseFilter):
+    store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store')
 
     class Config:
         populate_by_name = True
@@ -62,7 +56,7 @@ class MoveFilter(Filter):
         model = Move
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["external_number", "origin_number"]
+        search_model_fields = ["order_id", "product_id"]
 
 
 class MoveListSchema(GenericListSchema):

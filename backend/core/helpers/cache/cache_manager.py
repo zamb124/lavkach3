@@ -46,13 +46,38 @@ class CacheManager:
         return _cached
 
     async def set(self, *, tag: CacheTag, key: str, response=Any, ttl=None) -> None:
-        key = f'{tag.value}::{key}'
+        key = f'{tag.value}:{key}'
         await self.backend.set(response=response, key=key, ttl=ttl)
         return key
 
+    async def set_model(self, module, model, key: str, data=Any, ttl=10000) -> None:
+        key = f'{CacheTag.MODEL.value}:{module}:{model}:{key}'
+        await self.backend.set(response=data, key=key, ttl=ttl)
+        return key
+
+    async def get_model(self, module, model, key: str) -> None:
+        key = f'{CacheTag.MODEL.value}:{module}:{model}:{key}'
+        return await self.backend.get(key=key)
+
+    def clean_model_tag(self, data, module, model):
+        pass
+    async def get_by_model_all(self, module, model) -> dict:
+        key = f'{CacheTag.MODEL.value}:{module}:{model}'
+        data =  await self.backend.get_startswith(key=key)
+        new_data = {}
+        for key, value in data.items():
+            new_data.update({
+                key.split(':')[-1]: value
+            })
+        return new_data
+
+    async def get(self, tag: CacheTag, key):
+        key = f'{tag.value}:{key}'
+        return await self.backend.get(key=key)
+
 
     async def remove_by_tag(self, *, tag: CacheTag, key:str=None) -> None:
-        key = f'{tag.value}::{key}'
+        key = f'{tag.value}:{key}'
         await self.backend.delete_startswith(key=key)
 
     async def remove_by_prefix(self, *, prefix: str) -> None:

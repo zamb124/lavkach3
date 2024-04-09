@@ -16,7 +16,7 @@ class BaseFilter(Filter):
         Аттрибут filter=True - значит будет показываться в UI на фильтрах
         Можно переопределить дальше эту схему уже в BFF
     """
-    search: Optional[str] = Field(default=None, filter=True, title='Search')
+    search: Optional[str] = Field(default='', filter=True, title='Search')
     lsn__gt: Optional[int] = Field(alias="cursor", default=0)
     id__in: Optional[List[UUID4]] = Field(default=None, title='ID')
     created_at__gte: Optional[datetime] = Field(default=None, filter=True, title='Created at from')

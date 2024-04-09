@@ -61,7 +61,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme, CustomBaseModel):
         return f'{self.order_type_rel.title}: [{self.number}]'
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 def empty_erray(val):

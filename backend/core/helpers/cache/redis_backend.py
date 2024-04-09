@@ -27,6 +27,17 @@ class RedisBackend(BaseBackend):
         async for key in redis_client.scan_iter(f"{key}*"):
             await redis_client.delete(key)
 
+    async def get_startswith(self, *, key: str) -> dict:
+        keys = []
+        data = {}
+        async for value in redis_client.scan_iter(f"{key}*"):
+            keys.append(value)
+        for key in keys:
+            data.update({
+                key.decode('utf-8'): await self.get(key=key)
+            })
+        return data
+
     async def delete(self, *, key: str) -> None:
         await redis_client.delete(key)
 
