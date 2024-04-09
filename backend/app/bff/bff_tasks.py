@@ -2,14 +2,15 @@ from app.bff.bff_config import config
 
 from core.helpers.cache import Cache
 
-cursors = {}
 import logging
 from fastapi_restful.tasks import repeat_every
 from httpx import AsyncClient as asyncclient
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+cursors = {}
+
 
 @repeat_every(seconds=360, logger=logger)
 async def remove_expired_tokens() -> None:
