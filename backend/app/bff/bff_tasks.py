@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 cursors = {}
 
 
-@repeat_every(seconds=360, logger=logger)
+@repeat_every(seconds=350, logger=logger)
 async def remove_expired_tokens() -> None:
     client = asyncclient()
     body = {

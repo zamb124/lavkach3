@@ -91,7 +91,7 @@ class BaseAdapter:
         is_cached = False
         cached_data = []
         missed = []
-        if self.conf['schema'][model or self.model].get('cache_strategy') != 'full':
+        if model in ('locale', 'currency','country') or self.conf['schema'][model or self.model].get('cache_strategy') != 'full':
             return is_cached, cached_data, missed
         if params:
             params.pop('module', None)
