@@ -13,7 +13,7 @@ from app.basic.store.schemas import StoreScheme, StoreCreateScheme, StoreUpdateS
 from app.basic.uom.schemas import UomScheme, UomCreateScheme, UomUpdateScheme, UomFilter, UomCategoryScheme, \
     UomCategoryCreateScheme, UomCategoryUpdateScheme, UomCategoryFilter
 from app.basic.user.schemas import UserScheme, UserCreateScheme, UserUpdateScheme, UserFilter, RoleScheme
-from app.basic.user.schemas.role_schemas import RoleFilter, RoleUpdateScheme, RoleCreateScheme
+from app.basic.user.schemas.role_schemas import *
 from app.bff.adapters.basic_adapter import BasicAdapter
 from app.bff.adapters.inventory_adapter import InventoryAdapter
 from app.inventory.location.schemas import LocationScheme, LocationCreateScheme, LocationUpdateScheme, LocationFilter, \
