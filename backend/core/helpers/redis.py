@@ -11,4 +11,3 @@ redis = aioredis.StrictRedis(
     ssl_ca_certs=config.REDIS_CERT_PATH,
     ssl_cert_reqs=None
 )
-#redis = aioredis.from_url('rediss://default:AVNS_w6X_JVOCj6vbTjwIowO@redis-do-user-15109425-0.c.db.ondigitalocean.com:25061', )
