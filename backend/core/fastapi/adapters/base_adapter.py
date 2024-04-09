@@ -86,6 +86,7 @@ class BaseAdapter:
             )
         return responce.json()
 
+    @timed
     async def check_in_cache(self, params, model):
         is_cached = False
         cached_data = []
