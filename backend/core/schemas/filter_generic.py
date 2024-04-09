@@ -26,6 +26,7 @@ class BaseFilter(Filter):
     company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None, title='Company')
     order_by: Optional[List[str]] = Field(default=["lsn", ], filter=True, title='Order by')
 
+
     @model_validator(mode='before')
     def check(cls, value):
         """

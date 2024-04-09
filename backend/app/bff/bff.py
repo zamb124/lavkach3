@@ -155,7 +155,7 @@ async def search(request: Request, schema:SearchSchema = Depends(SearchSchema)):
     """
      Универсальный запрос поиска
     """
-    params = QueryParams({'search': schema.query})
+    params = {'search': schema.query}
     async with getattr(request.scope['env'], schema.module) as a:
         data = await a.list(params=params, model=schema.model)
     return [
@@ -177,7 +177,7 @@ async def get_by_ids(request: Request, schema: SearchSchema = Depends(SearchIds)
     """
     if not schema.id__in:
         return []
-    params = QueryParams({'id__in': schema.id__in})
+    params = {'id__in': schema.id__in}
     async with getattr(request.scope['env'], schema.module) as a:
         data = await a.list(params=params, model=schema.model)
     return [

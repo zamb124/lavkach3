@@ -47,67 +47,76 @@ class Config(CoreConfig):
             'DOMAIN': os.environ.get("BASIC_DOMAIN") or '127.0.0.1',
             'PORT': '8001',
             'adapter': BasicAdapter,
-            'cache': ['store', 'company', 'partner', 'product_category', 'product_storage_type', 'product_storage_type', 'product', 'uom_category', 'uom'],
             'schema': {
                 'store': {
                     'base': StoreScheme,
                     'create': StoreCreateScheme,
                     'update': StoreUpdateScheme,
                     'filter': StoreFilter,
+                    'cache_strategy': 'full'
                 },
                 'company': {
                     'base': CompanyScheme,
                     'create': CompanyCreateScheme,
                     'update': CompanyUpdateScheme,
                     'filter': CompanyFilter,
+                    'cache_strategy': 'full'
                 },
                 'partner': {
                     'base': PartnerScheme,
                     'create': PartnerCreateScheme,
                     'update': PartnerUpdateScheme,
                     'filter': PartnerFilter,
+                    'cache_strategy': 'full'
                 },
                 'product_category': {
                     'base': ProductCategoryScheme,
                     'create': ProductCategoryCreateScheme,
                     'update': ProductCategoryUpdateScheme,
                     'filter': ProductCategoryFilter,
+                    'cache_strategy': 'full'
                 },
                 'product_storage_type': {
                     'base': ProductStorageTypeScheme,
                     'create': ProductStorageTypeCreateScheme,
                     'update': ProductStorageTypeUpdateScheme,
                     'filter': ProductStorageTypeFilter,
+                    'cache_strategy': 'full'
                 },
                 'product': {
                     'base': ProductScheme,
                     'create': ProductCreateScheme,
                     'update': ProductUpdateScheme,
                     'filter': ProductFilter,
+                    'cache_strategy': 'full'
                 },
                 'uom_category': {
                     'base': UomCategoryScheme,
                     'create': UomCategoryCreateScheme,
                     'update': UomCategoryUpdateScheme,
                     'filter': UomCategoryFilter,
+                    'cache_strategy': 'full'
                 },
                 'uom': {
                     'base': UomScheme,
                     'create': UomCreateScheme,
                     'update': UomUpdateScheme,
                     'filter': UomFilter,
+                    'cache_strategy': 'full'
                 },
                 'user': {
                     'base': UserScheme,
                     'create': UserCreateScheme,
                     'update': UserUpdateScheme,
                     'filter': UserFilter,
+                    'cache_strategy': 'full'
                 },
                 'role': {
                     'base': RoleScheme,
                     'create': RoleCreateScheme,
                     'update': RoleUpdateScheme,
                     'filter': RoleFilter,
+                    'cache_strategy': 'full'
                 },
             }
         },
@@ -121,13 +130,14 @@ class Config(CoreConfig):
                     'create': OrderCreateScheme,
                     'update': OrderUpdateScheme,
                     'filter': OrderFilter,
-                    'sort': ['number', 'planned_datetime']
+                    'sort': ['number', 'planned_datetime'],
                 },
                 'order_type': {
                     'base': OrderTypeScheme,
                     'create': OrderTypeCreateScheme,
                     'update': OrderTypeUpdateScheme,
                     'filter': OrderTypeFilter,
+                    'cache_strategy': 'full'
                 },
                 'move': {
                     'base': MoveScheme,
@@ -152,6 +162,7 @@ class Config(CoreConfig):
                     'create': LocationTypeCreateScheme,
                     'update': LocationTypeUpdateScheme,
                     'filter': LocationTypeFilter,
+                    'cache_strategy': 'full'
                 },
                 # 'suggest': {
                 #     'base': SuggestScheme,

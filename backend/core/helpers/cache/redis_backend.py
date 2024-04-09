@@ -1,5 +1,5 @@
 import pickle
-from typing import Any
+from typing import Any, Optional
 
 import ujson
 
@@ -23,6 +23,16 @@ class RedisBackend(BaseBackend):
 
         await redis_client.set(name=key, value=response, ex=ttl)
 
+    async def set_hash(
+            self,
+            name: str,
+            key: Optional[str] = None,
+            value: Optional[str] = None,
+            mapping: Optional[dict] = None,
+            items: Optional[list] = None,
+    ) -> None:
+        await redis_client.hset(name=name, key=key, value=value, mapping=mapping, items=items)
+
     async def delete_startswith(self, *, key: str) -> None:
         async for key in redis_client.scan_iter(f"{key}*"):
             await redis_client.delete(key)
@@ -40,5 +50,6 @@ class RedisBackend(BaseBackend):
 
     async def delete(self, *, key: str) -> None:
         await redis_client.delete(key)
+
 
 redis_backend = RedisBackend()

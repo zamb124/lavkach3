@@ -435,7 +435,7 @@ class ModelView:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
-        params = QueryParams({'id__in': model_id})
+        params = {'id__in': model_id}
         lines, _ = await self._get_data(
             params=params,
             schema=self.schemas.update,
@@ -453,7 +453,7 @@ class ModelView:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
-        params = QueryParams({'id__in': model_id})
+        params = {'id__in': model_id}
         lines, _ = await self._get_data(
             params=params,
             schema=self.schemas.base,
@@ -478,7 +478,7 @@ class ModelView:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
-        params = QueryParams({'id__in': model_id})
+        params = {'id__in': model_id}
         lines, _ = await self._get_data(
             params=params,
             schema=self.schemas.base,
@@ -596,7 +596,7 @@ class ModelView:
                 if isinstance(_vals, list):
                     miss_value_str = ','.join([i for i in _vals if i])
                 if miss_value_str:
-                    qp = QueryParams({'id__in': miss_value_str})
+                    qp = {'id__in': miss_value_str}
                     _corutine_data = a.list(params=qp, model=_fields[0].model)
                     #_join_lines = {i['id']: i for i in _data['data']}
                 to_serialize.append((_vals, _fields, _corutine_data))

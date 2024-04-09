@@ -3,6 +3,7 @@ from core.fastapi.adapters import BaseAdapter
 class BasicAdapter(BaseAdapter):
     module = 'basic'
 
+
     async def refresh_token(self, refresh_schema):
         path = f'/api/basic/user/refresh'
         body = {
