@@ -1,15 +1,14 @@
 {% block as_form %}
-    <div class="row">
-        <select class="form-control is-valid"
-                id="{{ field.prefix }}{{ field.field_name }}"
-                name="{{ field.prefix }}{{ field.field_name }}"
-                data-choices multiple
-        >   {% if field.val %}
-            {% for val in field.val %}
-                <option value="{{ val }}" selected></option>
-            {% endfor %}
-        {% endif %}
-        </select>
+    <select class="form-control is-valid"
+            id="{{ field.prefix }}{{ field.field_name }}"
+            name="{{ field.prefix }}{{ field.field_name }}"
+            data-choices multiple
+    >   {% if field.val %}
+        {% for val in field.val %}
+            <option value="{{ val }}" selected></option>
+        {% endfor %}
+    {% endif %}
+    </select>
     <script>
         (async function () {
             let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
@@ -92,13 +91,12 @@
 {% endblock %}
 
 {% block as_view %}
-    <div class="row">
-        <div  class="text-start" id="{{ field.prefix }}{{ field.field_name }}">
+        <div class="text-start" id="{{ field.prefix }}{{ field.field_name }}">
         </div>
-    </div>
     <script>
         (async function () {
             let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+
             async function getValues() {
                 var id__in = "{{ ','.join(field.val) }}"
                 try {
@@ -108,7 +106,7 @@
                         return []
                     } else {
                         results.forEach(function (line) {
-                            element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary">' +line.label+ '</span>');
+                            element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary">' + line.label + '</span>');
                         });
                     }
                 } catch (err) {
@@ -116,6 +114,40 @@
                 }
 
             }
+
+            getValues()
+        })();
+    </script>
+{% endblock %}
+{% block as_table %}
+    <td>
+        <div class="row">
+            <div class="text-start" id="{{ field.prefix }}{{ field.field_name }}">
+            </div>
+        </div>
+    </td>
+    <script>
+        (async function () {
+            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+
+            async function getValues() {
+                var id__in = "{{ ','.join(field.val) }}"
+                try {
+                    const items = await fetch('/bff/get_by_ids?module={{ field.module }}&model={{ field.model }}&id__in=' + encodeURIComponent(id__in));
+                    const results = await items.json();
+                    if (0 === results.length) { // Handle error from result, for example.
+                        return []
+                    } else {
+                        results.forEach(function (line) {
+                            element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary">' + line.label + '</span>');
+                        });
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+
+            }
+
             getValues()
         })();
     </script>

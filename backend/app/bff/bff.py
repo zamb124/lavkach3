@@ -244,7 +244,7 @@ async def modal(request: Request, schema: ModalSchema):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    model = ModelView(request, schema.module, schema.model, prefix=schema.prefix)
+    model = ModelView(request, schema.module, schema.model)
     if data := schema.model_extra:
         data = clean_filter(data, schema.prefix)
         method_schema = getattr(model.schemas, schema.method)

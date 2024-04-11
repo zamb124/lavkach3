@@ -119,7 +119,7 @@ class HtmxField(BaseModel):
         return self.render(block_name='as_form')
 
     def as_filter(self):
-        return  self.render(block_name='as_form')
+        return self.render(block_name='as_form')
 
     def as_view(self):
         return self.render(block_name='as_view')
@@ -129,6 +129,21 @@ class HtmxField(BaseModel):
 
     def as_table(self):
         return self.render(block_name='as_table')
+
+    def as_table_view(self):
+        return render_block(
+            environment=templates.env,
+            template_name=f'views/table.html',
+            block_name='as_view',
+            view=self
+        )
+    def as_table_form(self):
+        return render_block(
+            environment=templates.env,
+            template_name=f'views/table.html',
+            block_name='as_form',
+            view=self
+        )
 
 
 
@@ -171,6 +186,11 @@ class HtmxLine(BaseModel):
         return self.render('button_create')
     def as_button_delete(self, target_id:str = None):
         return self.render(block_name='button_delete', target_id=target_id)
+
+    def as_form(self):
+        return self.render(block_name='as_form')
+    def as_create(self):
+        return self.render(block_name='as_create')
 
 class HtmxCreate(BaseModel):
     """"
@@ -219,8 +239,8 @@ class HtmxTable(HtmxView):
             rendered_html = render_block(
                 environment=environment,
                 template_name=f'view/table.html',
-                block_name='table',
-                field=self
+                block_name='as_view',
+                view=self
             )
         except Exception as ex:
             raise
@@ -545,7 +565,7 @@ class ModelView:
         )
 
     @timed
-    async def get_table(self, params: QueryParams | dict = None, join_related: bool = True, join_field: list = None, widget:str = 'table') -> str:
+    async def get_table(self, params: QueryParams | dict = None, join_related: bool = True, join_field: list = None, widget:str = 'as_view') -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
@@ -563,7 +583,7 @@ class ModelView:
         self._sort_columns()
         return render_block(
             environment=templates.env, template_name=f'views/table.html',
-            block_name=widget, table=self.table
+            block_name=widget, view=self.table
         )
 
     @timed
