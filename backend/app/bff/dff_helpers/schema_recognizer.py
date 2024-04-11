@@ -333,7 +333,9 @@ class ModelView:
         for i, c in enumerate(class_types):
             if i > 0:
                 res += '_'
-            if field_name == 'order_by':
+            if field_name == 'id':
+                res += 'id'
+            elif field_name == 'order_by':
                 res += 'order_by'
                 enums = fielinfo.default
             elif field_name.endswith('_by'):
@@ -435,8 +437,18 @@ class ModelView:
             Отдает ту модель, которая нужна или базовую
         """
         fields = []
+        exclude = kwargs.get('exclude') or self.exclude
+        exclude_add = []
+        if bool(schema.model_fields.get('lsn')):
+            for f, v in schema.model_fields.items():
+                if v.json_schema_extra:
+                    if not v.json_schema_extra.get('table'):
+                        exclude_add.append(f)
+                else:
+                    exclude_add.append(f)
+            exclude = set(exclude_add) | set(exclude)
         for k, v in schema.model_fields.items():
-            if k in self.exclude:
+            if k in exclude:
                 continue
             fields.append(
                 self._get_field(field_name=k, schema=schema, **kwargs)

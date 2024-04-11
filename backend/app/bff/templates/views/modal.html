@@ -180,7 +180,7 @@
                     {% if loop.index0 % 3 == 0 %}
                         <div class="row" style="margin-bottom: 1rem">
                     {% endif %}
-                <div class="col">
+                <div class="col text-start">
                     <p style="margin-bottom: 0; margin-top: 1rem" class="sort text-uppercase text-muted text-start " for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
                     {{ field.as_view()|safe }}
 

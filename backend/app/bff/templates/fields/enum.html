@@ -11,10 +11,5 @@
     </select>
 {% endblock %}
 {% block as_view %}
-
-        <h5 class="fs-3 mb-0 text-start">{{ field.val.english_name or field.val.name or field.val}}</h5>
-
-{% endblock %}
-{% block as_table %}
-<td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
+        {{ field.val.english_name or field.val.name or field.val}}
 {% endblock %}

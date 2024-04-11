@@ -24,14 +24,14 @@ class OrderBaseScheme(BaseModel):
     order_type_id: UUID4 = Field(title='Order type')
     store_id: UUID4 = Field(title='Store', table=True, form=True)
     partner_id: Optional[UUID4] = Field(default=None, title='Partner', table=True, form=True)
-    lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True, form=True)
-    origin_type: Optional[str] = Field(default=None, title='Original Type', table=True, form=True)
+    lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True)
+    origin_type: Optional[str] = Field(default=None, title='Original Type', form=True)
     origin_number: Optional[str] = Field(default=None, title='Original', table=True, form=True)
     planned_datetime: Optional[datetime] = Field(default=None, title='Planned Date', table=True, form=True)
     expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=True, form=True)
     description: Optional[str] = Field(default=None, title='Description', table=True, form=True)
     status: OrderStatus = Field(title='Status', table=True, form=True)
-    order_id: Optional[UUID4] = Field(default=None, title='Parent', table=True, form=True)
+    order_id: Optional[UUID4] = Field(default=None, title='Parent', form=True)
 
     class Config:
         extra = 'allow'
@@ -58,7 +58,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme, CustomBaseModel):
     number: str = Field(title='Order #', table=True, form=True)
     actual_datetime: Optional[datetime] = Field(title='Actual Date', table=True, form=True)
     created_by: UUID4 = Field(title='Created By', table=True)
-    edited_by: UUID4 = Field(title='Edit By', table=True)
+    edited_by: UUID4 = Field(title='Edit By')
     user_ids: Optional[list[UUID4]] = Field(default=[], title='Users', form=True)
     move_list_rel: Optional[list[MoveScheme]] = Field(default=[], title='Order Movements', form=True)
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True)

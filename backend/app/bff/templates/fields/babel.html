@@ -19,10 +19,8 @@
     </div>
 {% endblock %}
 {% block as_view %}
-<div>
-        <h4 class="fs-3 mb-0">{{ field.val.english_name or field.val.name or field.val}}</h4>
-</div>
+{{ field.val.english_name or field.val.name or field.val}}
 {% endblock %}
 {% block as_table %}
-    <td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
+{{ field.val if field.val else '' }}
 {% endblock %}

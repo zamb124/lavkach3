@@ -48,8 +48,8 @@
     </script>
 {% endblock %}
 {% block as_view %}
-        <h5 class="fs-3 mb-0 text-start">{{ field.val.english_name or field.val.name or field.val}}</h5>
+        {{ field.val.english_name or field.val.name or field.val}}
 {% endblock %}
 {% block as_table %}
-<td class="{{ field.field_name }}"><a href="#" hx-params="none" hx-get="/base/table/row?module={{ field.module }}&model={{ field.model }}">{{ field.val.code or field.val.english_name}}</a></td>
+<a href="#" hx-params="none" hx-get="/base/table/row?module={{ field.module }}&model={{ field.model }}">{{ field.val.code or field.val.english_name}}</a>
 {% endblock %}

@@ -49,7 +49,7 @@
                             </div>
                         </th>
                         {% for field in view.line.fields %}
-                            {{ field.as_table_header()|safe }}
+                            <td>{{ field.as_table_header()|safe }}</td>
                         {% endfor %}
                         <th>Active</th>
                     </tr>
@@ -64,7 +64,7 @@
                                     </div>
                                 </th>
                                 {% for field in line.fields %}
-                                    {{ field.as_table()|safe }}
+                                    <td>{{ field.as_view()|safe }}</td>
                                 {% endfor %}
                                 <td>
                                     <ul class="list-inline hstack gap-2 mb-0">
@@ -118,7 +118,7 @@
                             </div>
                         </th>
                         {% for field in view.line.fields %}
-                            {{ field.as_table_header()|safe }}
+                            <td class="text-capitalize text-muted">{{ field.as_table_header()|safe }}</td>
                         {% endfor %}
                     </tr>
                     </thead>
@@ -132,8 +132,8 @@
                                     <input class="form-check-input" type="checkbox" name="checkAll" value="">
                                 </div>
                             </th>
-                            {% for line_field in line.fields %}
-                                <td>{{ line_field.as_form()|safe }}</td>
+                            {% for field in line.fields %}
+                                <td>{{ field.as_form()|safe }}</td>
                             {% endfor %}
                         </tr>
                     {% endfor %}

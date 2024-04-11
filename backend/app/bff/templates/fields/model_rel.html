@@ -24,7 +24,7 @@
     </div>
 {% endblock %}
 {% block as_table %}
-    <td class="{{ field.field_name }}"><i class="ri-links-fill fs-8 text-danger"></i>
+    <i class="ri-links-fill fs-8 text-danger"> </i>
         <a class="text-danger py-3"
            href="#"
            hx-include="none"
@@ -41,5 +41,4 @@
 }'
 >{{ field.val.title or field.val.nickname }}
         </a>
-    </td>
 {% endblock %}

@@ -7,8 +7,8 @@
            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
 {% endblock %}
 {% block as_view %}
-        <h5 class="fs-3 mb-0 text-start">{{field.val.strftime('%Y-%m-%d') if field.val else ''}}</h5>
+{{field.val.strftime('%Y-%m-%d') if field.val else ''}}
 {% endblock %}
 {% block as_table %}
-<td class="{{ field.field_name }}">{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}<small class="text-muted"> {{ field.val.strftime('%H-%M') if field.val else '' }}</small></td>
+{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}<small class="text-muted"> {{ field.val.strftime('%H-%M') if field.val else '' }}</small>
 {% endblock %}
