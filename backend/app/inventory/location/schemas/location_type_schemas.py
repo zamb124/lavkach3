@@ -26,6 +26,12 @@ class LocationTypeBaseScheme(BaseModel):
     strategy: Optional[PutawayStrategy] = PutawayStrategy.FEFO
     product_storage_type_ids: Optional[list[str]] = None
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = LocationType
+        service = 'app.inventory.location.services.LocationTypeService'
+
 class LocationTypeUpdateScheme(LocationTypeBaseScheme):
     title: Optional[str] = None
     location_class: Optional[LocationClass] = None

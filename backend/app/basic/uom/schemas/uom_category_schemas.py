@@ -12,6 +12,12 @@ from core.schemas.timestamps import TimeStampScheme
 class UomCategoryBaseScheme(BaseModel):
     title: str = Field(description="Title")
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = UomCategory
+        service = 'app.basic.uom.services.UomCategoryService'
+
 
 class UomCategoryUpdateScheme(UomCategoryBaseScheme):
     pass

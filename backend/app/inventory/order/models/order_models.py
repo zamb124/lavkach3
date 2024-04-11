@@ -182,7 +182,7 @@ class Move(Base, AllMixin):
     product_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     quantity: Mapped[float]     # Если перемещение кпаковки, то всегда 0
-    uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("uom.id", ondelete="RESTRICT"), index=True) # Если перемещение упаковкой то None
+    uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=False) # Если перемещение упаковкой то None
     status: Mapped[MoveStatus]
 
 

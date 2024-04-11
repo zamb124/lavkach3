@@ -63,9 +63,9 @@
                                     <input class="form-check-input" type="checkbox" name="checkAll" value="">
                                 </div>
                             </th>
-                            {% for field in line.fields if field.widget.table %}
-                                    {{ field.as_table()|safe }}
-                            {% endfor %}
+                        {% for field in line.fields if field.widget.table %}
+                                {{ field.as_table()|safe }}
+                        {% endfor %}
                             <td>
                                 <ul class="list-inline hstack gap-2 mb-0">
                                     <li class="list-inline-item view-btn" title="View">

@@ -1,6 +1,7 @@
 from contextvars import ContextVar, Token
 from typing import Union
 
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,
@@ -61,3 +62,4 @@ class Base(metaclass=DeclarativeMeta):
     metadata = mapper_registry.metadata
 
     __init__ = mapper_registry.constructor
+

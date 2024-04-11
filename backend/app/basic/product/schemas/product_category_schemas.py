@@ -17,7 +17,11 @@ class ProductCategoryBaseScheme(BaseModel):
     external_number: Optional[str] = None
     product_category_ids: Optional[list[UUID4]] = None
 
-
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = ProductCategory
+        service = 'app.basic.product.services.ProductCategoryService'
 class ProductCategoryUpdateScheme(ProductCategoryBaseScheme):
     title: Optional[str] = None
 

@@ -26,6 +26,11 @@ class LoginResponseSchema(BaseModel):
     locale: Optional[str]
     country: Optional[str]
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = User
+        service = 'app.basic.user.services.UserService'
 
 class UserBaseScheme(BaseModel):
     vars: Optional[dict] = {}

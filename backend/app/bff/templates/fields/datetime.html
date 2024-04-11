@@ -1,22 +1,13 @@
 {% block as_form %}
-    <div class="row">
-    <p style="border-top-width: 10px; margin-top: 10px;margin-bottom: 0px;" class="text-muted text-uppercase text-start">{{ field.title|capitalize}}:</p>
-    </div>
-     <div class="row" style="margin-right: 0px; margin-left: 0px;">
     <input class="form-control" type="text"
            name="{{ field.prefix }}{{ field.field_name }}"
             {% if field.required %} aria-required="true" {% endif %}
            onfocus="(this.type='date')"
            placeholder="{{ field.title }}" id="{{ field.field_name }}"
            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
-    </div>
-
 {% endblock %}
 {% block as_view %}
-     <div>
-        <p class="text-muted mb-2 text-uppercase fw-semibold text-start">{{ field.title }}</p>
         <h5 class="fs-3 mb-0 text-start">{{field.val.strftime('%Y-%m-%d') if field.val else ''}}</h5>
-    </div>
 {% endblock %}
 {% block as_table %}
 <td class="{{ field.field_name }}">{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}<small class="text-muted"> {{ field.val.strftime('%H-%M') if field.val else '' }}</small></td>

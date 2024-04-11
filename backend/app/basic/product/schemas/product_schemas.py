@@ -23,6 +23,12 @@ class ProductBaseScheme(BaseModel):
     product_storage_type_id: UUID4
     barcode_list: list[str]
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Product
+        service = 'app.basic.product.services.ProductService'
+
 
 class ProductUpdateScheme(ProductBaseScheme):
     title: Optional[str] = None

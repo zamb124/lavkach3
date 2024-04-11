@@ -223,8 +223,7 @@ async def table(request: Request, schema: TableSchema):
     form_data = await request.json()
     qp = request.query_params
     if form_data.get('prefix'):
-        data = clean_filter(form_data, form_data['prefix'])
-        qp = {i: v for i, v in data.items() if v}
+        qp = {i: v for i, v in qp.items() if v}
     view = ModelView(request, params=qp, module=schema.module, model=schema.model, prefix=schema.prefix)
     return await view.get_table()
 
@@ -249,7 +248,7 @@ async def modal(request: Request, schema: ModalSchema):
     if data := schema.model_extra:
         data = clean_filter(data, schema.prefix)
         method_schema = getattr(model.schemas, schema.method)
-        method_schema_obj = method_schema(**data)
+        method_schema_obj = method_schema(**data[0])
         adapter_method = getattr(model.adapter, schema.method)
         responce = await adapter_method(id=schema.id, model=schema.model, json=method_schema_obj.model_dump(mode='json'))
         return model.send_message(f'{model.model.capitalize()}: is {schema.method.capitalize()}')

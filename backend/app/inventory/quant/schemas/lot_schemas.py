@@ -19,6 +19,13 @@ class LotBaseScheme(CustomBaseModel):
     external_number: Optional[str] = None
     partner_id: Optional[UUID4] = None
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Lot
+        service = 'app.inventory.quant.services.LotService'
+
+
 
 class LotUpdateScheme(LotBaseScheme):
     pass

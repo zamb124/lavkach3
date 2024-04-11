@@ -23,6 +23,11 @@ class QuantBaseScheme(BaseModel):
     expiration_datetime: Optional[datetime] = None
     uom_id: UUID4
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Quant
+        service = 'app.inventory.quant.services.QuantService'
 
 class QuantUpdateScheme(QuantBaseScheme):
     store_id: Optional[UUID4] = None

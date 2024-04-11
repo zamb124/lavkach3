@@ -16,6 +16,11 @@ class RoleBaseScheme(BaseModel):
     permission_allow_list: Optional[List[str]] = None
     permission_deny_list: Optional[List[str]] = None
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Role
+        service = 'app.basic.user.services.RoleService'
 
 class RoleUpdateScheme(RoleBaseScheme):
     role_ids: Optional[List[UUID4]]

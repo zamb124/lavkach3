@@ -21,7 +21,11 @@ class LocationBaseScheme(BaseModel):
     location_type_id: UUID4
     partner_id: Optional[UUID4] = None
 
-
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Location
+        service = 'app.inventory.location.services.LocationService'
 
 class LocationUpdateScheme(LocationBaseScheme):
     title: Optional[str] = None

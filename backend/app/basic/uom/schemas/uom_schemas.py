@@ -17,6 +17,11 @@ class UomBaseScheme(BaseModel):
     ratio: float
     precision: float
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Uom
+        service = 'app.basic.uom.services.UomService'
 
 class UomUpdateScheme(UomBaseScheme):
     pass

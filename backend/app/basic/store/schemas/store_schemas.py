@@ -19,6 +19,13 @@ class StoreBaseScheme(BaseModel):
     address: Optional[str] = Field(title='Address', table=True, form=True)
     source: Optional[StoreType] = Field(default=StoreType.INTERNAL, title='Source', table=True, form=True)
 
+
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Store
+        service = 'app.basic.store.services.StoreService'
+
     @field_validator('vars', mode='before')
     @classmethod
     def convert_int_serial(cls, v):

@@ -5,7 +5,6 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
-from app.inventory.location.enums import PutawayStrategy
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
@@ -13,32 +12,40 @@ from app.inventory.order.models import Move, MoveType
 from app.inventory.order.models.order_models import MoveStatus, ReservationMethod
 
 
+
 class MoveBaseScheme(BaseModel):
-    type: MoveType
-    move_id: Optional[UUID4] = None
-    order_id: UUID4
-    location_src_id: Optional[UUID4] = None
-    location_dest_id: Optional[UUID4] = None
-    lot_id: Optional[UUID4] = None
-    location_id: Optional[UUID4] = None
+    type: MoveType = Field(title='Move Type')
+    location_src_id: Optional[UUID4] = Field(default=None, title='Location src')
+    location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest')
+    lot_id: Optional[UUID4] = Field(default=None, title='Lot')
+    location_id: Optional[UUID4] = Field(default=None, title='Package')
     # ONE OF Возможно либо location_id либо product_id
-    product_id: Optional[UUID4] = None
-    partner_id: Optional[UUID4] = None
-    quantity: float
-    uom_id: Optional[UUID4] = None
+    product_id: Optional[UUID4] = Field(default=None, title='Product')
+    quantity: float = Field(title='Quantity')
+    uom_id: Optional[UUID4] = Field(default=None, title='Uom')
+
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Move
+        service = 'app.inventory.order.services.MoveService'
 
 class MoveUpdateScheme(MoveBaseScheme):
-    quantity: Optional[float] = None
+    id: UUID4
 
 
 class MoveCreateScheme(MoveBaseScheme):
-    company_id: UUID4
+    ...
 
 
 
 class MoveScheme(MoveCreateScheme, TimeStampScheme):
+    company_id: UUID4
     lsn: int
     id: UUID4
+    move_id: Optional[UUID4] = None
+    order_id: UUID4
+    partner_id: Optional[UUID4] = None
     type: MoveType
     status: MoveStatus
 

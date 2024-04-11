@@ -17,7 +17,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         super(MoveService, self).__init__(request, Move, db_session)
 
     @permit('move_edit')
-    async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
+    async def update(self, id: Any, obj: UpdateSchemaType, commit:bool =True) -> Optional[ModelType]:
         return await super(MoveService, self).update(id, obj)
 
     @permit('move_list')
@@ -38,4 +38,4 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
 
     @permit('move_move_counstructor')
     async def move_counstructor(self, move_id: uuid.UUID, moves: list) -> None:
-        return await super(moveService, self).delete(id)
+        return await super(MoveService, self).delete(id)

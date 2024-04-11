@@ -18,6 +18,11 @@ class CompanyBaseScheme(BaseModel):
     country: Optional[TypeCountry] = Field(default='US', title='Country', table=True, form=True)
     currency: TypeCurrency | str = Field(default='USD', title='Currency', table=True, form=True)
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Company
+        service = 'app.basic.company.services.CompanyService'
 
 class CompanyUpdateScheme(CompanyBaseScheme):
     currency: Optional[TypeCurrency | str]

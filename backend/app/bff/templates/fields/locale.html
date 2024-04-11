@@ -1,8 +1,4 @@
 {% block as_form %}
-    <div class="row">
-        <p style="border-top-width: 10px; margin-top: 10px;margin-bottom: 0px;" class="text-muted text-uppercase text-start">{{ field.title|capitalize}}:</p>
-    </div>
-    <div class="row">
     <select class="form-control is-valid"
             id="{{ field.prefix ~ field.field_name }}"
             name="{{ field.prefix ~ field.field_name }}"
@@ -13,7 +9,6 @@
                     <option value="{{ field.val.id }}" selected> {{ field.val.name or field.val.english_name }}</option>
                 {% endif %}
     </select>
-    </div>
     <script>
         (async function () {
             let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
@@ -53,10 +48,7 @@
     </script>
 {% endblock %}
 {% block as_view %}
-<div>
-        <p class="text-muted mb-2 text-uppercase fw-semibold text-start">{{ field.title }}</p>
         <h5 class="fs-3 mb-0 text-start">{{ field.val.english_name or field.val.name or field.val}}</h5>
-</div>
 {% endblock %}
 {% block as_table %}
 <td class="{{ field.field_name }}"><a href="#" hx-params="none" hx-get="/base/table/row?module={{ field.module }}&model={{ field.model }}">{{ field.val.code or field.val.english_name}}</a></td>

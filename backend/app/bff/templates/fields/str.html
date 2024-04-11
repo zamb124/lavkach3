@@ -1,8 +1,4 @@
 {% block as_form %}
-    <div class="row">
-        <p style="border-top-width: 10px; margin-top: 10px;margin-bottom: 0px;" class="text-muted text-uppercase text-start">{{ field.title|capitalize}}:</p>
-    </div>
-    <div class="row" style="margin-right: 0px; margin-left: 0px;">
         <input
                 class="form-control"
                 {% if field.required %} required {% endif %}
@@ -10,13 +6,9 @@
                 placeholder="Enter {{ field.title }}"
                 value="{{ field.val if field.val else "" }}"
         >
-    </div>
 {% endblock %}
 {% block as_view %}
-    <div>
-        <p class="text-muted text-uppercase fw-semibold text-start">{{ field.title }}</p>
         <h5 class="fs-5 mb-0 text-start" >{{ field.val.english_name or field.val.name or field.val }}</h5>
-    </div>
 {% endblock %}
 
 {% block as_table_header %}

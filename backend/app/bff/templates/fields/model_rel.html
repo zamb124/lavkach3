@@ -1,8 +1,7 @@
 {% block as_view %}
-    <div class="row">
-        <p class="text-muted mb-2 text-uppercase fw-semibold text-start">{{ field.title }}</p>
-        <h5 class="fs-3 mb-0 text-start">
-            <a class="text-danger py-3"
+    <div class="text-start">
+<h5><i
+                class="ri-links-fill fs-6 text-danger"> </i><a class="text-danger py-3 text-start"
            href="#"
            hx-include="none"
            hx-trigger="click"
@@ -17,10 +16,7 @@
 "prefix": "{{ field.prefix }}"
 }'
 >{{ field.val.title or field.val.nickname }}
-        </a>
-        </h5>
-    </div>
-
+        </a></h5></div>
     <div id="{{ modal_id }}" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content"></div>
@@ -28,7 +24,7 @@
     </div>
 {% endblock %}
 {% block as_table %}
-    <td class="{{ field.field_name }}"><i class="ri-links-fill fs-6"></i>
+    <td class="{{ field.field_name }}"><i class="ri-links-fill fs-8 text-danger"></i>
         <a class="text-danger py-3"
            href="#"
            hx-include="none"

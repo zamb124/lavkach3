@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from fastapi_filter.contrib.sqlalchemy import Filter
 from core.fastapi.middlewares.authentication import CurrentUser
-import math
+
 
 from core.utils.timeit import timed
 
@@ -25,7 +25,43 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 FilterSchemaType = TypeVar("FilterSchemaType", bound=Filter)
 before_fields = ['role_ids', 'company_ids', 'is_admin', 'store_id']
 
-from logging import getLogger
+def import_service(service_name):
+    components = service_name.split('.')
+    mod = __import__(components[0])
+    for comp in components[1:]:
+        mod = getattr(mod, comp)
+    return mod
+
+def is_pydantic(obj: object | list):
+    """ Checks whether an object is pydantic. """
+    if isinstance(obj, list):
+        for i in obj:
+            return type(i).__class__.__name__ == "ModelMetaclass"
+    return type(obj).__class__.__name__ == "ModelMetaclass"
+
+
+def model_to_entity(schema):
+    """
+        Iterates through pydantic schema and parses nested schemas
+        to a dictionary containing SQLAlchemy models.
+        Only works if nested schemas have specified the Meta.orm_model.
+    """
+    if is_pydantic(schema):
+        try:
+            converted_model = model_to_entity(dict(schema))
+            return schema.Config.orm_model(**converted_model)
+        except AttributeError:
+            model_name = schema.__class__.__name__
+            raise AttributeError(f"Failed converting pydantic model: {model_name}.Meta.orm_model not specified.")
+
+    elif isinstance(schema, list):
+        return [model_to_entity(model) for model in schema]
+
+    elif isinstance(schema, dict):
+        for key, model in schema.items():
+            schema[key] = model_to_entity(model)
+
+    return schema
 
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterSchemaType]):
     def __init__(self, request=None, model: Type[ModelType] = None, db_session: AsyncSession = session):
@@ -34,6 +70,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         elif isinstance(request, Request):
             self.user = request.user
         self.model = model
+        self.request = request
         self.session = db_session if db_session else session
 
     def sudo(self):
@@ -58,7 +95,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         if getattr(_filter, 'order_by'):
             query_filter = _filter.sort(query_filter)
         executed_data = await self.session.execute(query_filter)
-        result =  executed_data.scalars().all()
+        result = executed_data.scalars().all()
         return result
 
     @timed
@@ -82,14 +119,28 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             await self.session.flush([entity])
         return entity
 
+
     @timed
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
         entity = await self.get(id)
         if not entity:
             raise HTTPException(status_code=404, detail=f"Not Found with id {id}")
+
+        to_set = []
+        for key, value in obj.__dict__.items():
+            if key in obj.model_fields_set:
+                obj_value = getattr(obj, key)
+                if is_pydantic(obj_value):
+                    for _obj in obj_value:
+                        rel_service = import_service(_obj.Config.service)
+                        rel_entity = await rel_service(self.request).update(id=_obj.id, obj=_obj, commit=False)
+                        self.session.add(rel_entity)
+                else:
+                    to_set.append((key,value))
+        for k, v in to_set:
+            setattr(entity, k, v)
+        #entity.mode_list_rel = new_entity.move_list_rel
         self.session.add(entity)
-        for column, value in obj.dict(exclude_unset=True).items():
-            setattr(entity, column, value)
         if commit:
             try:
                 await self.session.commit()

@@ -1,6 +1,7 @@
 import uuid
 
 import httpx
+import redis.exceptions
 from fastapi import HTTPException
 from starlette.datastructures import QueryParams
 from starlette.requests import Request, HTTPConnection
@@ -13,6 +14,7 @@ from core.helpers.cache import Cache
 from core.utils.timeit import timed
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class Client(httpx.AsyncClient):
     @timed
@@ -104,7 +106,11 @@ class BaseAdapter:
                 else:
                     ids = id__in.split(',')
                 for id in ids:
-                    cached = await Cache.get_model(self.module, model or self.model, id)
+                    try:
+                        cached = await Cache.get_model(self.module, model or self.model, id)
+                    except redis.exceptions.ConnectionError as ex:
+                        logger.error(f'Cache error with {model or self.model}:{id}')
+                        cached = False
                     if cached:
                         cached_data.append(cached)
                     else:

@@ -8,14 +8,14 @@ from pydantic import BaseModel, Field, field_validator, model_validator, model_s
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import PutawayStrategy
-from app.inventory.order.schemas.move_schemas import MoveScheme
+from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme
 from core.schemas import BaseFilter
 from core.schemas.filter_generic import CustomBaseModel
 
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import Order
-from app.inventory.order.models.order_models import OrderStatus
+from app.inventory.order.models.order_models import OrderStatus, Move
 from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
 
 
@@ -35,12 +35,19 @@ class OrderBaseScheme(BaseModel):
 
     class Config:
         extra = 'allow'
+        from_attributes = True
+        orm_model = Order
+        service = 'app.inventory.order.services.OrderService'
+
+
+
+
 
 class OrderUpdateScheme(OrderBaseScheme):
-    ...
+    move_list_rel: Optional[list[MoveUpdateScheme]] = Field(default=[], title='Order Movements', form=True)
 
 class OrderCreateScheme(OrderBaseScheme):
-    ...
+    move_list_rel: Optional[list[MoveCreateScheme]] = Field(default=[], title='Order Movements', form=True)
 
 
 class OrderScheme(OrderCreateScheme, TimeStampScheme, CustomBaseModel):

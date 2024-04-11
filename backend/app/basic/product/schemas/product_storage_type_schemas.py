@@ -16,6 +16,11 @@ class ProductStorageTypeBaseScheme(BaseModel):
     title: str
     external_number: Optional[str] = None
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = ProductStorageType
+        service = 'app.basic.product.services.ProductStorageTypeService'
 
 class ProductStorageTypeUpdateScheme(ProductStorageTypeBaseScheme):
     title: Optional[str] = None

@@ -38,6 +38,10 @@ class OrderTypeBaseScheme(BaseModel):
     strategy: PutawayStrategy = Field(default=PutawayStrategy.FEFO, title='Strategy', form=True)
     class Config:
         extra = 'allow'
+        from_attributes = True
+        orm_model = OrderType
+        service = 'app.inventory.order.services.OrderTypeService'
+
 class OrderTypeUpdateScheme(OrderTypeBaseScheme):
     ...
 

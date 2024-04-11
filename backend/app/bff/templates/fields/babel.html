@@ -20,8 +20,7 @@
 {% endblock %}
 {% block as_view %}
 <div>
-        <p class="text-muted mb-2 text-uppercase fw-semibold">{{ field.title }}</p>
-        <h5 class="fs-3 mb-0">{{ field.val.english_name or field.val.name or field.val}}</h5>
+        <h4 class="fs-3 mb-0">{{ field.val.english_name or field.val.name or field.val}}</h4>
 </div>
 {% endblock %}
 {% block as_table %}

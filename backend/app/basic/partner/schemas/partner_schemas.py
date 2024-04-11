@@ -24,6 +24,12 @@ class PartnerBaseScheme(BaseModel):
     locale: Optional[TypeLocale]
     currency: Optional[TypeCurrency]
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Partner
+        service = 'app.basic.partner.services.PartnerService'
+
 
 class PartnerUpdateScheme(PartnerBaseScheme):
     pass
