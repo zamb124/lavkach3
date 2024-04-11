@@ -1,61 +1,3 @@
-{% block as_form %}
-    <div class="table-responsive">
-        <table class="invoice-table table table-borderless table-nowrap mb-0">
-            <thead class="align-middle">
-            <tr class="table-active">
-                <th scope="col">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="checkAll"
-                               value="option">
-                    </div>
-                </th>
-                {% for field in view.line.fields %}
-                    {{ field.as_table_header()|safe }}
-                {% endfor %}
-            </tr>
-            </thead>
-            <tbody id="newlink">
-
-            {% for line in field.lines %}
-
-                <tr>
-                    <th scope="row">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="checkAll" value="">
-                        </div>
-                    </th>
-                    {% for line_field in line.fields %}
-                        <td>{{ line_field.as_form()|safe }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-            </tbody>
-            <tbody>
-            <tr>
-                <td>
-                    <a href="#"
-                       id="add-item"
-                       hx-ext="json-enc"
-                       hx-target="closest tr"
-                       hx-swap="afterend"
-                       hx-post="/base/line/add"
-                       hx-vals='{
-                        "module": "{{ view.module }}",
-                        "model": "{{ view.model }}",
-                        "method": "view",
-                        "id": "{{ view.val.id }}",
-                        "prefix": "{{ view.prefix }}"
-                        }'
-                       class="btn btn-soft-secondary fw-medium">
-                        <i class="ri-add-fill me-1 align-bottom"></i> Add Item
-                    </a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <!--end table-->
-    </div>
-{% endblock %}
 {% block as_create %}
 
 {% endblock %}
@@ -76,8 +18,8 @@
 "id": "{{ line.id }}",
 "prefix": "{{ line.prefix }}"
 }'
-       class="text-success d-inline-block edit-item-btn">
-        <i class="ri-eye-fill h2 text-success"></i>
+       class="btn btn-soft-success">
+        <i class="ri-eye-fill h6"></i>
     </a>
 {% endblock %}
 
@@ -85,7 +27,8 @@
         <script>
     hideModals()
     </script>
-    <a href="#"
+    <button
+       href="#"
        hx-include="none"
        hx-trigger="click"
        hx-target="#modal"
@@ -98,9 +41,9 @@
 "id": "{{ line.id }}",
 "prefix": "{{ line.prefix }}",
 }'
-       class="text-primary d-inline-block edit-item-btn">
-        <i class="ri-pencil-fill h2 text-primary"></i>
-    </a>
+       class="btn btn-soft-primary">
+        <i class="ri-pencil-fill h6 "></i>
+    </button>
 {% endblock %}
 
 {% block button_create %}
@@ -120,8 +63,8 @@
 {% if line.id %}"id": "{{ line.id }}", {% endif %}
 "prefix": "{{ line.prefix }}"
 }'
-       class="text-secondary d-inline-block edit-item-btn">
-        <i class="ri-add-box-fill h2 text-danger"></i>
+       class="btn btn-soft-danger">
+        <i class="ri-add-box-fill h6"></i>
     </a>
 {% endblock %}
 
@@ -143,8 +86,8 @@
 "prefix": "{{ line.prefix }}",
 "target_id": "{{ target_id }}"
 }'
-       class="text-danger d-inline-block edit-item-btn">
-        <i class="ri-delete-bin-2-fill fs-16"></i>
+       class="btn btn-soft-danger">
+        <i class="ri-delete-bin-2-fill h6"></i>
     </a>
 {% endblock %}
 

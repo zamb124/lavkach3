@@ -66,14 +66,14 @@ if (linechartDashedColors) {
             name: 'New Application',
             data: [89, 56, 74, 98, 72, 38, 64, 46, 84, 58, 46, 49]
         },
-        {
-            name: "Interview",
-            data: [45, 52, 38, 24, 33, 26, 21, 20, 6, 8, 15, 10]
-        },
-        {
-            name: " Hired",
-            data: [36, 42, 60, 42, 13, 18, 29, 37, 36, 51, 32, 35]
-        }
+            {
+                name: "Interview",
+                data: [45, 52, 38, 24, 33, 26, 21, 20, 6, 8, 15, 10]
+            },
+            {
+                name: " Hired",
+                data: [36, 42, 60, 42, 13, 18, 29, 37, 36, 51, 32, 35]
+            }
         ],
         markers: {
             size: 0,
@@ -132,6 +132,7 @@ if (chartDonutBasicColors) {
 }
 
 var worldemapmarkers = "";
+
 function loadCharts() {
     // world map with markers
     var vectorMapWorldMarkersColors = getChartColorsArray("sales-by-locations");
@@ -157,18 +158,18 @@ function loadCharts() {
                 name: "Palestine",
                 coords: [31.9474, 35.2272],
             },
-            {
-                name: "Russia",
-                coords: [61.524, 105.3188],
-            },
-            {
-                name: "Canada",
-                coords: [56.1304, -106.3468],
-            },
-            {
-                name: "Greenland",
-                coords: [71.7069, -42.6043],
-            },
+                {
+                    name: "Russia",
+                    coords: [61.524, 105.3188],
+                },
+                {
+                    name: "Canada",
+                    coords: [56.1304, -106.3468],
+                },
+                {
+                    name: "Greenland",
+                    coords: [71.7069, -42.6043],
+                },
             ],
             markerStyle: {
                 initial: {
@@ -215,7 +216,7 @@ var jobListAllData = [
 ];
 
 // recomended-jobs
-if (document.getElementById("recomended-jobs")){
+if (document.getElementById("recomended-jobs")) {
     var jobListAll = new gridjs.Grid({
         columns: [{
             name: 'Position',
@@ -232,7 +233,7 @@ if (document.getElementById("recomended-jobs")){
         }, {
             name: 'Experience',
             width: '150px',
-        },{
+        }, {
             name: 'Job Type',
             width: '150px',
         }],
@@ -248,6 +249,7 @@ if (document.getElementById("recomended-jobs")){
     var searchResultList = document.getElementById("searchResultList");
     searchResultList.addEventListener("keyup", function () {
         var inputVal = searchResultList.value.toLowerCase();
+
         function filterItems(arr, query) {
             return arr.filter(function (el) {
                 return el[0].toLowerCase().indexOf(query.toLowerCase()) !== -1 || el[1].toLowerCase().indexOf(query.toLowerCase()) !== -1
@@ -255,7 +257,7 @@ if (document.getElementById("recomended-jobs")){
         }
 
         var filterData = filterItems(jobListAllData, inputVal);
-        
+
         jobListAll.updateConfig({
             data: filterData
         }).forceRender();
@@ -287,8 +289,11 @@ window.addEventListener("load", () => {
 
         for (let i of candidateList) {
             let item = i.querySelector(".candidate-name").innerHTML.toLowerCase();
-            if (item.indexOf(search) == -1) { i.classList.add("d-none"); }
-            else { i.classList.remove("d-none"); }
+            if (item.indexOf(search) == -1) {
+                i.classList.add("d-none");
+            } else {
+                i.classList.remove("d-none");
+            }
         }
     };
 });

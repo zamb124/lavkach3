@@ -99,11 +99,11 @@ xhttp.onload = function () {
             create_date: element.create_date,
             expiry_date: element.expiry_date
         });
-        apiKeyList.sort('id', { order: "desc" });
+        apiKeyList.sort('id', {order: "desc"});
 
-        if(element.status == "Active"){
+        if (element.status == "Active") {
             document.querySelector(".disable-btn").innerHTML = "Disable"
-        }else if (element.status == "Disable"){
+        } else if (element.status == "Disable") {
             document.querySelector(".disable-btn").innerHTML = "Enable"
         }
         refreshCallbacks();
@@ -122,7 +122,6 @@ function isStatus(val) {
             return ('<span class="badge bg-success-subtle text-success">' + val + "</span>");
     }
 }
-
 
 
 document.getElementById("api-key-modal").addEventListener("show.bs.modal", function (e) {
@@ -243,7 +242,7 @@ addBtn.addEventListener("click", function (e) {
             expiry_date: nextDate
         });
 
-        apiKeyList.sort('id', { order: "desc" });
+        apiKeyList.sort('id', {order: "desc"});
         document.getElementById("close-modal").click();
         clearFields();
         refreshCallbacks();
@@ -405,7 +404,6 @@ document.querySelector(".pagination-prev").addEventListener("click", function ()
 });
 
 
-
 // Delete Multiple Records
 function deleteMultiple() {
     ids_array = [];
@@ -416,7 +414,8 @@ function deleteMultiple() {
             var id = trNode.querySelector("td a").innerHTML;
             ids_array.push(id);
         }
-    };
+    }
+    ;
     if (typeof ids_array !== 'undefined' && ids_array.length > 0) {
         Swal.fire({
             title: "Are you sure?",

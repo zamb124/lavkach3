@@ -17,7 +17,8 @@ function getChartColorsArray(chartId) {
                 if (newValue.indexOf(",") === -1) {
                     var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
                     if (color) return color;
-                    else return newValue;;
+                    else return newValue;
+                    ;
                 } else {
                     var val = value.split(',');
                     if (val.length == 2) {
@@ -44,9 +45,9 @@ if (vectorMapWorldLineColors)
         zoomOnScroll: true,
         zoomButtons: true,
         markers: [{
-                name: "Greenland",
-                coords: [72, -42]
-            },
+            name: "Greenland",
+            coords: [72, -42]
+        },
             {
                 name: "Canada",
                 coords: [56.1304, -106.3468]
@@ -81,9 +82,9 @@ if (vectorMapWorldLineColors)
             },
         ],
         lines: [{
-                from: "Canada",
-                to: "Egypt"
-            },
+            from: "Canada",
+            to: "Egypt"
+        },
             {
                 from: "Russia",
                 to: "Egypt"
@@ -371,12 +372,12 @@ var chartHeatMapColors = getChartColorsArray("color_heatmap");
 if (chartHeatMapColors) {
     var options = {
         series: [{
-                name: 'Jan',
-                data: generateData(20, {
-                    min: -30,
-                    max: 55
-                })
-            },
+            name: 'Jan',
+            data: generateData(20, {
+                min: -30,
+                max: 55
+            })
+        },
             {
                 name: 'Feb',
                 data: generateData(20, {
@@ -451,11 +452,11 @@ if (chartHeatMapColors) {
                 useFillColorAsStroke: true,
                 colorScale: {
                     ranges: [{
-                            from: -30,
-                            to: 5,
-                            name: 'Youtube',
-                            color: chartHeatMapColors[0]
-                        },
+                        from: -30,
+                        to: 5,
+                        name: 'Youtube',
+                        color: chartHeatMapColors[0]
+                    },
                         {
                             from: 6,
                             to: 20,
@@ -689,7 +690,8 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
             for (var i = 0; i < len; i++) {
                 digits[i] = text.charAt(i);
-            } cardNumElem.innerText = digits.join('');
+            }
+            cardNumElem.innerText = digits.join('');
 
         } else return false;
     };
@@ -715,7 +717,8 @@ document.addEventListener("DOMContentLoaded", function (e) {
 
         for (var i = 0; i < text.length; i++) {
             digits[i] = text.charAt(i);
-        } cvcElem.innerText = digits.join('');
+        }
+        cvcElem.innerText = digits.join('');
     };
 
     cardForm.onsubmit = function (e) {
@@ -770,8 +773,11 @@ window.addEventListener("load", () => {
 
         for (let i of candidateList) {
             let item = i.querySelector(".candidate-name").innerHTML.toLowerCase();
-            if (item.indexOf(search) == -1) { i.classList.add("d-none"); }
-            else { i.classList.remove("d-none"); }
+            if (item.indexOf(search) == -1) {
+                i.classList.add("d-none");
+            } else {
+                i.classList.remove("d-none");
+            }
         }
     };
 });

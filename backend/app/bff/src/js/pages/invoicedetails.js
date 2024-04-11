@@ -47,7 +47,8 @@ if ((localStorage.getItem("invoices-list") !== null) && (localStorage.getItem("o
                 break;
             case 'Cancel':
                 badge = "danger";
-        };
+        }
+        ;
 
         document.getElementById("legal-register-no").innerHTML = viewobj.company_details.legal_registration_no;
         document.getElementById("email").innerHTML = viewobj.company_details.email;

@@ -48,10 +48,10 @@ if (document.querySelector('#register-tour'))
             on: 'bottom'
         },
         buttons: [{
-                text: 'Back',
-                classes: 'btn btn-light',
-                action: tour.back
-            },
+            text: 'Back',
+            classes: 'btn btn-light',
+            action: tour.back
+        },
             {
                 text: 'Next',
                 classes: 'btn btn-success',
@@ -70,10 +70,10 @@ if (document.querySelector('#login-tour'))
             on: 'bottom'
         },
         buttons: [{
-                text: 'Back',
-                classes: 'btn btn-light',
-                action: tour.back
-            },
+            text: 'Back',
+            classes: 'btn btn-light',
+            action: tour.back
+        },
             {
                 text: 'Next',
                 classes: 'btn btn-success',
@@ -92,10 +92,10 @@ if (document.querySelector('#getproduct-tour'))
             on: 'bottom'
         },
         buttons: [{
-                text: 'Back',
-                classes: 'btn btn-light',
-                action: tour.back
-            },
+            text: 'Back',
+            classes: 'btn btn-light',
+            action: tour.back
+        },
             {
                 text: 'Next',
                 classes: 'btn btn-success',
@@ -114,10 +114,10 @@ if (document.querySelector('#thankyou-tour'))
             on: 'bottom'
         },
         buttons: [{
-                text: 'Back',
-                classes: 'btn btn-light',
-                action: tour.back
-            },
+            text: 'Back',
+            classes: 'btn btn-light',
+            action: tour.back
+        },
             {
                 text: 'Thank you !',
                 classes: 'btn btn-primary',

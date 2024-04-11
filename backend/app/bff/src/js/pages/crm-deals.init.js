@@ -129,7 +129,7 @@ form.addEventListener('submit', function (event) {
         form.reset();
         Swal.fire({
             title: 'Success!',
-            text: 'Deal Inserted successfully in '+deatType+' Tab.',
+            text: 'Deal Inserted successfully in ' + deatType + ' Tab.',
             icon: 'success',
             showCancelButton: true,
             confirmButtonClass: 'btn btn-primary w-xs me-2 mt-2',

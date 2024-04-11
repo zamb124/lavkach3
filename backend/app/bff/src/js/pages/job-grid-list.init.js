@@ -96,17 +96,17 @@ function loadJobListData(datas, page) {
                 <button type="button" class="btn btn-icon btn-soft-primary float-end" data-bs-toggle="button" aria-pressed="true"><i class="mdi mdi-cards-heart fs-16"></i></button>\
                 <div class="avatar-sm mb-4">\
                     <div class="avatar-title bg-light rounded">\
-                        <img src="'+ datas[i].companyLogo + '" alt="" class="avatar-xxs" />\
+                        <img src="' + datas[i].companyLogo + '" alt="" class="avatar-xxs" />\
                     </div>\
                 </div>\
-                <a href="#!"><h5>'+ datas[i].jobTitle + '</h5></a>\
-                <p class="text-muted">'+ datas[i].companyName + '</p>\
+                <a href="#!"><h5>' + datas[i].jobTitle + '</h5></a>\
+                <p class="text-muted">' + datas[i].companyName + '</p>\
                 <div class="d-flex gap-4 mb-3">\
-                    <div><i class="ri-map-pin-2-line text-primary me-1 align-bottom"></i> '+ datas[i].location + '</div>\
-                    <div><i class="ri-time-line text-primary me-1 align-bottom"></i> '+ datas[i].postDate + '</div>\
+                    <div><i class="ri-map-pin-2-line text-primary me-1 align-bottom"></i> ' + datas[i].location + '</div>\
+                    <div><i class="ri-time-line text-primary me-1 align-bottom"></i> ' + datas[i].postDate + '</div>\
                 </div>\
-                <p class="text-muted">'+ datas[i].description + '</p>\
-                <div class="hstack gap-2">'+ tagHtmlValue + '</div>\
+                <p class="text-muted">' + datas[i].description + '</p>\
+                <div class="hstack gap-2">' + tagHtmlValue + '</div>\
                 <div class="mt-4 hstack gap-2">\
                     <a href="#!" class="btn btn-soft-primary w-100">Apply Job</a>\
                     <a href="apps-job-details.html" class="btn btn-soft-success w-100">Overview</a>\
@@ -114,7 +114,8 @@ function loadJobListData(datas, page) {
             </div>\
         </div>\
     </div>'
-        };
+        }
+        ;
     }
 
     document.getElementById("total-result").innerHTML = datas.length
@@ -122,16 +123,16 @@ function loadJobListData(datas, page) {
     var searchElementList = document.getElementById("searchJob");
     searchElementList.addEventListener("keyup", function () {
         var inputVal = searchElementList.value.toLowerCase();
-        if(inputVal.length > 0){
+        if (inputVal.length > 0) {
             document.getElementById("job-widget").style.display = "none";
-        }else{
+        } else {
             document.getElementById("job-widget").style.display = "block";
         }
     });
 
-    if(datas.length > 0){
+    if (datas.length > 0) {
         (document.getElementById("job-widget")) ? document.getElementById("job-widget").style.display = "block" : "";
-    }else{
+    } else {
         (document.getElementById("job-widget")) ? document.getElementById("job-widget").style.display = "none" : "";
     }
 
@@ -198,7 +199,7 @@ function paginationEvents() {
 var searchElementList = document.getElementById("searchJob");
 searchElementList.addEventListener("keyup", function () {
     var inputVal = searchElementList.value.toLowerCase();
-    
+
     function filterItems(arr, query) {
         return arr.filter(function (el) {
             return el.jobTitle.toLowerCase().indexOf(query.toLowerCase()) !== -1
@@ -207,9 +208,9 @@ searchElementList.addEventListener("keyup", function () {
 
     var filterData = filterItems(allJobList, inputVal);
 
-    if(filterData.length == 0){
+    if (filterData.length == 0) {
         document.getElementById("pagination-element").style.display = "none";
-    }else{
+    } else {
         document.getElementById("pagination-element").style.display = "flex";
     }
 
@@ -259,7 +260,7 @@ function filterData() {
         } else {
             dateFilter = false;
         }
-        
+
         if (statusFilter && typeFilter && dateFilter) {
             return statusFilter && typeFilter && dateFilter;
         } else if (statusFilter && typeFilter && pickerVal == "") {

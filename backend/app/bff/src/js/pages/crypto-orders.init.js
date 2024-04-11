@@ -20,10 +20,10 @@ var options = {
         "avg_price",
         "price",
         "status",
-        { name: 'time', attr: 'data-timestamp' },
-        { name: 'or_val', attr: 'data-orderval' },
-        { name: 'sort-avg_price', attr: 'data-av-price' },
-        { name: 'sort-price', attr: 'data-price' },
+        {name: 'time', attr: 'data-timestamp'},
+        {name: 'or_val', attr: 'data-orderval'},
+        {name: 'sort-avg_price', attr: 'data-av-price'},
+        {name: 'sort-price', attr: 'data-price'},
     ],
     page: perPage,
     pagination: true,
@@ -38,15 +38,15 @@ var options = {
 // Init list
 var ContactList = document.getElementById('contactList');
 if (ContactList) {
-    var contactList = new List("contactList", options).on("updated", function(list) {
+    var contactList = new List("contactList", options).on("updated", function (list) {
         list.matchingItems.length == 0 ?
             (document.getElementsByClassName("noresult")[0].style.display = "block") :
             (document.getElementsByClassName("noresult")[0].style.display = "none");
         var isFirst = list.i == 1;
         var isLast = list.i > list.matchingItems.length - list.page;
         // make the Prev and Nex buttons disabled on first and last pages accordingly
-        (document.querySelector(".pagination-prev.disabled")) ? document.querySelector(".pagination-prev.disabled").classList.remove("disabled"): '';
-        (document.querySelector(".pagination-next.disabled")) ? document.querySelector(".pagination-next.disabled").classList.remove("disabled"): '';
+        (document.querySelector(".pagination-prev.disabled")) ? document.querySelector(".pagination-prev.disabled").classList.remove("disabled") : '';
+        (document.querySelector(".pagination-next.disabled")) ? document.querySelector(".pagination-next.disabled").classList.remove("disabled") : '';
         if (isFirst) {
             document.querySelector(".pagination-prev").classList.add("disabled");
         }
@@ -72,7 +72,7 @@ if (ContactList) {
     );
 }
 
-function filterData(){
+function filterData() {
     var isstatus = document.getElementById("idStatus").value;
     var isType = document.getElementById("idType").value;
     var pickerVal = document.getElementById("range-datepicker").value;
@@ -108,9 +108,9 @@ function filterData(){
             dateFilter = false;
         }
 
-        if(statusFilter && typeFilter && dateFilter){
+        if (statusFilter && typeFilter && dateFilter) {
             return statusFilter && typeFilter && dateFilter
-        }  else if (statusFilter && typeFilter && pickerVal == "") {
+        } else if (statusFilter && typeFilter && pickerVal == "") {
             return statusFilter && typeFilter;
         } else if (typeFilter && dateFilter && pickerVal == "") {
             return typeFilter && dateFilter;
@@ -122,15 +122,15 @@ function filterData(){
 
 var paginationNext = document.querySelector(".pagination-next");
 if (paginationNext) {
-    document.querySelector(".pagination-next").addEventListener("click", function() {
+    document.querySelector(".pagination-next").addEventListener("click", function () {
         (document.querySelector(".pagination.listjs-pagination")) ? (document.querySelector(".pagination.listjs-pagination").querySelector(".active")) ?
-        document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click(): '': '';
+            document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click() : '' : '';
     });
 }
 var paginationPrev = document.querySelector(".pagination-prev");
 if (paginationPrev) {
-    document.querySelector(".pagination-prev").addEventListener("click", function() {
+    document.querySelector(".pagination-prev").addEventListener("click", function () {
         (document.querySelector(".pagination.listjs-pagination")) ? (document.querySelector(".pagination.listjs-pagination").querySelector(".active")) ?
-        document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click(): '': '';
+            document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click() : '' : '';
     });
 }

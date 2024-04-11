@@ -7,8 +7,8 @@ File: Range sliders Js File
 */
 
 /*********************
-  basic example
-**********************/
+ basic example
+ **********************/
 var sliderColorScheme = document.querySelectorAll('[data-rangeslider]');
 if (sliderColorScheme)
     Array.from(sliderColorScheme).forEach(function (slider) {
@@ -23,8 +23,8 @@ if (sliderColorScheme)
     });
 
 /*********************
-  multi range handle
-**********************/
+ multi range handle
+ **********************/
 
 var multielementslider = document.querySelectorAll('[data-multielement]');
 if (multielementslider)
@@ -40,8 +40,8 @@ if (multielementslider)
     });
 
 /*********************
-  Colorpicker
-**********************/
+ Colorpicker
+ **********************/
 
 var resultElement = document.getElementById('result');
 var sliders = document.getElementsByClassName('sliders');
@@ -75,8 +75,8 @@ if (sliders)
     });
 
 /*********************
-  Using HTML5 input elements
-**********************/
+ Using HTML5 input elements
+ **********************/
 
 var select = document.getElementById('input-select');
 // Append the option elements
@@ -121,8 +121,8 @@ if (inputNumber && html5Slider) {
 }
 
 /*********************
-  Non linear slider
-**********************/
+ Non linear slider
+ **********************/
 var nonLinearSlider = document.getElementById('nonlinear');
 if (nonLinearSlider)
     noUiSlider.create(nonLinearSlider, {
@@ -151,8 +151,8 @@ nonLinearSlider.noUiSlider.on('update', function (values, handle, unencoded, isT
 });
 
 /*********************
-  Locking sliders together
-**********************/
+ Locking sliders together
+ **********************/
 var lockedState = false;
 var lockedSlider = false;
 var lockedValues = [60, 80];
@@ -241,8 +241,8 @@ if (slider1 && slider2) {
 }
 
 /*********************
-    mergingTooltipSlider
-**********************/
+ mergingTooltipSlider
+ **********************/
 var mergingTooltipSlider = document.getElementById('slider-merging-tooltips');
 if (mergingTooltipSlider) {
     noUiSlider.create(mergingTooltipSlider, {
@@ -345,8 +345,8 @@ function mergeTooltips(slider, threshold, separator) {
 }
 
 /*********************
-    tooltip
-**********************/
+ tooltip
+ **********************/
 var hidingTooltipSlider = document.getElementById('slider-hide');
 if (hidingTooltipSlider)
     noUiSlider.create(hidingTooltipSlider, {
@@ -359,8 +359,8 @@ if (hidingTooltipSlider)
     });
 
 /*********************
-    pipe - scale
-**********************/
+ pipe - scale
+ **********************/
 var pipsSlider = document.getElementById('slider-pips');
 if (pipsSlider)
     noUiSlider.create(pipsSlider, {
@@ -381,6 +381,7 @@ function clickOnPip() {
     var value = Number(this.getAttribute('data-value'));
     pipsSlider.noUiSlider.set(value);
 }
+
 if (pips)
     Array.from(pips).forEach(function (ele) {
         // For this example. Do this in CSS!
@@ -389,8 +390,8 @@ if (pips)
     });
 
 /*********************
-  Colored Connect Elements
-**********************/
+ Colored Connect Elements
+ **********************/
 var slider = document.getElementById('slider-color');
 if (slider)
     noUiSlider.create(slider, {
@@ -408,12 +409,12 @@ var classes = ['c-1-color', 'c-2-color', 'c-3-color', 'c-4-color', 'c-5-color'];
 var i = 0;
 Array.from(connect).forEach(function (ele) {
     ele.classList.add(classes[i]);
-    i ++;
+    i++;
 });
 
 /*********************
-    toggle slider
-**********************/
+ toggle slider
+ **********************/
 var toggleSlider = document.getElementById('slider-toggle');
 if (toggleSlider) {
     noUiSlider.create(toggleSlider, {
@@ -438,8 +439,8 @@ if (toggleSlider) {
 }
 
 /*********************
-    Soft limits
-**********************/
+ Soft limits
+ **********************/
 var softSlider = document.getElementById('soft');
 if (softSlider) {
     noUiSlider.create(softSlider, {

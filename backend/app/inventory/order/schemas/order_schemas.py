@@ -1,22 +1,20 @@
 from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional, List, TYPE_CHECKING, Any
-from datetime import date
+from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, field_validator, model_validator, model_serializer, computed_field
+from pydantic import BaseModel, Field, computed_field
 from pydantic.types import UUID4
 
-from app.inventory.location.enums import PutawayStrategy
+from app.inventory.order.models import Order
+from app.inventory.order.models.order_models import OrderStatus
 from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme
+from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
 from core.schemas import BaseFilter
 from core.schemas.filter_generic import CustomBaseModel
-
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.inventory.order.models import Order
-from app.inventory.order.models.order_models import OrderStatus, Move
-from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
 
 
 class OrderBaseScheme(BaseModel):
@@ -40,11 +38,9 @@ class OrderBaseScheme(BaseModel):
         service = 'app.inventory.order.services.OrderService'
 
 
-
-
-
 class OrderUpdateScheme(OrderBaseScheme):
     move_list_rel: Optional[list[MoveUpdateScheme]] = Field(default=[], title='Order Movements', form=True)
+
 
 class OrderCreateScheme(OrderBaseScheme):
     move_list_rel: Optional[list[MoveCreateScheme]] = Field(default=[], title='Order Movements', form=True)

@@ -31,13 +31,13 @@ document.addEventListener("DOMContentLoaded", function () {
     var Draggable = FullCalendar.Draggable;
     var externalEventContainerEl = document.getElementById('external-events');
     var defaultEvents = [{
-            id: 1,
-            title: "World Braille Day",
-            start: "2022-01-04",
-            className: "bg-info-subtle",
-            allDay: true
+        id: 1,
+        title: "World Braille Day",
+        start: "2022-01-04",
+        className: "bg-info-subtle",
+        allDay: true
 
-        },
+    },
         {
             id: 2,
             title: "World Leprosy Day",
@@ -282,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
             var newView = getInitialView();
             calendar.changeView(newView);
         },
-        eventResize: function(info) {
+        eventResize: function (info) {
             var indexOfSelectedEvent = defaultEvents.findIndex(function (x) {
                 return x.id == info.event.id
             });
@@ -342,11 +342,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 return [year, month, day].join('-');
             };
             var updateDay = null
-            if(ed_date != null){
+            if (ed_date != null) {
                 var endUpdateDay = new Date(ed_date);
                 updateDay = endUpdateDay.setDate(endUpdateDay.getDate() - 1);
             }
-            
+
             var r_date = ed_date == null ? (str_dt(st_date)) : (str_dt(st_date)) + ' to ' + (str_dt(updateDay));
             var er_date = ed_date == null ? (date_r(st_date)) : (date_r(st_date)) + ' to ' + (date_r(updateDay));
 
@@ -659,20 +659,24 @@ function upcomingEvent(a) {
         if (element.end) {
             endUpdatedDay = new Date(element.end);
             var updatedDay = endUpdatedDay.setDate(endUpdatedDay.getDate() - 1);
-          }
+        }
         var e_dt = updatedDay ? updatedDay : undefined;
         if (e_dt == "Invalid Date" || e_dt == undefined) {
             e_dt = null;
         } else {
-            const newDate = new Date(e_dt).toLocaleDateString('en', { year: 'numeric', month: 'numeric', day: 'numeric' });
+            const newDate = new Date(e_dt).toLocaleDateString('en', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric'
+            });
             e_dt = new Date(newDate)
-              .toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })
-              .split(" ")
-              .join(" ");
+                .toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                })
+                .split(" ")
+                .join(" ");
         }
         var st_date = element.start ? str_dt(element.start) : null;
         var ed_date = updatedDay ? str_dt(updatedDay) : null;
@@ -683,15 +687,19 @@ function upcomingEvent(a) {
         if (startDate === "Invalid Date" || startDate === undefined) {
             startDate = null;
         } else {
-            const newDate = new Date(startDate).toLocaleDateString('en', { year: 'numeric', month: 'numeric', day: 'numeric' });
+            const newDate = new Date(startDate).toLocaleDateString('en', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric'
+            });
             startDate = new Date(newDate)
-              .toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })
-              .split(" ")
-              .join(" ");
+                .toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                })
+                .split(" ")
+                .join(" ");
         }
 
         var end_dt = (e_dt) ? " to " + e_dt : '';

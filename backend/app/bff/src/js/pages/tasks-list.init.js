@@ -8,20 +8,20 @@ File: Tasks-list init js
 
 var checkAll = document.getElementById("checkAll");
 if (checkAll) {
-  checkAll.onclick = function () {
-    var checkboxes = document.querySelectorAll('.form-check-all input[type="checkbox"]');
-    var checkedCount = document.querySelectorAll('.form-check-all input[type="checkbox"]:checked').length;
-    for (var i = 0; i < checkboxes.length; i++) {
-      checkboxes[i].checked = this.checked;
-      if (checkboxes[i].checked) {
-          checkboxes[i].closest("tr").classList.add("table-active");
-      } else {
-          checkboxes[i].closest("tr").classList.remove("table-active");
-      }
-    }
+    checkAll.onclick = function () {
+        var checkboxes = document.querySelectorAll('.form-check-all input[type="checkbox"]');
+        var checkedCount = document.querySelectorAll('.form-check-all input[type="checkbox"]:checked').length;
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = this.checked;
+            if (checkboxes[i].checked) {
+                checkboxes[i].closest("tr").classList.add("table-active");
+            } else {
+                checkboxes[i].closest("tr").classList.remove("table-active");
+            }
+        }
 
-    (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'none' : document.getElementById("remove-actions").style.display = 'block';
-  };
+        (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'none' : document.getElementById("remove-actions").style.display = 'block';
+    };
 }
 var perPage = 8;
 var editlist = false;
@@ -85,15 +85,15 @@ xhttp.onload = function () {
         var showElem = 3;
         var imgHtml = '<div class="avatar-group flex-nowrap">';
         Array.from(assignedElem.slice(0, showElem)).forEach(function (img) {
-            imgHtml += '<a href="javascript: void(0);" class="avatar-group-item" data-img="' + img.assigneeImg + '"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'+img.assigneeName+'">\
-                <img src="'+ img.assigneeImg + '" alt="" class="rounded-circle avatar-xxs" />\
+            imgHtml += '<a href="javascript: void(0);" class="avatar-group-item" data-img="' + img.assigneeImg + '"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="' + img.assigneeName + '">\
+                <img src="' + img.assigneeImg + '" alt="" class="rounded-circle avatar-xxs" />\
             </a>';
         });
-        if(assignedElem.length > showElem){
+        if (assignedElem.length > showElem) {
             var elemLength = assignedElem.length - showElem;
-            imgHtml += '<a href="javascript: void(0);" class="avatar-group-item"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'+elemLength+' More">\
+            imgHtml += '<a href="javascript: void(0);" class="avatar-group-item"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="' + elemLength + ' More">\
             <div class="avatar-xxs">\
-            <div class="avatar-title rounded-circle">'+elemLength+'+</div>\
+            <div class="avatar-title rounded-circle">' + elemLength + '+</div>\
             </div>\
         </a>'
         }
@@ -109,7 +109,7 @@ xhttp.onload = function () {
             status: isStatus(raw.status),
             priority: isPriority(raw.priority)
         });
-        tasksList.sort('id', { order: "desc" });
+        tasksList.sort('id', {order: "desc"});
         refreshCallbacks();
         tooltipElm();
     });
@@ -138,9 +138,10 @@ var idField = document.getElementById("tasksId"),
     removeBtns = document.getElementsByClassName("remove-item-btn"),
     editBtns = document.getElementsByClassName("edit-item-btn");
 refreshCallbacks();
+
 //filterOrder("All");
 
-function tooltipElm(){
+function tooltipElm() {
     var tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     var tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 }
@@ -220,7 +221,7 @@ Array.prototype.slice.call(forms).forEach(function (form) {
             event.stopPropagation();
         } else {
             event.preventDefault();
-            
+
             if (
                 projectNameField.value !== "" &&
                 tasksTitleField.value !== "" &&
@@ -230,8 +231,8 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                 statusField.value !== "" && !editlist
             ) {
                 tasksList.add({
-                    id: '<a href="apps-tasks-details.html" class="fw-medium link-primary">#VLZ'+count+"</a>",
-                    project_name: '<a href="apps-projects-overview.html" class="fw-medium link-primary">'+projectNameField.value+"</a>",
+                    id: '<a href="apps-tasks-details.html" class="fw-medium link-primary">#VLZ' + count + "</a>",
+                    project_name: '<a href="apps-projects-overview.html" class="fw-medium link-primary">' + projectNameField.value + "</a>",
                     tasks_name: tasksTitleField.value,
                     client_name: clientNameField.value,
                     assignedto: assignToUsers(),
@@ -239,7 +240,7 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                     status: isStatus(statusField.value),
                     priority: isPriority(priorityField.value)
                 });
-                tasksList.sort('id', { order: "desc" });
+                tasksList.sort('id', {order: "desc"});
                 document.getElementById("close-modal").click();
                 clearFields();
                 refreshCallbacks();
@@ -269,8 +270,8 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                     var selectedid = isid.body.firstElementChild.innerHTML;
                     if (selectedid == itemId) {
                         x.values({
-                            id: '<a href="javascript:void(0);" class="fw-medium link-primary">'+idField.value+"</a>",
-                            project_name: '<a href="apps-projects-overview.html" class="fw-medium link-primary">' +projectNameField.value+"</a>",
+                            id: '<a href="javascript:void(0);" class="fw-medium link-primary">' + idField.value + "</a>",
+                            project_name: '<a href="apps-projects-overview.html" class="fw-medium link-primary">' + projectNameField.value + "</a>",
                             tasks_name: tasksTitleField.value,
                             client_name: clientNameField.value,
                             assignedto: assignToUsers(),
@@ -355,19 +356,19 @@ function ischeckboxcheck() {
             } else {
                 e.target.closest("tr").classList.remove("table-active");
             }
-  
+
             var checkedCount = document.querySelectorAll('[name="chk_child"]:checked').length;
             if (e.target.closest("tr").classList.contains("table-active")) {
-                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block': document.getElementById("remove-actions").style.display = 'none';
+                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block' : document.getElementById("remove-actions").style.display = 'none';
             } else {
-                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block': document.getElementById("remove-actions").style.display = 'none';
+                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block' : document.getElementById("remove-actions").style.display = 'none';
             }
         });
     });
 }
 
 function refreshCallbacks() {
-    if (removeBtns){
+    if (removeBtns) {
         Array.from(removeBtns).forEach(function (btn) {
             btn.addEventListener("click", function (e) {
                 e.target.closest("tr").children[1].innerText;
@@ -375,12 +376,12 @@ function refreshCallbacks() {
                 var itemValues = tasksList.get({
                     id: itemId,
                 });
-    
+
                 Array.from(itemValues).forEach(function (x) {
                     deleteid = new DOMParser().parseFromString(x._values.id, "text/html");
                     var isElem = deleteid.body.firstElementChild;
                     var isdeleteid = deleteid.body.firstElementChild.innerHTML;
-    
+
                     if (isdeleteid == itemId) {
                         document.getElementById("delete-record").addEventListener("click", function () {
                             tasksList.remove("id", isElem.outerHTML);
@@ -391,70 +392,71 @@ function refreshCallbacks() {
             });
         });
     }
-    
-    if (editBtns){
-    Array.from(editBtns).forEach(function (btn) {
-        btn.addEventListener("click", function (e) {
-            e.target.closest("tr").children[1].innerText;
-            itemId = e.target.closest("tr").children[1].innerText;
-            var itemValues = tasksList.get({
-                id: itemId,
-            });
 
-            Array.from(itemValues).forEach(function (x) {
-                isid = new DOMParser().parseFromString(x._values.id, "text/html");
-                var selectedid = isid.body.firstElementChild.innerHTML;
-                if (selectedid == itemId) {
-                    editlist = true;
-                    idField.value = selectedid;
+    if (editBtns) {
+        Array.from(editBtns).forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+                e.target.closest("tr").children[1].innerText;
+                itemId = e.target.closest("tr").children[1].innerText;
+                var itemValues = tasksList.get({
+                    id: itemId,
+                });
 
-                    project = new DOMParser().parseFromString(x._values.project_name, "text/html");
-                    var projectName = project.body.firstElementChild.innerHTML;
-                    statusVal.setChoiceByValue(statusSelec);
+                Array.from(itemValues).forEach(function (x) {
+                    isid = new DOMParser().parseFromString(x._values.id, "text/html");
+                    var selectedid = isid.body.firstElementChild.innerHTML;
+                    if (selectedid == itemId) {
+                        editlist = true;
+                        idField.value = selectedid;
 
-                    projectNameField.value = projectName;
-                    tasksTitleField.value = x._values.tasks_name;
-                    clientNameField.value = x._values.client_name;
-                    dateDueField.value = x._values.due_date;
+                        project = new DOMParser().parseFromString(x._values.project_name, "text/html");
+                        var projectName = project.body.firstElementChild.innerHTML;
+                        statusVal.setChoiceByValue(statusSelec);
 
-                    Array.from(document.querySelectorAll('input[name="assignedTo[]"]')).forEach(function (subElem) {
-                        var checkedElem = subElem.parentElement;
-                        var nameelem = checkedElem.querySelector(".flex-grow-1").innerHTML;
+                        projectNameField.value = projectName;
+                        tasksTitleField.value = x._values.tasks_name;
+                        clientNameField.value = x._values.client_name;
+                        dateDueField.value = x._values.due_date;
 
-                        var assignElem = new DOMParser().parseFromString(x._values.assignedto, "text/html");
-                        assignElem.querySelectorAll(".avatar-group .avatar-group-item").forEach(function(item){
-                            if(item.getAttribute('data-bs-title') == nameelem){
-                                subElem.checked = true;
-                            };
+                        Array.from(document.querySelectorAll('input[name="assignedTo[]"]')).forEach(function (subElem) {
+                            var checkedElem = subElem.parentElement;
+                            var nameelem = checkedElem.querySelector(".flex-grow-1").innerHTML;
+
+                            var assignElem = new DOMParser().parseFromString(x._values.assignedto, "text/html");
+                            assignElem.querySelectorAll(".avatar-group .avatar-group-item").forEach(function (item) {
+                                if (item.getAttribute('data-bs-title') == nameelem) {
+                                    subElem.checked = true;
+                                }
+                                ;
+                            });
                         });
-                    });
 
-                    if (statusVal) statusVal.destroy();
-                    statusVal = new Choices(statusField, {
-                        searchEnabled: false
-                    });
-                    val = new DOMParser().parseFromString(x._values.status, "text/html");
-                    var statusSelec = val.body.firstElementChild.innerHTML;
-                    statusVal.setChoiceByValue(statusSelec);
+                        if (statusVal) statusVal.destroy();
+                        statusVal = new Choices(statusField, {
+                            searchEnabled: false
+                        });
+                        val = new DOMParser().parseFromString(x._values.status, "text/html");
+                        var statusSelec = val.body.firstElementChild.innerHTML;
+                        statusVal.setChoiceByValue(statusSelec);
 
-                    if (example) example.destroy();
-                    example = new Choices(priorityField, {
-                        searchEnabled: false
-                    });
-                    val = new DOMParser().parseFromString(x._values.priority, "text/html");
-                    var selected = val.body.firstElementChild.innerHTML;
-                    example.setChoiceByValue(selected);
-                    //priorityField.value = x._values.priority;
+                        if (example) example.destroy();
+                        example = new Choices(priorityField, {
+                            searchEnabled: false
+                        });
+                        val = new DOMParser().parseFromString(x._values.priority, "text/html");
+                        var selected = val.body.firstElementChild.innerHTML;
+                        example.setChoiceByValue(selected);
+                        //priorityField.value = x._values.priority;
 
-                    flatpickr("#duedate-field", {
-                        dateFormat: "d M, Y",
-                        defaultDate: x._values.due_date,
-                    });
-                }
+                        flatpickr("#duedate-field", {
+                            dateFormat: "d M, Y",
+                            defaultDate: x._values.due_date,
+                        });
+                    }
+                });
             });
         });
-    });
-}
+    }
 
 }
 
@@ -465,7 +467,7 @@ function clearFields() {
     assignedtoNameField.value = "";
     dateDueField.value = "";
 
-    document.querySelectorAll('input[name="assignedTo[]"]').forEach(function(item){
+    document.querySelectorAll('input[name="assignedTo[]"]').forEach(function (item) {
         item.checked = false;
     });
 
@@ -481,13 +483,13 @@ function clearFields() {
 document.querySelector(".pagination-next").addEventListener("click", function () {
     document.querySelector(".pagination.listjs-pagination") ?
         document.querySelector(".pagination.listjs-pagination").querySelector(".active") ?
-        document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click() : "" : "";
+            document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click() : "" : "";
 });
 
 document.querySelector(".pagination-prev").addEventListener("click", function () {
     document.querySelector(".pagination.listjs-pagination") ?
         document.querySelector(".pagination.listjs-pagination").querySelector(".active") ?
-        document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click() : "" : "";
+            document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click() : "" : "";
 });
 
 function isStatus(val) {
@@ -522,7 +524,7 @@ function fomateDate(date) {
 
 function assignToUsers() {
     var assignedtousers = [];
-    var assignedTo =  document.querySelectorAll('input[name="assignedTo[]"]:checked');
+    var assignedTo = document.querySelectorAll('input[name="assignedTo[]"]:checked');
     Array.from(assignedTo).forEach(function (ele) {
         var checkedElem = ele.parentElement;
         var imgpath = checkedElem.querySelector(".avatar-xxs").getAttribute('src');
@@ -537,15 +539,15 @@ function assignToUsers() {
     var showElem = 3;
     var imgHtml = '<div class="avatar-group flex-nowrap">';
     Array.from(assignedElem.slice(0, showElem)).forEach(function (img) {
-        imgHtml += '<a href="javascript: void(0);" class="avatar-group-item" data-img="' + img.assigneeImg + '"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'+img.assigneeName+'">\
-            <img src="'+ img.assigneeImg + '" alt="" class="rounded-circle avatar-xxs" />\
+        imgHtml += '<a href="javascript: void(0);" class="avatar-group-item" data-img="' + img.assigneeImg + '"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="' + img.assigneeName + '">\
+            <img src="' + img.assigneeImg + '" alt="" class="rounded-circle avatar-xxs" />\
         </a>';
     });
-    if(assignedElem.length > showElem){
+    if (assignedElem.length > showElem) {
         var elemLength = assignedElem.length - showElem;
-        imgHtml += '<a href="javascript: void(0);" class="avatar-group-item"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'+elemLength+' More">\
+        imgHtml += '<a href="javascript: void(0);" class="avatar-group-item"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="' + elemLength + ' More">\
         <div class="avatar-xxs">\
-        <div class="avatar-title rounded-circle">'+elemLength+'+</div>\
+        <div class="avatar-title rounded-circle">' + elemLength + '+</div>\
         </div>\
     </a>'
     }

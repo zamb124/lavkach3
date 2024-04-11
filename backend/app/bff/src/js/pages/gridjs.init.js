@@ -10,12 +10,12 @@ File: grid Js File
 if (document.getElementById("table-gridjs"))
     new gridjs.Grid({
         columns: [{
-                name: 'ID',
-                width: '80px',
-                formatter: (function (cell) {
-                    return gridjs.html('<span class="fw-semibold">' + cell + '</span>');
-                })
-            },
+            name: 'ID',
+            width: '80px',
+            formatter: (function (cell) {
+                return gridjs.html('<span class="fw-semibold">' + cell + '</span>');
+            })
+        },
             {
                 name: 'Name',
                 width: '150px',
@@ -74,7 +74,7 @@ if (document.getElementById("table-card"))
         columns: [{
             name: 'Name',
             width: '150px',
-        },{
+        }, {
             name: 'Email',
             width: '250px',
         }, {
@@ -110,24 +110,24 @@ if (document.getElementById("table-card"))
 if (document.getElementById("table-pagination"))
     new gridjs.Grid({
         columns: [{
-                name: 'ID',
-                width: '120px',
-                formatter: (function (cell) {
-                    return gridjs.html('<a href="" class="fw-medium">' + cell + '</a>');
-                })
-            }, {
-                name: 'Name',
-                width: '150px',
-            }, {
-                name: 'Date',
-                width: '180px',
-            }, {
-                name: 'Total',
-                width: '120px',
-            }, {
-                name: 'Status',
-                width: '120px',
-            },
+            name: 'ID',
+            width: '120px',
+            formatter: (function (cell) {
+                return gridjs.html('<a href="" class="fw-medium">' + cell + '</a>');
+            })
+        }, {
+            name: 'Name',
+            width: '150px',
+        }, {
+            name: 'Date',
+            width: '180px',
+        }, {
+            name: 'Total',
+            width: '120px',
+        }, {
+            name: 'Status',
+            width: '120px',
+        },
             {
                 name: 'Actions',
                 width: '100px',
@@ -143,7 +143,7 @@ if (document.getElementById("table-pagination"))
         },
 
         data: [
-            ["#VL2111", "Jonathan", "07 Oct, 2021", "$24.05", "Paid", ],
+            ["#VL2111", "Jonathan", "07 Oct, 2021", "$24.05", "Paid",],
             ["#VL2110", "Harold", "07 Oct, 2021", "$26.15", "Paid"],
             ["#VL2109", "Shannon", "06 Oct, 2021", "$21.25", "Refund"],
             ["#VL2108", "Robert", "05 Oct, 2021", "$25.03", "Paid"],
@@ -320,15 +320,15 @@ if (document.getElementById("table-hidden-column"))
             name: 'Name',
             width: '120px',
         }, {
-                name: 'Email',
-                width: '250px',
-            }, {
-                name: 'Position',
-                width: '250px',
-            }, {
-                name: 'Company',
-                width: '250px',
-            },
+            name: 'Email',
+            width: '250px',
+        }, {
+            name: 'Position',
+            width: '250px',
+        }, {
+            name: 'Company',
+            width: '250px',
+        },
             {
                 name: 'Country',
                 hidden: true

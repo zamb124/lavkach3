@@ -36,20 +36,20 @@ function formatDate(date) {
 
 var checkAll = document.getElementById("checkAll");
 if (checkAll) {
-  checkAll.onclick = function () {
-    var checkboxes = document.querySelectorAll('.form-check-all input[type="checkbox"]');
-    var checkedCount = document.querySelectorAll('.form-check-all input[type="checkbox"]:checked').length;
-    for (var i = 0; i < checkboxes.length; i++) {
-      checkboxes[i].checked = this.checked;
-      if (checkboxes[i].checked) {
-          checkboxes[i].closest("tr").classList.add("table-active");
-      } else {
-          checkboxes[i].closest("tr").classList.remove("table-active");
-      }
-    }
+    checkAll.onclick = function () {
+        var checkboxes = document.querySelectorAll('.form-check-all input[type="checkbox"]');
+        var checkedCount = document.querySelectorAll('.form-check-all input[type="checkbox"]:checked').length;
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = this.checked;
+            if (checkboxes[i].checked) {
+                checkboxes[i].closest("tr").classList.add("table-active");
+            } else {
+                checkboxes[i].closest("tr").classList.remove("table-active");
+            }
+        }
 
-    (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'none' : document.getElementById("remove-actions").style.display = 'block';
-  };
+        (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'none' : document.getElementById("remove-actions").style.display = 'block';
+    };
 }
 
 var perPage = 8;
@@ -86,8 +86,8 @@ var contactList = new List("contactList", options).on("updated", function (list)
     var isFirst = list.i == 1;
     var isLast = list.i > list.matchingItems.length - list.page;
     // make the Prev and Nex buttons disabled on first and last pages accordingly
-    (document.querySelector(".pagination-prev.disabled")) ? document.querySelector(".pagination-prev.disabled").classList.remove("disabled"): '';
-    (document.querySelector(".pagination-next.disabled")) ? document.querySelector(".pagination-next.disabled").classList.remove("disabled"): '';
+    (document.querySelector(".pagination-prev.disabled")) ? document.querySelector(".pagination-prev.disabled").classList.remove("disabled") : '';
+    (document.querySelector(".pagination-next.disabled")) ? document.querySelector(".pagination-next.disabled").classList.remove("disabled") : '';
     if (isFirst) {
         document.querySelector(".pagination-prev").classList.add("disabled");
     }
@@ -110,29 +110,29 @@ var contactList = new List("contactList", options).on("updated", function (list)
 const xhttp = new XMLHttpRequest();
 xhttp.onload = function () {
     var json_records = JSON.parse(this.responseText);
-    Array.from(json_records).forEach(function (raw){
+    Array.from(json_records).forEach(function (raw) {
         var tags = raw.tags;
         var tagHtml = '';
         Array.from(tags).forEach((tag, index) => {
-            tagHtml += '<span class="badge bg-primary-subtle text-primary me-1">'+tag+'</span>'
+            tagHtml += '<span class="badge bg-primary-subtle text-primary me-1">' + tag + '</span>'
         })
 
         contactList.add({
             id: `<a href="javascript:void(0);" class="fw-medium link-primary">#VZ${raw.id}</a>`,
             name: '<div class="d-flex align-items-center">\
-            <div class="flex-shrink-0"><img src="'+raw.name[0]+'" alt="" class="avatar-xs rounded-circle"></div>\
-            <div class="flex-grow-1 ms-2 name">'+raw.name[1]+'</div>\
+            <div class="flex-shrink-0"><img src="' + raw.name[0] + '" alt="" class="avatar-xs rounded-circle"></div>\
+            <div class="flex-grow-1 ms-2 name">' + raw.name[1] + '</div>\
             </div>',
             company_name: raw.company_name,
             desc: raw.desc,
             designation: raw.designation,
-            date: formatDate(raw.date)+' <small class="text-muted">'+timeConvert(raw.date)+'</small>',
+            date: formatDate(raw.date) + ' <small class="text-muted">' + timeConvert(raw.date) + '</small>',
             email_id: raw.email_id,
             phone: raw.phone,
             lead_score: raw.lead_score,
             tags: tagHtml,
         });
-        contactList.sort('id', { order: "desc" });
+        contactList.sort('id', {order: "desc"});
         refreshCallbacks();
     });
     contactList.remove("id", `<a href="javascript:void(0);" class="fw-medium link-primary">#VZ001</a>`);
@@ -150,9 +150,9 @@ document.querySelector("#customer-image-input").addEventListener("change", funct
     var preview = document.querySelector("#customer-img");
     var file = document.querySelector("#customer-image-input").files[0];
     var reader = new FileReader();
-    reader.addEventListener("load",function () {
+    reader.addEventListener("load", function () {
         preview.src = reader.result;
-    },false);
+    }, false);
     if (file) {
         reader.readAsDataURL(file);
     }
@@ -170,7 +170,7 @@ var idField = document.getElementById("id-field"),
     editBtn = document.getElementById("edit-btn"),
     removeBtns = document.getElementsByClassName("remove-item-btn"),
     editBtns = document.getElementsByClassName("edit-item-btn");
-    viewBtns = document.getElementsByClassName("view-item-btn");
+viewBtns = document.getElementsByClassName("view-item-btn");
 refreshCallbacks();
 
 document.getElementById("showModal").addEventListener("show.bs.modal", function (e) {
@@ -204,6 +204,7 @@ var trlist = table.querySelectorAll(".list tr");
 
 // date & time
 var dateValue = new Date().toUTCString().slice(5, 16);
+
 function currentTime() {
     var ampm = new Date().getHours() >= 12 ? "PM" : "AM";
     var hour =
@@ -220,20 +221,21 @@ function currentTime() {
         return hour + ":" + minute + " " + ampm;
     }
 }
+
 setInterval(currentTime, 1000);
 
 
 var count = 11;
 // multiple Remove CancelButton
 var tagInputField = new Choices('#taginput-choices', {
-      removeItemButton: true,
+        removeItemButton: true,
     }
 );
 
 var tagInputFieldValue = tagInputField.getValue(true);
 var tagHtmlValue = '';
 Array.from(tagInputFieldValue).forEach((tag, index) => {
-    tagHtmlValue += '<span class="badge bg-primary-subtle text-primary me-1">'+tag+'</span>'
+    tagHtmlValue += '<span class="badge bg-primary-subtle text-primary me-1">' + tag + '</span>'
 })
 var forms = document.querySelectorAll('.tablelist-form')
 Array.prototype.slice.call(forms).forEach(function (form) {
@@ -259,8 +261,8 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                     id: `<a href="javascript:void(0);" class="fw-medium link-primary">#VZ${count}</a>`,
                     // name: customerNameField.value,
                     name: '<div class="d-flex align-items-center">\
-                    <div class="flex-shrink-0"><img src="'+ customerImg.src + '" alt="" class="avatar-xs rounded-circle object-cover"></div>\
-                    <div class="flex-grow-1 ms-2 name">'+ customerNameField.value + '</div>\
+                    <div class="flex-shrink-0"><img src="' + customerImg.src + '" alt="" class="avatar-xs rounded-circle object-cover"></div>\
+                    <div class="flex-grow-1 ms-2 name">' + customerNameField.value + '</div>\
                     </div>',
                     company_name: company_nameField.value,
                     designation: designationField.value,
@@ -270,7 +272,7 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                     tags: tagHtmlValue,
                     date: dateValue + ' <small class="text-muted">' + currentTime() + '</small>'
                 });
-                contactList.sort('id', { order: "desc" });
+                contactList.sort('id', {order: "desc"});
                 document.getElementById("close-modal").click();
                 clearFields();
                 refreshCallbacks();
@@ -283,12 +285,12 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                     timer: 2000,
                     showCloseButton: true
                 });
-            }else if (customerNameField.value !== "" &&
-            company_nameField.value !== "" &&
-            email_idField.value !== "" &&
-            phoneField.value !== "" &&
-            lead_scoreField.value !== "" &&
-            designationField.value !== "" && editlist) {
+            } else if (customerNameField.value !== "" &&
+                company_nameField.value !== "" &&
+                email_idField.value !== "" &&
+                phoneField.value !== "" &&
+                lead_scoreField.value !== "" &&
+                designationField.value !== "" && editlist) {
                 var editValues = contactList.get({
                     id: idField.value,
                 });
@@ -304,8 +306,8 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                         x.values({
                             id: `<a href="javascript:void(0);" class="fw-medium link-primary">#VZ${idField.value}</a>`,
                             name: '<div class="d-flex align-items-center">\
-                            <div class="flex-shrink-0"><img src="'+customerImg.src+'" alt="" class="avatar-xs rounded-circle object-fit-cover"></div>\
-                            <div class="flex-grow-1 ms-2 name">'+customerNameField.value+'</div>\
+                            <div class="flex-shrink-0"><img src="' + customerImg.src + '" alt="" class="avatar-xs rounded-circle object-fit-cover"></div>\
+                            <div class="flex-grow-1 ms-2 name">' + customerNameField.value + '</div>\
                             </div>',
                             company_name: company_nameField.value,
                             designation: designationField.value,
@@ -313,7 +315,7 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                             phone: phoneField.value,
                             lead_score: lead_scoreField.value,
                             tags: tagHtmlValue,
-                            date: dateValue + ' <small class="text-muted">'+currentTime()+'</small>'
+                            date: dateValue + ' <small class="text-muted">' + currentTime() + '</small>'
                         });
                     }
                 });
@@ -341,19 +343,19 @@ function ischeckboxcheck() {
             } else {
                 e.target.closest("tr").classList.remove("table-active");
             }
-  
+
             var checkedCount = document.querySelectorAll('[name="chk_child"]:checked').length;
             if (e.target.closest("tr").classList.contains("table-active")) {
-                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block': document.getElementById("remove-actions").style.display = 'none';
+                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block' : document.getElementById("remove-actions").style.display = 'none';
             } else {
-                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block': document.getElementById("remove-actions").style.display = 'none';
+                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block' : document.getElementById("remove-actions").style.display = 'none';
             }
         });
     });
 }
 
 function refreshCallbacks() {
-    if(removeBtns){
+    if (removeBtns) {
         Array.from(removeBtns).forEach(function (btn) {
             btn.addEventListener("click", function (e) {
                 e.target.closest("tr").children[1].innerText;
@@ -379,7 +381,7 @@ function refreshCallbacks() {
         });
     }
 
-    if(editBtns){
+    if (editBtns) {
         Array.from(editBtns).forEach(function (btn) {
             btn.addEventListener("click", function (e) {
                 e.target.closest("tr").children[1].innerText;
@@ -387,7 +389,7 @@ function refreshCallbacks() {
                 var itemValues = contactList.get({
                     id: itemId,
                 });
-    
+
                 Array.from(itemValues).forEach(function (x) {
                     isid = new DOMParser().parseFromString(x._values.id, "text/html");
                     var selectedid = isid.body.firstElementChild.innerHTML;
@@ -402,12 +404,12 @@ function refreshCallbacks() {
                         email_idField.value = x._values.email_id;
                         phoneField.value = x._values.phone;
                         lead_scoreField.value = x._values.lead_score;
-                        if(tagBadge){
+                        if (tagBadge) {
                             Array.from(tagBadge).forEach((item) => {
                                 tagInputField.setChoiceByValue(item.innerHTML);
                             })
                         }
-                        
+
                     }
                 });
             });
@@ -512,7 +514,7 @@ function clearFields() {
 }
 
 // Delete All Records
-function deleteMultiple(){
+function deleteMultiple() {
     ids_array = [];
     var items = document.getElementsByName('chk_child');
     for (i = 0; i < items.length; i++) {
@@ -523,7 +525,7 @@ function deleteMultiple(){
         }
     }
 
-    if(typeof ids_array !== 'undefined' && ids_array.length > 0){
+    if (typeof ids_array !== 'undefined' && ids_array.length > 0) {
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -550,7 +552,7 @@ function deleteMultiple(){
                 });
             }
         });
-    }else{
+    } else {
         Swal.fire({
             title: 'Please select at least one checkbox',
             confirmButtonClass: 'btn btn-info',
@@ -562,9 +564,9 @@ function deleteMultiple(){
 
 document.querySelector(".pagination-next").addEventListener("click", function () {
     (document.querySelector(".pagination.listjs-pagination")) ? (document.querySelector(".pagination.listjs-pagination").querySelector(".active")) ?
-    document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click(): '': '';
+        document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click() : '' : '';
 });
 document.querySelector(".pagination-prev").addEventListener("click", function () {
     (document.querySelector(".pagination.listjs-pagination")) ? (document.querySelector(".pagination.listjs-pagination").querySelector(".active")) ?
-    document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click(): '': '';
+        document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click() : '' : '';
 });

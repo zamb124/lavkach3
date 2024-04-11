@@ -410,14 +410,14 @@ if (dealTypeChartsColors) {
             name: 'Ethereum',
             data: [80, 50, 30, 40, 100, 20],
         },
-        {
-            name: 'Artwork Sold',
-            data: [20, 30, 40, 80, 20, 80],
-        },
-        {
-            name: 'Cancelation',
-            data: [44, 76, 78, 13, 43, 10],
-        }
+            {
+                name: 'Artwork Sold',
+                data: [20, 30, 40, 80, 20, 80],
+            },
+            {
+                name: 'Cancelation',
+                data: [44, 76, 78, 13, 43, 10],
+            }
         ],
         chart: {
             height: 270,
@@ -552,7 +552,7 @@ if (barchartColors) {
         dataLabels: {
             enabled: false,
             textAnchor: 'top',
-        },  
+        },
         yaxis: {
             labels: {
                 show: false,
@@ -586,14 +586,14 @@ if (linechartBasicColors) {
             name: "Artwork",
             data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
         },
-        {
-            name: "Auction",
-            data: [40, 120, 83, 45, 31, 74, 35, 34, 78]
-        },
-        {
-            name: "Creators",
-            data: [95, 35, 20, 130, 64, 22, 43, 45, 31]
-        }],
+            {
+                name: "Auction",
+                data: [40, 120, 83, 45, 31, 74, 35, 34, 78]
+            },
+            {
+                name: "Creators",
+                data: [95, 35, 20, 130, 64, 22, 43, 45, 31]
+            }],
         chart: {
             height: 350,
             type: 'line',
@@ -623,6 +623,7 @@ if (linechartBasicColors) {
 
 
 var worldemapmarkers = "";
+
 function loadCharts() {
     //creators-by-locations world map with markers
     var vectorMapWorldMarkersColors = getChartColorsArray("creators-by-locations");
@@ -651,38 +652,38 @@ function loadCharts() {
                     image: "/static/images/flags/us.svg",
                 }
             },
-            {
-                name: "Russia",
-                coords: [61.524, 105.3188],
-                style: {
-                    image: "/static/images/flags/russia.svg",
-                }
-            },
-            {
-                name: "Spain",
-                coords: [40.4637, 3.7492],
-                style: {
-                    image: "/static/images/flags/spain.svg",
-                }
-            },
-            {
-                name: "Italy",
-                coords: [41.8719, 12.5674],
-                style: {
-                    image: "/static/images/flags/italy.svg",
-                }
-            },
-            {
-                name: "Germany",
-                coords: [51.1657, 10.4515],
-                style: {
-                    image: "/static/images/flags/germany.svg",
-                }
-            },
+                {
+                    name: "Russia",
+                    coords: [61.524, 105.3188],
+                    style: {
+                        image: "/static/images/flags/russia.svg",
+                    }
+                },
+                {
+                    name: "Spain",
+                    coords: [40.4637, 3.7492],
+                    style: {
+                        image: "/static/images/flags/spain.svg",
+                    }
+                },
+                {
+                    name: "Italy",
+                    coords: [41.8719, 12.5674],
+                    style: {
+                        image: "/static/images/flags/italy.svg",
+                    }
+                },
+                {
+                    name: "Germany",
+                    coords: [51.1657, 10.4515],
+                    style: {
+                        image: "/static/images/flags/germany.svg",
+                    }
+                },
             ],
             markerStyle: {
                 initial: {
-                
+
                     fill: vectorMapWorldMarkersColors[1],
                 },
                 selected: {
