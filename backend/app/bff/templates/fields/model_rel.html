@@ -1,6 +1,6 @@
 {% block as_view %}
     <div class="text-start">
-<h5><i
+<h6><i
                 class="ri-links-fill fs-6 text-danger"> </i><a class="text-danger py-3 text-start"
            href="#"
            hx-include="none"
@@ -16,12 +16,7 @@
 "prefix": "{{ field.prefix }}"
 }'
 >{{ field.val.title or field.val.nickname }}
-        </a></h5></div>
-    <div id="{{ modal_id }}" class="modal modal-blur fade" style="display: none" aria-hidden="false" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content"></div>
-        </div>
-    </div>
+        </a></h6></div>
 {% endblock %}
 {% block as_table %}
     <i class="ri-links-fill fs-8 text-danger"> </i>

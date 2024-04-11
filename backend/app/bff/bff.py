@@ -221,9 +221,12 @@ async def table(request: Request, schema: TableSchema):
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
     form_data = await request.json()
+
     qp = request.query_params
     if form_data.get('prefix'):
-        qp = {i: v for i, v in qp.items() if v}
+        qp = clean_filter(form_data, form_data['prefix'])
+        if qp:
+            qp = {i: v for i, v in qp[0].items() if v}
     view = ModelView(request, params=qp, module=schema.module, model=schema.model, prefix=schema.prefix)
     return await view.get_table()
 

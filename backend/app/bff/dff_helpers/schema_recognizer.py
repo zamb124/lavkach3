@@ -486,7 +486,7 @@ class ModelView:
         """
             Метод отдает фильтр , те столбцы с типами для HTMX шаблонов
         """
-        line = self._get_line(schema=self.schemas.filter)
+        line = self._get_line(schema=self.schemas.filter, prefix=f'{self.prefix}--0--')
         self.filter = HtmxFilter(module=self.module, model=self.model, line=line, prefix=self.prefix)
         return render_block(
             environment=templates.env, template_name=f'views/filter.html',
@@ -581,7 +581,7 @@ class ModelView:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
-        line = self._get_line(schema=self.schemas.base)
+        line = self._get_line(schema=self.schemas.base, prefix=f'{self.prefix}--0--')
         lines, cursor = await self._get_data(
             schema=self.schemas.base,
             params=params,
@@ -623,7 +623,7 @@ class ModelView:
         model = kwargs.get('model') or self.model
         prefix = kwargs.get('prefix') or self.prefix
         cursor = 0
-        line = self._get_line(schema=schema, prefix=prefix)
+        line = self._get_line(schema=schema, prefix=f'{prefix}--0--')
         if not data:
             async with getattr(self.request.scope['env'], module) as a:
                 data = await a.list(params=params, model=model)
@@ -636,7 +636,7 @@ class ModelView:
         htmx_line_temp = line.model_dump()
         for row_number, row in enumerate(data):
             line_dict = deepcopy(htmx_line_temp)
-            line_dict['prefix'] = line_dict['prefix'] + f'--{row_number}--'
+            line_dict['prefix'] = prefix + f'--{row_number}--'
             for col in line_dict['fields']:
                 col['prefix'] = line_dict['prefix']
                 col['val'] = row[col['field_name']]
@@ -653,7 +653,6 @@ class ModelView:
                             schema=col['schema'], data=val_data, prefix=line_prefix,
                             module=col['module'], model=col['model'], join_related=False
                         )
-                        a=1
 
             lines.append(self._get_line(
                 schema=line_dict['schema'],
@@ -665,7 +664,7 @@ class ModelView:
                 display_title=row.get('title'),
                 company_id=row.get('company_id'),
                 fields=line_dict['fields'],
-                prefix=f"{line_dict['prefix']}--{row_number}",
+                prefix=f"{prefix}--{row_number}",
                 idx=row_number
             ))
         logging.info(f"_GET_DATA LINES SERIALIZE: {datetime.datetime.now() - time_start}")

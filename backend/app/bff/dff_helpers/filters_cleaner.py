@@ -7,10 +7,10 @@ def clean_filter(qp: QueryParams|dict, filter:str) -> list:
     """
     models = {}
     new_qp = {}
-    if qp.get('prefix'):
-        qp.pop('prefix')
-    if qp.get('search_terms'):
-        qp.pop('search_terms')
+    qp.pop('prefix', None)
+    qp.pop('search_terms', None)
+    qp.pop('model', None)
+    qp.pop('module', None)
     keys_to_pop = []
     for k, v in qp.items():
         if v == '':

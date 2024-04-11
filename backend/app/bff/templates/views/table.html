@@ -56,8 +56,7 @@
                     </thead>
                     <div class="rows">
                         {% for line in view.lines %}
-                            {% set line_id = "td-"~line.id %}
-                            <tr id="{{ line_id }}" class="mb-0 fw-semibold text-muted">
+                            <tr id="{{ line.prefix }}" class="mb-0 fw-semibold text-muted">
                                 <th scope="row">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="checkAll" value="">
@@ -75,7 +74,7 @@
                                             {{ line.as_button_update()|safe }}
                                         </li>
                                         <li class="list-inline-item" title="Remove">
-                                            {{ line.as_button_delete(line_id)|safe }}
+                                            {{ line.as_button_delete(line.prefix)|safe }}
                                         </li>
                                     </ul>
                                 </td>
@@ -87,11 +86,11 @@
                                         hx-ext="json-enc"
                                         hx-trigger="revealed" hx-swap="afterend" hx-select="#rows"
                                         hx-vals='{
-                                    "module": "{{ view.module }}",
-                                    "model": "{{ view.model }}",
-                                    "cursor": "{{ line.lsn }}",
-                                    "prefix": "{{ view.prefix }}"
-                                 }'
+                                        "module": "{{ view.module }}",
+                                        "model": "{{ view.model }}",
+                                        "{{ view.line.prefix }}cursor": "{{ line.lsn }}",
+                                        "prefix": "{{ view.prefix }}"
+                                     }'
                                 ></div>
                             {% endif %}
                         {% endfor %}
@@ -124,19 +123,18 @@
                     </thead>
                     <tbody id="newlink">
 
-                    {% for line in view.lines %}
-
-                        <tr>
-                            <th scope="row">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="checkAll" value="">
-                                </div>
-                            </th>
-                            {% for field in line.fields %}
-                                <td>{{ field.as_form()|safe }}</td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
+                        {% for line in view.lines %}
+                            <tr>
+                                <th scope="row">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="checkAll" value="">
+                                    </div>
+                                </th>
+                                {% for field in line.fields %}
+                                    <td>{{ field.as_form()|safe }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
                     </tbody>
                     <tbody>
                     <tr>
@@ -148,12 +146,11 @@
                                hx-swap="afterend"
                                hx-post="/base/line/add"
                                hx-vals='{
-                        "module": "{{ view.module }}",
-                        "model": "{{ view.model }}",
-                        "method": "view",
-                        "id": "{{ view.val.id }}",
-                        "prefix": "{{ view.prefix }}"
-                        }'
+                                "module": "{{ view.module }}",
+                                "model": "{{ view.model }}",
+                                "method": "create",
+                                "prefix": "{{ view.prefix }}"
+                                }'
                                class="btn btn-soft-secondary fw-medium">
                                 <i class="ri-add-fill me-1 align-bottom"></i> Add Item
                             </a>

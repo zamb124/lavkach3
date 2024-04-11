@@ -22,7 +22,7 @@ class OrderBaseScheme(BaseModel):
     order_type_id: UUID4 = Field(title='Order type')
     store_id: UUID4 = Field(title='Store', table=True, form=True)
     partner_id: Optional[UUID4] = Field(default=None, title='Partner', table=True, form=True)
-    lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True)
+    lot_id: Optional[UUID4] = Field(default=None, title='Lot')
     origin_type: Optional[str] = Field(default=None, title='Original Type', form=True)
     origin_number: Optional[str] = Field(default=None, title='Original', table=True, form=True)
     planned_datetime: Optional[datetime] = Field(default=None, title='Planned Date', table=True, form=True)
