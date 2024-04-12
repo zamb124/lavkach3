@@ -7,12 +7,10 @@ def clean_filter(qp: QueryParams|dict, filter:str) -> list:
     """
     models = {}
     new_qp = {}
-    qp.pop('prefix', None)
-    qp.pop('search_terms', None)
-    qp.pop('model', None)
-    qp.pop('module', None)
     keys_to_pop = []
     for k, v in qp.items():
+        if not k.startswith(filter):
+            continue
         if v == '':
             qp[k] = None
         model, line_number, field_name = k.split('--')[:3]
