@@ -37,7 +37,7 @@
 {% block as_view %}
 <style>
 td {
-    max-width: 10rem;
+    max-width: 8rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -57,9 +57,11 @@ td {
                             </div>
                         </th>
                         {% for field in view.line.fields %}
-                            <td>{{ field.as_table_header()|safe }}</td>
+                            <td data-bs-toggle="tooltip" data-bs-html="true" title="{{field.description or field.title}}">
+                                {{ field.as_table_header()|safe }}
+                            </td>
                         {% endfor %}
-                        <th>Active</th>
+                        <th style="min-width: 14rem">Active</th>
                     </tr>
                     </thead>
                     <div class="rows">

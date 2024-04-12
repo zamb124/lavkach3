@@ -100,6 +100,7 @@ class HtmxField(BaseModel):
     prefix: Optional[str] = None
     line: Optional['HtmxLine'] = None
     lines: Optional[list['HtmxLine']] = []
+    description: str
     schema: Any
 
     def render(self, block_name: str, type: str = None):
@@ -425,6 +426,7 @@ class ModelView:
             'enums': enums,
             'widget': fielinfo.json_schema_extra or {},
             'sort_idx': self.sort.get(field_name, 999),
+            'description': fielinfo.description or field_name,
             'prefix': prefix,
             'line': line,
             'schema': schema
