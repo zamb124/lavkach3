@@ -236,6 +236,7 @@ class ModalSchema(BaseModel):
     module: str
     model: str
     method: str
+    backdrop: Optional[str] = None
     id: Optional[UUID4] = None
     target_id: str = None
 
@@ -257,7 +258,7 @@ async def modal(request: Request, schema: ModalSchema):
         return model.send_message(f'{model.model.capitalize()}: is {schema.method.capitalize()}')
     else:
         model_method = getattr(model, f'get_{schema.method}')
-        return await model_method(model_id=schema.id, target_id=schema.target_id)
+        return await model_method(model_id=schema.id, target_id=schema.target_id, backdrop=schema.backdrop)
 
 
 @index_router.get("/base/dropdown-ids", response_class=HTMLResponse)

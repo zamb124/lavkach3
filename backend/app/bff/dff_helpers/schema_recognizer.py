@@ -26,6 +26,7 @@ from core.utils.timeit import timed
 class DeleteSchema(BaseModel):
     delete_id: uuid.UUID
 
+
 def _get_prefix():
     return f'{uuid.uuid4().hex[:10]}'
 
@@ -138,6 +139,7 @@ class HtmxField(BaseModel):
             block_name='as_view',
             view=self
         )
+
     def as_table_form(self):
         return render_block(
             environment=templates.env,
@@ -145,7 +147,6 @@ class HtmxField(BaseModel):
             block_name='as_form',
             view=self
         )
-
 
 
 class HtmxLine(BaseModel):
@@ -164,34 +165,45 @@ class HtmxLine(BaseModel):
     display_title: Optional[str] = None
     selected: Optional[bool] = False
 
-
-
-    def render(self, block_name:str, target_id:str = None):
+    def render(self, block_name: str, target_id: str = None, backdrop:str = None):
         try:
             rendered_html = render_block(
                 environment=templates.env,
                 template_name=f'views/line.html',
                 block_name=block_name,
                 line=self,
-                target_id=target_id
+                target_id=target_id,
+                backdrop=backdrop
             )
         except Exception as ex:
             raise
         return rendered_html
+    def get_backdrop_method(self, backdrop):
+        if backdrop:
+            return getattr(self, f'as_button_{backdrop}')()
+        return None
+    def as_button_view(self, backdrop: str = None):
+        backdrop = self.get_backdrop_method(backdrop)
+        return self.render('button_view', backdrop=backdrop)
 
-    def as_button_view(self):
-        return self.render('button_view')
-    def as_button_update(self):
-        return self.render('button_update')
-    def as_button_create(self):
-        return self.render('button_create')
-    def as_button_delete(self, target_id:str = None):
-        return self.render(block_name='button_delete', target_id=target_id)
+    def as_button_update(self, backdrop: str = None):
+        backdrop = self.get_backdrop_method(backdrop)
+        return self.render('button_update', backdrop=backdrop)
+
+    def as_button_create(self, backdrop: str = None):
+        backdrop = self.get_backdrop_method(backdrop)
+        return self.render('button_create', backdrop=backdrop)
+
+    def as_button_delete(self, target_id: str = None, backdrop: str = None):
+        backdrop = self.get_backdrop_method(backdrop)
+        return self.render(block_name='button_delete', target_id=target_id, backdrop=backdrop)
 
     def as_form(self):
         return self.render(block_name='as_form')
+
     def as_create(self):
         return self.render(block_name='as_create')
+
 
 class HtmxCreate(BaseModel):
     """"
@@ -204,12 +216,13 @@ class HtmxCreate(BaseModel):
     id: Optional[uuid.UUID] = None
 
 
-
 class HtmxFilter(HtmxCreate):
     """"
         Описание строчки
     """
     ...
+
+
 class HtmxUpdate(HtmxCreate):
     """"
         Редактирование
@@ -249,7 +262,6 @@ class HtmxTable(HtmxView):
 
     def as_table(self):
         return self.render()
-
 
 
 class HtmxConstructorSchemas:
@@ -380,42 +392,40 @@ class ModelView:
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_src_id'):
                 model_name = field_name.replace('_src_id', '')
                 res += 'model_id'
-                module =  get_module_by_model(model_name)
+                module = get_module_by_model(model_name)
                 model = model_name
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_dest_id'):
                 model_name = field_name.replace('_dest_id', '')
                 res += 'model_id'
-                module =  get_module_by_model(model_name)
+                module = get_module_by_model(model_name)
                 model = model_name
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id'):
                 model_name = field_name.replace('_id', '')
                 res += 'model_id'
-                module =  get_module_by_model(model_name)
+                module = get_module_by_model(model_name)
                 model = model_name
 
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id__in'):
                 model_name = field_name.replace('_id__in', '')
                 res += 'model_id'
-                module =  get_module_by_model(model_name)
+                module = get_module_by_model(model_name)
                 model = model_name or model
             elif issubclass(class_types[0], datetime.datetime):
                 res += 'datetime'
             elif issubclass(class_types[0], BaseModel) and field_name.endswith('_list_rel'):
                 model_name = field_name.replace('_list_rel', '')
                 res += 'model_list_rel'
-                module =  get_module_by_model(model_name)
+                module = get_module_by_model(model_name)
                 model = model_name
                 schema = class_types[0]
                 line = self._get_line(schema=schema, module=module, model=model, prefix=prefix)
             elif issubclass(class_types[0], BaseModel) and field_name.endswith('_rel'):
                 model_name = field_name.replace('_rel', '')
                 res += 'model_rel'
-                module =  get_module_by_model(model_name)
+                module = get_module_by_model(model_name)
                 model = model_name
             else:
                 res += 'str'
-        if not module:
-            a=1
         return HtmxField(**{
             'field_name': field_name,
             'type': res,
@@ -441,14 +451,16 @@ class ModelView:
         fields = []
         exclude = kwargs.get('exclude') or self.exclude
         exclude_add = []
-        if bool(schema.model_fields.get('lsn')):
-            for f, v in schema.model_fields.items():
-                if v.json_schema_extra:
-                    if not v.json_schema_extra.get('table'):
+        type = kwargs.get('type')
+        if type == 'table':
+            if bool(schema.model_fields.get('lsn')):  # Осначает, что это вьюха
+                for f, v in schema.model_fields.items():
+                    if v.json_schema_extra:
+                        if not v.json_schema_extra.get('table'):
+                            exclude_add.append(f)
+                    else:
                         exclude_add.append(f)
-                else:
-                    exclude_add.append(f)
-            exclude = set(exclude_add) | set(exclude)
+                exclude = set(exclude_add) | set(exclude)
         for k, v in schema.model_fields.items():
             if k in exclude:
                 continue
@@ -513,6 +525,7 @@ class ModelView:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
+        kwargs.update({'type': 'update'})
         params = {'id__in': model_id}
         lines, _ = await self._get_data(
             params=params,
@@ -520,17 +533,19 @@ class ModelView:
             join_related=False,
         )
         assert len(lines) == 1 or 0
-        self.update = HtmxUpdate(model=self.model, module=self.module, line=lines[0], prefix=self.prefix, id=lines[0].id)
+        self.update = HtmxUpdate(model=self.model, module=self.module, line=lines[0], prefix=self.prefix,
+                                 id=lines[0].id)
         return render_block(
             environment=templates.env,
             template_name=f'views/modal.html',
-            block_name='update', view=self.update
+            block_name='update', view=self.update, backdrop=kwargs.get('backdrop')
         )
 
     async def get_view(self, model_id: uuid.UUID, **kwargs) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
+        kwargs.update({'type': 'view'})
         params = {'id__in': model_id}
         lines, _ = await self._get_data(
             params=params,
@@ -549,10 +564,10 @@ class ModelView:
             environment=templates.env,
             template_name=f'views/modal.html',
             block_name='view',
-            view=self.view
+            view=self.view, backdrop=kwargs.get('backdrop')
         )
 
-    async def get_delete(self, model_id: uuid.UUID, target_id: str = None) -> str:
+    async def get_delete(self, model_id: uuid.UUID, target_id: str = None, **kwargs) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
@@ -560,7 +575,7 @@ class ModelView:
         lines, _ = await self._get_data(
             params=params,
             schema=self.schemas.base,
-            join_related=True,
+            join_related=True, backdrop=kwargs.get('backdrop')
         )
         assert len(lines) == 1 or 0
         self.view = HtmxView(
@@ -579,10 +594,12 @@ class ModelView:
         )
 
     @timed
-    async def get_table(self, params: QueryParams | dict = None, join_related: bool = True, join_field: list = None, widget:str = 'as_view') -> str:
+    async def get_table(self, params: QueryParams | dict = None, join_related: bool = True, join_field: list = None,
+                        widget: str = 'as_view', **kwargs) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
+        kwargs.update({'type': 'view'})
         line = self._get_line(schema=self.schemas.base, prefix=f'{self.prefix}--0--')
         lines, cursor = await self._get_data(
             schema=self.schemas.base,
@@ -676,7 +693,7 @@ class ModelView:
             for line in lines:
                 """Достаем все релейтед обьекты у которых модуль отличается"""
                 for field in line.fields:
-                    if field.module != module or self.model == field.field_name.replace('_id',''):
+                    if field.module != module or self.model == field.field_name.replace('_id', ''):
                         # if field.widget.get('table'):  # TODO: может все надо а не ток table
                         if not self.join_fields:
                             missing_fields[field.field_name].append((field.val, field))
@@ -694,7 +711,7 @@ class ModelView:
                 if miss_value_str:
                     qp = {'id__in': miss_value_str}
                     _corutine_data = a.list(params=qp, model=_fields[0].model)
-                    #_join_lines = {i['id']: i for i in _data['data']}
+                    # _join_lines = {i['id']: i for i in _data['data']}
                 to_serialize.append((_vals, _fields, _corutine_data))
             logging.info(f"_GET_DATA GET CORUTINE CREATED: {datetime.datetime.now() - time_start}")
             for _vals, _fields, _corutine_data in to_serialize:
@@ -781,6 +798,7 @@ class ModelView:
             block_name='widget',
             model=self
         )
+
     def as_filter_widget(self):
         return render_block(
             environment=templates.env,
@@ -796,6 +814,7 @@ class ModelView:
             block_name='widget',
             model=self
         )
+
     def as_button_create(self):
         line = self._get_line(schema=self.schemas.create)
         try:
@@ -809,7 +828,7 @@ class ModelView:
             raise
         return rendered_html
 
-    def send_message(self, message:str):
+    def send_message(self, message: str):
         return render_block(
             environment=templates.env,
             template_name=f'components/message.html',

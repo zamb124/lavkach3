@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 import httpx
@@ -5,10 +6,6 @@ import redis.exceptions
 from fastapi import HTTPException
 from starlette.datastructures import QueryParams
 from starlette.requests import Request, HTTPConnection
-from fastapi.exceptions import RequestValidationError
-from core.config import config
-
-import logging
 
 from core.helpers.cache import Cache
 from core.utils.timeit import timed
@@ -105,10 +102,16 @@ class BaseAdapter:
                     ids = [id__in.__str__(),]
                 else:
                     ids = id__in.split(',')
+                cached_courutins = []
                 for id in ids:
+                    cached_courutins.append(Cache.get_model(self.module, model or self.model, id))
+                for cou in cached_courutins:
                     try:
-                        cached = await Cache.get_model(self.module, model or self.model, id)
+                        cached = await cou
                     except redis.exceptions.ConnectionError as ex:
+                        logger.error(f'Cache error with {model or self.model}:{id}')
+                        cached = False
+                    except redis.exceptions.TimeoutError as ex:
                         logger.error(f'Cache error with {model or self.model}:{id}')
                         cached = False
                     if cached:

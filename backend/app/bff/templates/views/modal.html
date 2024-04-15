@@ -6,17 +6,20 @@
                     <div class="col-6">
                         <h5 class="modal-title">Edit {{ view.model|capitalize }}
                             <span>
-                            {{ view.line.as_button_view()|safe }}
+                            {{ view.line.as_button_view(backdrop='update')|safe }}
                         </span>
                             <span>
-                            {{ view.line.as_button_create()|safe }}
+                            {{ view.line.as_button_create(backdrop='update')|safe }}
                         </span>
                             <span>
-                            {{ view.line.as_button_delete()|safe }}
+                            {{ view.line.as_button_delete(backdrop='update')|safe }}
                         </span>
                         </h5>
                     </div>
                     <div class="bx-pull-right">
+                        {% if backdrop %}
+                            {{ backdrop()|safe }}
+                        {% endif %}
                         <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                 </div>
@@ -48,7 +51,9 @@
                                     <div class="row">
                                 {% endif %}
                             <div class="col">
-                                <p style="margin-bottom: 0; margin-top: 1rem" class="sort text-uppercase text-muted text-start " for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                                <p style="margin-bottom: 0; margin-top: 1rem"
+                                   class="sort text-uppercase text-muted text-start "
+                                   for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
                                 {{ field.as_form()|safe }}
 
                             </div>
@@ -121,7 +126,9 @@
                                     <div class="row">
                                 {% endif %}
                             <div class="col">
-                                <p style="margin-bottom: 0; margin-top: 1rem" class="sort text-uppercase text-muted text-start " for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                                <p style="margin-bottom: 0; margin-top: 1rem"
+                                   class="sort text-uppercase text-muted text-start "
+                                   for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
                                 {{ field.as_form()|safe }}
 
                             </div>
@@ -150,21 +157,21 @@
     <div class="modal-content modal-xl">
         <div class="modal-header">
             <div class="col-6">
-                        <h5 class="modal-title">View {{ view.model|capitalize }}
-                            <span>
-                            {{ view.line.as_button_update()|safe }}
+                <h5 class="modal-title">View {{ view.model|capitalize }}
+                    <span>
+                            {{ view.line.as_button_update(backdrop='view')|safe }}
                         </span>
-                            <span>
-                            {{ view.line.as_button_create()|safe }}
+                    <span>
+                            {{ view.line.as_button_create(backdrop='view')|safe }}
                         </span>
-                            <span>
-                            {{ view.line.as_button_delete()|safe }}
+                    <span>
+                            {{ view.line.as_button_delete(backdrop='view')|safe }}
                         </span>
-                        </h5>
-                    </div>
-                    <div class="bx-pull-right">
-                        <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                </h5>
+            </div>
+            <div class="bx-pull-right">
+                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
         </div>
         <div class="modal-body text-center p-5">
             <lord-icon
@@ -181,7 +188,8 @@
                         <div class="row" style="margin-bottom: 1rem">
                     {% endif %}
                 <div class="col text-start">
-                    <p style="margin-bottom: 0; margin-top: 1rem" class="sort text-uppercase text-muted text-start " for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                    <p style="margin-bottom: 0; margin-top: 1rem" class="sort text-uppercase text-muted text-start "
+                       for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
                     {{ field.as_view()|safe }}
 
                 </div>
@@ -190,6 +198,7 @@
                 {% endif %}
                 {% endfor %}
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
