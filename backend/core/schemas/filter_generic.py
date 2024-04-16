@@ -17,7 +17,7 @@ class BaseFilter(Filter):
         Можно переопределить дальше эту схему уже в BFF
     """
     search: Optional[str] = Field(default='', filter=True, title='Search')
-    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
+    lsn__gt: Optional[int] = Field(alias="cursor", title='Lsn', default=0)
     id__in: Optional[List[UUID4]] = Field(default=None, title='ID')
     created_at__gte: Optional[datetime] = Field(default=None, filter=True, title='Created at from')
     created_at__lt: Optional[datetime] = Field(default=None, filter=True, title='Created at to')

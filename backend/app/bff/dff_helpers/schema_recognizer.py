@@ -453,14 +453,13 @@ class ModelView:
         exclude_add = []
         type = kwargs.get('type')
         if type == 'table':
-            if bool(schema.model_fields.get('lsn')):  # Осначает, что это вьюха
-                for f, v in schema.model_fields.items():
-                    if v.json_schema_extra:
-                        if not v.json_schema_extra.get('table'):
-                            exclude_add.append(f)
-                    else:
+            for f, v in schema.model_fields.items():
+                if v.json_schema_extra:
+                    if not v.json_schema_extra.get('table'):
                         exclude_add.append(f)
-                exclude = set(exclude_add) | set(exclude)
+                else:
+                    exclude_add.append(f)
+            exclude = set(exclude_add) | set(exclude)
         for k, v in schema.model_fields.items():
             if k in exclude:
                 continue
@@ -481,7 +480,7 @@ class ModelView:
         company_id = kwargs.get('company_id')
         fields = kwargs.get('fields')
         if not fields:
-            fields = self._get_schema_fields(schema=schema, **kwargs)
+            fields = self._get_schema_fields(schema=schema, prefix=prefix, exclude=kwargs.get('exclude'), type=kwargs.get('type'))
         return HtmxLine(
             schema=schema,
             module=module,
@@ -527,7 +526,7 @@ class ModelView:
         """
         kwargs.update({'type': 'update'})
         params = {'id__in': model_id}
-        lines, _ = await self._get_data(
+        line, lines, _ = await self._get_data(
             params=params,
             schema=self.schemas.update,
             join_related=False,
@@ -547,7 +546,7 @@ class ModelView:
         """
         kwargs.update({'type': 'view'})
         params = {'id__in': model_id}
-        lines, _ = await self._get_data(
+        line, lines, _ = await self._get_data(
             params=params,
             schema=self.schemas.base,
             join_related=True,
@@ -572,7 +571,7 @@ class ModelView:
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
         params = {'id__in': model_id}
-        lines, _ = await self._get_data(
+        line, lines, _ = await self._get_data(
             params=params,
             schema=self.schemas.base,
             join_related=True, backdrop=kwargs.get('backdrop')
@@ -599,13 +598,13 @@ class ModelView:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
-        kwargs.update({'type': 'view'})
-        line = self._get_line(schema=self.schemas.base, prefix=f'{self.prefix}--0--')
-        lines, cursor = await self._get_data(
+        #line = self._get_line(schema=self.schemas.base, prefix=f'{self.prefix}--0--', type='table')
+        line, lines, cursor = await self._get_data(
             schema=self.schemas.base,
             params=params,
             join_related=join_related,
-            join_field=join_field
+            join_field=join_field,
+            type='table'
         )
         self.table = HtmxTable(
             prefix=self.prefix, module=self.module, model=self.model, lines=lines,
@@ -641,8 +640,9 @@ class ModelView:
         module = kwargs.get('module') or self.module
         model = kwargs.get('model') or self.model
         prefix = kwargs.get('prefix') or self.prefix
+        type = kwargs.get('type')
         cursor = 0
-        line = self._get_line(schema=schema, prefix=f'{prefix}--0--')
+        line = self._get_line(schema=schema, prefix=f'{prefix}--0--', type=type)
         if not data:
             async with getattr(self.request.scope['env'], module) as a:
                 data = await a.list(params=params, model=model)
@@ -650,7 +650,7 @@ class ModelView:
                 data = data['data']
             logging.info(f"_GET_DATA END REQUEST: {datetime.datetime.now() - time_start}")
         if not data:
-            return [], 0
+            return line, [], 0
         lines = []
         htmx_line_temp = line.model_dump()
         for row_number, row in enumerate(data):
@@ -668,7 +668,7 @@ class ModelView:
                 elif col['type'].endswith('_list_rel'):
                     if val_data := col['val']:
                         line_prefix = f'{line_dict["prefix"]}{col["field_name"]}'
-                        col['lines'], _ = await self._get_data(
+                        l, col['lines'], _ = await self._get_data(
                             schema=col['schema'], data=val_data, prefix=line_prefix,
                             module=col['module'], model=col['model'], join_related=False
                         )
@@ -757,7 +757,7 @@ class ModelView:
                         _header_col.field_name = new_field_name
                         _header_col.type = _header_col.type.replace('_id', '_rel')
                         _header_col.type = _header_col.type.replace('_ids', '_list_rel')
-        return lines, cursor
+        return line, lines, cursor
 
     def get_complete(
             self,

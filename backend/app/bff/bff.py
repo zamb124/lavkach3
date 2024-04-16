@@ -8,7 +8,7 @@ from pydantic import BaseModel, field_validator, UUID4, model_validator
 from starlette.datastructures import QueryParams
 from starlette.responses import Response, JSONResponse
 
-from app.bff.dff_helpers.filters_cleaner import clean_filter
+from app.bff.dff_helpers.uttils import clean_filter
 from app.bff.dff_helpers.schema_recognizer import ModelView
 from app.bff.template_spec import templates
 from core.utils.timeit import timed
