@@ -103,21 +103,24 @@ class BaseAdapter:
                 else:
                     ids = id__in.split(',')
                 cached_courutins = []
-                for id in ids:
-                    cached_courutins.append(Cache.get_model(self.module, model or self.model, id))
+                for id in set(ids):
+                    cached_courutins.append({
+                        'promise': Cache.get_model(self.module, model or self.model, id),
+                        'id': id
+                    })
                 for cou in cached_courutins:
                     try:
-                        cached = await cou
+                        cached = await cou['promise']
                     except redis.exceptions.ConnectionError as ex:
-                        logger.error(f'Cache error with {model or self.model}:{id}')
+                        logger.error(f'Cache error with {model or self.model}:{cou["id"]}')
                         cached = False
                     except redis.exceptions.TimeoutError as ex:
-                        logger.error(f'Cache error with {model or self.model}:{id}')
+                        logger.error(f'Cache error with {model or self.model}:{cou["id"]}')
                         cached = False
                     if cached:
                         cached_data.append(cached)
                     else:
-                        missed.append(id)
+                        missed.append(cou['id'])
         return is_cached, cached_data, missed
     @timed
     async def list(self, model: str = None, params=None, **kwargs):
