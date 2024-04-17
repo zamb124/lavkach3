@@ -10,7 +10,7 @@ from core.permissions.permissions import permit
 
 class CompanyService(BaseService[Company, CompanyCreateScheme, CompanyUpdateScheme, CompanyFilter]):
     def __init__(self, request=None, db_session=None):
-        super(CompanyService, self).__init__(request, Company, db_session)
+        super(CompanyService, self).__init__(request, Company, CompanyCreateScheme, CompanyUpdateScheme, db_session)
 
     @permit('company_create', 'company_edit')
     async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:

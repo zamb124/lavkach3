@@ -183,7 +183,7 @@ class Move(Base, AllMixin):
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     quantity: Mapped[float]     # Если перемещение кпаковки, то всегда 0
     uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=False) # Если перемещение упаковкой то None
-    status: Mapped[MoveStatus]
+    status: Mapped[MoveStatus] = mapped_column(default=MoveStatus.DRAFT)
 
 
 class MoveLogType(str, Enum):

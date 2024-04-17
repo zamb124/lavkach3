@@ -35,14 +35,6 @@
 {% endblock %}
 
 {% block as_view %}
-<style>
-td {
-    max-width: 8rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    }
-</style>
     <div class="card">
         <div class="card-body">
             <div class="table-responsive " style="width: auto; min-height: 400px" data-show-columns="true">
@@ -132,7 +124,6 @@ td {
                     </tr>
                     </thead>
                     <tbody id="newlink">
-
                         {% for line in view.lines %}
                             <tr>
                                 <th scope="row">
@@ -152,14 +143,14 @@ td {
                             <a href="#"
                                id="add-item"
                                hx-ext="json-enc"
-                               hx-target="closest tr"
-                               hx-swap="afterend"
-                               hx-post="/base/line/add"
+                               hx-target="#newlink"
+                               hx-swap="beforeend"
+                               hx-params="module,model,prefix"
+                               hx-post="/base/table/line"
                                hx-vals='{
                                 "module": "{{ view.module }}",
                                 "model": "{{ view.model }}",
-                                "method": "create",
-                                "prefix": "{{ view.prefix }}"
+                                "prefix": "{{ view.prefix }}{{ view.field_name }}"
                                 }'
                                class="btn btn-soft-secondary fw-medium">
                                 <i class="ri-add-fill me-1 align-bottom"></i> Add Item

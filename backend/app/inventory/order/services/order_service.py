@@ -13,7 +13,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, OrderFilter]):
     def __init__(self, request, db_session: AsyncSession = None):
-        super(OrderService, self).__init__(request, Order, db_session)
+        super(OrderService, self).__init__(request, Order, OrderCreateScheme, OrderUpdateScheme, db_session)
 
     @permit('order_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

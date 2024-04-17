@@ -3,7 +3,7 @@
 {% endblock %}
 {% block button_view %}
     <script>
-    hideModals()
+        hideModals()
     </script>
     <a href="#"
        hx-include="none"
@@ -24,31 +24,31 @@
 {% endblock %}
 
 {% block button_update %}
-        <script>
-    hideModals()
+    <script>
+        hideModals()
     </script>
     <button
-       href="#"
-       hx-include="none"
-       hx-trigger="click"
-       hx-target="#modal"
-       hx-ext="json-enc"
-       hx-post="/base/modal"
-       hx-vars='{
+            href="#"
+            hx-include="none"
+            hx-trigger="click"
+            hx-target="#modal"
+            hx-ext="json-enc"
+            hx-post="/base/modal"
+            hx-vars='{
 "module": "{{ line.module }}",
 "model": "{{ line.model }}",
 "method": "update",
 "id": "{{ line.id }}",
 "prefix": "{{ line.prefix }}"
 }'
-       class="btn btn-soft-primary">
+            class="btn btn-soft-primary">
         <i class="ri-file-edit-fill h4 "></i>
     </button>
 {% endblock %}
 
 {% block button_create %}
-        <script>
-    hideModals()
+    <script>
+        hideModals()
     </script>
     <a href="#"
        hx-include="none"
@@ -69,8 +69,8 @@
 {% endblock %}
 
 {% block button_delete %}
-        <script>
-    hideModals()
+    <script>
+        hideModals()
     </script>
     <a href="#"
        hx-include="none"
@@ -89,5 +89,18 @@
        class="btn btn-soft-danger">
         <i class="ri-file-reduce-fill h4"></i>
     </a>
+{% endblock %}
+
+{% block as_form %}
+    <tr>
+        <th scope="row">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="checkAll" value="">
+            </div>
+        </th>
+        {% for field in line.fields %}
+            <td>{{ field.as_form()|safe }}</td>
+        {% endfor %}
+    </tr>
 {% endblock %}
 

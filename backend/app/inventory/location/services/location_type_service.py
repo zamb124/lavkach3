@@ -11,7 +11,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 class LocationTypeService(BaseService[LocationType, LocationTypeCreateScheme, LocationTypeUpdateScheme, LocationTypeFilter]):
     def __init__(self, request, db_session: AsyncSession = None):
-        super(LocationTypeService, self).__init__(request, LocationType, db_session)
+        super(LocationTypeService, self).__init__(request, LocationType,LocationTypeCreateScheme, LocationTypeUpdateScheme, db_session)
 
     @permit('location_type_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

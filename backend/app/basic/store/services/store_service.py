@@ -12,7 +12,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 class StoreService(BaseService[Store, StoreCreateScheme, StoreUpdateScheme, StoreFilter]):
     def __init__(self, request, db_session: AsyncSession = None):
-        super(StoreService, self).__init__(request, Store, db_session)
+        super(StoreService, self).__init__(request, Store,StoreCreateScheme, StoreUpdateScheme,db_session)
 
     @permit('store_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

@@ -1,3 +1,4 @@
+import uuid
 from typing import Annotated, Optional, Any
 
 from fastapi import APIRouter, Depends
@@ -73,31 +74,6 @@ async def refresh_token(request: Request, refresh_schema: RefreshTokenSchema):
         return await a.refresh_token(refresh_schema)
 
 
-class SelectSchema(BaseModel):
-    module: str
-    model: str
-    prefix: str
-    name: str
-    value: str = None
-    required: bool = False
-    title: str = None
-    search_terms: Any = None
-
-    @field_validator('value')
-    @classmethod
-    def check_none(cls, v: Any):
-        if v == 'None':
-            return None
-        return v
-
-    @field_validator('required', 'value')
-    @classmethod
-    def check_none(cls, v: Any):
-        if v == 'None':
-            return None
-        return v
-
-
 
 class FilterSchema(BaseModel):
     module: str
@@ -114,35 +90,6 @@ async def filter(request: Request, filschema: FilterSchema):
     return htmx_orm.get_filter()
 
 
-class MultiSelectSchema(BaseModel):
-    module: str
-    model: str
-    prefix: str
-    field_name: str
-    select_in: str | None
-    values: list[UUID4] = []
-    search_terms: str
-
-    @classmethod
-    def parse_values(cls, v: str):
-        try:
-            return list(set(eval(v)))
-        except Exception as ex:
-            pass
-    @model_validator(mode='before')
-    @classmethod
-    def check_card_number_omitted(cls, data: Any) -> Any:
-        if isinstance(data, dict):
-            prefix = data['prefix']
-            field_name = data['field_name']
-            values = cls.parse_values(data['values'])
-            select_in = data.get('select_in')
-            if select_in:
-                values = data[f'{prefix}{field_name}']
-            data['select_in'] = select_in
-            data['values'] = values
-            data['search_terms'] = max(data['search_terms']) if data.get('search_terms') else ''
-        return data
 
 class SearchSchema(BaseModel):
     module: str
@@ -189,32 +136,12 @@ async def get_by_ids(request: Request, schema: SearchSchema = Depends(SearchIds)
     ]
 
 
-class BadgesSchema(BaseModel):
-    model: str
-    module: str
-    value: str | dict = None
-    prefix: str
-
-    @field_validator('value')
-    @classmethod
-    def check_none(cls, v: Any):
-        if v:
-            try:
-                return eval(v)
-            except Exception as ex:
-                pass
-        return None
-
-
-
-
 class TableSchema(BaseModel):
     module: str
     model: str
     cursor: Optional[int] = 0
     prefix: str
 
-@timed
 @index_router.post("/base/table", response_class=HTMLResponse)
 async def table(request: Request, schema: TableSchema):
     """
@@ -229,6 +156,26 @@ async def table(request: Request, schema: TableSchema):
             qp = {i: v for i, v in qp[0].items() if v}
     view = ModelView(request, params=qp, module=schema.module, model=schema.model, prefix=schema.prefix)
     return await view.get_table()
+
+class LineSchema(BaseModel):
+    module: str
+    model: str
+    prefix: str
+
+@index_router.post("/base/table/line", response_class=HTMLResponse)
+async def line(request: Request, schema: TableSchema):
+    """
+     Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
+    """
+    form_data = await request.json()
+    new_id = uuid.uuid4()
+    qp = request.query_params
+    if form_data.get('prefix'):
+        qp = clean_filter(form_data, form_data['prefix'])
+        if qp:
+            qp = {i: v for i, v in qp[0].items() if v}
+    view = ModelView(request, params=qp, module=schema.module, model=schema.model, prefix=f'{schema.prefix}--{new_id}--')
+    return await view.get_create_line()
 
 
 class ModalSchema(BaseModel):

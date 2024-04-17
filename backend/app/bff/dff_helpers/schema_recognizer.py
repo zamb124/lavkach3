@@ -506,6 +506,17 @@ class ModelView:
             block_name='filter', filter=self.filter
         )
 
+    async def get_create_line(self, model_id: uuid.UUID = None, **kwargs) -> str:
+        """
+            Метод отдает создать схему , те столбцы с типами для HTMX шаблонов
+        """
+        prefix = self.prefix
+        line = self._get_line(schema=self.schemas.create, model_id=model_id, prefix=prefix)
+        return render_block(
+            environment=templates.env,
+            template_name=f'views/line.html',
+            block_name='as_form', line=line
+        )
     @timed
     async def get_create(self, model_id: uuid.UUID = None, **kwargs) -> str:
         """

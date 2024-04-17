@@ -23,7 +23,7 @@ from core.utils.token_helper import TokenHelper
 
 class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilter]):
     def __init__(self, request=None, db_session=None):
-        super(UserService, self).__init__(request, User, db_session)
+        super(UserService, self).__init__(request, User,UserCreateScheme, UserUpdateScheme, db_session)
 
     @permit('user_get')
     async def get(self, id: Any) -> Row | RowMapping:

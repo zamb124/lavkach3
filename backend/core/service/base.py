@@ -64,12 +64,22 @@ def model_to_entity(schema):
     return schema
 
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterSchemaType]):
-    def __init__(self, request=None, model: Type[ModelType] = None, db_session: AsyncSession = session):
+    def __init__(
+            self,
+            request,
+            model: Type[ModelType],
+            create_schema: Type[CreateSchemaType],
+            update_schema: Type[UpdateSchemaType],
+            db_session: AsyncSession = session,
+
+    ):
         if isinstance(request, CurrentUser):
             self.user = CurrentUser
         elif isinstance(request, Request):
             self.user = request.user
         self.model = model
+        self.create_schema = create_schema
+        self.update_schema = update_schema
         self.request = request
         self.session = db_session if db_session else session
 
@@ -133,7 +143,14 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 if is_pydantic(obj_value):
                     for _obj in obj_value:
                         rel_service = import_service(_obj.Config.service)
-                        rel_entity = await rel_service(self.request).update(id=_obj.id, obj=_obj, commit=False)
+                        rel = rel_service(self.request)
+                        if _obj.id:
+                            rel_entity = await rel.update(id=_obj.id, obj=_obj, commit=False)
+                        else:
+                            _dump = _obj.model_dump()
+                            _dump[f'{self.model.__tablename__}_id'] = id
+                            create_obj = rel.create_schema(**_dump)
+                            rel_entity = await rel.create(obj=create_obj, commit=False)
                         self.session.add(rel_entity)
                 else:
                     to_set.append((key,value))

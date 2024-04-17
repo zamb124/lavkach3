@@ -11,7 +11,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, QuantFilter]):
     def __init__(self, request, db_session: AsyncSession = None):
-        super(QuantService, self).__init__(request, Quant, db_session)
+        super(QuantService, self).__init__(request, Quant, QuantCreateScheme, QuantUpdateScheme, db_session)
 
     @permit('quant_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

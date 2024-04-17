@@ -11,7 +11,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 class LotService(BaseService[Lot, LotCreateScheme, LotUpdateScheme, LotFilter]):
     def __init__(self, request, db_session: AsyncSession = None):
-        super(LotService, self).__init__(request, Lot, db_session)
+        super(LotService, self).__init__(request, Lot,LotCreateScheme, LotUpdateScheme, db_session)
 
     @permit('lot_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

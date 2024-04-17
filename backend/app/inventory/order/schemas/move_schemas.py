@@ -31,7 +31,7 @@ class MoveBaseScheme(BaseModel):
         service = 'app.inventory.order.services.MoveService'
 
 class MoveUpdateScheme(MoveBaseScheme):
-    id: UUID4
+    id: Optional[UUID4] = None
 
 
 class MoveCreateScheme(MoveBaseScheme):

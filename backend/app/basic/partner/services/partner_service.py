@@ -12,7 +12,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 class PartnerService(BaseService[Partner, PartnerCreateScheme, PartnerUpdateScheme, PartnerFilter]):
     def __init__(self, request=None, db_session=None):
-        super(PartnerService, self).__init__(request, Partner, db_session)
+        super(PartnerService, self).__init__(request, Partner, PartnerCreateScheme, PartnerUpdateScheme, db_session)
 
     @permit('partner_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

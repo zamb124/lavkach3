@@ -14,22 +14,19 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilter]):
     def __init__(self, request, db_session: AsyncSession = None):
-        super(MoveService, self).__init__(request, Move, db_session)
+        super(MoveService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme, db_session)
 
     @permit('move_edit')
     async def update(self, id: Any, obj: UpdateSchemaType, commit:bool =True) -> Optional[ModelType]:
-        return await super(MoveService, self).update(id, obj)
+        return await super(MoveService, self).update(id, obj, commit)
 
     @permit('move_list')
     async def list(self, _filter: FilterSchemaType, size: int):
         return await super(MoveService, self).list(_filter, size)
 
     @permit('move_create')
-    async def create(self, obj: CreateSchemaType) -> ModelType:
-        obj.number = datetime.datetime.now(datetime.UTC).strftime('%y%m%d%H%m%S')
-        obj.created_by = self.user.user_id
-        obj.edited_by = self.user.user_id
-        return await super(MoveService, self).create(obj)
+    async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
+        return await super(MoveService, self).create(obj, commit)
 
     @permit('move_delete')
     async def delete(self, id: Any) -> None:
