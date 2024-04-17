@@ -420,7 +420,8 @@ class ModelView:
                 module = get_module_by_model(model_name)
                 model = model_name
                 schema = class_types[0]
-                line = self._get_line(schema=schema, module=module, model=model, prefix=prefix)
+                submodel = ModelView(request=self.request,module=module, model=model)
+                line = submodel._get_line(schema=schema, module=module, model=model, prefix=prefix)
             elif issubclass(class_types[0], BaseModel) and field_name.endswith('_rel'):
                 model_name = field_name.replace('_rel', '')
                 res += 'model_rel'
@@ -527,7 +528,6 @@ class ModelView:
         prefix = self.prefix
         line = self._get_line(schema=self.schemas.create, model_id=model_id, prefix=f'{self.prefix}--0--')
         self.create = HtmxCreate(line=line, id=model_id, prefix=prefix, module=self.module, model=self.model)
-        self._sort_columns()
         return render_block(
             environment=templates.env,
             template_name=f'views/modal.html',
