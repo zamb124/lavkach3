@@ -59,6 +59,21 @@ services:
       - db
       - redis
 
+  terminal-app:
+    build:
+      context: .
+    env_file:
+      - .env-docker
+    container_name: terminal_app
+    command: [ "/fastapi/docker/terminal_app.sh" ]
+    ports:
+      - 9994:8004
+    depends_on:
+      - basic-app
+      - inventory-app
+      - db
+      - redis
+
   celery:
     build:
       context: .

@@ -1,0 +1,18 @@
+<div  id="main-terminal-full">
+    <div class="card-orders-list"  >
+        <h6 class="text-muted text-uppercase fw-semibold mb-3">Information</h6>
+        <p class="text-muted mb-4">some description</p>
+        <div class="table-responsive table-card">
+
+{#            <div hx-ext="ws"  ws-connect="/terminal/orders_ws">#}
+{# <div id="orders_content"></div>#}
+{#            </div>#}
+{#            <div hx-ws="connect:/terminal/orders_ws"></div>#}
+
+            <div hx-sse="connect:/terminal/events">
+                <div  hx-trigger="sse:orders_updated" hx-get="/terminal/orders"></div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -70,8 +70,10 @@ typing_extensions==4.8.0
 tzdata==2024.1
 ujson==5.8.0
 urllib3==2.0.7
-uvicorn==0.23.2
+uvicorn[standard]==0.23.2
 vine==5.1.0
 wcwidth==0.2.13
 wheel==0.38.4
 yarl==1.9.4
+sse_starlette==2.0.0
+

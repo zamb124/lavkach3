@@ -86,6 +86,7 @@
 {% block javascript %}
     <!-- JAVASCRIPT -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/ws.js"></script>
 {#    <script>#}
 {#        const links = document.querySelectorAll('a[class="nav-link"]')#}
 {##}
@@ -150,17 +151,18 @@
         htmx.on("htmx:confirm", (e) => {
             let authToken = getCookieValue('token');
             // if there is no auth token
-            if (authToken == null && !window.location.pathname.includes('login')) {
-                e.preventDefault()
-                window.history.pushState('Login', 'Login', '/auth/login');
-                console.log('redirect login')
-                htmx.ajax('GET', '/auth/login', {
-                    target: '#htmx_content', headers: {
-                        'HX-Replace-Url': 'true'
-                    }
-                })
-                //console.log(authToken)
-            }
+            {##}
+            {#if (authToken == null && !window.location.pathname.includes('login')) {#}
+            {#    e.preventDefault()#}
+            {#    window.history.pushState('Login', 'Login', '/auth/login');#}
+            {#    console.log('redirect login')#}
+            {#    htmx.ajax('GET', '/auth/login', {#}
+            {#        target: '#htmx_content', headers: {#}
+            {#            'HX-Replace-Url': 'true'#}
+            {#        }#}
+            {#    })#}
+            {#    //console.log(authToken)#}
+            {#  #}
         });
 
         async function refreshToken(){
