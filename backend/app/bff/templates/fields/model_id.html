@@ -120,7 +120,6 @@
 {% block as_view %}
     {% if field.val %}
         <div id="{{ field.prefix~field.field_name }}"
-             hx-include="none"
              hx-trigger="load"
              hx-ext="json-enc"
              hx-post="/base/model_id"

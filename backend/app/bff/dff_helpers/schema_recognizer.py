@@ -426,8 +426,6 @@ class ModelView:
                 model = model_name
             else:
                 res += 'str'
-        if not  module:
-            a=1
         return HtmxField(**{
             'field_name': field_name,
             'type': res,
@@ -468,7 +466,7 @@ class ModelView:
             fields.append(
                 self._get_field(field_name=k, schema=schema, **kwargs)
             )
-        return fields
+        return sorted(fields, key=lambda x: x.sort_idx)
 
     @timed
     def _get_line(self, schema: BaseModel, **kwargs) -> HtmxLine:
@@ -710,9 +708,10 @@ class ModelView:
                 elif col['type'].endswith('_list_rel'):
                     if val_data := col['val']:
                         line_prefix = f'{line_dict["prefix"]}{col["field_name"]}'
-                        col['line'], col['lines'], _ = await self._get_data(
+                        submodel = ModelView(request=self.request, module=col['module'], model=col['model'])
+                        col['line'], col['lines'], _ = await submodel._get_data(
                             schema=col['schema'], data=val_data, prefix=line_prefix,
-                            module=col['module'], model=col['model'], join_related=False, type='table'
+                            module=col['module'], model=col['model'], join_related=False
                         )
 
             lines.append(self._get_line(
@@ -829,12 +828,12 @@ class ModelView:
             for line in self.table.lines:
                 line.fields.sort(key=lambda x: x.sort_idx)
         if self.create:
-            self.create.fields.sort(key=lambda x: x.sort_idx)
+            self.create.line.fields.sort(key=lambda x: x.sort_idx)
         if self.update:
-            self.update.fields.sort(key=lambda x: x.sort_idx)
+            self.update.line.fields.sort(key=lambda x: x.sort_idx)
 
         if self.view:
-            self.view.fields.sort(key=lambda x: x.sort_idx)
+            self.view.line.fields.sort(key=lambda x: x.sort_idx)
 
     def as_table_widget(self):
         return render_block(

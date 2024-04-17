@@ -3,6 +3,7 @@
         <div class="modal-dialog modal-dialog-centered modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
+
                     <div class="col-6">
                         <h5 class="modal-title">Edit {{ view.model|capitalize }}
                             <span>
@@ -42,30 +43,36 @@
                                 trigger="loop"
                                 style="width:150px;height:150px">
                         </lord-icon>
-                        <div class="row">
-                            {% for field in view.line.fields if not field.type =='dict' %}
-                                {% if loop.length % 3 != 0 and loop.first %}
-                                    <div class="row">
-                                {% endif %}
-                                {% if loop.index0 % 3 == 0 %}
-                                    <div class="row">
-                                {% endif %}
-                            <div class="col">
-                                <p style="margin-bottom: 0; margin-top: 1rem"
-                                   class="sort text-uppercase text-muted text-start "
-                                   for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
-                                {{ field.as_form()|safe }}
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for field in view.line.fields if not field.type =='dict' %}
+                                        {% if loop.length % 3 != 0 and loop.first %}
+                                            <div class="row">
+                                        {% endif %}
+                                        {% if loop.index0 % 3 == 0 %}
+                                            <div class="row">
+                                        {% endif %}
+                                    <div class="col">
+                                        <p style="margin-bottom: 0; margin-top: 1rem"
+                                           class="sort text-uppercase text-muted text-start "
+                                           for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                                        {{ field.as_form()|safe }}
 
-                            </div>
-                            {% if loop.index % 3 == 0 %}
+                                    </div>
+                                    {% if loop.index % 3 == 0 %}
+                                        </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                        </button>
+                                        <button id="{{ 'submit_'~view.prefix }}" type="submit" class="btn btn-success">
+                                            Save
+                                        </button>
+                                    </div>
                                 </div>
-                            {% endif %}
-                            {% endfor %}
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button id="{{ 'submit_'~view.prefix }}" type="submit" class="btn btn-success">Save
-                                </button>
                             </div>
                 </form>
             </div>
@@ -78,7 +85,7 @@
 {% endblock %}
 {% block create %}
     <div class="modal" id="{{ 'modal_'~view.prefix }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+        <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
             <div class="modal-content modal-xl">
                 <div class="modal-header">
                     <div class="col-6">
@@ -117,30 +124,36 @@
                                 trigger="loop"
                                 style="width:150px;height:150px">
                         </lord-icon>
-                        <div class="row">
-                            {% for field in view.line.fields if not field.type =='dict' %}
-                                {% if loop.length % 3 != 0 and loop.first %}
-                                    <div class="row">
-                                {% endif %}
-                                {% if loop.index0 % 3 == 0 %}
-                                    <div class="row">
-                                {% endif %}
-                            <div class="col">
-                                <p style="margin-bottom: 0; margin-top: 1rem"
-                                   class="sort text-uppercase text-muted text-start "
-                                   for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
-                                {{ field.as_form()|safe }}
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for field in view.line.fields if not field.type =='dict' %}
+                                        {% if loop.length % 3 != 0 and loop.first %}
+                                            <div class="row">
+                                        {% endif %}
+                                        {% if loop.index0 % 3 == 0 %}
+                                            <div class="row">
+                                        {% endif %}
+                                    <div class="col">
+                                        <p style="margin-bottom: 0; margin-top: 1rem"
+                                           class="sort text-uppercase text-muted text-start "
+                                           for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                                        {{ field.as_form()|safe }}
 
-                            </div>
-                            {% if loop.index % 3 == 0 %}
+                                    </div>
+                                    {% if loop.index % 3 == 0 %}
+                                        </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                        </button>
+                                        <button id="{{ 'submit_'~view.prefix }}" type="submit" class="btn btn-success">
+                                            Save
+                                        </button>
+                                    </div>
                                 </div>
-                            {% endif %}
-                            {% endfor %}
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button id="{{ 'submit_'~view.prefix }}" type="submit" class="btn btn-success">Save
-                                </button>
                             </div>
                 </form>
             </div>
@@ -179,28 +192,43 @@
                     trigger="loop"
                     style="width:150px;height:150px">
             </lord-icon>
-            <div class="row">
-                {% for field in view.line.fields if not field.field_name in ( 'vars', 'id', 'lsn') if not field.type in ('model_id') %}
-                    {% if loop.length % 3 != 0 and loop.first %}
-                        <div class="row">
-                    {% endif %}
-                    {% if loop.index0 % 3 == 0 %}
-                        <div class="row" style="margin-bottom: 1rem">
-                    {% endif %}
-                <div class="col text-start">
-                    <p style="margin-bottom: 0; margin-top: 1rem" class="sort text-uppercase text-muted text-start "
-                       for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
-                    {{ field.as_view()|safe }}
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        {% for field in view.line.fields if not field.field_name in ( 'vars', 'id', 'lsn') if not field.type in ('model_list_rel') %}
+                            {% if loop.length % 3 != 0 and loop.first %}
+                                <div class="row">
+                            {% endif %}
+                            {% if loop.index0 % 3 == 0 %}
+                                <div class="row" style="margin-bottom: 1rem">
+                            {% endif %}
+                        <div class="col text-start">
+                            <p style="margin-bottom: 0; margin-top: 1rem"
+                               class="sort text-uppercase text-muted text-start "
+                               for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                            {{ field.as_view()|safe }}
 
-                </div>
-                {% if loop.index % 3 == 0 %}
+                        </div>
+                        {% if loop.index % 3 == 0 %}
+                            </div>
+                        {% endif %}
+                        {% endfor %}
+                        </div>
                     </div>
-                {% endif %}
-                {% endfor %}
-                </div>
+                    <div class="row">
+                        {% for field in view.line.fields if not field.field_name in ( 'vars', 'id', 'lsn') if field.type in ('model_list_rel') %}
+                            <div class="row">
+                                <p style="margin-bottom: 0; margin-top: 1rem"
+                                   class="sort text-uppercase text-muted text-start "
+                                   for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                                {{ field.as_view()|safe }}
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
