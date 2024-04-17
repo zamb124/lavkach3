@@ -15,14 +15,14 @@ from app.inventory.order.models.order_models import MoveStatus, ReservationMetho
 
 class MoveBaseScheme(BaseModel):
     type: MoveType = Field(title='Move Type')
-    location_src_id: Optional[UUID4] = Field(default=None, title='Location src')
-    location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest')
-    lot_id: Optional[UUID4] = Field(default=None, title='Lot')
-    location_id: Optional[UUID4] = Field(default=None, title='Package')
+    location_src_id: Optional[UUID4] = Field(default=None, title='Location src', table=True)
+    location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest', table=True)
+    lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True)
+    location_id: Optional[UUID4] = Field(default=None, title='Package', table=True)
     # ONE OF Возможно либо location_id либо product_id
-    product_id: Optional[UUID4] = Field(default=None, title='Product')
-    quantity: float = Field(title='Quantity')
-    uom_id: Optional[UUID4] = Field(default=None, title='Uom')
+    product_id: Optional[UUID4] = Field(default=None, title='Product', table=True)
+    quantity: float = Field(title='Quantity', table=True)
+    uom_id: Optional[UUID4] = Field(default=None, title='Uom', table=True)
 
     class Config:
         extra = 'allow'

@@ -144,6 +144,7 @@ class Config(CoreConfig):
                     'create': MoveCreateScheme,
                     'update': MoveUpdateScheme,
                     'filter': MoveFilter,
+                    'sort': ['product_id', 'planned_datetime'],
                 },
                 'lot': {
                     'base': LotScheme,

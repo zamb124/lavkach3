@@ -104,3 +104,16 @@
     </tr>
 {% endblock %}
 
+{% block as_view %}
+    <tr>
+        <th scope="row">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="checkAll" value="">
+            </div>
+        </th>
+        {% for field in line.fields %}
+            <td>{{ field.as_view()|safe }}</td>
+        {% endfor %}
+    </tr>
+{% endblock %}
+

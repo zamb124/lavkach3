@@ -153,7 +153,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                             rel_entity = await rel.create(obj=create_obj, commit=False)
                         self.session.add(rel_entity)
                 else:
-                    to_set.append((key,value))
+                    to_set.append((key, value))
         for k, v in to_set:
             setattr(entity, k, v)
         #entity.mode_list_rel = new_entity.move_list_rel

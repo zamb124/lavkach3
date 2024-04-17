@@ -426,6 +426,8 @@ class ModelView:
                 model = model_name
             else:
                 res += 'str'
+        if not  module:
+            a=1
         return HtmxField(**{
             'field_name': field_name,
             'type': res,
@@ -525,6 +527,7 @@ class ModelView:
         prefix = self.prefix
         line = self._get_line(schema=self.schemas.create, model_id=model_id)
         self.create = HtmxCreate(line=line, id=model_id, prefix=prefix, module=self.module, model=self.model)
+        self._sort_columns()
         return render_block(
             environment=templates.env,
             template_name=f'views/modal.html',
@@ -545,6 +548,7 @@ class ModelView:
         assert len(lines) == 1 or 0
         self.update = HtmxUpdate(model=self.model, module=self.module, line=lines[0], prefix=self.prefix,
                                  id=lines[0].id)
+        self._sort_columns()
         return render_block(
             environment=templates.env,
             template_name=f'views/modal.html',
@@ -570,9 +574,36 @@ class ModelView:
             prefix=self.prefix,
             id=lines[0].id
         )
+        self._sort_columns()
         return render_block(
             environment=templates.env,
             template_name=f'views/modal.html',
+            block_name='view',
+            view=self.view, backdrop=kwargs.get('backdrop')
+        )
+
+    async def get_link_view(self, model_id: uuid.UUID, **kwargs) -> str:
+        """
+
+        """
+        kwargs.update({'type': 'view'})
+        params = {'id__in': model_id}
+        line, lines, _ = await self._get_data(
+            params=params,
+            schema=self.schemas.base,
+            join_related=False,
+        )
+        assert len(lines) == 1 or 0
+        self.view = HtmxView(
+            module=self.module,
+            model=self.model,
+            line=lines[0],
+            prefix=self.prefix,
+            id=lines[0].id
+        )
+        return render_block(
+            environment=templates.env,
+            template_name=f'views/link.html',
             block_name='view',
             view=self.view, backdrop=kwargs.get('backdrop')
         )
@@ -679,9 +710,9 @@ class ModelView:
                 elif col['type'].endswith('_list_rel'):
                     if val_data := col['val']:
                         line_prefix = f'{line_dict["prefix"]}{col["field_name"]}'
-                        l, col['lines'], _ = await self._get_data(
+                        col['line'], col['lines'], _ = await self._get_data(
                             schema=col['schema'], data=val_data, prefix=line_prefix,
-                            module=col['module'], model=col['model'], join_related=False
+                            module=col['module'], model=col['model'], join_related=False, type='table'
                         )
 
             lines.append(self._get_line(
@@ -801,6 +832,9 @@ class ModelView:
             self.create.fields.sort(key=lambda x: x.sort_idx)
         if self.update:
             self.update.fields.sort(key=lambda x: x.sort_idx)
+
+        if self.view:
+            self.view.fields.sort(key=lambda x: x.sort_idx)
 
     def as_table_widget(self):
         return render_block(

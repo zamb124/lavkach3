@@ -118,5 +118,19 @@
     </script>
 {% endblock %}
 {% block as_view %}
-        {{ field.val.english_name or field.val.name or field.val }}
+    {% if field.val %}
+        <div id="{{ field.prefix~field.field_name }}"
+             hx-include="none"
+             hx-trigger="load"
+             hx-ext="json-enc"
+             hx-post="/base/model_id"
+             hx-vals='{
+            "module": "{{ field.module }}",
+            "model": "{{ field.model }}",
+            "method": "view",
+            "id": "{{ field.val }}",
+            "prefix": "{{ field.prefix }}"
+            }'
+        ></div>
+    {% endif %}
 {% endblock %}

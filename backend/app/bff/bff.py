@@ -177,6 +177,26 @@ async def line(request: Request, schema: TableSchema):
     view = ModelView(request, params=qp, module=schema.module, model=schema.model, prefix=f'{schema.prefix}--{new_id}--')
     return await view.get_create_line()
 
+class ModelSchema(BaseModel):
+    module: str
+    model: str
+    prefix: str
+    id: UUID4
+
+    @field_validator('id')
+    @classmethod
+    def id_validate(cls, val):
+        return val
+
+@index_router.post("/base/model_id", response_class=HTMLResponse)
+async def model_id(request: Request, schema: ModelSchema):
+    """
+     отдает простой контрол для чтения
+    """
+    form_data = await request.json()
+    model = ModelView(request, schema.module, schema.model)
+    link_view = await model.get_link_view(model_id=schema.id)
+    return link_view
 
 class ModalSchema(BaseModel):
     prefix: str

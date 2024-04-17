@@ -12,7 +12,7 @@ from core.schemas import BaseFilter
 
 class UomBaseScheme(BaseModel):
     title: str = Field(description="Title")
-    category_id: UUID4
+    uom_category_id: UUID4
     type: UomType
     ratio: float
     precision: float
@@ -42,7 +42,7 @@ class UomScheme(UomCreateScheme, TimeStampScheme):
 
 class UomFilter(BaseFilter):
     title__in: Optional[List[str]] = Field(default=None, description="title")
-    category_id__in: Optional[List[str]] = Field(default=None,description="category_id")
+    uom_category_id__in: Optional[List[str]] = Field(default=None,description="category_id")
     type__in: Optional[List[str]] = Field(default=None, description="type")
 
     class Config:
