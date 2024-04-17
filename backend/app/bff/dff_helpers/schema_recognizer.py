@@ -523,7 +523,7 @@ class ModelView:
             Метод отдает создать схему , те столбцы с типами для HTMX шаблонов
         """
         prefix = self.prefix
-        line = self._get_line(schema=self.schemas.create, model_id=model_id)
+        line = self._get_line(schema=self.schemas.create, model_id=model_id, prefix=f'{self.prefix}--0--')
         self.create = HtmxCreate(line=line, id=model_id, prefix=prefix, module=self.module, model=self.model)
         self._sort_columns()
         return render_block(
@@ -544,8 +544,7 @@ class ModelView:
             join_related=False,
         )
         assert len(lines) == 1 or 0
-        self.update = HtmxUpdate(model=self.model, module=self.module, line=lines[0], prefix=self.prefix,
-                                 id=lines[0].id)
+        self.update = HtmxUpdate(model=self.model, module=self.module, line=lines[0], prefix=self.prefix,id=lines[0].id)
         self._sort_columns()
         return render_block(
             environment=templates.env,
