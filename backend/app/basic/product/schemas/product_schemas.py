@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Any
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic.types import UUID4
 from app.basic.product.models.product_models import Product, ProductType
 from core.schemas import BaseFilter
@@ -29,6 +29,18 @@ class ProductBaseScheme(BaseModel):
         orm_model = Product
         service = 'app.basic.product.services.ProductService'
 
+    @model_validator(mode='before')
+    @classmethod
+    def check_card_number_omitted(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            barcode_list_str = data.get('barcode_list')
+            if barcode_list_str and isinstance(barcode_list_str, str):
+                try:
+                    barcode_list = barcode_list_str.split(',')
+                    data['barcode_list'] = barcode_list
+                except Exception as ex:
+                    pass
+        return data
 
 class ProductUpdateScheme(ProductBaseScheme):
     ...

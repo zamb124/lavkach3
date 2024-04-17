@@ -389,6 +389,8 @@ class ModelView:
                 res += 'dict'
             elif issubclass(class_types[0], int):
                 res += 'number'
+            elif issubclass(class_types[0], str) and field_name.endswith('_list'):
+                res += 'list'
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_src_id'):
                 model_name = field_name.replace('_src_id', '')
                 res += 'model_id'
