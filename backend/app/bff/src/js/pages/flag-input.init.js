@@ -32,15 +32,16 @@ File: flag input Js File
             loadCountryListData(countryListData);
         }
     });
+
     function loadCountryListData(datas) {
         var mainArray = Array.from(document.querySelectorAll("[data-input-flag]"))
         var flags = '';
         var arr = Array.from(datas);
         for (let index = 0; index < arr.length; index++) {
             flags += '<li class="dropdown-item d-flex">\
-            <div class="flex-shrink-0 me-2"><img src="'+ arr[index]['flagImg'] + '" alt="country flag" class="options-flagimg" height="20"></div>\
+            <div class="flex-shrink-0 me-2"><img src="' + arr[index]['flagImg'] + '" alt="country flag" class="options-flagimg" height="20"></div>\
                 <div class="flex-grow-1">\
-                <div class="d-flex"><div class="country-name me-1">'+ arr[index]['countryName'] + '</div><span class="countrylist-codeno text-muted">' + arr[index]['countryCode'] + '</span></div>\
+                <div class="d-flex"><div class="country-name me-1">' + arr[index]['countryName'] + '</div><span class="countrylist-codeno text-muted">' + arr[index]['countryCode'] + '</span></div>\
             </div>\
             </li>';
         }
@@ -50,6 +51,7 @@ File: flag input Js File
             countryListClickEvent(mainArray[i]);
         }
     };
+
     function countryListClickEvent(item) {
         if (item.querySelector(".country-flagimg")) {
             var countryFlagImg = item.querySelector(".country-flagimg").getAttribute('src');
@@ -110,26 +112,29 @@ File: flag input Js File
         if (searchInput) {
             searchInput.addEventListener("keyup", function () {
                 var inputVal = searchInput.value.toLowerCase();
+
                 function filterItems(arr, query) {
                     return arr.filter(function (el) {
                         return (el.countryName.toLowerCase().indexOf(query.toLowerCase()) !== -1 || el.countryCode.indexOf(query) !== -1)
                     })
                 }
+
                 var filterData = filterItems(countryListData, inputVal);
                 setTimeout(function () {
                     item.querySelector(".dropdown-menu-list").innerHTML = '';
                     Array.from(filterData).forEach(function (listData) {
                         item.querySelector(".dropdown-menu-list").innerHTML +=
                             '<li class="dropdown-item d-flex">\
-                        <div class="flex-shrink-0 me-2"><img src="'+ listData.flagImg + '" alt="country flag" class="options-flagimg" height="20"></div>\
+                        <div class="flex-shrink-0 me-2"><img src="' + listData.flagImg + '" alt="country flag" class="options-flagimg" height="20"></div>\
                         <div class="flex-grow-1">\
-                        <div class="d-flex"><div class="country-name me-1">'+ listData.countryName + '</div><span class="countrylist-codeno text-muted">' + listData.countryCode + '</span></div>\
+                        <div class="d-flex"><div class="country-name me-1">' + listData.countryName + '</div><span class="countrylist-codeno text-muted">' + listData.countryCode + '</span></div>\
                         </div>\
                         </li>';
                     });
                     countryListClickEvent(item);
                 }, 350);
             });
-        };
+        }
+        ;
     });
 })();

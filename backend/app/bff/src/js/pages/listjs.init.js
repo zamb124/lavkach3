@@ -56,8 +56,8 @@ if (document.getElementById("customerList"))
         var isFirst = list.i == 1;
         var isLast = list.i > list.matchingItems.length - list.page;
         // make the Prev and Nex buttons disabled on first and last pages accordingly
-        (document.querySelector(".pagination-prev.disabled")) ? document.querySelector(".pagination-prev.disabled").classList.remove("disabled"): '';
-        (document.querySelector(".pagination-next.disabled")) ? document.querySelector(".pagination-next.disabled").classList.remove("disabled"): '';
+        (document.querySelector(".pagination-prev.disabled")) ? document.querySelector(".pagination-prev.disabled").classList.remove("disabled") : '';
+        (document.querySelector(".pagination-next.disabled")) ? document.querySelector(".pagination-next.disabled").classList.remove("disabled") : '';
         if (isFirst) {
             document.querySelector(".pagination-prev").classList.add("disabled");
         }
@@ -83,20 +83,20 @@ if (document.getElementById("customerList"))
 
 const xhttp = new XMLHttpRequest();
 xhttp.onload = function () {
-  var json_records = JSON.parse(this.responseText);
-  Array.from(json_records).forEach(raw => {
-    customerList.add({
-      id: '<a href="javascript:void(0);" class="fw-medium link-primary">#VZ'+raw.id+"</a>",
-      customer_name: raw.customer_name,
-      email: raw.email,
-      date: raw.date,
-      phone: raw.phone,
-      status: isStatus(raw.status)
+    var json_records = JSON.parse(this.responseText);
+    Array.from(json_records).forEach(raw => {
+        customerList.add({
+            id: '<a href="javascript:void(0);" class="fw-medium link-primary">#VZ' + raw.id + "</a>",
+            customer_name: raw.customer_name,
+            email: raw.email,
+            date: raw.date,
+            phone: raw.phone,
+            status: isStatus(raw.status)
+        });
+        customerList.sort('id', {order: "desc"});
+        refreshCallbacks();
     });
-    customerList.sort('id', { order: "desc" });
-    refreshCallbacks();
-  });
-  customerList.remove("id", '<a href="javascript:void(0);" class="fw-medium link-primary">#VZ2101</a>');
+    customerList.remove("id", '<a href="javascript:void(0);" class="fw-medium link-primary">#VZ2101</a>');
 }
 xhttp.open("GET", "/static/json/table-customer-list.json");
 xhttp.send();
@@ -119,6 +119,7 @@ var idField = document.getElementById("id-field"),
     removeBtns = document.getElementsByClassName("remove-item-btn"),
     editBtns = document.getElementsByClassName("edit-item-btn");
 refreshCallbacks();
+
 //filterContact("All");
 
 function filterContact(isValue) {
@@ -211,7 +212,7 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                     phone: phoneField.value,
                     status: isStatus(statusField.value),
                 });
-                customerList.sort('id', { order: "desc" });
+                customerList.sort('id', {order: "desc"});
                 document.getElementById("close-modal").click();
                 refreshCallbacks();
                 clearFields();
@@ -230,7 +231,7 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                 emailField.value !== "" &&
                 dateField.value !== "" &&
                 phoneField.value !== "" && editlist
-            ){
+            ) {
                 var editValues = customerList.get({
                     id: idField.value,
                 });
@@ -264,6 +265,7 @@ Array.prototype.slice.call(forms).forEach(function (form) {
 })
 
 var statusVal = new Choices(statusField);
+
 function isStatus(val) {
     switch (val) {
         case "Active":
@@ -295,27 +297,27 @@ function ischeckboxcheck() {
 
 function refreshCallbacks() {
     if (removeBtns)
-    Array.from(removeBtns).forEach(function (btn) {
-        btn.addEventListener("click", function (e) {
-            e.target.closest("tr").children[1].innerText;
-            itemId = e.target.closest("tr").children[1].innerText;
-            var itemValues = customerList.get({
-                id: itemId,
-            });
+        Array.from(removeBtns).forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+                e.target.closest("tr").children[1].innerText;
+                itemId = e.target.closest("tr").children[1].innerText;
+                var itemValues = customerList.get({
+                    id: itemId,
+                });
 
-            Array.from(itemValues).forEach(function (x) {
-                deleteid = new DOMParser().parseFromString(x._values.id, "text/html");
-                var isElem = deleteid.body.firstElementChild;
-                var isdeleteid = deleteid.body.firstElementChild.innerHTML;
-                if (isdeleteid == itemId) {
-                    document.getElementById("delete-record").addEventListener("click", function () {
-                        customerList.remove("id", isElem.outerHTML);
-                        document.getElementById("deleteRecordModal").click();
-                    });
-                }
+                Array.from(itemValues).forEach(function (x) {
+                    deleteid = new DOMParser().parseFromString(x._values.id, "text/html");
+                    var isElem = deleteid.body.firstElementChild;
+                    var isdeleteid = deleteid.body.firstElementChild.innerHTML;
+                    if (isdeleteid == itemId) {
+                        document.getElementById("delete-record").addEventListener("click", function () {
+                            customerList.remove("id", isElem.outerHTML);
+                            document.getElementById("deleteRecordModal").click();
+                        });
+                    }
+                });
             });
         });
-    });
 
     if (editBtns)
         Array.from(editBtns).forEach(function (btn) {
@@ -362,47 +364,46 @@ function clearFields() {
 }
 
 function deleteMultiple() {
-  ids_array = [];
-  var items = document.getElementsByName('chk_child');
-  Array.from(items).forEach(function (ele) {
-    if (ele.checked == true) {
-      var trNode = ele.parentNode.parentNode.parentNode;
-      var id = trNode.querySelector('.id a').innerHTML;
-      ids_array.push(id);
-    }
-  });
-  if (typeof ids_array !== 'undefined' && ids_array.length > 0) {
-    if (confirm('Are you sure you want to delete this?')) {
-        Array.from(ids_array).forEach(function (id) {
-        customerList.remove("id", `<a href="javascript:void(0);" class="fw-medium link-primary">${id}</a>`);
-      });
-      document.getElementById('checkAll').checked = false;
-    } else {
-      return false;
-    }
-  } else {
-    Swal.fire({
-      title: 'Please select at least one checkbox',
-      confirmButtonClass: 'btn btn-info',
-      buttonsStyling: false,
-      showCloseButton: true
+    ids_array = [];
+    var items = document.getElementsByName('chk_child');
+    Array.from(items).forEach(function (ele) {
+        if (ele.checked == true) {
+            var trNode = ele.parentNode.parentNode.parentNode;
+            var id = trNode.querySelector('.id a').innerHTML;
+            ids_array.push(id);
+        }
     });
-  }
+    if (typeof ids_array !== 'undefined' && ids_array.length > 0) {
+        if (confirm('Are you sure you want to delete this?')) {
+            Array.from(ids_array).forEach(function (id) {
+                customerList.remove("id", `<a href="javascript:void(0);" class="fw-medium link-primary">${id}</a>`);
+            });
+            document.getElementById('checkAll').checked = false;
+        } else {
+            return false;
+        }
+    } else {
+        Swal.fire({
+            title: 'Please select at least one checkbox',
+            confirmButtonClass: 'btn btn-info',
+            buttonsStyling: false,
+            showCloseButton: true
+        });
+    }
 }
 
 
-
-document.querySelectorAll(".listjs-table").forEach(function(item){
+document.querySelectorAll(".listjs-table").forEach(function (item) {
     item.querySelector(".pagination-next").addEventListener("click", function () {
         (item.querySelector(".pagination.listjs-pagination")) ? (item.querySelector(".pagination.listjs-pagination").querySelector(".active")) ?
-         item.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click(): '': '';
+            item.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click() : '' : '';
     });
 });
 
-document.querySelectorAll(".listjs-table").forEach(function(item){
+document.querySelectorAll(".listjs-table").forEach(function (item) {
     item.querySelector(".pagination-prev").addEventListener("click", function () {
         (item.querySelector(".pagination.listjs-pagination")) ? (item.querySelector(".pagination.listjs-pagination").querySelector(".active")) ?
-         item.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click(): '': '';
+            item.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click() : '' : '';
     });
 });
 

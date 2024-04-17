@@ -1,32 +1,55 @@
 import pickle
-from typing import Any
+from typing import Any, Optional
 
 import ujson
 
 from core.helpers.cache.base import BaseBackend
-from core.helpers.redis import redis
+from core.helpers.redis import redis as redis_client
 
 
 class RedisBackend(BaseBackend):
-    async def get(self, key: str) -> Any:
-        result = await redis.get(key)
+    async def get(self, *, key: str) -> Any:
+        result = await redis_client.get(key)
         if not result:
             return
-        try:
-            return ujson.loads(result.decode("utf8"))
-        except UnicodeDecodeError:
-            return pickle.loads(result)
 
-    async def set(self, response: Any, key: str, ttl: int = 60) -> None:
+        return ujson.loads(result)
+
+    async def set(self, *, response: Any, key: str, ttl: int = 60) -> None:
         if isinstance(response, dict):
             response = ujson.dumps(response)
-        elif isinstance(response, object):
+        else:
             response = pickle.dumps(response)
-        await redis.set(name=key, value=response, ex=ttl)
 
-    async def delete_startswith(self, value: str) -> None:
-        async for key in redis.scan_iter(f"{value}::*"):
-            await redis.delete(key)
+        await redis_client.set(name=key, value=response, ex=ttl)
 
-    async def delete(self, key: str) -> None:
-        await redis.delete(key)
+    async def set_hash(
+            self,
+            name: str,
+            key: Optional[str] = None,
+            value: Optional[str] = None,
+            mapping: Optional[dict] = None,
+            items: Optional[list] = None,
+    ) -> None:
+        await redis_client.hset(name=name, key=key, value=value, mapping=mapping, items=items)
+
+    async def delete_startswith(self, *, key: str) -> None:
+        async for key in redis_client.scan_iter(f"{key}*"):
+            await redis_client.delete(key)
+
+    async def get_startswith(self, *, key: str) -> dict:
+        keys = []
+        data = {}
+        async for value in redis_client.scan_iter(f"{key}*"):
+            keys.append(value)
+        for key in keys:
+            data.update({
+                key.decode('utf-8'): await self.get(key=key)
+            })
+        return data
+
+    async def delete(self, *, key: str) -> None:
+        await redis_client.delete(key)
+
+
+redis_backend = RedisBackend()

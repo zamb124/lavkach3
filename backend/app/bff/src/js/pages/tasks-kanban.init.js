@@ -30,9 +30,9 @@ if (tasks_list) {
     function noTaskImage() {
         Array.from(document.querySelectorAll("#kanbanboard .tasks-list")).forEach(function (item) {
             var taskBox = item.querySelectorAll(".tasks-box")
-            if(taskBox.length > 0){
+            if (taskBox.length > 0) {
                 item.querySelector('.tasks').classList.remove("noTask");
-            }else{
+            } else {
                 item.querySelector('.tasks').classList.add("noTask");
             }
         });
@@ -46,7 +46,7 @@ if (tasks_list) {
                 Array.from(tasks).forEach(function (ele) {
                     task_box = ele.getElementsByClassName("tasks-box");
                     task_counted = task_box.length;
-                });     
+                });
                 badge = element.querySelector(".totaltask-badge").innerText = "";
                 badge = element.querySelector(".totaltask-badge").innerText = task_counted;
             });
@@ -97,7 +97,7 @@ if (tasks_list) {
                 '<div class="d-flex mb-3">' +
                 '<div class="flex-grow-1">' +
                 '<h6 class="fs-14 text-uppercase fw-semibold mb-0">' +
-                boardName +'<small class="badge bg-success align-bottom ms-1 totaltask-badge">0</small></h6>' +
+                boardName + '<small class="badge bg-success align-bottom ms-1 totaltask-badge">0</small></h6>' +
                 '</div>' +
                 '<div class="flex-shrink-0">' +
                 '<div class="dropdown card-header-dropdown">' +
@@ -122,7 +122,7 @@ if (tasks_list) {
 
             var subTask = document.getElementById("kanbanboard");
             subTask.insertAdjacentHTML("beforeend", kanbanlisthtml);
-            
+
             var link = document.getElementById("addBoardBtn-close");
             link.click();
 

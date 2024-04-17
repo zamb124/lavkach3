@@ -1,0 +1,15 @@
+{% block as_form %}
+    <input
+            type="number"
+            class="form-control"
+            name="{{ field.pefix ~ field.field_name }}"
+            placeholder="Enter {{ field.title }}"
+            value="{{ field.val.national_number }}"
+    >
+{% endblock %}
+{% block as_view %}
+        {{ field.val.international or field.val.name or field.val}}
+{% endblock %}
+{% block as_table %}
+{{ field.field_name }}">{{ field.val if field.val else '' }}
+{% endblock %}

@@ -15,7 +15,7 @@ from ...exceptions import DecodeTokenException
 class AuthBackend(AuthenticationBackend):
     async def authenticate(self, conn: HTTPConnection) -> Tuple[bool, Optional[CurrentUser]]:
         current_user = CurrentUser()
-        authorization: str = conn.headers.get("Authorization")
+        authorization: str = conn.headers.get("Authorization") or conn.cookies.get('token')
         if not authorization:
             return False, current_user
         if not authorization:
@@ -33,7 +33,7 @@ class AuthBackend(AuthenticationBackend):
 class AuthBffBackend(AuthenticationBackend):
     async def authenticate(self, conn: HTTPConnection) -> Tuple[bool, Optional[CurrentUser]]:
         current_user = CurrentUser()
-        authorization: str = conn.headers.get("Authorization")
+        authorization: str = conn.headers.get("Authorization") or conn.cookies.get('token')
         if not authorization:
             return False, current_user
         if not authorization:

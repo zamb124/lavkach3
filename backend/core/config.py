@@ -26,16 +26,17 @@ class Config(BaseSettings):
     DB_USER_TEST: str = os.environ.get("DB_USER_TEST") or 'taxi'
     DB_PASS: str = os.environ.get("DB_PASS") or 'test'
     DB_PASS_TEST: str = os.environ.get("DB_PASS_TEST") or 'test'
+    DB_SSL: str = os.environ.get('DB_SSL') or 'prefer'
     POSTGRES_TEST_DATABASE_URL: str = f'postgresql+asyncpg://{DB_USER_TEST}:{DB_PASS_TEST}@{DB_HOST_TEST}/postgres'
     TEST_WRITER_DB_URL: str = f'postgresql+asyncpg://{DB_USER_TEST}:{DB_PASS_TEST}@{DB_HOST_TEST}:{DB_PORT_TEST}/{DB_NAME_TEST}'
-    WRITER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-    READER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    WRITER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}?ssl={DB_SSL}'
+    READER_DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}?ssl={DB_SSL}'
     JWT_SECRET_KEY: str = os.environ.get("JWT_SECRET_KEY") or 'secret'
     JWT_ALGORITHM: str = os.environ.get("JWT_ALGORITHM") or 'HS256'
     #SENTRY_SDN: str = os.environ.get("SENTRY_SDN")
     CELERY_BROKER_URL: str = "amqp://user:bitnami@localhost:5672/"
-    CELERY_BACKEND_URL: str = "redis://:password123@localhost:6379/0"
-    REDIS_HOST: str = os.environ.get("REDIS_HOST") or 'redis'
+    CELERY_BACKEND_URL: str = "redis://:password123@localhost:5370/0"
+    REDIS_HOST: str = os.environ.get("REDIS_HOST") or 'localhost'
     REDIS_PORT: int = os.environ.get("REDIS_PORT") or '5370'
     REDIS_PASSWORD: str = os.environ.get("REDIS_PASSWORD") or ''
     REDIS_SSL: bool = os.environ.get("REDIS_SSL") or False
@@ -45,19 +46,9 @@ class Config(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str = os.environ.get("AWS_SECRET_ACCESS_KEY") or ''
     AWS_DEFAULT_BUCKET: str = os.environ.get("AWS_DEFAULT_BUCKET") or 'us-east-1'
     AWS_ENDPOINT_URL: str = os.environ.get("AWS_ENDPOINT_URL") or 'https://storage.yandexcloud.net'
-    services: dict = {
-        'basic': {
-            'DOMAIN': '127.0.0.1',
-            'PORT': '8001',
-            'adapter': 'BasicAdapter'
-        },
-        'inventory': {
-            'DOMAIN': '127.0.0.1',
-            'PORT': '8002',
-            'adapter': 'InventoryAdapter'
-        },
+    SUPERUSER_EMAIL: str = os.environ.get("SUPERUSER_EMAIL") or ''
+    SUPERUSER_PASSWORD: str = os.environ.get("SUPERUSER_PASSWORD") or ''
 
-    }
 
 class DevelopmentConfig(Config):
     ...
@@ -73,8 +64,8 @@ class ProductionConfig(Config):
 def get_config():
     env = os.getenv("ENV", "local")
     for name, value in os.environ.items():
-        #logging.info("{0}: {1}".format(name, value))
-        #print("{0}: {1}".format(name, value))
+        logging.info("{0}: {1}".format(name, value))
+        print("{0}: {1}".format(name, value))
         pass
     config_type = {
         "dev": DevelopmentConfig(),

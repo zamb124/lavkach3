@@ -25,7 +25,7 @@ if (document.querySelectorAll(".form-steps"))
     Array.from(document.querySelectorAll(".form-steps")).forEach(function (form) {
 
         // next tab
-        if (form.querySelectorAll(".nexttab")){
+        if (form.querySelectorAll(".nexttab")) {
             Array.from(form.querySelectorAll(".nexttab")).forEach(function (nextButton) {
                 var tabEl = form.querySelectorAll('button[data-bs-toggle="pill"]');
                 Array.from(tabEl).forEach(function (item) {
@@ -35,9 +35,9 @@ if (document.querySelectorAll(".form-steps"))
                 });
                 nextButton.addEventListener("click", function () {
                     form.classList.add('was-validated');
-                    form.querySelectorAll(".tab-pane.show .form-control").forEach(function(elem){
+                    form.querySelectorAll(".tab-pane.show .form-control").forEach(function (elem) {
                         var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-                        if(elem.value.length > 0 && elem.value.match(validRegex)){
+                        if (elem.value.length > 0 && elem.value.match(validRegex)) {
                             var nextTab = nextButton.getAttribute('data-nexttab');
                             document.getElementById(nextTab).click();
                             form.classList.remove('was-validated');
@@ -54,7 +54,7 @@ if (document.querySelectorAll(".form-steps"))
                     var prevTab = prevButton.getAttribute('data-previous');
                     var totalDone = prevButton.closest("form").querySelectorAll(".custom-nav .done").length;
                     for (var i = totalDone - 1; i < totalDone; i++) {
-                        (prevButton.closest("form").querySelectorAll(".custom-nav .done")[i]) ? prevButton.closest("form").querySelectorAll(".custom-nav .done")[i].classList.remove('done'): '';
+                        (prevButton.closest("form").querySelectorAll(".custom-nav .done")[i]) ? prevButton.closest("form").querySelectorAll(".custom-nav .done")[i].classList.remove('done') : '';
                     }
                     document.getElementById(prevTab).click();
                 });
@@ -75,9 +75,9 @@ if (document.querySelectorAll(".form-steps"))
                         document.getElementById("custom-progress-bar").querySelector('.progress-bar').style.width = percent + "%";
                     }
                     (form.querySelectorAll(".custom-nav .done").length > 0) ?
-                    Array.from(form.querySelectorAll(".custom-nav .done")).forEach(function (doneTab) {
-                        doneTab.classList.remove('done');
-                    }): '';
+                        Array.from(form.querySelectorAll(".custom-nav .done")).forEach(function (doneTab) {
+                            doneTab.classList.remove('done');
+                        }) : '';
                     for (var j = 0; j <= i; j++) {
                         tabButtons[j].classList.contains('active') ? tabButtons[j].classList.remove('done') : tabButtons[j].classList.add('done');
                     }

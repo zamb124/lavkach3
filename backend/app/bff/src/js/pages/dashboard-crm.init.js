@@ -17,7 +17,8 @@ function getChartColorsArray(chartId) {
                 if (newValue.indexOf(",") === -1) {
                     var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
                     if (color) return color;
-                    else return newValue;;
+                    else return newValue;
+                    ;
                 } else {
                     var val = value.split(',');
                     if (val.length == 2) {
@@ -127,9 +128,9 @@ var dealTypeChartsColors = getChartColorsArray("deal-type-charts");
 if (dealTypeChartsColors) {
     var options = {
         series: [{
-                name: 'Pending',
-                data: [80, 50, 30, 40, 100, 20],
-            },
+            name: 'Pending',
+            data: [80, 50, 30, 40, 100, 20],
+        },
             {
                 name: 'Loss',
                 data: [20, 30, 40, 80, 20, 80],

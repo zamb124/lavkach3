@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,7 +12,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUpdateScheme, OrderTypeFilter]):
     def __init__(self, request, db_session: AsyncSession = None):
-        super(OrderTypeService, self).__init__(request, OrderType, db_session)
+        super(OrderTypeService, self).__init__(request, OrderType,OrderTypeCreateScheme, OrderTypeUpdateScheme,  db_session)
 
     @permit('order_type_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
@@ -23,6 +24,8 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
 
     @permit('order_type_create')
     async def create(self, obj: CreateSchemaType) -> ModelType:
+        obj.created_by = self.user.user_id
+        obj.edited_by = self.user.user_id
         return await super(OrderTypeService, self).create(obj)
 
     @permit('order_type_delete')

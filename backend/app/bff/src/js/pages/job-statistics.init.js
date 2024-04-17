@@ -16,7 +16,8 @@ function getChartColorsArray(chartId) {
             if (newValue.indexOf(",") === -1) {
                 var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
                 if (color) return color;
-                else return newValue;;
+                else return newValue;
+                ;
             } else {
                 var val = value.split(',');
                 if (val.length == 2) {
@@ -208,54 +209,54 @@ if (chartTreemapDistributedColors) {
                 x: 'USA',
                 y: 321
             },
-            {
-                x: 'Russia',
-                y: 165
-            },
-            {
-                x: 'India',
-                y: 184
-            },
-            {
-                x: 'China',
-                y: 98
-            },
-            {
-                x: 'Canada',
-                y: 84
-            },
-            {
-                x: 'Brazil',
-                y: 31
-            },
-            {
-                x: 'UK',
-                y: 70
-            },
-            {
-                x: 'Australia',
-                y: 30
-            },
-            {
-                x: 'Germany',
-                y: 44
-            },
-            {
-                x: 'Italy',
-                y: 68
-            },
-            {
-                x: 'Israel',
-                y: 28
-            },
-            {
-                x: 'Indonesia',
-                y: 19
-            },
-            {
-                x: 'Bangladesh',
-                y: 29
-            }
+                {
+                    x: 'Russia',
+                    y: 165
+                },
+                {
+                    x: 'India',
+                    y: 184
+                },
+                {
+                    x: 'China',
+                    y: 98
+                },
+                {
+                    x: 'Canada',
+                    y: 84
+                },
+                {
+                    x: 'Brazil',
+                    y: 31
+                },
+                {
+                    x: 'UK',
+                    y: 70
+                },
+                {
+                    x: 'Australia',
+                    y: 30
+                },
+                {
+                    x: 'Germany',
+                    y: 44
+                },
+                {
+                    x: 'Italy',
+                    y: 68
+                },
+                {
+                    x: 'Israel',
+                    y: 28
+                },
+                {
+                    x: 'Indonesia',
+                    y: 19
+                },
+                {
+                    x: 'Bangladesh',
+                    y: 29
+                }
             ]
         }],
         legend: {
@@ -353,10 +354,10 @@ if (dealTypeChartsColors) {
             name: 'Following',
             data: [80, 50, 30, 40, 100, 20],
         },
-        {
-            name: 'Followers',
-            data: [20, 30, 40, 80, 20, 80],
-        }],
+            {
+                name: 'Followers',
+                data: [20, 30, 40, 80, 20, 80],
+            }],
         chart: {
             height: 341,
             type: 'radar',
@@ -414,14 +415,14 @@ if (revenueExpensesChartsColors) {
             name: ' Interviews',
             data: [20, 26, 45, 32, 42, 53, 59, 70, 78, 97, 110, 125]
         },
-        {
-            name: ' Hired',
-            data: [12, 17, 45, 42, 24, 35, 42, 75, 102, 108, 156, 199]
-        },
-        {
-            name: ' Rejected',
-            data: [8, 13, 22, 27, 32, 34, 46, 59, 65, 97, 100, 110]
-        }],
+            {
+                name: ' Hired',
+                data: [12, 17, 45, 42, 24, 35, 42, 75, 102, 108, 156, 199]
+            },
+            {
+                name: ' Rejected',
+                data: [8, 13, 22, 27, 32, 34, 46, 59, 65, 97, 100, 110]
+            }],
         chart: {
             height: 320,
             type: 'area',

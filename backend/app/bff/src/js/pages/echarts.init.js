@@ -16,7 +16,8 @@ function getChartColorsArray(chartId) {
             if (newValue.indexOf(",") === -1) {
                 var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
                 if (color) return color;
-                else return newValue;;
+                else return newValue;
+                ;
             } else {
                 var val = value.split(',');
                 if (val.length == 2) {
@@ -137,11 +138,11 @@ if (chartLineStackedColors) {
             }
         },
         series: [{
-                name: 'Email',
-                type: 'line',
-                stack: 'Total',
-                data: [120, 132, 101, 134, 90, 230, 210],
-            },
+            name: 'Email',
+            type: 'line',
+            stack: 'Total',
+            data: [120, 132, 101, 134, 90, 230, 210],
+        },
             {
                 name: 'Union Ads',
                 type: 'line',
@@ -291,15 +292,15 @@ if (chartAreaStackedColors) {
         },
         color: chartAreaStackedColors,
         series: [{
-                name: 'Email',
-                type: 'line',
-                stack: 'Total',
-                areaStyle: {},
-                emphasis: {
-                    focus: 'series'
-                },
-                data: [120, 132, 101, 134, 90, 230, 210]
+            name: 'Email',
+            type: 'line',
+            stack: 'Total',
+            areaStyle: {},
+            emphasis: {
+                focus: 'series'
             },
+            data: [120, 132, 101, 134, 90, 230, 210]
+        },
             {
                 name: 'Union Ads',
                 type: 'line',
@@ -406,11 +407,11 @@ if (chartStepLineColors) {
         },
         color: chartStepLineColors,
         series: [{
-                name: 'Step Start',
-                type: 'line',
-                step: 'start',
-                data: [120, 132, 101, 134, 90, 230, 210]
-            },
+            name: 'Step Start',
+            type: 'line',
+            step: 'start',
+            data: [120, 132, 101, 134, 90, 230, 210]
+        },
             {
                 name: 'Step Middle',
                 type: 'line',
@@ -634,8 +635,8 @@ if (chartBarLabelRotationColors) {
             };
             myChart.setOption({
                 series: [{
-                        label: labelOption
-                    },
+                    label: labelOption
+                },
                     {
                         label: labelOption
                     },
@@ -736,15 +737,15 @@ if (chartBarLabelRotationColors) {
             fontFamily: 'Poppins, sans-serif'
         },
         series: [{
-                name: 'Forest',
-                type: 'bar',
-                barGap: 0,
-                label: labelOption,
-                emphasis: {
-                    focus: 'series'
-                },
-                data: [320, 332, 301, 334, 390]
+            name: 'Forest',
+            type: 'bar',
+            barGap: 0,
+            label: labelOption,
+            emphasis: {
+                focus: 'series'
             },
+            data: [320, 332, 301, 334, 390]
+        },
             {
                 name: 'Steppe',
                 type: 'bar',
@@ -836,10 +837,10 @@ if (chartBarHorizontalColors) {
         },
         color: chartBarHorizontalColors,
         series: [{
-                name: '2011',
-                type: 'bar',
-                data: [18203, 23489, 29034, 104970, 131744, 630230]
-            },
+            name: '2011',
+            type: 'bar',
+            data: [18203, 23489, 29034, 104970, 131744, 630230]
+        },
             {
                 name: '2012',
                 type: 'bar',
@@ -909,17 +910,17 @@ if (chartBarStackedColors) {
             fontFamily: 'Poppins, sans-serif'
         },
         series: [{
-                name: 'Direct',
-                type: 'bar',
-                stack: 'total',
-                label: {
-                    show: true
-                },
-                emphasis: {
-                    focus: 'series'
-                },
-                data: [320, 302, 301, 334, 390, 330, 320]
+            name: 'Direct',
+            type: 'bar',
+            stack: 'total',
+            label: {
+                show: true
             },
+            emphasis: {
+                focus: 'series'
+            },
+            data: [320, 302, 301, 334, 390, 330, 320]
+        },
             {
                 name: 'Mail Ad',
                 type: 'bar',
@@ -998,9 +999,9 @@ if (chartPieColors) {
             type: 'pie',
             radius: '50%',
             data: [{
-                    value: 1048,
-                    name: 'Search Engine'
-                },
+                value: 1048,
+                name: 'Search Engine'
+            },
                 {
                     value: 735,
                     name: 'Direct'
@@ -1073,9 +1074,9 @@ if (chartDoughnutColors) {
                 show: false
             },
             data: [{
-                    value: 1048,
-                    name: 'Search Engine'
-                },
+                value: 1048,
+                name: 'Search Engine'
+            },
                 {
                     value: 735,
                     name: 'Direct'
@@ -1269,10 +1270,10 @@ if (chartGraphColors) {
                 fontSize: 20
             },
             data: [{
-                    name: 'Node 1',
-                    x: 300,
-                    y: 300
-                },
+                name: 'Node 1',
+                x: 300,
+                y: 300
+            },
                 {
                     name: 'Node 2',
                     x: 800,
@@ -1291,17 +1292,17 @@ if (chartGraphColors) {
             ],
             // links: [],
             links: [{
-                    source: 0,
-                    target: 1,
-                    symbolSize: [5, 20],
-                    label: {
-                        show: true
-                    },
-                    lineStyle: {
-                        width: 5,
-                        curveness: 0.2
-                    }
+                source: 0,
+                target: 1,
+                symbolSize: [5, 20],
+                label: {
+                    show: true
                 },
+                lineStyle: {
+                    width: 5,
+                    curveness: 0.2
+                }
+            },
                 {
                     source: 'Node 2',
                     target: 'Node 1',
@@ -1355,18 +1356,18 @@ if (chartTreemapColors) {
         series: [{
             type: 'treemap',
             data: [{
-                    name: 'nodeA',
-                    value: 10,
-                    children: [{
-                            name: 'nodeAa',
-                            value: 4
-                        },
-                        {
-                            name: 'nodeAb',
-                            value: 6
-                        }
-                    ]
+                name: 'nodeA',
+                value: 10,
+                children: [{
+                    name: 'nodeAa',
+                    value: 4
                 },
+                    {
+                        name: 'nodeAb',
+                        value: 6
+                    }
+                ]
+            },
                 {
                     name: 'nodeB',
                     value: 20,
@@ -1397,51 +1398,51 @@ if (chartSunburstColors) {
     var option;
 
     var data = [{
-            name: 'Grandpa',
+        name: 'Grandpa',
+        children: [{
+            name: 'Uncle Leo',
+            value: 15,
             children: [{
-                    name: 'Uncle Leo',
-                    value: 15,
+                name: 'Cousin Jack',
+                value: 2
+            },
+                {
+                    name: 'Cousin Mary',
+                    value: 5,
                     children: [{
-                            name: 'Cousin Jack',
-                            value: 2
-                        },
-                        {
-                            name: 'Cousin Mary',
-                            value: 5,
-                            children: [{
-                                name: 'Jackson',
-                                value: 2
-                            }]
-                        },
-                        {
-                            name: 'Cousin Ben',
-                            value: 4
-                        }
-                    ]
+                        name: 'Jackson',
+                        value: 2
+                    }]
                 },
                 {
-                    name: 'Father',
-                    value: 10,
-                    children: [{
-                            name: 'Me',
-                            value: 5
-                        },
-                        {
-                            name: 'Brother Peter',
-                            value: 1
-                        }
-                    ]
+                    name: 'Cousin Ben',
+                    value: 4
                 }
             ]
         },
+            {
+                name: 'Father',
+                value: 10,
+                children: [{
+                    name: 'Me',
+                    value: 5
+                },
+                    {
+                        name: 'Brother Peter',
+                        value: 1
+                    }
+                ]
+            }
+        ]
+    },
         {
             name: 'Nancy',
             children: [{
                 name: 'Uncle Nike',
                 children: [{
-                        name: 'Cousin Betty',
-                        value: 1
-                    },
+                    name: 'Cousin Betty',
+                    value: 1
+                },
                     {
                         name: 'Cousin Jenny',
                         value: 2
@@ -1480,9 +1481,9 @@ if (chartParallelColors) {
 
     option = {
         parallelAxis: [{
-                dim: 0,
-                name: 'Price'
-            },
+            dim: 0,
+            name: 'Price'
+        },
             {
                 dim: 1,
                 name: 'Net Weight'
@@ -1541,8 +1542,8 @@ if (chartSankeyColors) {
                 focus: 'adjacency'
             },
             data: [{
-                    name: 'a'
-                },
+                name: 'a'
+            },
                 {
                     name: 'b'
                 },
@@ -1560,10 +1561,10 @@ if (chartSankeyColors) {
                 }
             ],
             links: [{
-                    source: 'a',
-                    target: 'a1',
-                    value: 5
-                },
+                source: 'a',
+                target: 'a1',
+                value: 5
+            },
                 {
                     source: 'a',
                     target: 'a2',
@@ -1661,9 +1662,9 @@ if (chartFunnelColors) {
                 }
             },
             data: [{
-                    value: 60,
-                    name: 'Visit'
-                },
+                value: 60,
+                name: 'Visit'
+            },
                 {
                     value: 40,
                     name: 'Inquiry'
@@ -1753,6 +1754,7 @@ if (chartHeatmapColors) {
         }
         return data;
     }
+
     option = {
         visualMap: {
             show: false,

@@ -124,12 +124,12 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 function getColor(d) {
     return d > 1000 ? '#405189' :
         d > 500 ? '#516194' :
-        d > 200 ? '#63719E' :
-        d > 100 ? '#7480A9' :
-        d > 50 ? '#8590B4' :
-        d > 20 ? '#97A0BF' :
-        d > 10 ? '#A8B0C9' :
-        '#A8B0C9';
+            d > 200 ? '#63719E' :
+                d > 100 ? '#7480A9' :
+                    d > 50 ? '#8590B4' :
+                        d > 20 ? '#97A0BF' :
+                            d > 10 ? '#A8B0C9' :
+                                '#A8B0C9';
 }
 
 function style(feature) {
@@ -157,8 +157,8 @@ L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.').addTo(cities),
 
 
 var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
 var grayscale = L.tileLayer(mbUrl, {

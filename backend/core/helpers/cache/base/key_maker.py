@@ -6,3 +6,4 @@ class BaseKeyMaker(ABC):
     @abstractmethod
     async def make(self, function: Callable, prefix: str) -> str:
         ...
+

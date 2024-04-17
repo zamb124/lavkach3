@@ -1,0 +1,20 @@
+{% block as_form %}
+        <input
+                class="form-control"
+                {% if field.required %} required {% endif %}
+                name="{{ field.prefix ~ field.field_name }}"
+                placeholder="Enter {{ field.title }}"
+                value="{{ field.val if field.val else "" }}"
+        >
+{% endblock %}
+{% block as_view %}
+        {{ field.val.english_name or field.val.name or field.val }}
+{% endblock %}
+
+{% block as_table_header %}
+    {{ field.title }}
+{% endblock %}
+
+{% block as_table %}
+    {{ field.val if field.val else '' }}
+{% endblock %}

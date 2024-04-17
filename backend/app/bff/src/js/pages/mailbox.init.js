@@ -6,7 +6,7 @@ Contact: Themesbrand@gmail.com
 File: mailbox init Js File
 */
 
-var url="/static/json/";
+var url = "/static/json/";
 var allmaillist = '';
 const loader = document.querySelector("#elmLoader");
 // showing loading
@@ -187,6 +187,7 @@ function favouriteBtn() {
         });
     });
 }
+
 favouriteBtn();
 
 // emailDetailShow
@@ -233,8 +234,8 @@ function emailDetailShow() {
 
 // editor
 ClassicEditor.create(document.querySelector('#email-editor')).then(function (editor) {
-        editor.ui.view.editable.element.style.height = '200px';
-    })
+    editor.ui.view.editable.element.style.height = '200px';
+})
     .catch(function (error) {
         console.error(error);
     });
@@ -263,9 +264,9 @@ function checkBoxAll() {
             checkall.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
 
             if (event.target.closest('li').classList.contains("active")) {
-                (checkedCount > 0) ? document.getElementById("email-topbar-actions").style.display = 'block': document.getElementById("email-topbar-actions").style.display = 'none';
+                (checkedCount > 0) ? document.getElementById("email-topbar-actions").style.display = 'block' : document.getElementById("email-topbar-actions").style.display = 'none';
             } else {
-                (checkedCount > 0) ? document.getElementById("email-topbar-actions").style.display = 'block': document.getElementById("email-topbar-actions").style.display = 'none';
+                (checkedCount > 0) ? document.getElementById("email-topbar-actions").style.display = 'block' : document.getElementById("email-topbar-actions").style.display = 'none';
             }
         });
     });
@@ -324,6 +325,7 @@ function checkBoxAll() {
 //User current Id
 var currentChatId = "users-chat";
 scrollToBottom(currentChatId);
+
 // // Scroll to Bottom
 function scrollToBottom(id) {
     setTimeout(() => {
@@ -364,6 +366,7 @@ function removeItems() {
         });
     })
 }
+
 removeItems();
 
 function removeSingleItem() {
@@ -373,11 +376,13 @@ function removeSingleItem() {
             getid = item.getAttribute('data-remove-id');
             document.getElementById("delete-record").addEventListener("click", function () {
                 var filtered = '';
+
                 function arrayRemove(arr, value) {
                     return arr.filter(function (ele) {
                         return ele.id != value;
                     });
                 }
+
                 filtered = arrayRemove(allmaillist, getid);
                 allmaillist = filtered;
                 loadMailData(allmaillist);
@@ -386,6 +391,7 @@ function removeSingleItem() {
         });
     });
 }
+
 removeSingleItem();
 
 var markAllReadBtn = document.getElementById("mark-all-read");
@@ -398,7 +404,8 @@ markAllReadBtn.addEventListener('click', function (event) {
         function hideclipboardNew() {
             document.getElementById("unreadConversations").style.display = "none";
         }
-    };
+    }
+    ;
 
     Array.from(document.querySelectorAll(".message-list li.unread")).forEach(function (element) {
         if (element.classList.contains("unread")) {
@@ -464,7 +471,8 @@ function emailDetailChange() {
     Array.from(document.querySelectorAll(".message-list li")).forEach(function (item) {
         item.addEventListener("click", function () {
             var mailListId = item.querySelector(".checkbox-wrapper-mail .form-check-input").value
-            document.querySelector(".remove-mail").setAttribute("data-remove-id", mailListId);;
+            document.querySelector(".remove-mail").setAttribute("data-remove-id", mailListId);
+            ;
             var subjectTitle = item.querySelector(".subject-title").innerHTML;
             document.querySelector(".email-subject-title").innerHTML = subjectTitle;
 
@@ -498,7 +506,7 @@ triggerTabList.forEach(triggerEl => {
     })
 })
 
-function resizeEvent(){
+function resizeEvent() {
     var windowSize = document.documentElement.clientWidth;
     if (windowSize < 767) {
         var chatUserList = document.querySelector(".email-chat-list a.active");
@@ -506,6 +514,7 @@ function resizeEvent(){
         document.getElementById("emailchat-detailElem").style.display = "none";
     }
 }
+
 resizeEvent();
 
 window.onresize = resizeEvent;

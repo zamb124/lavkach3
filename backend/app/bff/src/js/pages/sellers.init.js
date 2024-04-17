@@ -533,22 +533,22 @@ function loadSellerList(datas, page) {
             document.getElementById("seller-list").innerHTML += '<div class="col-xl-3 col-lg-6">\
         <div class="card ribbon-box right overflow-hidden">\
             <div class="card-body text-center p-4">\
-                '+trendingBadge+'\
-                <img src="'+ datas[i].shop[0].img + '" alt="' + datas[i].shop[0].img_alt + '" height="45">\
-                <h5 class="mb-1 mt-4"><a href="/apps-ecommerce-seller-details" class="link-primary">'+ datas[i].shop[0].name + '</a></h5>\
-                <p class="text-muted mb-4">'+ datas[i].seller + '</p>\
+                ' + trendingBadge + '\
+                <img src="' + datas[i].shop[0].img + '" alt="' + datas[i].shop[0].img_alt + '" height="45">\
+                <h5 class="mb-1 mt-4"><a href="/apps-ecommerce-seller-details" class="link-primary">' + datas[i].shop[0].name + '</a></h5>\
+                <p class="text-muted mb-4">' + datas[i].seller + '</p>\
                 <div class="row justify-content-center">\
                     <div class="col-lg-8">\
-                        <div id="chart-seller'+ datas[i].id + '" data-colors=\'["' + datas[i].chartColor + '"]\'  dir="ltr"></div>\
+                        <div id="chart-seller' + datas[i].id + '" data-colors=\'["' + datas[i].chartColor + '"]\'  dir="ltr"></div>\
                     </div>\
                 </div>\
                 <div class="row mt-4">\
                     <div class="col-lg-6 border-end-dashed border-end">\
-                        <h5>'+ datas[i].stock + '</h5>\
+                        <h5>' + datas[i].stock + '</h5>\
                         <span class="text-muted">Item Stock</span>\
                     </div>\
                     <div class="col-lg-6">\
-                        <h5>'+ datas[i].wallet_balance + '</h5>\
+                        <h5>' + datas[i].wallet_balance + '</h5>\
                         <span class="text-muted">Wallet Balance</span>\
                     </div>\
                 </div>\
@@ -678,11 +678,13 @@ function pageEvent(data) {
 var searchResultList = document.getElementById("searchResultList");
 searchResultList.addEventListener("keyup", function () {
     var inputVal = searchResultList.value.toLowerCase();
+
     function filterItems(arr, query) {
         return arr.filter(function (el) {
             return el.shop[0].name.toLowerCase().indexOf(query.toLowerCase()) !== -1 || el.seller.toLowerCase().indexOf(query.toLowerCase()) !== -1
         })
     }
+
     var filterData = filterItems(sellerListData, inputVal);
     loadSellerList(filterData, currentPage);
 });

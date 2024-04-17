@@ -9,3 +9,4 @@ permits:
   role_list: Может получать список ролей
   role_delete: Может удалять роль
   role_get: Может смотреть на роль
+  company_change: Может сменить компанию

@@ -23,7 +23,7 @@ basic_router.include_router(partner_router, prefix="/partner", tags=["Partner"],
 basic_router.include_router(auth_router, prefix="/auth", tags=["Auth"])
 basic_router.include_router(company_router, prefix="/company", tags=["Company"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 basic_router.include_router(store_router, prefix="/store", tags=["Store"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
-basic_router.include_router(uom_category_router, prefix="/category", tags=["Uom", "Category"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+basic_router.include_router(uom_category_router, prefix="/uom_category", tags=["Uom", "Category"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 basic_router.include_router(uom_router, prefix="/uom", tags=["Uom", "Uom"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 basic_router.include_router(product_category_router, prefix="/product_category", tags=["ProductCategory"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 basic_router.include_router(product_storage_type_router, prefix="/product_storage_type", tags=["ProductStorageType"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])

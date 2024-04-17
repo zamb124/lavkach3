@@ -11,12 +11,12 @@ var todoList = [{
     "checkedElem": false,
     'todo': 'Added Email Templates',
     "assignedto": [{
-            "assigneeName": "Curtis Saenz",
-            "assigneeImg": "/static/images/users/avatar-1.jpg",
-        },{
-            "assigneeName": "John Robles",
-            "assigneeImg": "/static/images/users/avatar-3.jpg",
-        }
+        "assigneeName": "Curtis Saenz",
+        "assigneeImg": "/static/images/users/avatar-1.jpg",
+    }, {
+        "assigneeName": "John Robles",
+        "assigneeImg": "/static/images/users/avatar-3.jpg",
+    }
     ],
     'dueDate': '03 Apr, 2022',
     'status': 'Inprogress',
@@ -26,15 +26,15 @@ var todoList = [{
     "checkedElem": false,
     'todo': 'Additional Mailbox',
     "assignedto": [{
-            "assigneeName": "Virgie Price",
-            "assigneeImg": "/static/images/users/avatar-5.jpg",
-        },{
-            "assigneeName": "Diego Norris",
-            "assigneeImg": "/static/images/users/avatar-9.jpg",
-        },{
-            "assigneeName": "Anthony Mills",
-            "assigneeImg": "/static/images/users/avatar-10.jpg",
-        }
+        "assigneeName": "Virgie Price",
+        "assigneeImg": "/static/images/users/avatar-5.jpg",
+    }, {
+        "assigneeName": "Diego Norris",
+        "assigneeImg": "/static/images/users/avatar-9.jpg",
+    }, {
+        "assigneeName": "Anthony Mills",
+        "assigneeImg": "/static/images/users/avatar-10.jpg",
+    }
     ],
     'dueDate': '02 Apr, 2022',
     'status': 'Pending',
@@ -44,18 +44,18 @@ var todoList = [{
     "checkedElem": true,
     'todo': 'Make a creating an account profile',
     "assignedto": [{
-            "assigneeName": "Virgie Price",
-            "assigneeImg": "/static/images/users/avatar-5.jpg",
-        },{
-            "assigneeName": "Marian Angel",
-            "assigneeImg": "/static/images/users/avatar-6.jpg",
-        },{
-            "assigneeName": "Johnnie Walton",
-            "assigneeImg": "/static/images/users/avatar-7.jpg",
-        },{
-            "assigneeName": "Donna Weston",
-            "assigneeImg": "/static/images/users/avatar-8.jpg",
-        }
+        "assigneeName": "Virgie Price",
+        "assigneeImg": "/static/images/users/avatar-5.jpg",
+    }, {
+        "assigneeName": "Marian Angel",
+        "assigneeImg": "/static/images/users/avatar-6.jpg",
+    }, {
+        "assigneeName": "Johnnie Walton",
+        "assigneeImg": "/static/images/users/avatar-7.jpg",
+    }, {
+        "assigneeName": "Donna Weston",
+        "assigneeImg": "/static/images/users/avatar-8.jpg",
+    }
     ],
     'dueDate': '02 May, 2022',
     'status': 'Completed',
@@ -65,9 +65,9 @@ var todoList = [{
     "checkedElem": false,
     'todo': 'Added new tabs styles',
     "assignedto": [{
-            "assigneeName": "James Forbes",
-            "assigneeImg": "/static/images/users/avatar-2.jpg",
-        }
+        "assigneeName": "James Forbes",
+        "assigneeImg": "/static/images/users/avatar-2.jpg",
+    }
     ],
     'dueDate': '01 May, 2022',
     'status': 'New',
@@ -77,15 +77,15 @@ var todoList = [{
     "checkedElem": false,
     'todo': 'Added bdge new style - gradient',
     "assignedto": [{
-            "assigneeName": "John Robles",
-            "assigneeImg": "/static/images/users/avatar-3.jpg",
-        },{
-            "assigneeName": "Anthony Mills",
-            "assigneeImg": "/static/images/users/avatar-10.jpg",
-        },{
-            "assigneeName": "Diego Norris",
-            "assigneeImg": "/static/images/users/avatar-9.jpg",
-        }
+        "assigneeName": "John Robles",
+        "assigneeImg": "/static/images/users/avatar-3.jpg",
+    }, {
+        "assigneeName": "Anthony Mills",
+        "assigneeImg": "/static/images/users/avatar-10.jpg",
+    }, {
+        "assigneeName": "Diego Norris",
+        "assigneeImg": "/static/images/users/avatar-9.jpg",
+    }
     ],
     'dueDate': '01 May, 2022',
     'status': 'Inprogress',
@@ -95,12 +95,12 @@ var todoList = [{
     "checkedElem": false,
     'todo': 'Added Back to Top button',
     "assignedto": [{
-            "assigneeName": "Marian Angel",
-            "assigneeImg": "/static/images/users/avatar-6.jpg",
-        },{
-            "assigneeName": "Johnnie Walton",
-            "assigneeImg": "/static/images/users/avatar-7.jpg",
-        }
+        "assigneeName": "Marian Angel",
+        "assigneeImg": "/static/images/users/avatar-6.jpg",
+    }, {
+        "assigneeName": "Johnnie Walton",
+        "assigneeImg": "/static/images/users/avatar-7.jpg",
+    }
     ],
     'dueDate': '30 Apr, 2022',
     'status': 'Inprogress',
@@ -110,15 +110,15 @@ var todoList = [{
     "checkedElem": true,
     'todo': 'Added File Manager Apps',
     "assignedto": [{
-            "assigneeName": "John Robles",
-            "assigneeImg": "/static/images/users/avatar-3.jpg",
-        },{
-            "assigneeName": "Mary Gant",
-            "assigneeImg": "/static/images/users/avatar-4.jpg",
-        },{
-            "assigneeName": "Virgie Price",
-            "assigneeImg": "/static/images/users/avatar-5.jpg",
-        }
+        "assigneeName": "John Robles",
+        "assigneeImg": "/static/images/users/avatar-3.jpg",
+    }, {
+        "assigneeName": "Mary Gant",
+        "assigneeImg": "/static/images/users/avatar-4.jpg",
+    }, {
+        "assigneeName": "Virgie Price",
+        "assigneeImg": "/static/images/users/avatar-5.jpg",
+    }
     ],
     'dueDate': '29 Apr, 2022',
     'status': 'Completed',
@@ -128,15 +128,15 @@ var todoList = [{
     "checkedElem": false,
     'todo': 'Datatable with jQuery cdn',
     "assignedto": [{
-            "assigneeName": "Marian Angel",
-            "assigneeImg": "/static/images/users/avatar-6.jpg",
-        },{
-            "assigneeName": "Johnnie Walton",
-            "assigneeImg": "/static/images/users/avatar-7.jpg",
-        },{
-            "assigneeName": "Donna Weston",
-            "assigneeImg": "/static/images/users/avatar-8.jpg",
-        }
+        "assigneeName": "Marian Angel",
+        "assigneeImg": "/static/images/users/avatar-6.jpg",
+    }, {
+        "assigneeName": "Johnnie Walton",
+        "assigneeImg": "/static/images/users/avatar-7.jpg",
+    }, {
+        "assigneeName": "Donna Weston",
+        "assigneeImg": "/static/images/users/avatar-8.jpg",
+    }
     ],
     'dueDate': '28 Apr, 2022',
     'status': 'Pending',
@@ -146,12 +146,12 @@ var todoList = [{
     "checkedElem": false,
     'todo': 'Profile Page Structure',
     "assignedto": [{
-            "assigneeName": "Mary Gant",
-            "assigneeImg": "/static/images/users/avatar-4.jpg",
-        },{
-            "assigneeName": "Virgie Price",
-            "assigneeImg": "/static/images/users/avatar-5.jpg",
-        }
+        "assigneeName": "Mary Gant",
+        "assigneeImg": "/static/images/users/avatar-4.jpg",
+    }, {
+        "assigneeName": "Virgie Price",
+        "assigneeImg": "/static/images/users/avatar-5.jpg",
+    }
     ],
     'dueDate': '27 Apr, 2022',
     'status': 'New',
@@ -161,9 +161,9 @@ var todoList = [{
     "checkedElem": true,
     'todo': 'Make a creating an account profile',
     "assignedto": [{
-            "assigneeName": "John Robles",
-            "assigneeImg": "/static/images/users/avatar-3.jpg",
-        }
+        "assigneeName": "John Robles",
+        "assigneeImg": "/static/images/users/avatar-3.jpg",
+    }
     ],
     'dueDate': '26 Apr, 2022',
     'status': 'Completed',
@@ -173,15 +173,15 @@ var todoList = [{
     "checkedElem": true,
     'todo': 'Change email option process',
     "assignedto": [{
-            "assigneeName": "John Robles",
-            "assigneeImg": "/static/images/users/avatar-3.jpg",
-        },{
-            "assigneeName": "Anthony Mills",
-            "assigneeImg": "/static/images/users/avatar-10.jpg",
-        },{
-            "assigneeName": "Diego Norris",
-            "assigneeImg": "/static/images/users/avatar-9.jpg",
-        }
+        "assigneeName": "John Robles",
+        "assigneeImg": "/static/images/users/avatar-3.jpg",
+    }, {
+        "assigneeName": "Anthony Mills",
+        "assigneeImg": "/static/images/users/avatar-10.jpg",
+    }, {
+        "assigneeName": "Diego Norris",
+        "assigneeImg": "/static/images/users/avatar-9.jpg",
+    }
     ],
     'dueDate': '25 Apr, 2022',
     'status': 'Completed',
@@ -191,15 +191,15 @@ var todoList = [{
     "checkedElem": false,
     'todo': 'Brand Logo design',
     "assignedto": [{
-            "assigneeName": "James Forbes",
-            "assigneeImg": "/static/images/users/avatar-2.jpg",
-        },{
-            "assigneeName": "Anthony Mills",
-            "assigneeImg": "/static/images/users/avatar-10.jpg",
-        },{
-            "assigneeName": "Diego Norris",
-            "assigneeImg": "/static/images/users/avatar-9.jpg",
-        }
+        "assigneeName": "James Forbes",
+        "assigneeImg": "/static/images/users/avatar-2.jpg",
+    }, {
+        "assigneeName": "Anthony Mills",
+        "assigneeImg": "/static/images/users/avatar-10.jpg",
+    }, {
+        "assigneeName": "Diego Norris",
+        "assigneeImg": "/static/images/users/avatar-9.jpg",
+    }
     ],
     'dueDate': '25 Apr, 2022',
     'status': 'New',
@@ -211,17 +211,17 @@ var todoList = [{
     "assignedto": [{
         "assigneeName": "Virgie Price",
         "assigneeImg": "/static/images/users/avatar-5.jpg",
-    },{
+    }, {
         "assigneeName": "Marian Angel",
         "assigneeImg": "/static/images/users/avatar-6.jpg",
-    },{
+    }, {
         "assigneeName": "Johnnie Walton",
         "assigneeImg": "/static/images/users/avatar-7.jpg",
-    },{
+    }, {
         "assigneeName": "Donna Weston",
         "assigneeImg": "/static/images/users/avatar-8.jpg",
     }
-],
+    ],
     'dueDate': '24 Apr, 2022',
     'status': 'Inprogress',
     "priority": "Low"
@@ -230,15 +230,15 @@ var todoList = [{
     "checkedElem": true,
     'todo': 'Additional Calendar',
     "assignedto": [{
-            "assigneeName": "Virgie Price",
-            "assigneeImg": "/static/images/users/avatar-5.jpg",
-        },{
-            "assigneeName": "Diego Norris",
-            "assigneeImg": "/static/images/users/avatar-9.jpg",
-        },{
-            "assigneeName": "Anthony Mills",
-            "assigneeImg": "/static/images/users/avatar-10.jpg",
-        }
+        "assigneeName": "Virgie Price",
+        "assigneeImg": "/static/images/users/avatar-5.jpg",
+    }, {
+        "assigneeName": "Diego Norris",
+        "assigneeImg": "/static/images/users/avatar-9.jpg",
+    }, {
+        "assigneeName": "Anthony Mills",
+        "assigneeImg": "/static/images/users/avatar-10.jpg",
+    }
     ],
     'dueDate': '23 Apr, 2022',
     'status': 'Completed',
@@ -248,12 +248,12 @@ var todoList = [{
     "checkedElem": false,
     'todo': 'Added Select2',
     "assignedto": [{
-            "assigneeName": "Curtis Saenz",
-            "assigneeImg": "/static/images/users/avatar-1.jpg",
-        },{
-            "assigneeName": "John Robles",
-            "assigneeImg": "/static/images/users/avatar-3.jpg",
-        }
+        "assigneeName": "Curtis Saenz",
+        "assigneeImg": "/static/images/users/avatar-1.jpg",
+    }, {
+        "assigneeName": "John Robles",
+        "assigneeImg": "/static/images/users/avatar-3.jpg",
+    }
     ],
     'dueDate': '23 Apr, 2022',
     'status': 'Pending',
@@ -264,18 +264,18 @@ var todoList = [{
 //Create a new folder
 var createFolderForms = document.querySelectorAll('.createProject-form')
 Array.prototype.slice.call(createFolderForms).forEach(function (form) {
-  form.addEventListener('submit', function (event) {
-    if (!form.checkValidity()) {
-      event.preventDefault();
-      event.stopPropagation();
-    } else {
-      event.preventDefault();
-        var projectName = document.getElementById("projectname-input").value;
-        var uniqueid = Math.floor(Math.random() * 100);
-        projectlisthtml =
-            '<li id="projectlist-' + uniqueid + '">\
-        <a data-bs-toggle="collapse" href="#projectCollapse-'+ uniqueid + '" class="nav-link fs-13">' + projectName + '</a>\
-        <div class="collapse" id="projectCollapse-'+ uniqueid + '">\
+    form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            event.preventDefault();
+            var projectName = document.getElementById("projectname-input").value;
+            var uniqueid = Math.floor(Math.random() * 100);
+            projectlisthtml =
+                '<li id="projectlist-' + uniqueid + '">\
+        <a data-bs-toggle="collapse" href="#projectCollapse-' + uniqueid + '" class="nav-link fs-13">' + projectName + '</a>\
+        <div class="collapse" id="projectCollapse-' + uniqueid + '">\
             <ul class="mb-0 sub-menu list-unstyled ps-3 vstack gap-2 mb-2">\
                 <li>\
                     <a href="#!"><i class="ri-stop-mini-fill align-middle fs-15 text-danger"></i> v1.0.0</a>\
@@ -284,21 +284,21 @@ Array.prototype.slice.call(createFolderForms).forEach(function (form) {
         </div>\
     </li>';
 
-        if (projectName !== "") {
-            var projectListdata = document.getElementById("projectlist-data");
-            projectListdata.insertAdjacentHTML("beforeend", projectlisthtml);
-            var addProjectClose = document.getElementById("addProjectBtn-close");
-            addProjectClose.click();
+            if (projectName !== "") {
+                var projectListdata = document.getElementById("projectlist-data");
+                projectListdata.insertAdjacentHTML("beforeend", projectlisthtml);
+                var addProjectClose = document.getElementById("addProjectBtn-close");
+                addProjectClose.click();
+            }
         }
-    }
-    form.classList.add('was-validated');
-  }, false)
+        form.classList.add('was-validated');
+    }, false)
 });
 
 const projectModalEl = document.getElementById('createProjectModal')
 projectModalEl.addEventListener('show.bs.modal', event => {
     document.getElementById("projectname-input").value = "";
-    document.querySelectorAll(".createProject-form").forEach(function(item){
+    document.querySelectorAll(".createProject-form").forEach(function (item) {
         item.classList.remove("was-validated");
     })
 })
@@ -327,7 +327,6 @@ var priorityVal = new Choices(priorityField, {
 });
 
 
-
 Array.from(document.getElementsByClassName("select-element")).forEach(function (elem) {
     Array.from(elem.querySelectorAll(".dropdown-menu ul li a")).forEach(function (subElem) {
         subElem.addEventListener("click", function () {
@@ -338,19 +337,19 @@ Array.from(document.getElementsByClassName("select-element")).forEach(function (
             var imgPath = subElem.querySelector(".avatar-xxs img").getAttribute('src');
 
             var folderListdata = document.getElementById("assignee-member");
-            if(subElem.classList.contains("active")){
+            if (subElem.classList.contains("active")) {
                 var nameelem = subElem.querySelector(".flex-grow-1").innerHTML;
 
                 folderlisthtml =
-                '<a href="javascript: void(0);" class="avatar-group-item mb-2" data-img="'+imgPath+'"  data-bs-toggle="tooltip" data -bs-placement="top" title="'+nameelem+'">\
-                <img src="'+imgPath+'" alt="" class="rounded-circle avatar-xs" />\
+                    '<a href="javascript: void(0);" class="avatar-group-item mb-2" data-img="' + imgPath + '"  data-bs-toggle="tooltip" data -bs-placement="top" title="' + nameelem + '">\
+                <img src="' + imgPath + '" alt="" class="rounded-circle avatar-xs" />\
                 </a>';
                 folderListdata.insertAdjacentHTML("beforeend", folderlisthtml);
                 tooltipElm();
-            }else{
+            } else {
                 Array.from(folderListdata.querySelectorAll(".avatar-group-item")).forEach(function (item) {
                     var avatarImg = item.getAttribute('data-img');
-                    if(imgPath == avatarImg){
+                    if (imgPath == avatarImg) {
                         item.remove();
                     }
                 });
@@ -368,39 +367,39 @@ document.getElementById("creattask-form").addEventListener("submit", function (e
     var priorityInputFieldValue = priorityVal.getValue(true);
 
     var assignedtousers = []
-    var assignedTo =  document.querySelectorAll('.select-element .dropdown-menu .dropdown-item.active');
+    var assignedTo = document.querySelectorAll('.select-element .dropdown-menu .dropdown-item.active');
 
     var errorMsg = document.getElementById("task-error-msg");
     errorMsg.style.display = "block";
-    
+
     var text;
-    if(inputTitle.length == 0){
-      text = "Please enter task name";
-      errorMsg.innerHTML = text;
-      return false;
+    if (inputTitle.length == 0) {
+        text = "Please enter task name";
+        errorMsg.innerHTML = text;
+        return false;
     }
-    if(assignedTo.length == 0){
+    if (assignedTo.length == 0) {
         text = "Please select team member";
         errorMsg.innerHTML = text;
         return false;
     }
-    if(statusInputFieldValue == ""){
+    if (statusInputFieldValue == "") {
         text = "Please select task status";
         errorMsg.innerHTML = text;
         return false;
     }
-    if(priorityInputFieldValue == ""){
+    if (priorityInputFieldValue == "") {
         text = "Please select task priority";
         errorMsg.innerHTML = text;
         return false;
     }
 
-    if(inputDate.length == 0){
+    if (inputDate.length == 0) {
         text = "Please select due date";
         errorMsg.innerHTML = text;
         return false;
     }
-    
+
     if (assignedTo.length > 0) {
         Array.from(assignedTo).forEach(function (ele) {
             var imgpath = ele.querySelector(".avatar-xxs img").getAttribute('src');
@@ -536,6 +535,7 @@ function sortElementsByName() {
 var searchTaskList = document.getElementById("searchTaskList");
 searchTaskList.addEventListener("keyup", function () {
     var inputVal = searchTaskList.value.toLowerCase();
+
     function filterItems(arr, query) {
         return arr.filter(function (el) {
             return el.todo.toLowerCase().indexOf(query.toLowerCase()) !== -1
@@ -559,6 +559,7 @@ function loadList(manyTodos) {
         document.getElementById("elmLoader").innerHTML = '';
         drawList(manyTodos);
     }
+
     elmLoader();
 }
 
@@ -587,15 +588,15 @@ function drawList(manyTodos) {
         var showElem = 3;
         var imgHtml = '<div class="avatar-group flex-nowrap">';
         Array.from(assignedElem.slice(0, showElem)).forEach(function (img) {
-            imgHtml += '<a href="javascript: void(0);" class="avatar-group-item" data-img="' + img.assigneeImg + '"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'+img.assigneeName+'">\
-                <img src="'+ img.assigneeImg + '" alt="" class="rounded-circle avatar-xxs" />\
+            imgHtml += '<a href="javascript: void(0);" class="avatar-group-item" data-img="' + img.assigneeImg + '"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="' + img.assigneeName + '">\
+                <img src="' + img.assigneeImg + '" alt="" class="rounded-circle avatar-xxs" />\
             </a>';
         });
-        if(assignedElem.length > showElem){
+        if (assignedElem.length > showElem) {
             var elemLength = assignedElem.length - showElem;
-            imgHtml += '<a href="javascript: void(0);" class="avatar-group-item"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="'+elemLength+' More">\
+            imgHtml += '<a href="javascript: void(0);" class="avatar-group-item"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="' + elemLength + ' More">\
             <div class="avatar-xxs">\
-            <div class="avatar-title rounded-circle">'+elemLength+'+</div>\
+            <div class="avatar-title rounded-circle">' + elemLength + '+</div>\
             </div>\
         </a>'
         }
@@ -610,20 +611,20 @@ function drawList(manyTodos) {
                     </div>\
                     <div class="flex-grow-1">\
                         <div class="form-check">\
-                            <input class="form-check-input" type="checkbox" value="'+ singleTodo.id + '" id="todo' + singleTodo.id + '" ' + checkinput + '>\
+                            <input class="form-check-input" type="checkbox" value="' + singleTodo.id + '" id="todo' + singleTodo.id + '" ' + checkinput + '>\
                             <label class="form-check-label" for="todo' + singleTodo.id + '">' + singleTodo.todo + '</label>\
                         </div>\
                     </div>\
                 </div>\
             </td>\
-            <td>'+ imgHtml + '</td>\
+            <td>' + imgHtml + '</td>\
             <td>' + singleTodo.dueDate + '</td>\
             <td>' + isStatus(singleTodo.status) + '</td>\
             <td>' + isPriority(singleTodo.priority) + '</td>\
             <td>\
             <div class="hstack gap-2">\
-                <button class="btn btn-sm btn-soft-danger remove-list" data-bs-toggle="modal" data-bs-target="#removeTaskItemModal" data-remove-id='+ singleTodo.id + '><i class="ri-delete-bin-5-fill align-bottom"></i></button>\
-                <button class="btn btn-sm btn-soft-info edit-list" data-bs-toggle="modal" data-bs-target="#createTask" data-edit-id='+ singleTodo.id + '><i class="ri-pencil-fill align-bottom"></i></button>\
+                <button class="btn btn-sm btn-soft-danger remove-list" data-bs-toggle="modal" data-bs-target="#removeTaskItemModal" data-remove-id=' + singleTodo.id + '><i class="ri-delete-bin-5-fill align-bottom"></i></button>\
+                <button class="btn btn-sm btn-soft-info edit-list" data-bs-toggle="modal" data-bs-target="#createTask" data-edit-id=' + singleTodo.id + '><i class="ri-pencil-fill align-bottom"></i></button>\
             </div>\
             </td>\
         </tr>';
@@ -655,7 +656,7 @@ window.addEventListener('click', function (e) {
     }
 });
 
-function tooltipElm(){
+function tooltipElm() {
     var tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     var tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 }
@@ -736,15 +737,15 @@ function editTodoList() {
 
                     Array.from(document.querySelectorAll(".select-element .dropdown-menu ul li a")).forEach(function (subElem) {
                         var nameelem = subElem.querySelector(".flex-grow-1").innerHTML;
-                        
+
                         item.assignedto.map(function (subItem) {
                             if (subItem.assigneeName == nameelem) {
                                 subElem.classList.add("active");
                                 var folderListdata = document.getElementById("assignee-member");
-                                if(subElem.classList.contains("active")){
+                                if (subElem.classList.contains("active")) {
                                     folderlisthtml =
-                                    '<a href="javascript: void(0);" class="avatar-group-item mb-2" data-img="'+subItem.assigneeImg+'"  data-bs-toggle="tooltip" data -bs-placement="top" data-bs-title="'+subItem.assigneeName+'">\
-                                    <img src="'+subItem.assigneeImg+'" alt="" class="rounded-circle avatar-xs" />\
+                                        '<a href="javascript: void(0);" class="avatar-group-item mb-2" data-img="' + subItem.assigneeImg + '"  data-bs-toggle="tooltip" data -bs-placement="top" data-bs-title="' + subItem.assigneeName + '">\
+                                    <img src="' + subItem.assigneeImg + '" alt="" class="rounded-circle avatar-xs" />\
                                     </a>';
 
                                     folderListdata.insertAdjacentHTML("beforeend", folderlisthtml);
@@ -755,7 +756,7 @@ function editTodoList() {
                             return subElem;
                         });
                     });
-                    
+
                     var assigneelength = document.querySelectorAll('.select-element .dropdown-menu .dropdown-item.active').length;
                     document.getElementById("total-assignee").innerHTML = assigneelength
 
@@ -777,6 +778,7 @@ function removeSingleItem() {
                         return ele.id != value;
                     });
                 }
+
                 var filtered = arrayRemove(todoList, getid);
 
                 todoList = filtered;

@@ -37,17 +37,16 @@ function onButtonGroupClick(event) {
 }
 
 
-
-var url="/static/json/";
+var url = "/static/json/";
 var allmemberlist = '';
 
 // Reading JSON with Fetch API
-fetch(url+"team-member-list.json")
+fetch(url + "team-member-list.json")
     .then(res => res.json())
     .then((data) => {
         allmemberlist = data;
         loadTeamData(allmemberlist);
-}).catch(err => console.error(err));
+    }).catch(err => console.error(err));
 
 // load team data
 function loadTeamData(datas) {
@@ -55,14 +54,14 @@ function loadTeamData(datas) {
 
     Array.from(datas).forEach(function (teamData, index) {
         var checkBookmark = teamData.bookmark ? "active" : "";
-        var isUserProfile = teamData.memberImg ? '<img src="'+teamData.memberImg+'" alt="" class="member-img img-fluid d-block rounded-circle" />'
-                    : '<div class="avatar-title border bg-light text-primary rounded-circle text-uppercase">' + teamData.nickname + '</div>';
+        var isUserProfile = teamData.memberImg ? '<img src="' + teamData.memberImg + '" alt="" class="member-img img-fluid d-block rounded-circle" />'
+            : '<div class="avatar-title border bg-light text-primary rounded-circle text-uppercase">' + teamData.nickname + '</div>';
 
         document.querySelector("#team-member-list").innerHTML +=
-        '<div class="col">\
-            <div class="card team-box">\
-                <div class="team-cover">\
-                    <img src="'+teamData.coverImg+'" alt="" class="img-fluid" />\
+            '<div class="col">\
+                <div class="card team-box">\
+                    <div class="team-cover">\
+                        <img src="' + teamData.coverImg + '" alt="" class="img-fluid" />\
                 </div>\
                 <div class="card-body p-4">\
                     <div class="row align-items-center team-row">\
@@ -80,31 +79,31 @@ function loadTeamData(datas) {
                                         <i class="ri-more-fill fs-17"></i>\
                                     </a>\
                                     <ul class="dropdown-menu dropdown-menu-end">\
-                                        <li><a class="dropdown-item edit-list" href="#addmemberModal"  data-bs-toggle="modal" data-edit-id="'+teamData.id+'"><i class="ri-pencil-line me-2 align-bottom text-muted"></i>Edit</a></li>\
-                                        <li><a class="dropdown-item remove-list" href="#removeMemberModal" data-bs-toggle="modal" data-remove-id="'+teamData.id+'"><i class="ri-delete-bin-5-line me-2 align-bottom text-muted"></i>Remove</a></li>\
+                                        <li><a class="dropdown-item edit-list" href="#addmemberModal"  data-bs-toggle="modal" data-edit-id="' + teamData.id + '"><i class="ri-pencil-line me-2 align-bottom text-muted"></i>Edit</a></li>\
+                                        <li><a class="dropdown-item remove-list" href="#removeMemberModal" data-bs-toggle="modal" data-remove-id="' + teamData.id + '"><i class="ri-delete-bin-5-line me-2 align-bottom text-muted"></i>Remove</a></li>\
                                     </ul>\
                                 </div>\
                             </div>\
                         </div>\
                         <div class="col-lg-4 col">\
                             <div class="team-profile-img">\
-                                <div class="avatar-lg img-thumbnail rounded-circle flex-shrink-0">'+isUserProfile+'</div>\
+                                <div class="avatar-lg img-thumbnail rounded-circle flex-shrink-0">' + isUserProfile + '</div>\
                                 <div class="team-content">\
                                     <a class="member-name" data-bs-toggle="offcanvas" href="#member-overview" aria-controls="member-overview">\
-                                        <h5 class="fs-16 mb-1">'+teamData.memberName+'</h5>\
+                                        <h5 class="fs-16 mb-1">' + teamData.memberName + '</h5>\
                                     </a>\
-                                    <p class="text-muted member-designation mb-0">'+teamData.position+'</p>\
+                                    <p class="text-muted member-designation mb-0">' + teamData.position + '</p>\
                                 </div>\
                             </div>\
                         </div>\
                         <div class="col-lg-4 col">\
                             <div class="row text-muted text-center">\
                                 <div class="col-6 border-end border-end-dashed">\
-                                    <h5 class="mb-1 projects-num">'+teamData.projects+'</h5>\
+                                    <h5 class="mb-1 projects-num">' + teamData.projects + '</h5>\
                                     <p class="text-muted mb-0">Projects</p>\
                                 </div>\
                                 <div class="col-6">\
-                                    <h5 class="mb-1 tasks-num">'+teamData.tasks+'</h5>\
+                                    <h5 class="mb-1 tasks-num">' + teamData.tasks + '</h5>\
                                     <p class="text-muted mb-0">Tasks</p>\
                                 </div>\
                             </div>\
@@ -138,6 +137,7 @@ function bookmarkBtn() {
         });
     });
 }
+
 bookmarkBtn();
 
 var editlist = false;
@@ -147,9 +147,9 @@ document.querySelector("#member-image-input").addEventListener("change", functio
     var preview = document.querySelector("#member-img");
     var file = document.querySelector("#member-image-input").files[0];
     var reader = new FileReader();
-    reader.addEventListener("load",function () {
+    reader.addEventListener("load", function () {
         preview.src = reader.result;
-    },false);
+    }, false);
     if (file) {
         reader.readAsDataURL(file);
     }
@@ -166,9 +166,9 @@ function editMemberList() {
                     document.getElementById("createMemberLabel").innerHTML = "Edit Member";
                     document.getElementById("addNewMember").innerHTML = "Save";
 
-                    if(item.memberImg == ""){
+                    if (item.memberImg == "") {
                         document.getElementById("member-img").src = "/static/images/users/user-dummy-img.jpg";
-                    }else{
+                    } else {
                         document.getElementById("member-img").src = item.memberImg;
                     }
 
@@ -192,9 +192,9 @@ document.querySelector("#cover-image-input").addEventListener("change", function
     var preview = document.querySelector("#cover-img");
     var file = document.querySelector("#cover-image-input").files[0];
     var reader = new FileReader();
-    reader.addEventListener("load",function () {
+    reader.addEventListener("load", function () {
         preview.src = reader.result;
-    },false);
+    }, false);
     if (file) {
         reader.readAsDataURL(file);
     }
@@ -202,15 +202,15 @@ document.querySelector("#cover-image-input").addEventListener("change", function
 
 Array.from(document.querySelectorAll(".addMembers-modal")).forEach(function (elem) {
     elem.addEventListener('click', function (event) {
-      document.getElementById("createMemberLabel").innerHTML = "Add New Members";
-      document.getElementById("addNewMember").innerHTML = "Add Member";
-      document.getElementById("teammembersName").value = "";
-      document.getElementById("designation").value = "";
+        document.getElementById("createMemberLabel").innerHTML = "Add New Members";
+        document.getElementById("addNewMember").innerHTML = "Add Member";
+        document.getElementById("teammembersName").value = "";
+        document.getElementById("designation").value = "";
 
-      document.getElementById("cover-img").src = "/static/images/small/img-9.jpg";
-      document.getElementById("member-img").src = "/static/images/users/user-dummy-img.jpg";
+        document.getElementById("cover-img").src = "/static/images/small/img-9.jpg";
+        document.getElementById("member-img").src = "/static/images/users/user-dummy-img.jpg";
 
-      document.getElementById("memberlist-form").classList.remove('was-validated');
+        document.getElementById("memberlist-form").classList.remove('was-validated');
     });
 });
 
@@ -240,16 +240,16 @@ Array.from(document.querySelectorAll(".addMembers-modal")).forEach(function (ele
                     );
 
                     var memberImageValue
-                    if(memberImgValue == "/static/images/users/user-dummy-img.jpg"){
+                    if (memberImgValue == "/static/images/users/user-dummy-img.jpg") {
                         memberImageValue = ""
-                    }else{
+                    } else {
                         memberImageValue = memberImg
                     }
 
                     var str = inputName;
                     var matches = str.match(/\b(\w)/g);
                     var acronym = matches.join(''); // JSON
-                    var nicknameValue = acronym.substring(0,2)
+                    var nicknameValue = acronym.substring(0, 2)
 
                     if (inputName !== "" && inputDesignation !== "" && !editlist) {
                         var newMemberId = findNextId();
@@ -266,10 +266,10 @@ Array.from(document.querySelectorAll(".addMembers-modal")).forEach(function (ele
                         };
 
                         allmemberlist.push(newMember);
-                        
+
                         sortElementsById();
-                        
-                    }else if(inputName !== "" && inputDesignation !== "" && editlist){
+
+                    } else if (inputName !== "" && inputDesignation !== "" && editlist) {
                         var getEditid = 0;
                         getEditid = document.getElementById("memberid-input").value;
                         allmemberlist = allmemberlist.map(function (item) {
@@ -299,7 +299,6 @@ Array.from(document.querySelectorAll(".addMembers-modal")).forEach(function (ele
             }, false)
         })
 })()
-
 
 
 function fetchIdFromObj(member) {
@@ -342,6 +341,7 @@ function removeItem() {
                         return ele.id != value;
                     });
                 }
+
                 var filtered = arrayRemove(allmemberlist, getid);
 
                 allmemberlist = filtered;
@@ -356,14 +356,14 @@ function removeItem() {
 function memberDetailShow() {
     Array.from(document.querySelectorAll(".team-box")).forEach(function (item) {
         item.querySelector(".member-name").addEventListener("click", function () {
-            
+
             var memberName = item.querySelector(".member-name h5").innerHTML;
             var memberDesignation = item.querySelector(".member-designation").innerHTML;
 
             var memberProfileImg
-            if(item.querySelector(".member-img")){
+            if (item.querySelector(".member-img")) {
                 memberProfileImg = item.querySelector(".member-img").src;
-            }else{
+            } else {
                 memberProfileImg = "/static/images/users/user-dummy-img.jpg"
             }
             var memberCoverImg = item.querySelector(".team-cover img").src;
@@ -379,13 +379,14 @@ function memberDetailShow() {
             document.querySelector("#member-overview .profile-project").innerHTML = memberProject;
             document.querySelector("#member-overview .profile-task").innerHTML = memberTask;
         });
-    }); 
+    });
 }
 
 // Search product list
 var searchMemberList = document.getElementById("searchMemberList");
 searchMemberList.addEventListener("keyup", function () {
     var inputVal = searchMemberList.value.toLowerCase();
+
     function filterItems(arr, query) {
         return arr.filter(function (el) {
             return (el.memberName.toLowerCase().indexOf(query.toLowerCase()) !== -1 || el.position.toLowerCase().indexOf(query.toLowerCase()) !== -1)

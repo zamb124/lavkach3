@@ -12,7 +12,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 class RoleService(BaseService[Role, RoleCreateScheme, RoleUpdateScheme, RoleFilter]):
     def __init__(self, request=None, db_session=None):
-        super(RoleService, self).__init__(request, Role, db_session)
+        super(RoleService, self).__init__(request, Role,  RoleCreateScheme, RoleUpdateScheme, db_session)
 
     @permit('role_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

@@ -11,10 +11,10 @@ if (document.querySelectorAll(".plan-nav .nav-item .nav-link")) {
         var annual = document.getElementsByClassName("annual");
         if (e.classList.contains("active") == true) {
             var i = 0;
-            Array.from(month).forEach(function (m){
+            Array.from(month).forEach(function (m) {
                 annual[i].style.display = "none";
                 m.style.display = "block";
-                i ++;  
+                i++;
             });
         }
     });
@@ -25,10 +25,10 @@ if (document.getElementById("month-tab")) {
         var month = document.getElementsByClassName("month");
         var annual = document.getElementsByClassName("annual");
         var i = 0;
-        Array.from(month).forEach(function (m){
+        Array.from(month).forEach(function (m) {
             if (annual[i]) annual[i].style.display = "none";
             if (m) m.style.display = "block";
-            i ++;
+            i++;
         });
     });
 }
@@ -39,10 +39,10 @@ if (document.getElementById("annual-tab")) {
         var annual = document.getElementsByClassName("annual");
 
         var i = 0;
-        Array.from(month).forEach(function (m){
+        Array.from(month).forEach(function (m) {
             if (annual[i]) annual[i].style.display = "block";
             if (m) m.style.display = "none";
-            i ++;
+            i++;
         });
     });
 }

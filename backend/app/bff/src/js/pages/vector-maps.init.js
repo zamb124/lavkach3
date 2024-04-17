@@ -17,7 +17,8 @@ function getChartColorsArray(chartId) {
                 if (newValue.indexOf(",") === -1) {
                     var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
                     if (color) return color;
-                    else return newValue;;
+                    else return newValue;
+                    ;
                 } else {
                     var val = value.split(',');
                     if (val.length == 2) {
@@ -44,9 +45,9 @@ if (vectorMapWorldLineColors)
         zoomOnScroll: false,
         zoomButtons: false,
         markers: [{
-                name: "Greenland",
-                coords: [72, -42]
-            },
+            name: "Greenland",
+            coords: [72, -42]
+        },
             {
                 name: "Canada",
                 coords: [56.1304, -106.3468]
@@ -81,9 +82,9 @@ if (vectorMapWorldLineColors)
             },
         ],
         lines: [{
-                from: "Canada",
-                to: "Egypt"
-            },
+            from: "Canada",
+            to: "Egypt"
+        },
             {
                 from: "Russia",
                 to: "Egypt"
@@ -146,9 +147,9 @@ if (vectorMapWorldMarkersColors)
         },
         markersSelectable: true,
         markers: [{
-                name: "Palestine",
-                coords: [31.9474, 35.2272]
-            },
+            name: "Palestine",
+            coords: [31.9474, 35.2272]
+        },
             {
                 name: "Russia",
                 coords: [61.524, 105.3188]
@@ -198,9 +199,9 @@ if (vectorMapWorldMarkersImageColors)
         selectedMarkers: [0, 2],
         markersSelectable: true,
         markers: [{
-                name: "Palestine",
-                coords: [31.9474, 35.2272]
-            },
+            name: "Palestine",
+            coords: [31.9474, 35.2272]
+        },
             {
                 name: "Russia",
                 coords: [61.524, 105.3188]

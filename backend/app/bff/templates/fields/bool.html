@@ -1,0 +1,24 @@
+{% block as_form %}
+        <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="{{ field.prefix }}{{ field.field_name }}"
+                name="{{ field.prefix }}{{ field.field_name }}"
+                {% if field.val == True %} checked {% endif %}
+        >
+{% endblock %}
+{% block as_view %}
+        <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                disabled
+                id="{{ field.prefix }}{{ field.field_name }}"
+                name="{{ field.prefix }}{{ field.field_name }}"
+                {% if field.val == True %} checked {% endif %}
+        >
+{% endblock %}
+{% block as_table %}
+{{ field.val if field.val else '' }}
+{% endblock %}

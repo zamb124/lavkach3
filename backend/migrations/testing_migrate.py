@@ -17,9 +17,9 @@ from sqlalchemy_utils.types import PasswordType
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'
-down_revision = 'aec81dd7c663'
+down_revision = '7c539bc761d4'
 branch_labels = None
-depends_on = 'aec81dd7c663'
+depends_on = '7c539bc761d4'
 
 
 def upgrade():
@@ -283,6 +283,7 @@ def upgrade():
                            'lsn': 3,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
+                           'is_admin': True,
                            "permission_allow_list": [
                                "company_create",
                                "company_edit",
@@ -290,7 +291,11 @@ def upgrade():
                                "company_delete",
                                "company_get",
                            ],
-                           "company_id": company_1_id
+                           "company_id": company_1_id,
+                           'company_ids': [
+                               company_1_id,
+                               company_2_id
+                           ]
                        },
                        {
                            "id": role_1_company_2_id,
@@ -336,7 +341,11 @@ def upgrade():
                            "is_admin": True,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
-                           "password": '1402'
+                           "password": '1402',
+                           'company_ids': [
+                               company_1_id,
+                               company_2_id
+                           ]
                        },
                        {
                            "id": user_1_company_1_id,

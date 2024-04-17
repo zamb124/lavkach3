@@ -11,8 +11,6 @@
     <link rel="shortcut icon" href="{{ url_for('static' ,path='images/favicon.ico') }}"/>
 
     {% block css %}
-        {% block extra_css %}
-        {% endblock extra_css %}
         <!-- Layout config Js -->
         <!-- Bootstrap Css -->
         <link href="{{ url_for('static' ,path='css/bootstrap.min.css') }}" id="bootstrap-style" rel="stylesheet"
@@ -24,32 +22,157 @@
         <!-- custom Css-->
         <link href="{{ url_for('static' ,path='css/custom.min.css') }}" id="app-style" rel="stylesheet"
               type="text/css"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.4/dist/bootstrap-table.min.css" rel="stylesheet">
         <style>
-        .card {
-            margin-bottom: 1rem;
-        }
+            .footer {
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+            }
 
-        input[type="date"] {
-    position: relative;
-}
+            .card-header {
+                border-bottom: hidden;
+            }
 
-::-webkit-datetime-edit-year-field:not([aria-valuenow]),
-::-webkit-datetime-edit-month-field:not([aria-valuenow]),
-::-webkit-datetime-edit-day-field:not([aria-valuenow]) {
-    color: transparent;
-}
+            .modal-content {
+                border-radius: 15px;
+            }
+
+            .dropdown-menu {
+                border-radius: 15px;
+            }
+
+
+            .card {
+                margin-bottom: 1rem;
+            }
+
+            .is-disabled .choices__inner {
+                background: transparent;
+                border: 0;
+            }
+
+
+
+            .choices__inner .choices__list {
+                background: transparent;
+            }
+
+            input[type="date"] {
+                position: relative;
+            }
+
+            ::-webkit-datetime-edit-year-field:not([aria-valuenow]),
+            ::-webkit-datetime-edit-month-field:not([aria-valuenow]),
+            ::-webkit-datetime-edit-day-field:not([aria-valuenow]) {
+                color: transparent;
+            }
+
+
+            .choices {
+                position: relative;
+                margin-bottom: 0px;
+                font-size: 16px;
+            }
+
+            .is-invalid {
+                border: 1px solid var(--vz-form-invalid-border-color) !important;
+                border-radius: 10px !important;
+            }
+
+            .is-invalid::after {
+                position: absolute;
+                font-weight: 900;
+                content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23f7666e'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23f7666e' stroke='none'/%3e%3c/svg%3e");
+                color: var(--vz-form-invalid-border-color);
+                font-size: 20px;
+                right: 40px;
+            }
+
+            .is-valid {
+                border: 1px solid var(--vz-form-valid-border-color) !important;
+                border-radius: 10px !important;
+            }
+
+            .is-valid::after {
+                position: absolute;
+                font-weight: 900;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%233cd188' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+                background-position: right calc(1.375em + 1.5rem) center !important;
+                color: var(--vz-form-valid-border-color);
+                font-size: 20px;
+                right: 40px;
+            }
+
+            .choices[data-type*=select-one] .choices__inner {
+                border-radius: 10px !important;
+            }
+
+            .choices[data-type*=select-one] .choices__input {
+                border-radius: 10px !important;
+            }
+
+            .card {
+                border-radius: 20px;
+            }
+
+            .card-header {
+                border-radius: 20px;
+            }
+
+            .btn {
+                border-radius: 10px;
+            }
+
+            .card-header:first-child {
+                border-radius: 10px;
+            }
+
+            .table {
+                border-radius: 20px;
+            }
+
+            .table-responsive {
+                border-radius: 20px;
+            }
+
+            .form-control {
+                border-radius: 10px;
+            }
+
+            .form-control.is-valid {
+                border-radius: 10px;
+                background-position: right calc(1.375em + 1.5rem) center !important;
+            }
+
+            .app-menu {
+                border-bottom-left-radius: 20px;
+                border-bottom-right-radius: 20px;
+            }
+
+            .page-title-box {
+                border-bottom-left-radius: 20px;
+                border-bottom-right-radius: 20px;
+            }
+
+
+            select option[selected] {
+                background-color: var(--vz-form-valid-border-color)
+            }
         </style>
     {% endblock css %}
 </head>
 
 <body>
+<!--<div id="websocket_bus" hx-ext="ws" ws-connect="ws://basic:8001/api/basic/ws/bus"></div>-->
 <div class="position-fixed top-0 end-0 p-3">
-  <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div id="toast-body" class="toast-body"></div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
+         aria-atomic="true">
+        <div class="d-flex">
+            <div id="toast-body" class="toast-body"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
     </div>
-  </div>
 </div>
 <!-- Begin page -->
 
@@ -72,7 +195,7 @@
         {% endblock footer %}
     </div>
 
-
+    <div id="trash"></div>
 </div>
 
 {% block extra_content %}
@@ -85,20 +208,21 @@
 
 {% block javascript %}
     <!-- JAVASCRIPT -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/ws.js"></script>
-{#    <script>#}
-{#        const links = document.querySelectorAll('a[class="nav-link"]')#}
-{##}
-{#        links.forEach(link => {#}
-{#            link.addEventListener('click', function () {#}
-{#                links.forEach(link => {#}
-{#                    link.classList.remove('active')#}
-{#                })#}
-{#                this.classList.add('active')#}
-{#            })#}
-{#        })#}
-{#    </script>#}
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/ws.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+    {#    <script>#}
+    {#        const links = document.querySelectorAll('a[class="nav-link"]')#}
+    {##}
+    {#        links.forEach(link => {#}
+    {#            link.addEventListener('click', function () {#}
+    {#                links.forEach(link => {#}
+    {#                    link.classList.remove('active')#}
+    {#                })#}
+    {#                this.classList.add('active')#}
+    {#            })#}
+    {#        })#}
+    {#    </script>#}
     <script>
         function getCookieValue(name) {
             const nameString = name + "="
@@ -108,17 +232,17 @@
             })
             if (values.length) {
                 let value = []
-                for (let val in values){
+                for (let val in values) {
                     let is_value = values[val].split('=').filter(item => {
                         return item.replace(' ', '') === name
                     })
-                    if (is_value.length){
+                    if (is_value.length) {
                         value = values[val]
                         break
                     }
                 }
-                if (value.length){
-                    return value.substring(nameString.length, value.length)
+                if (value.length) {
+                    return value.substring(nameString.length, value.length).replace('=', '')
                 }
             } else {
                 return null
@@ -146,32 +270,32 @@
 
         // await the auth token and store it somewhere
 
-        let authToken = null
+        var authToken = null
         // gate htmx requests on the auth token
         htmx.on("htmx:confirm", (e) => {
             let authToken = getCookieValue('token');
             // if there is no auth token
-            {##}
-            {#if (authToken == null && !window.location.pathname.includes('login')) {#}
-            {#    e.preventDefault()#}
-            {#    window.history.pushState('Login', 'Login', '/auth/login');#}
-            {#    console.log('redirect login')#}
-            {#    htmx.ajax('GET', '/auth/login', {#}
-            {#        target: '#htmx_content', headers: {#}
-            {#            'HX-Replace-Url': 'true'#}
-            {#        }#}
-            {#    })#}
-            {#    //console.log(authToken)#}
-            {#  #}
+            if (authToken == null && !window.location.pathname.includes('login')) {
+                debugger
+                e.preventDefault()
+                window.history.pushState('Login', 'Login', '/auth/login');
+                console.log('redirect login')
+                htmx.ajax('GET', '/auth/login', {
+                    target: '#htmx_content', headers: {
+                        'HX-Replace-Url': 'true'
+                    }
+                })
+                //console.log(authToken)
+            }
         });
 
-        async function refreshToken(){
+        async function refreshToken() {
             let user = {
                 token: getCookieValue('token').replace('=', ''),
-                refresh_token: getCookieValue('refresh_token').replace('=','')
+                refresh_token: getCookieValue('refresh_token').replace('=', '')
             };
             console.log('refreshing token')
-            let response = await fetch('/auth/refresh_token', {
+            let response = await fetch('/basic/user/refresh', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -179,20 +303,24 @@
                 body: JSON.stringify(user)
             });
             let result = await response.json();
+            const parsed = parseJwt(result.token)
+            const expires = await new Date(parsed.exp * 1000)
+            document.cookie = "token=" + result.token + "; expires=" + expires + ";path=/;"
+            document.cookie = "refresh_token=" + result.token + "; expires=" + expires + ";path=/;"
             return true
 
         }
 
         async function checkAuth() {
             var authToken = getCookieValue('token')
-            if (!authToken){
+            if (!authToken) {
                 authToken = getCookieValue('refresh_token')
                 if (authToken) {
                     authToken = refreshToken()
                     authToken = getCookieValue('token')
                 }
             }
-            if (!authToken){
+            if (!authToken) {
                 return false
             }
             var tokenData = parseJwt(authToken)
@@ -241,8 +369,9 @@
                 evt.detail.target = errors
                 evt.detail.shouldSwap = true;
                 evt.detail.isError = false;
-            } else if (evt.detail.xhr.status === 401) {
+            } else if (evt.detail.xhr.status === 401 && !window.location.pathname.includes('login')) {
                 // Запрещено
+                debugger
                 window.history.pushState('Login', 'Login', '/auth/login');
                 htmx.ajax('GET', '/auth/login', {
                     target: '#htmx_content', headers: {
@@ -255,7 +384,7 @@
                 evt.detail.shouldSwap = true;
                 evt.detail.target = htmx.find("#teapot");
 
-            }else {
+            } else {
                 var myToast = Toastify({
                     text: evt.detail.xhr.responseText,
                     duration: 3000,
@@ -273,6 +402,38 @@
         //        console.log(event, elt, data);
         //    }
         //};
+        htmx.on('htmx:wsConfigSend', (e) => {
+            console.log('wsConfigSend')
+            console.log(e);
+            e.detail.headers["Authorization"] = getCookieValue('token')
+        })
+        htmx.on('htmx:wsBeforeMessage', (e) => {
+            console.log('wsBeforeMessage')
+            const message = JSON.parse(e.detail.message)
+            console.log(message)
+            if (message.message_type === 'COMPANY_CHANGED') {
+                refreshToken()
+                htmx.trigger("#table", "update");
+            }
+        })
+
+        function hideModals() {
+            var $modals = document.querySelectorAll('.modal')
+            $modals.forEach(modal => {
+                let currentModal = bootstrap.Modal.getInstance(modal)
+                if (currentModal) {
+                    currentModal.hide()
+                }
+            })
+            var $modals = document.querySelectorAll('.modal-backdrop')
+            $modals.forEach(back => {
+                if (back) {
+                    back.remove()
+                }
+                var body = document.body
+                body.style.removeProperty('overflow');
+            })
+        }
     </script>
 
 
@@ -281,9 +442,9 @@
     <script src="{{ url_for('static' ,path='libs/node-waves/dist/waves.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='libs/feather-icons/dist/feather.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
-    <script src="{{ url_for('static' ,path='libs/sweetalert2/dist/sweetalert2.min.js') }}"></script>
     <script src="{{ url_for('static' ,path='js/plugins.js') }}"></script>
     <script src="{{ url_for('static' ,path='js/app.js') }}"></script>
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
     {% block extra_js %}
 
     {% endblock extra_js %}

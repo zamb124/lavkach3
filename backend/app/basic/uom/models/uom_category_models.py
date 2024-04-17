@@ -14,4 +14,4 @@ class UomCategory(Base, AllMixin):
     lsn_seq = Sequence(f'uom_category_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(index=True)
-    uom_list_rel: Mapped[Optional[list['Uom']]] = relationship(back_populates='category_rel', lazy='selectin')
+    uom_list_rel: Mapped[Optional[list['Uom']]] = relationship(back_populates='uom_category_rel', lazy='selectin')

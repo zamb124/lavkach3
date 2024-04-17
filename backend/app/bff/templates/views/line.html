@@ -1,0 +1,119 @@
+{% block as_create %}
+
+{% endblock %}
+{% block button_view %}
+    <script>
+        hideModals()
+    </script>
+    <a href="#"
+       hx-include="none"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vars='{
+"module": "{{ line.module }}",
+"model": "{{ line.model }}",
+"method": "view",
+"id": "{{ line.id }}",
+"prefix": "{{ line.prefix }}"
+}'
+       class="btn btn-soft-success">
+        <i class="ri-file-fill h4"></i>
+    </a>
+{% endblock %}
+
+{% block button_update %}
+    <script>
+        hideModals()
+    </script>
+    <button
+            href="#"
+            hx-include="none"
+            hx-trigger="click"
+            hx-target="#modal"
+            hx-ext="json-enc"
+            hx-post="/base/modal"
+            hx-vars='{
+"module": "{{ line.module }}",
+"model": "{{ line.model }}",
+"method": "update",
+"id": "{{ line.id }}",
+"prefix": "{{ line.prefix }}"
+}'
+            class="btn btn-soft-primary">
+        <i class="ri-file-edit-fill h4 "></i>
+    </button>
+{% endblock %}
+
+{% block button_create %}
+    <script>
+        hideModals()
+    </script>
+    <a href="#"
+       hx-include="none"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vars='{
+"module": "{{ line.module }}",
+"model": "{{ line.model }}",
+"method": "create",
+{% if line.id %}"id": "{{ line.id }}", {% endif %}
+"prefix": "{{ line.prefix }}"
+}'
+       class="btn btn-soft-secondary">
+        <i class="ri-file-add-fill h4"></i>
+    </a>
+{% endblock %}
+
+{% block button_delete %}
+    <script>
+        hideModals()
+    </script>
+    <a href="#"
+       hx-include="none"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vars='{
+"module": "{{ line.module }}",
+"model": "{{ line.model }}",
+"method": "delete",
+"id": "{{ line.id }}",
+"prefix": "{{ line.prefix }}",
+"target_id": "{{ target_id }}"
+}'
+       class="btn btn-soft-danger">
+        <i class="ri-file-reduce-fill h4"></i>
+    </a>
+{% endblock %}
+
+{% block as_form %}
+    <tr>
+        <th scope="row">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="checkAll" value="">
+            </div>
+        </th>
+        {% for field in line.fields %}
+            <td>{{ field.as_form()|safe }}</td>
+        {% endfor %}
+    </tr>
+{% endblock %}
+
+{% block as_view %}
+    <tr>
+        <th scope="row">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="checkAll" value="">
+            </div>
+        </th>
+        {% for field in line.fields %}
+            <td>{{ field.as_view()|safe }}</td>
+        {% endfor %}
+    </tr>
+{% endblock %}
+

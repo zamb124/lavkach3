@@ -1,29 +1,48 @@
-{% set select_key  = (prefix or 'select') ~ '-' ~ model %}
+{% set select_key  = prefix ~ name %}
+{% set select_id = 'select-' + uuid().hex %}
 <select
-        id="{{ select_key }}"
-        name="{{ model }}"
-        class="form-select was-validated"
-        data-choices data-choices-removeItem name="{{ select_key }}"
-        hx-get="/bff/select"
+        id="{{ select_id }}"
+        name="{{ select_key }}"
+        class="form-control"
+        aria-required="true"
+        data-choices data-choices-removeItem
+        hx-post="/bff/select"
         {% if required %} required {% endif %}
         hx-include="next [name='search_terms']"
-        hx-vals='{"module": "{{ module }}","model":"{{ model }}", "field":"{{ field }}"}'
+        hx-vals='{"module": "{{ module }}","model":"{{ model }}"}'
         hx-trigger="search delay:0.5s"
 >
-    <option value="{{ key or ''}}">{{ value or 'Select ' ~ model|capitalize }}</option>
+
+        <option value="">{{'Select ' ~ model|capitalize }}</option>
+
     {% for o in objects %}
-        <option value="{{ o.id or o.language or o.code }}">{{ o.title or o.english_name or o.name }}</option>
+        <option value="{{ o.id or o.language or o.code }}" {% if value==o.id %} selected {% endif %}>{{ o.title or o.english_name or o.name or o.nickname }}</option>
     {% endfor %}
 </select>
 <script>
-    var element = document.getElementById('{{ select_key }}')
+    var element = document.getElementById('{{ select_id }}')
     var choices = new Choices(element);
-    console.log('reqired')
+    console.log(element)
+    console.log(choices)
     var value = choices.getValue()
-    console.log(value)
+    var inner_element = choices.containerInner.element;
+    {% if required and  not value %}
+        inner_element.classList.add('is-invalid');
+        inner_element.classList.add('form-control');
+    {% else %}
+        inner_element.classList.add('is-valid');
+        inner_element.classList.add('form-control');
+    {% endif %}
+    element.addEventListener('choice', function (event){
+        console.log('choice')
+        if (this.required) {
+            if (!event.detail.choice.value) {
+                this.parentElement.classList.add('is-invalid');
+                this.parentElement.classList.remove('is-valid');
+            } else {
+                this.parentElement.classList.remove('is-invalid');
+                this.parentElement.classList.add('is-valid');
+            }
+        }
+    });
 </script>
-<style>
-    .btn.btn-default.dropdown-toggle.is-invalid {
-  border-color: #dc3545;
-}
-</style>

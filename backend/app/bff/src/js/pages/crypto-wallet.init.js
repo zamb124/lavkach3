@@ -320,7 +320,7 @@ if (areachartDatetimeColors) {
                 [1361833200000, 38.59],
                 [1361919600000, 39.6],
             ],
-        }, ],
+        },],
         chart: {
             id: "area-datetime",
             type: "area",
@@ -445,7 +445,7 @@ if (areachartbitcoinColors) {
         series: [{
             name: "Bitcoin",
             data: [85, 68, 35, 90, 8, 11, 26, 54],
-        }, ],
+        },],
         chart: {
             width: "100%",
             height: 50,
@@ -490,7 +490,7 @@ if (areachartlitecoinColors) {
         series: [{
             name: "Litecoin",
             data: [25, 50, 41, 87, 12, 36, 9, 54],
-        }, ],
+        },],
         chart: {
             width: "100%",
             height: 46,
@@ -535,7 +535,7 @@ if (areacharteathereumColors) {
         series: [{
             name: "Eathereum",
             data: [36, 21, 65, 22, 35, 50, 29, 44],
-        }, ],
+        },],
         chart: {
             width: "100%",
             height: 46,
@@ -580,7 +580,7 @@ if (areachartbinanceColors) {
         series: [{
             name: "Monero",
             data: [30, 58, 29, 89, 12, 36, 9, 54],
-        }, ],
+        },],
         chart: {
             width: "100%",
             height: 46,
@@ -625,7 +625,7 @@ if (areachartdashColors) {
         series: [{
             name: "Dash",
             data: [24, 68, 39, 86, 29, 42, 11, 58],
-        }, ],
+        },],
         chart: {
             width: "100%",
             height: 46,
@@ -670,7 +670,7 @@ if (areacharttetherColors) {
         series: [{
             name: "Dash",
             data: [13, 76, 12, 85, 25, 60, 9, 54],
-        }, ],
+        },],
         chart: {
             width: "100%",
             height: 46,
@@ -715,7 +715,7 @@ if (areachartneoColors) {
         series: [{
             name: "Neo",
             data: [9, 66, 41, 89, 12, 36, 25, 54],
-        }, ],
+        },],
         chart: {
             width: "100%",
             height: 46,
@@ -846,8 +846,8 @@ if (paginationNext) {
     document.querySelector(".pagination-next").addEventListener("click", function () {
         document.querySelector(".pagination.listjs-pagination") ?
             document.querySelector(".pagination.listjs-pagination").querySelector(".active") ?
-            document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click() :
-            "" :
+                document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click() :
+                "" :
             "";
     });
 }
@@ -857,8 +857,8 @@ if (paginationPrev) {
     document.querySelector(".pagination-prev").addEventListener("click", function () {
         document.querySelector(".pagination.listjs-pagination") ?
             document.querySelector(".pagination.listjs-pagination").querySelector(".active") ?
-            document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click() :
-            "" :
+                document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click() :
+                "" :
             "";
     });
 }

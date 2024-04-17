@@ -5,17 +5,16 @@ from core.helpers.cache.base import BaseKeyMaker
 
 
 class CustomKeyMaker(BaseKeyMaker):
-    async def make(self, function: Any | Callable, prefix: str) -> str:
-        if isinstance(function, Callable):
-            path = f"{prefix}::{inspect.getmodule(function).__name__}.{function.__name__}"
-            args = ""
+    async def make(self, *, function: Callable, prefix: str) -> str:
+        path = f"{prefix}:{inspect.getmodule(function).__name__}.{function.__name__}"  # type: ignore
+        args = ""
 
-            for arg in inspect.signature(function).parameters.values():
-                args += arg.name
+        for arg in inspect.signature(function).parameters.values():
+            args += arg.name
 
-            if args:
-                return f"{path}.{args}"
-        else:
-            path = f"{prefix}::{function}"
+        if args:
+            return f"{path}.{args}"
 
         return path
+
+cache_kay_maker = CustomKeyMaker()

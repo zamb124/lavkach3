@@ -4,42 +4,13 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
 from typing import Optional, List
 
-from app.basic.company.schemas import CompanyCreateScheme
+from app.basic.company.schemas import CompanyCreateScheme, CompanyScheme
 from app.basic.user.models.user_models import UserType, User
 from app.basic.store.schemas.store_schemas import StoreScheme
+from core.schemas import BaseFilter
+from core.schemas.timestamps import TimeStampScheme
 from core.types.types import *
 from core.schemas.list_schema import GenericListSchema
-
-
-class GetUserListResponseSchema(BaseModel):
-    id: UUID4 = Field(..., description="ID")
-    email: str = Field(..., description="Email")
-    nickname: str = Field(..., description="Nickname")
-    type: Optional[UserType]
-    store: Optional[StoreScheme]
-
-    class Config:
-        orm_mode = True
-
-
-class CreateUserRequestSchema(BaseModel):
-    email: str = Field(..., description="Email")
-    password1: str = Field(..., description="Password1")
-    password2: str = Field(..., description="Password2")
-    nickname: str = Field(..., description="Nickname")
-    type: Optional[UserType]
-    store_rel: Optional[UUID4]
-
-    class Config:
-        orm_mode = True
-
-
-class CreateUserResponseSchema(BaseModel):
-    email: str = Field(..., description="Email")
-    nickname: str = Field(..., description="Nickname")
-
-    class Config:
-        orm_mode = True
 
 
 class LoginResponseSchema(BaseModel):
@@ -49,33 +20,35 @@ class LoginResponseSchema(BaseModel):
     refresh_token: str = Field(..., description="Refresh token")
     user_id: Optional[UUID4]
     company_ids: Optional[List[UUID4]]
+    company_id: Optional[UUID4] = None
     permission_list: Optional[List[str]]
     role_ids: Optional[List[str]]
     locale: Optional[str]
     country: Optional[str]
 
-
-from pydantic import BaseModel, Field, UUID4
-from core.schemas.timestamps import TimeStampScheme
-
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = User
+        service = 'app.basic.user.services.UserService'
 
 class UserBaseScheme(BaseModel):
     vars: Optional[dict] = {}
-    email: str = Field(description="Email")
-    country: Optional[TypeCountry] = None
-    locale: TypeLocale
-    phone_number: Optional[TypePhone] = None
-    nickname: str
-    is_admin: Optional[bool] = None
-    type: Optional[str] = None
-    external_number: Optional[str] = None
-    store_id: Optional[UUID4] = None
-    company_ids: Optional[list[UUID4]] = None
-    role_ids: Optional[list[UUID4]] = None
+    email: str = Field(title="Email")
+    country: Optional[TypeCountry] = Field(default=None, title='Country', table=True, form=True)
+    locale: TypeLocale = Field(default=None, title='Locale', table=True, form=True)
+    phone_number: Optional[TypePhone] = Field(default=None, title='Phone', table=True, form=True)
+    nickname: str = Field(title='Nickname', table=True, form=True)
+    is_admin: Optional[bool] = Field(default=False, title='Is Admin')
+    type: Optional[UserType] = Field(default=UserType.COMMON, title='Type')
+    external_number: Optional[str] = Field(default=False, title='External #', table=True)
+    store_id: Optional[UUID4] = Field(default=None, title='Store Id')
+    company_ids: Optional[list[UUID4]] = Field(default=None, title='Сompanies')
+    role_ids: Optional[list[UUID4]] = Field(default=None, title='Roles')
 
 
 class UserUpdateScheme(UserBaseScheme):
-    nickname: Optional[str] = None
+    nickname: Optional[str] = Field(default=None,title='Nickname', table=True, form=True)
     locale: TypeLocale = None
     email: str = None
 
@@ -93,27 +66,21 @@ class UserScheme(UserBaseScheme, TimeStampScheme):
     phone_number: Optional[TypePhone]
     locale: Optional[TypeLocale]
     country: Optional[TypeCountry]
+    company_id: Optional[UUID4]
+    company_rel: Optional[CompanyScheme]
     store_rel: Optional[StoreScheme]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
-class UserFilter(Filter):
-    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
-    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
-    created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
-    created_at__lt: Optional[datetime] = Field(description="less created", default=None)
-    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
-    updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
+class UserFilter(BaseFilter):
     country__in: Optional[List[str]] = Field(alias="country", default=None)
-    external_number__in: Optional[List[str]] = Field(alias="external_number", default=None)
-    email__in: Optional[List[str]] = Field(alias="email", default=None)
-    nickname__in: Optional[List[str]] = Field(alias="nickname", default=None)
-    role_ids__in: Optional[List[str]] = Field(alias="roles", default=None)
-    locale__in: Optional[List[str]] = Field(alias="locale", default=None)
-    order_by: Optional[List[str]] = ["created_at"]
-    search: Optional[str] = None
+    external_number__in: Optional[List[str]] = Field(default=None)
+    email__in: Optional[List[str]] = Field(default=None)
+    nickname__in: Optional[List[str]] = Field(default=None)
+    role_ids__in: Optional[List[str]] = Field(default=None)
+    locale__in: Optional[List[str]] = Field(default=None)
 
     class Config:
         populate_by_name = True
@@ -132,3 +99,8 @@ class UserListSchema(GenericListSchema):
 class SignUpScheme(BaseModel):
     user: UserCreateScheme
     company: CompanyCreateScheme
+
+
+class ChangeCompanyScheme(BaseModel):
+    user_id: UUID4
+    company_id: UUID4

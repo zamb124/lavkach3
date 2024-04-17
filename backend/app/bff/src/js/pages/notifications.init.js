@@ -47,14 +47,14 @@ if (toastTrigger5 && toastLiveExample5) {
 toastPlacement = document.getElementById("toastPlacement");
 toastPlacement && document.getElementById("selectToastPlacement").addEventListener("change", function () {
     toastPlacement.dataset.originalClass ||
-        (toastPlacement.dataset.originalClass = toastPlacement.className),
+    (toastPlacement.dataset.originalClass = toastPlacement.className),
         (toastPlacement.className =
             toastPlacement.dataset.originalClass + " " + this.value);
 }),
 
-Array.from(document.querySelectorAll(".bd-example .toast")).forEach(function (a) {
-    var b = new bootstrap.Toast(a, {
-        autohide: !1
+    Array.from(document.querySelectorAll(".bd-example .toast")).forEach(function (a) {
+        var b = new bootstrap.Toast(a, {
+            autohide: !1
+        });
+        b.show();
     });
-    b.show();
-});

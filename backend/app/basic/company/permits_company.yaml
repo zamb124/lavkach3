@@ -4,3 +4,4 @@ permits:
   company_list: Может получать список компаний
   company_delete: Может удалять компанию
   company_get: Может смотреть на компанию
+  change_company: Может изменить компанию

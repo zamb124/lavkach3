@@ -1,8 +1,8 @@
 FROM python:3.12
 
-RUN mkdir /fastapi
+RUN mkdir /basic
 
-WORKDIR /fastapi
+WORKDIR /basic
 
 COPY requirements.txt .
 
@@ -12,4 +12,4 @@ COPY . .
 
 RUN chmod a+x docker/*.sh
 
-#CMD gunicorn app.server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000
+CMD gunicorn app.basic.server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000

@@ -1,18 +1,18 @@
 from contextvars import ContextVar, Token
 from typing import Union
-from typing import AsyncGenerator
 
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,
     async_scoped_session,
 )
-from sqlalchemy.orm import RelationshipProperty, registry, relationship
+from sqlalchemy.orm import registry
 from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm.decl_api import DeclarativeMeta
 from sqlalchemy.sql.expression import Update, Delete, Insert
 
 from core.config import config
-from sqlalchemy.orm.decl_api import DeclarativeMeta
 
 session_context: ContextVar[str] = ContextVar("session_context")
 
@@ -30,8 +30,8 @@ def reset_session_context(context: Token) -> None:
 
 
 engines = {
-    "writer": create_async_engine(config.WRITER_DB_URL, echo=True, pool_recycle=3600),
-    "reader": create_async_engine(config.READER_DB_URL, echo=True, pool_recycle=3600),
+    "writer": create_async_engine(config.WRITER_DB_URL, pool_recycle=3600),
+    "reader": create_async_engine(config.READER_DB_URL, pool_recycle=3600),
 }
 
 
@@ -53,6 +53,8 @@ session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
 )
 
 mapper_registry = registry()
+
+
 class Base(metaclass=DeclarativeMeta):
     __abstract__ = True
 

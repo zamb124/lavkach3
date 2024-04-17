@@ -94,9 +94,10 @@ function check() {
             annual[i].style.display = "none";
             mon.style.display = "block";
         }
-        i ++;
+        i++;
     });
 }
+
 check();
 
 // client-review-swiper

@@ -1,87 +1,88 @@
 from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional, List, TYPE_CHECKING, Any
-from datetime import date
+from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, field_validator, model_validator, model_serializer
+from pydantic import BaseModel, Field, computed_field
 from pydantic.types import UUID4
 
-from app.inventory.location.enums import PutawayStrategy
-from core.schemas import BaseFilter
-
-from core.schemas.list_schema import GenericListSchema
-from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import Order
 from app.inventory.order.models.order_models import OrderStatus
+from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme
 from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
+from core.schemas import BaseFilter
+from core.schemas.filter_generic import CustomBaseModel
+from core.schemas.list_schema import GenericListSchema
+from core.schemas.timestamps import TimeStampScheme
+
 
 class OrderBaseScheme(BaseModel):
-    vars: Optional[dict] = None
-    parent_id: Optional[UUID4] = None
-    external_number: Optional[str] = None
-    store_id: UUID4
-    partner_id: Optional[UUID4] = None
-    lot_id: Optional[UUID4] = None
-    order_type_id: Optional[UUID4] = None
-    origin_number: Optional[str] = None
-    planned_date: Optional[datetime]
-    actual_date: Optional[datetime]
-    created_by: UUID4
-    edited_by: UUID4
-    expiration_datetime: Optional[datetime]
-    users_ids: Optional[list[UUID4]] = []
-    description: Optional[str]
-    status: OrderStatus
-
-
-class OrderUpdateScheme(OrderBaseScheme):
-    vars: Optional[dict] = None
-    external_number: Optional[str] = None
-    lot_id: Optional[UUID4] = None
-    origin_type: Optional[str] = None
-    origin_number: Optional[str] = None
-    planned_date: Optional[datetime] = None
-    expiration_datetime: Optional[datetime] = None
-    description: Optional[str] = None
-    partner_id: Optional[UUID4] = None
-    order_type_id: UUID4 = None
-
-class OrderCreateScheme(OrderBaseScheme):
-    company_id: UUID4
+    external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
+    order_type_id: UUID4 = Field(title='Order type')
+    store_id: UUID4 = Field(title='Store', table=True, form=True)
+    partner_id: Optional[UUID4] = Field(default=None, title='Partner', table=True, form=True)
+    lot_id: Optional[UUID4] = Field(default=None, title='Lot')
+    origin_type: Optional[str] = Field(default=None, title='Original Type', form=True)
+    origin_number: Optional[str] = Field(default=None, title='Original', table=True, form=True)
+    planned_datetime: Optional[datetime] = Field(default=None, title='Planned Date', table=True, form=True)
+    expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=True, form=True)
+    description: Optional[str] = Field(default=None, title='Description', table=True, form=True)
+    status: OrderStatus = Field(title='Status', table=True, form=True)
+    order_id: Optional[UUID4] = Field(default=None, title='Parent', form=True)
 
     class Config:
         extra = 'allow'
+        from_attributes = True
+        orm_model = Order
+        service = 'app.inventory.order.services.OrderService'
 
-class OrderScheme(OrderCreateScheme, TimeStampScheme):
+
+class OrderUpdateScheme(OrderBaseScheme):
+    move_list_rel: Optional[list[MoveUpdateScheme]] = Field(default=[], title='Order Movements', form=True)
+
+
+class OrderCreateScheme(OrderBaseScheme):
+    move_list_rel: Optional[list[MoveCreateScheme]] = Field(default=[], title='Order Movements', form=True)
+
+
+class OrderScheme(OrderCreateScheme, TimeStampScheme, CustomBaseModel):
     lsn: int
     id: UUID4
     company_id: UUID4
-    moves_list_rel: Optional[list[UUID4]] = []
-    number: str
-    order_type: 'OrderTypeScheme'
+    vars: Optional[dict] = None
+    number: str = Field(title='Order #', table=True, form=True, description="Internal number of order")
+    actual_datetime: Optional[datetime] = Field(title='Actual Date', table=True, form=True)
+    created_by: UUID4 = Field(title='Created By', table=True)
+    edited_by: UUID4 = Field(title='Edit By')
+    user_ids: Optional[list[UUID4]] = Field(default=[], title='Users', form=True)
+    move_list_rel: Optional[list[MoveScheme]] = Field(default=[], title='Order Movements', form=True)
+    order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True)
+
+    @computed_field
+    def title(self) -> str:
+        return f'{self.order_type_rel.title}: [{self.number}]'
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 def empty_erray(val):
     if val:
         return val
 
+
 class OrderFilter(BaseFilter):
-    planned_date__gte: Optional[datetime] = Field(alias='planned_date_from', description="bigger or equal planned date", default=None)
-    planned_date__lt: Optional[datetime] = Field(alias='planned_date_to', description="less planned date", default=None)
-    status__in: Optional[List[OrderStatus]] = Field(alias="status", default=None)
-    date_planned_range: Optional[str] = Field(alias="date_planned_range", default=None)
-    store_id__in: Optional[List[UUID4]] = Field(alias="store_id", default=None)
-    order_type_id__in: Optional[List[UUID4]] = Field(alias="order_type_id", default=None)
+    planned_datetime__gte: Optional[datetime] = Field(title="bigger or equal planned date", default=None, filter=True)
+    planned_datetime__lt: Optional[datetime] = Field(title="less planned date", default=None, filter=True)
+    status__in: Optional[List[OrderStatus]] = Field(default=None, title='Order Status', filter=True)
+    store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', filter=True)
+    order_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Order Type', filter=True)
 
     class Constants(Filter.Constants):
         model = Order
         ordering_field_name = "order_by"
         search_model_fields = ["external_number", "origin_number", "number"]
-
 
 
 class OrderListSchema(GenericListSchema):

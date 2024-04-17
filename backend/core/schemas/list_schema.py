@@ -19,7 +19,10 @@ class GenericListSchema(BaseModel):
     @model_validator(mode='before')
     def mixin(cls: Type['Model'], data: Any) -> 'Model':
         if data['data']:
-            cursor = max([i.lsn for i in data['data']])
+            if not getattr(data['data'][0], 'lsn'):
+                cursor = 99999
+            else:
+                cursor = max([i.lsn for i in data['data']])
             return {
                 'size': len(data['data']),
                 'data': data['data'],
@@ -28,7 +31,7 @@ class GenericListSchema(BaseModel):
         return data
 
     class Config:
-        orm_mode = False
+        from_attributes = False
         arbitrary_types_allowed = True
         extra = 'allow'
 

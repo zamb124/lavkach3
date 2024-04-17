@@ -1,3 +1,5 @@
+import logging
+from contextlib import asynccontextmanager
 from typing import List
 
 from fastapi import FastAPI, Request, Depends
@@ -5,11 +7,13 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.bff.bff_config import config
 from app.bff.bff_router import bff_router
+from app.bff.bff_tasks import remove_expired_tokens
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -17,8 +21,12 @@ from core.fastapi.middlewares import (
     AuthBffBackend,
     SQLAlchemyMiddleware,
 )
-from core.helpers.cache import Cache, CustomKeyMaker
+from core.helpers.cache import Cache, CustomKeyMaker, CacheTag
 from core.helpers.cache import RedisBackend
+from core.utils.timeit import add_timing_middleware
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class env:
@@ -34,11 +42,12 @@ class AdapterMidlleWare:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        conn = HTTPConnection(scope)
-        e = env()
-        for i, v in config.services.items():
-            e.__setattr__(i, v['adapter'](conn, i))
-        scope['env'] = e
+        if scope['type'] in  ("http", "websocket"):
+            conn = HTTPConnection(scope)
+            e = env()
+            for i, v in config.services.items():
+                e.__setattr__(i, v['adapter'](conn, v, i))
+            scope['env'] = e
         await self.app(scope, receive, send)
 
 
@@ -94,8 +103,27 @@ def init_cache() -> None:
     Cache.init(backend=RedisBackend(), key_maker=CustomKeyMaker())
 
 
+def fake_answer_to_everything_ml_model(x: float):
+    return x * 42
+
+
+
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+        Старт сервера
+    """
+    await remove_expired_tokens()
+    yield
+    """
+            Выключение сервера
+    """
+
 def create_app() -> FastAPI:
     app_ = FastAPI(
+        lifespan=lifespan,
         title="Hide",
         description="Hide API",
         version="1.0.0",
@@ -111,4 +139,10 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+add_timing_middleware(app, record=logger.info, prefix="app", exclude="untimed")
 app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
+
+
+
+

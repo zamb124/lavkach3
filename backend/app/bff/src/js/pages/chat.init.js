@@ -48,7 +48,7 @@ File: Chat init js
     //User current Id
     var currentChatId = "users-chat";
     var currentSelectedChat = "users";
-    var url="/static/json/";
+    var url = "/static/json/";
     var usersList = "";
     var userChatId = 1;
 
@@ -90,7 +90,7 @@ File: Chat init js
                 var activeClass = userData.id === 1 ? "active" : "";
                 document.getElementById("userList").innerHTML +=
                     '<li id="contact-id-' + userData.id + '" data-name="direct-message" class="' + activeClass + '">\
-                '+ messageCount + ' \
+                ' + messageCount + ' \
                 <div class="d-flex align-items-center">\
                     <div class="flex-shrink-0 chat-user-img ' + userData.status + ' align-self-center me-2 ms-0">\
                         <div class="avatar-xxs">\
@@ -121,7 +121,7 @@ File: Chat init js
                 var messageCount = isChannel.messagecount ? '<a href="javascript: void(0);" class="unread-msg-user">' : '<a href="javascript: void(0);">'
                 document.getElementById("channelList").innerHTML +=
                     '<li id="contact-id-' + isChannel.id + '" data-name="channel">\
-            '+ messageCount + ' \
+            ' + messageCount + ' \
                 <div class="d-flex align-items-center">\
                     <div class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">\
                         <div class="avatar-xxs">\
@@ -230,7 +230,7 @@ File: Chat init js
                     isreplyMessage = false;
                     document.querySelector(".replyCard").classList.remove("show");
                 }
-                
+
                 if (item.querySelector(".align-items-center").querySelector(".avatar-xxs img")) {
                     var contactImg = item.querySelector(".align-items-center").querySelector(".avatar-xxs .rounded-circle").getAttribute("src");
                     document.querySelector(".user-own-img .avatar-xs").setAttribute("src", contactImg);
@@ -268,6 +268,7 @@ File: Chat init js
         };
         xhr.send();
     }
+
     // getNextMsgCounts
     function getNextMsgCounts(chatsData, i, from_id) {
         var counts = 0;
@@ -389,6 +390,7 @@ File: Chat init js
             getChatMessages(url + "chats.json");
         }
     }
+
     updateSelectedChat();
 
 
@@ -430,7 +432,7 @@ File: Chat init js
                     }
 
                     msgHTML +=
-                        '<div class="conversation-name"><span class="d-none name">'+user.name+'</span><small class="text-muted time">'+ isChat.datetime +
+                        '<div class="conversation-name"><span class="d-none name">' + user.name + '</span><small class="text-muted time">' + isChat.datetime +
                         '</small> <span class="text-success check-message-icon"><i class="bx bx-check-double"></i></span></div>';
                     msgHTML += "</div>\
                 </div>\
@@ -497,6 +499,7 @@ File: Chat init js
             return hour + ":" + minute + " " + ampm;
         }
     }
+
     setInterval(currentTime, 1000);
 
     var messageIds = 0;
@@ -594,6 +597,7 @@ File: Chat init js
 
     //Copy Message to clipboard
     var itemList = document.querySelector(".chat-conversation-list");
+
     function copyMessage() {
         var copyMessage = itemList.querySelectorAll(".copy-message");
         copyMessage.forEach(function (item) {
@@ -627,6 +631,7 @@ File: Chat init js
                 document.getElementById("copyClipBoard").style.display = "block";
                 document.getElementById("copyClipBoardChannel").style.display = "block";
                 setTimeout(hideclipboard, 1000);
+
                 function hideclipboard() {
                     document.getElementById("copyClipBoard").style.display = "none";
                     document.getElementById("copyClipBoardChannel").style.display =
@@ -661,10 +666,12 @@ File: Chat init js
             });
         });
     }
+
     deleteImage();
 
     //Delete Channel Message
     var channelItemList = document.querySelector("#channel-conversation");
+
     function deleteChannelMessage() {
         channelChatList = channelItemList.querySelectorAll(".delete-item");
         channelChatList.forEach(function (item) {
@@ -675,6 +682,7 @@ File: Chat init js
             });
         });
     }
+
     deleteChannelMessage();
 
     //Reply Message
@@ -943,6 +951,7 @@ File: Chat init js
     });
 
 })();
+
 //Search Message
 function searchMessages() {
     var searchInput, searchFilter, searchUL, searchLI, a, i, txtValue;

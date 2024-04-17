@@ -12,11 +12,16 @@ from core.schemas import BaseFilter
 
 class UomBaseScheme(BaseModel):
     title: str = Field(description="Title")
-    category_id: UUID4
+    uom_category_id: UUID4
     type: UomType
     ratio: float
     precision: float
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Uom
+        service = 'app.basic.uom.services.UomService'
 
 class UomUpdateScheme(UomBaseScheme):
     pass
@@ -31,20 +36,14 @@ class UomScheme(UomCreateScheme, TimeStampScheme):
     lsn: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         arbitrary_types_allowed = True
 
 
 class UomFilter(BaseFilter):
-    lsn__gt: Optional[int] = Field(alias="cursor")
-    id__in: Optional[List[UUID4]] = Field(alias="id")
-    created_at__gte: Optional[datetime] = Field(description="bigger or equal created")
-    created_at__lt: Optional[datetime] = Field(description="less created")
-    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated")
-    updated_at__lt: Optional[datetime] = Field(description="less updated")
-    title__in: Optional[List[str]] = Field(description="title")
-    category_id__in: Optional[List[str]] = Field(description="category_id")
-    type__in: Optional[List[str]] = Field(description="type")
+    title__in: Optional[List[str]] = Field(default=None, description="title")
+    uom_category_id__in: Optional[List[str]] = Field(default=None,description="category_id")
+    type__in: Optional[List[str]] = Field(default=None, description="type")
 
     class Config:
         populate_by_name = True

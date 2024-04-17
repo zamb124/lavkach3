@@ -73,12 +73,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -137,12 +137,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -201,12 +201,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -265,12 +265,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -329,12 +329,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -393,12 +393,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -457,12 +457,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -521,12 +521,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -585,12 +585,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -649,12 +649,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -713,12 +713,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -777,12 +777,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -841,12 +841,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -905,12 +905,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -969,12 +969,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -1033,12 +1033,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -1097,12 +1097,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -1161,12 +1161,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -1225,12 +1225,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -1289,12 +1289,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -1353,12 +1353,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -1417,12 +1417,12 @@ var Invoices = [{
         tax: '123456789'
     },
     prducts: [{
-            product_name: 'Sweatshirt for Men (Pink)',
-            product_details: 'Graphic Print Men & Women Sweatshirt',
-            rates: (rate = 119.99),
-            quantity: (qty = 2),
-            amount: (rate * qty)
-        },
+        product_name: 'Sweatshirt for Men (Pink)',
+        product_details: 'Graphic Print Men & Women Sweatshirt',
+        rates: (rate = 119.99),
+        quantity: (qty = 2),
+        amount: (rate * qty)
+    },
         {
             product_name: 'Noise NoiseFit Endure Smart Watch',
             product_details: '32.5mm (1.28 Inch) TFT Color Touch Display',
@@ -1579,20 +1579,20 @@ flatpickr("#date-field", {
 
 var checkAll = document.getElementById("checkAll");
 if (checkAll) {
-  checkAll.onclick = function () {
-    var checkboxes = document.querySelectorAll('.form-check-all input[type="checkbox"]');
-    var checkedCount = document.querySelectorAll('.form-check-all input[type="checkbox"]:checked').length;
-    for (var i = 0; i < checkboxes.length; i++) {
-      checkboxes[i].checked = this.checked;
-      if (checkboxes[i].checked) {
-          checkboxes[i].closest("tr").classList.add("table-active");
-      } else {
-          checkboxes[i].closest("tr").classList.remove("table-active");
-      }
-    }
+    checkAll.onclick = function () {
+        var checkboxes = document.querySelectorAll('.form-check-all input[type="checkbox"]');
+        var checkedCount = document.querySelectorAll('.form-check-all input[type="checkbox"]:checked').length;
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = this.checked;
+            if (checkboxes[i].checked) {
+                checkboxes[i].closest("tr").classList.add("table-active");
+            } else {
+                checkboxes[i].closest("tr").classList.remove("table-active");
+            }
+        }
 
-    (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'none' : document.getElementById("remove-actions").style.display = 'block';
-  };
+        (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'none' : document.getElementById("remove-actions").style.display = 'block';
+    };
 }
 
 var perPage = 8;
@@ -1760,12 +1760,12 @@ function ischeckboxcheck() {
             } else {
                 e.target.closest("tr").classList.remove("table-active");
             }
-  
+
             var checkedCount = document.querySelectorAll('[name="chk_child"]:checked').length;
             if (e.target.closest("tr").classList.contains("table-active")) {
-                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block': document.getElementById("remove-actions").style.display = 'none';
+                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block' : document.getElementById("remove-actions").style.display = 'none';
             } else {
-                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block': document.getElementById("remove-actions").style.display = 'none';
+                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block' : document.getElementById("remove-actions").style.display = 'none';
             }
         });
     });
@@ -1810,13 +1810,13 @@ function clearFields() {
 document.querySelector(".pagination-next").addEventListener("click", function () {
     document.querySelector(".pagination.listjs-pagination") ?
         document.querySelector(".pagination.listjs-pagination").querySelector(".active") ?
-        document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click() : "" : "";
+            document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click() : "" : "";
 });
 
 document.querySelector(".pagination-prev").addEventListener("click", function () {
     document.querySelector(".pagination.listjs-pagination") ?
         document.querySelector(".pagination.listjs-pagination").querySelector(".active") ?
-        document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click() : "" : "";
+            document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click() : "" : "";
 });
 
 function ViewInvoice(data) {
@@ -1844,7 +1844,7 @@ function deleteMultiple() {
             ids_array.push(items[i].value);
         }
     }
-    
+
     if (typeof ids_array !== 'undefined' && ids_array.length > 0) {
         Swal.fire({
             title: "Are you sure?",

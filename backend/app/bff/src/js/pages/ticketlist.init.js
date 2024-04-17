@@ -64,12 +64,12 @@ var options = {
 
 // Init list
 var ticketsList = new List('ticketsList', options).on("updated", function (list) {
-    (list.matchingItems.length == 0) ? document.getElementsByClassName("noresult")[0].style.display = "block": document.getElementsByClassName("noresult")[0].style.display = "none";
+    (list.matchingItems.length == 0) ? document.getElementsByClassName("noresult")[0].style.display = "block" : document.getElementsByClassName("noresult")[0].style.display = "none";
     var isFirst = list.i == 1;
     var isLast = list.i > list.matchingItems.length - list.page;
     // make the Prev and Nex buttons disabled on first and last pages accordingly
-    (document.querySelector(".pagination-prev.disabled")) ? document.querySelector(".pagination-prev.disabled").classList.remove("disabled"): '';
-    (document.querySelector(".pagination-next.disabled")) ? document.querySelector(".pagination-next.disabled").classList.remove("disabled"): '';
+    (document.querySelector(".pagination-prev.disabled")) ? document.querySelector(".pagination-prev.disabled").classList.remove("disabled") : '';
+    (document.querySelector(".pagination-next.disabled")) ? document.querySelector(".pagination-next.disabled").classList.remove("disabled") : '';
     if (isFirst) {
         document.querySelector(".pagination-prev").classList.add("disabled");
     }
@@ -107,7 +107,7 @@ xhttp.onload = function () {
             priority: isPriority(element.priority),
             status: isStatus(element.status)
         });
-        ticketsList.sort('id', { order: "desc" });
+        ticketsList.sort('id', {order: "desc"});
         refreshCallbacks();
     });
     ticketsList.remove("id", `<a href="javascript:void(0);" onclick="ViewTickets(this)" data-id="001" class="fw-medium link-primary">#VLZ001</a>`);
@@ -135,6 +135,7 @@ var idField = document.getElementById("orderId"),
     removeBtns = document.getElementsByClassName("remove-item-btn"),
     editBtns = document.getElementsByClassName("edit-item-btn");
 refreshCallbacks();
+
 //filterOrder("All");
 
 function filterOrder(isValue) {
@@ -273,7 +274,7 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                     priority: isPriority(priorityField.value),
                     status: isStatus(statusField.value),
                 });
-                ticketsList.sort('id', { order: "desc" });
+                ticketsList.sort('id', {order: "desc"});
                 document.getElementById("close-modal").click();
                 clearFields();
                 refreshCallbacks();
@@ -287,7 +288,7 @@ Array.prototype.slice.call(forms).forEach(function (form) {
                     timer: 2000,
                     showCloseButton: true
                 });
-            }else if (
+            } else if (
                 tasksTitleField.value !== "" &&
                 client_nameNameField.value !== "" &&
                 assignedtoNameField.value !== "" &&
@@ -375,16 +376,16 @@ function ischeckboxcheck() {
 
             var checkedCount = document.querySelectorAll('[name="checkAll"]:checked').length;
             if (e.target.closest("tr").classList.contains("table-active")) {
-                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block': document.getElementById("remove-actions").style.display = 'none';
+                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block' : document.getElementById("remove-actions").style.display = 'none';
             } else {
-                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block': document.getElementById("remove-actions").style.display = 'none';
+                (checkedCount > 0) ? document.getElementById("remove-actions").style.display = 'block' : document.getElementById("remove-actions").style.display = 'none';
             }
         });
     });
 }
 
 function refreshCallbacks() {
-    if(removeBtns){
+    if (removeBtns) {
         Array.from(removeBtns).forEach(function (btn) {
             btn.addEventListener("click", function (e) {
                 e.target.closest("tr").children[1].innerText;
@@ -392,13 +393,13 @@ function refreshCallbacks() {
                 var itemValues = ticketsList.get({
                     id: itemId,
                 });
-    
+
                 Array.from(itemValues).forEach(function (x) {
                     deleteid = new DOMParser().parseFromString(x._values.id, "text/html");
-    
+
                     var isElem = deleteid.body.firstElementChild;
                     var isdeleteid = deleteid.body.firstElementChild.innerHTML;
-    
+
                     if (isdeleteid == itemId) {
                         document.getElementById("delete-record").addEventListener("click", function () {
                             ticketsList.remove("id", isElem.outerHTML);
@@ -410,7 +411,7 @@ function refreshCallbacks() {
         });
     }
 
-    if(editBtns){
+    if (editBtns) {
         Array.from(editBtns).forEach(function (btn) {
             btn.addEventListener("click", function (e) {
                 e.target.closest("tr").children[1].innerText;
@@ -418,7 +419,7 @@ function refreshCallbacks() {
                 var itemValues = ticketsList.get({
                     id: itemId,
                 });
-    
+
                 Array.from(itemValues).forEach(function (x) {
                     isid = new DOMParser().parseFromString(x._values.id, "text/html");
                     var selectedid = isid.body.firstElementChild.innerHTML;
@@ -430,7 +431,7 @@ function refreshCallbacks() {
                         assignedtoNameField.value = x._values.assignedto;
                         dateField.value = x._values.create_date;
                         dateDueField.value = x._values.due_date;
-    
+
                         if (example) example.destroy();
                         example = new Choices(priorityField, {
                             searchEnabled: false
@@ -438,7 +439,7 @@ function refreshCallbacks() {
                         val = new DOMParser().parseFromString(x._values.priority, "text/html");
                         var selected = val.body.firstElementChild.innerHTML;
                         example.setChoiceByValue(selected);
-    
+
                         if (statusVal) statusVal.destroy();
                         statusVal = new Choices(statusField, {
                             searchEnabled: false
@@ -446,12 +447,12 @@ function refreshCallbacks() {
                         val = new DOMParser().parseFromString(x._values.status, "text/html");
                         var statusSelec = val.body.firstElementChild.innerHTML;
                         statusVal.setChoiceByValue(statusSelec);
-    
+
                         flatpickr("#date-field", {
                             dateFormat: "d M, Y",
                             defaultDate: x._values.create_date,
                         });
-    
+
                         flatpickr("#duedate-field", {
                             dateFormat: "d M, Y",
                             defaultDate: x._values.due_date,
@@ -481,11 +482,11 @@ function clearFields() {
 
 document.querySelector(".pagination-next").addEventListener("click", function () {
     (document.querySelector(".pagination.listjs-pagination")) ? (document.querySelector(".pagination.listjs-pagination").querySelector(".active")) ?
-    document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click(): '': '';
+        document.querySelector(".pagination.listjs-pagination").querySelector(".active").nextElementSibling.children[0].click() : '' : '';
 });
 document.querySelector(".pagination-prev").addEventListener("click", function () {
     (document.querySelector(".pagination.listjs-pagination")) ? (document.querySelector(".pagination.listjs-pagination").querySelector(".active")) ?
-    document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click(): '': '';
+        document.querySelector(".pagination.listjs-pagination").querySelector(".active").previousSibling.children[0].click() : '' : '';
 });
 
 // Delete Multiple Records

@@ -16,16 +16,21 @@ class RoleBaseScheme(BaseModel):
     permission_allow_list: Optional[List[str]] = None
     permission_deny_list: Optional[List[str]] = None
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Role
+        service = 'app.basic.user.services.RoleService'
 
 class RoleUpdateScheme(RoleBaseScheme):
-    parent_ids: Optional[List[UUID4]]
+    role_ids: Optional[List[UUID4]]
     title: Optional[str]
 
 
 class RoleCreateScheme(RoleBaseScheme):
     title: str
     company_id: UUID4
-    parent_ids: Optional[List[UUID4]] = None
+    role_ids: Optional[List[UUID4]] = None
 
 
 class RoleScheme(RoleCreateScheme, TimeStampScheme):
@@ -33,22 +38,13 @@ class RoleScheme(RoleCreateScheme, TimeStampScheme):
     lsn: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class RoleFilter(BaseFilter):
-    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
-    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
-    created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
-    created_at__lt: Optional[datetime] = Field(description="less created", default=None)
-    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
-    updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
-    company_id__in: Optional[List[str]] = Field(alias="company_id", default=None)
     title__in: Optional[List[str]] = Field(alias="title", default=None)
     permission_allow_list__contains: Optional[str] = Field(alias="permissions_allow", default=None)
     permission_deny_list__contains: Optional[str] = Field(alias="permissions_deny", default=None)
-    order_by: Optional[List[str]] = ["created_at"]
-    search: Optional[str] = None
     class Config:
         populate_by_name = True
 

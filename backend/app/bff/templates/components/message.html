@@ -1,3 +1,4 @@
+{% block success %}
 <script>
 var myToast = Toastify({
  text: "{{message}}",
@@ -5,8 +6,20 @@ var myToast = Toastify({
     style: {
     background: "{{background}}",
   },
-
 })
 myToast.showToast();
-htmx.trigger("#table", "update"); // событие обновления
+var table = htmx.find("#table_{{ model.prefix }}")
+if (table){
+    htmx.trigger(table, 'update')
+}
+var form = htmx.find("#form_{{ model.prefix }}")
+if (form){
+    htmx.trigger(form, 'update')
+}
+var modal = htmx.find("#modal_{{ model.prefix }}")
+if (modal){
+    htmx.trigger(modal, 'update')
+}
+
 </script>
+{% endblock %}

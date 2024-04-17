@@ -12,12 +12,17 @@ from core.schemas import BaseFilter
 
 
 class CompanyBaseScheme(BaseModel):
-    title: str = Field(description="Title")
-    external_number: Optional[str] = None
-    locale: Optional[TypeLocale] = None
-    country: Optional[TypeCountry] = None
-    currency: TypeCurrency | str = None
+    title: str = Field(title='Title', table=True, form=True)
+    external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
+    locale: Optional[TypeLocale] = Field(default='en_US', title='Locale', table=True, form=True)
+    country: Optional[TypeCountry] = Field(default='US', title='Country', table=True, form=True)
+    currency: TypeCurrency | str = Field(default='USD', title='Currency', table=True, form=True)
 
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Company
+        service = 'app.basic.company.services.CompanyService'
 
 class CompanyUpdateScheme(CompanyBaseScheme):
     currency: Optional[TypeCurrency | str]
@@ -31,20 +36,17 @@ class CompanyCreateScheme(CompanyBaseScheme):
 class CompanyScheme(CompanyCreateScheme, TimeStampScheme):
     id: UUID4
     lsn: int
-    country: TypeCountry
-    locale: TypeLocale
-    currency: TypeCurrency
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         arbitrary_types_allowed = True
 
 
 class CompanyFilter(BaseFilter):
     title__in: Optional[str] = Field(description="title", default=None)
-    country__in: Optional[List[str]] = Field(alias="country", default=None, filter=True)
-    currency__in: Optional[List[str]] = Field(alias="currency", default=None, filter=True)
-    locale__in: Optional[List[str]] = Field(alias="locale", default=None, filter=True)
+    country__in: Optional[List[str]] = Field(default=None, filter=True)
+    currency__in: Optional[List[str]] = Field(default=None, filter=True)
+    locale__in: Optional[list[str]] = Field(default=None, filter=True)
 
 
     class Config:
@@ -59,4 +61,7 @@ class CompanyFilter(BaseFilter):
 
 class CompanyListSchema(GenericListSchema):
     data: Optional[List[CompanyScheme]]
+
+
+
 

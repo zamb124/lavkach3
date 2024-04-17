@@ -26,23 +26,23 @@ document.addEventListener('DOMContentLoaded', function () {
         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        var countDownBlock = '<div class="countdownlist-item">'+
-                                '<div class="count-title">Days</div>'+'<div class="count-num">'+ days +'</div>'+
-                            '</div>'+
-                            '<div class="countdownlist-item">'+
-                                '<div class="count-title">Hours</div>'+'<div class="count-num">'+ hours +'</div>'+
-                            '</div>'+
-                            '<div class="countdownlist-item">'+
-                                '<div class="count-title">Minutes</div>'+'<div class="count-num">'+ minutes +'</div>'+
-                            '</div>'+
-                            '<div class="countdownlist-item">'+
-                                '<div class="count-title">Seconds</div>'+'<div class="count-num">'+ seconds +'</div>'+
-                            '</div>';
+        var countDownBlock = '<div class="countdownlist-item">' +
+            '<div class="count-title">Days</div>' + '<div class="count-num">' + days + '</div>' +
+            '</div>' +
+            '<div class="countdownlist-item">' +
+            '<div class="count-title">Hours</div>' + '<div class="count-num">' + hours + '</div>' +
+            '</div>' +
+            '<div class="countdownlist-item">' +
+            '<div class="count-title">Minutes</div>' + '<div class="count-num">' + minutes + '</div>' +
+            '</div>' +
+            '<div class="countdownlist-item">' +
+            '<div class="count-title">Seconds</div>' + '<div class="count-num">' + seconds + '</div>' +
+            '</div>';
 
         // Output the result in an element with id="countDownBlock"
-        if(document.getElementById("countdown")){
-        document.getElementById("countdown").innerHTML = countDownBlock;
-    }
+        if (document.getElementById("countdown")) {
+            document.getElementById("countdown").innerHTML = countDownBlock;
+        }
         // If the count down is over, write some text 
         if (distance < 0) {
             clearInterval(countDown);

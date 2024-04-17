@@ -16,7 +16,8 @@ function getChartColorsArray(chartId) {
             if (newValue.indexOf(",") === -1) {
                 var color = getComputedStyle(document.documentElement).getPropertyValue(newValue);
                 if (color) return color;
-                else return newValue;;
+                else return newValue;
+                ;
             } else {
                 var val = value.split(',');
                 if (val.length == 2) {
@@ -103,7 +104,7 @@ function loadJobListData(datas, page) {
 
     for (var i = (page - 1) * itemsPerPage; i < (page * itemsPerPage) && i < datas.length; i++) {
         // Array.from(datas).forEach(function (listData, index){
-        if(datas[i] && datas[i].tags){
+        if (datas[i] && datas[i].tags) {
             var tags = datas[i].tags;
             var tagHtml = '';
             Array.from(tags).forEach((tag, index) => {
@@ -111,18 +112,18 @@ function loadJobListData(datas, page) {
             })
         }
         if (datas[i]) {
-        document.querySelector("#job-list").innerHTML += '<div class="card joblist-card">\
+            document.querySelector("#job-list").innerHTML += '<div class="card joblist-card">\
             <div class="card-body">\
                 <div class="d-flex mb-4">\
                     <div class="avatar-sm">\
                         <div class="avatar-title bg-light rounded">\
-                            <img src="'+ datas[i].companyLogo + '" alt="" class="avatar-xxs companyLogo-img">\
+                            <img src="' + datas[i].companyLogo + '" alt="" class="avatar-xxs companyLogo-img">\
                         </div>\
                     </div>\
                     <div class="ms-3 flex-grow-1">\
-                        <img src="'+ datas[i].coverImg + '" alt="" class="d-none cover-img">\
-                        <a href="#!"><h5 class="job-title">'+ datas[i].jobTitle + '</h5></a>\
-                        <p class="company-name text-muted mb-0">'+ datas[i].companyName + '</p>\
+                        <img src="' + datas[i].coverImg + '" alt="" class="d-none cover-img">\
+                        <a href="#!"><h5 class="job-title">' + datas[i].jobTitle + '</h5></a>\
+                        <p class="company-name text-muted mb-0">' + datas[i].companyName + '</p>\
                     </div>\
                     <div>\
                         <button type="button" class="btn btn-ghost-primary btn-icon custom-toggle" data-bs-toggle="button">\
@@ -131,16 +132,16 @@ function loadJobListData(datas, page) {
                         </button>\
                     </div>\
                 </div>\
-                <p class="text-muted job-description">'+ datas[i].description + '</p>\
-                <div>'+ tagHtml + '</div>\
+                <p class="text-muted job-description">' + datas[i].description + '</p>\
+                <div>' + tagHtml + '</div>\
             </div>\
             <div class="card-footer border-top-dashed">\
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">\
-                    <div><i class="ri-briefcase-2-line align-bottom me-1"></i> <span class="job-type">'+ datas[i].type + '</span></div>\
-                    <div class="d-none"><span class="job-experience">'+ datas[i].experience + '</span></div>\
-                    <div><i class="ri-map-pin-2-line align-bottom me-1"></i>  <span class="job-location">'+ datas[i].location + '</span></div>\
-                    <div><i class="ri-user-3-line align-bottom me-1"></i> '+ datas[i].applied + '</div>\
-                    <div><i class="ri-time-line align-bottom me-1"></i> <span class="job-postdate">'+ datas[i].postDate + '</span></div>\
+                    <div><i class="ri-briefcase-2-line align-bottom me-1"></i> <span class="job-type">' + datas[i].type + '</span></div>\
+                    <div class="d-none"><span class="job-experience">' + datas[i].experience + '</span></div>\
+                    <div><i class="ri-map-pin-2-line align-bottom me-1"></i>  <span class="job-location">' + datas[i].location + '</span></div>\
+                    <div><i class="ri-user-3-line align-bottom me-1"></i> ' + datas[i].applied + '</div>\
+                    <div><i class="ri-time-line align-bottom me-1"></i> <span class="job-postdate">' + datas[i].postDate + '</span></div>\
                     <div><a href="#!" class="btn btn-primary viewjob-list">View More <i class="ri-arrow-right-line align-bottom ms-1"></i></a></div>\
                 </div>\
             </div>\
@@ -148,7 +149,7 @@ function loadJobListData(datas, page) {
         }
         // });
     }
-    
+
     document.getElementById("total-result").innerHTML = datas.length
     selectedPage();
     currentPage == 1 ? prevButton.parentNode.classList.add('disabled') : prevButton.parentNode.classList.remove('disabled');
@@ -213,8 +214,8 @@ function paginationEvents() {
 
 // multiple Remove CancelButton
 var tagInputField = new Choices('#taginput-choices', {
-    removeItemButton: true,
-  }
+        removeItemButton: true,
+    }
 );
 
 // companylogo image
@@ -222,9 +223,9 @@ document.querySelector("#companylogo-image-input").addEventListener("change", fu
     var preview = document.querySelector("#companylogo-img");
     var file = document.querySelector("#companylogo-image-input").files[0];
     var reader = new FileReader();
-    reader.addEventListener("load",function () {
+    reader.addEventListener("load", function () {
         preview.src = reader.result;
-    },false);
+    }, false);
     if (file) {
         reader.readAsDataURL(file);
     }
@@ -235,9 +236,9 @@ document.querySelector("#cover-image-input").addEventListener("change", function
     var preview = document.querySelector("#modal-cover-img");
     var file = document.querySelector("#cover-image-input").files[0];
     var reader = new FileReader();
-    reader.addEventListener("load",function () {
+    reader.addEventListener("load", function () {
         preview.src = reader.result;
-    },false);
+    }, false);
     if (file) {
         reader.readAsDataURL(file);
     }
@@ -260,7 +261,7 @@ document.querySelector("#cover-image-input").addEventListener("change", function
                     event.stopPropagation();
                 } else {
                     event.preventDefault();
-                    
+
                     var jobTitleVal = document.getElementById("jobtitle-field").value;
                     var companyNameVal = document.getElementById("companyname-field").value;
                     var companyLogoImg = document.getElementById("companylogo-img").src;
@@ -325,7 +326,7 @@ function sortElementsById() {
         }
         return 0;
     })
-    
+
     loadJobListData(manyJobList, currentPage);
 }
 
@@ -342,7 +343,7 @@ function jobDetailShow() {
             var jobLocationVal = item.querySelector(".job-location").innerHTML;
             var jobPostdateVal = item.querySelector(".job-postdate").innerHTML;
             var jobExperienceVal = item.querySelector(".job-experience").innerHTML;
-        
+
             document.querySelector("#cover-img").src = coverImgVal;
             document.querySelector("#job-overview .view-companylogo").src = companyLogoImgVal;
             document.querySelector("#job-overview .view-title").innerHTML = jobTitleVal;
@@ -360,7 +361,7 @@ function jobDetailShow() {
 var searchElementList = document.getElementById("searchJob");
 searchElementList.addEventListener("keyup", function () {
     var inputVal = searchElementList.value.toLowerCase();
-    
+
     function filterItems(arr, query) {
         return arr.filter(function (el) {
             return el.jobTitle.toLowerCase().indexOf(query.toLowerCase()) !== -1 || el.companyName.toLowerCase().indexOf(query.toLowerCase()) !== -1
@@ -368,15 +369,15 @@ searchElementList.addEventListener("keyup", function () {
     }
 
     var filterData = filterItems(allJobList, inputVal);
-    if(inputVal.length > 0){
+    if (inputVal.length > 0) {
         document.getElementById("found-job-alert").classList.remove("d-none");
-    }else{
+    } else {
         document.getElementById("found-job-alert").classList.add("d-none");
     }
 
-    if(filterData.length == 0){
+    if (filterData.length == 0) {
         document.getElementById("pagination-element").style.display = "none";
-    }else{
+    } else {
         document.getElementById("pagination-element").style.display = "flex";
     }
 

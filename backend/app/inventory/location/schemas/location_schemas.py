@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import PutawayStrategy
+from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.location.models import Location
@@ -15,12 +16,16 @@ class LocationBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: str
     store_id: UUID4
-    parent_id: Optional[UUID4] = None
+    location_id: Optional[UUID4] = None
     is_active: bool = None
     location_type_id: UUID4
     partner_id: Optional[UUID4] = None
 
-
+    class Config:
+        extra = 'allow'
+        from_attributes = True
+        orm_model = Location
+        service = 'app.inventory.location.services.LocationService'
 
 class LocationUpdateScheme(LocationBaseScheme):
     title: Optional[str] = None
@@ -37,19 +42,13 @@ class LocationScheme(LocationCreateScheme, TimeStampScheme):
     id: UUID4
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
-class LocationFilter(Filter):
-    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
-    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
-    created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
-    created_at__lt: Optional[datetime] = Field(description="less created", default=None)
-    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
-    updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
-    company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
-    order_by: Optional[List[str]] = ["created_at"]
-    search: Optional[str]
+class LocationFilter(BaseFilter):
+    title__in: Optional[str] = Field(default=None)
+    store_id__in: Optional[List[UUID4]] = Field(default=None, filter=True)
+    is_active: Optional[bool] = Field(default=None, filter=True)
     class Config:
         populate_by_name = True
 

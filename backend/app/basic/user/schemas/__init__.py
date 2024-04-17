@@ -1,4 +1,4 @@
-from .user_schemas import UserScheme, UserCreateScheme, UserUpdateScheme, BaseModel, GetUserListResponseSchema, \
+from .user_schemas import UserScheme, UserCreateScheme, UserUpdateScheme, BaseModel, \
     LoginResponseSchema, UserFilter, UserListSchema
 from .role_schemas import RoleScheme, RoleCreateScheme, RoleUpdateScheme, PermissionListSchema, \
     PermissionSchema

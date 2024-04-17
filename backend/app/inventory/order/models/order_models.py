@@ -3,7 +3,8 @@ import uuid
 from enum import Enum
 from typing import Optional
 import datetime
-from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint, ARRAY
+from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint, ARRAY, \
+    String
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from core.db import Base
@@ -79,7 +80,7 @@ class OrderType(Base, AllMixin):
     exclusive_location_src_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)     # Искличенные зоны из подбора
     allowed_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)      # Разрешенные зона для назначения
     exclusive_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)    # Исключение зон из назначения
-    backorder_order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order_type.id", ondelete='CASCADE'))# Тип Ордера возврата разницы
+    order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order_type.id", ondelete='CASCADE'))# Тип Ордера возврата разницы
     backorder_action_type: Mapped[BackOrderAction] = mapped_column(default=BackOrderAction.ASK)                 # Поведение возврата разницы
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                     # Склад
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                   # Партнер (если у опредленного партнера своя стратегия)
@@ -119,24 +120,31 @@ class Order(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     number: Mapped[str] = mapped_column(index=True)    # Человекочитаемый номер присвается по формуле - {ГОД(2)}-{МЕСЯЦ}-{ДЕНЬ}-{LSN}
     order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='CASCADE'))
-    order_type: Mapped[OrderType] = relationship(lazy='selectin')
-    parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order.id", ondelete="CASCADE"))
+    order_type_rel: Mapped[OrderType] = relationship(lazy='selectin')
+    order_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order.id", ondelete="CASCADE"))
     external_number: Mapped[Optional[str]]
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
     lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
     origin_type: Mapped[Optional[str]] = mapped_column(index=True)
     origin_number: Mapped[Optional[str]] = mapped_column(index=True)
-    planned_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
-    actual_date: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    planned_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
+    actual_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     created_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
     edited_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
-    users_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
+    user_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
     description: Mapped[Optional[str]]
-    status: Mapped[OrderStatus]
+    status: Mapped['OrderStatus'] = mapped_column(default=OrderStatus.DRAFT)
     move_list_rel: Mapped[Optional[list["Move"]]] = relationship(back_populates="order_rel", lazy="selectin")
 
+    def __init__(self, **kwargs):
+        """
+            Разрешает экстра поля, но удаляет, если их нет в табличке
+        """
+        allowed_args = self.__mapper__.class_manager  # returns a dict
+        kwargs = {k: v for k, v in kwargs.items() if k in allowed_args}
+        super().__init__(**kwargs)
 
 class MoveStatus(str, Enum):
     DRAFT:      str = 'draft'
@@ -163,7 +171,7 @@ class Move(Base, AllMixin):
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     type: Mapped[MoveType]
-    parent_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
+    move_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order.id', ondelete='RESTRICT'))
     order_rel: Mapped[Order] = relationship(back_populates='move_list_rel')
     location_src_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
@@ -174,8 +182,8 @@ class Move(Base, AllMixin):
     product_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     quantity: Mapped[float]     # Если перемещение кпаковки, то всегда 0
-    uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("uom.id", ondelete="RESTRICT"), index=True) # Если перемещение упаковкой то None
-    status: Mapped[MoveStatus]
+    uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=False) # Если перемещение упаковкой то None
+    status: Mapped[MoveStatus] = mapped_column(default=MoveStatus.DRAFT)
 
 
 class MoveLogType(str, Enum):

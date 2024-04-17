@@ -11,7 +11,7 @@ templates = Jinja2Templates(directory=["app/bff/templates/", "app/terminal/apps/
 templates.env.globals['datetime'] = datetime
 templates.env.globals['uuid'] = uuid4
 templates.env.globals['now'] = datetime.date(datetime.now()).isoformat()
-a=1
+
 
 async def internal_error(request: Request, exc: HTTPException):
     return templates.TemplateResponse('base/toast.html', {'request': request}, status_code=500)
