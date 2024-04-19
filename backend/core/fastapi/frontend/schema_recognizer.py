@@ -219,7 +219,6 @@ class HtmxUpdate(HtmxCreate):
     """"
         Редактирование
     """
-    line: HtmxLine
     id: uuid.UUID
 
 
@@ -227,7 +226,6 @@ class HtmxView(HtmxCreate):
     """"
         Cоздание
     """
-    line: HtmxLine
     id: uuid.UUID
 
 

@@ -110,7 +110,17 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     @timed
     async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
-        entity = self.model(**obj.dict())
+        to_set = []
+        for key, value in obj.__dict__.items():
+            if is_pydantic(value):
+                if isinstance(value, list):
+                    for _obj in value:
+                        rel_service = import_service(_obj.Config.service)
+                else:
+                    pass
+            else:
+                to_set.append((key, value))
+        entity = self.model(**obj.model_dump())
         entity.company_id = self.user.company_id
         self.session.add(entity)
         if commit:

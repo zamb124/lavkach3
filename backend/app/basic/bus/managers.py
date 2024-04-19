@@ -1,11 +1,10 @@
 from datetime import datetime
 
 from fastapi import WebSocket
-from pydantic import UUID4
 
-from core.helpers.cache import RedisBackend, CacheTag
-from core.helpers.redis import redis
+from core.helpers.cache import CacheTag
 from core.helpers.cache.cache_manager import Cache
+
 
 class ConnectionManager:
     cache: Cache
@@ -14,7 +13,7 @@ class ConnectionManager:
         self.cache = Cache
         self.active_connections: dict[dict[str: WebSocket, str: int]] = {}
 
-    async def  connect(self, user_id: str, websocket: WebSocket):
+    async def connect(self, user_id: str, websocket: WebSocket):
         await websocket.accept()
         cache_key = await self.cache.set(tag=CacheTag.WS_SESSION, key=user_id, response={'session_start': datetime.now().isoformat()})
         self.active_connections[cache_key] = websocket
