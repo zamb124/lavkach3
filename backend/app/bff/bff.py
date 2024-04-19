@@ -1,15 +1,12 @@
-import uuid
-from typing import Annotated, Optional
+from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi import Form
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, field_validator, UUID4
-from starlette.responses import Response, JSONResponse
+from pydantic import BaseModel
+from starlette.responses import Response
 
-from app.bff.dff_helpers.schema_recognizer import ModelView
-from app.bff.dff_helpers.uttils import clean_filter
 from app.bff.template_spec import templates
 
 

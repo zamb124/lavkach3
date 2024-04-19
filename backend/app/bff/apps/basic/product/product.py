@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
-from app.bff.dff_helpers.schema_recognizer import ModelView
+from core.fastapi.frontend.schema_recognizer import ModelView
 from app.bff.template_spec import templates
 
 product_router = APIRouter()

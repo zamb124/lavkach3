@@ -1,0 +1,12 @@
+<script>
+    console.log('let auth cookie')
+    var tokenData = parseJwt('{{token}}')
+    console.log(tokenData.exp)
+    var expires = new Date(tokenData.exp*1000)
+    console.log(expires)
+    document.cookie = "token={{token}};expires=" + expires  + ";path=/;"
+    document.cookie = "refresh_token={{refresh_token}};expires=" + expires  + ";path=/;"
+    console.log('seted auth cookie')
+    htmx.ajax('GET', '/', {target:'#htmx_content'})
+                //console.log(authToken)
+</script>
