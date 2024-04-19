@@ -48,6 +48,7 @@ class AdapterMidlleWare:
             for i, v in config.services.items():
                 e.__setattr__(i, v['adapter'](conn, v, i))
             scope['env'] = e
+            scope['services'] = config.services
         await self.app(scope, receive, send)
 
 

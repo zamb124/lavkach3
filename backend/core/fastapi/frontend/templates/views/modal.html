@@ -1,0 +1,289 @@
+{% block update %}
+    <div class="modal" id="{{ 'modal_'~view.prefix }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <div class="col-6">
+                        <h5 class="modal-title">Edit {{ view.model|capitalize }}
+                            <span>
+                            {{ view.line.as_button_view(backdrop='update')|safe }}
+                        </span>
+                            <span>
+                            {{ view.line.as_button_create(backdrop='update')|safe }}
+                        </span>
+                            <span>
+                            {{ view.line.as_button_delete(backdrop='update')|safe }}
+                        </span>
+                        </h5>
+                    </div>
+                    <div class="bx-pull-right">
+                        {% if backdrop %}
+                            {{ backdrop()|safe }}
+                        {% endif %}
+                        <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <form class="was-validated"
+                      hx-post="/base/modal"
+                      hx-ext="json-enc"
+                      hx-include="this"
+                      hx-target="#trash"
+                      hx-vals='{
+                "module": "{{ view.module }}",
+                "model": "{{ view.model }}",
+                "method": "update",
+                "id": "{{ view.line.id }}",
+                "prefix": "{{ view.prefix }}"
+              }'
+                >
+                    <div class="modal-body text-center p-5">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/ghhwiltn.json"
+                                trigger="loop"
+                                style="width:150px;height:150px">
+                        </lord-icon>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for field in view.line.fields if not field.type =='dict' %}
+                                        {% if loop.length % 3 != 0 and loop.first %}
+                                            <div class="row">
+                                        {% endif %}
+                                        {% if loop.index0 % 3 == 0 %}
+                                            <div class="row">
+                                        {% endif %}
+                                    <div class="col">
+                                        <p style="margin-bottom: 0; margin-top: 1rem"
+                                           class="sort text-uppercase text-muted text-start "
+                                           for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                                        {{ field.as_form()|safe }}
+
+                                    </div>
+                                    {% if loop.index % 3 == 0 %}
+                                        </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                        </button>
+                                        <button id="{{ 'submit_'~view.prefix }}" type="submit" class="btn btn-success">
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        var modal = new bootstrap.Modal('#{{ 'modal_'~view.prefix }}')
+        modal.show()
+    </script>
+{% endblock %}
+{% block create %}
+    <div class="modal" id="{{ 'modal_'~view.prefix }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-fullscreen">
+            <div class="modal-content modal-xl">
+                <div class="modal-header">
+                    <div class="col-6">
+                        <h5 class="modal-title">Create {{ view.model|capitalize }}
+                            <span>
+                            {{ view.line.as_button_view()|safe }}
+                        </span>
+                            <span>
+                            {{ view.line.as_button_update()|safe }}
+                        </span>
+                            <span>
+                            {{ view.line.as_button_delete()|safe }}
+                        </span>
+                        </h5>
+                    </div>
+                    <div class="bx-pull-right">
+                        <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <form class="was-validated"
+                      hx-post="/base/modal"
+                      hx-ext="json-enc"
+                      hx-include="this"
+                      hx-target="#trash"
+                      hx-vals='{
+                "module": "{{ view.module }}",
+                "model": "{{ view.model }}",
+                "method": "create",
+                {% if view.id %}"id": "{{ view.id }}", {% endif %}
+                "prefix": "{{ view.prefix }}"
+              }'
+                >
+                    <div class="modal-body text-center p-5">
+                        <lord-icon
+                                src="https://cdn.lordicon.com/ghhwiltn.json"
+                                trigger="loop"
+                                style="width:150px;height:150px">
+                        </lord-icon>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for field in view.line.fields if not field.type =='dict' %}
+                                        {% if loop.length % 3 != 0 and loop.first %}
+                                            <div class="row">
+                                        {% endif %}
+                                        {% if loop.index0 % 3 == 0 %}
+                                            <div class="row">
+                                        {% endif %}
+                                    <div class="col">
+                                        <p style="margin-bottom: 0; margin-top: 1rem"
+                                           class="sort text-uppercase text-muted text-start "
+                                           for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                                        {{ field.as_form()|safe }}
+
+                                    </div>
+                                    {% if loop.index % 3 == 0 %}
+                                        </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                        </button>
+                                        <button id="{{ 'submit_'~view.prefix }}" type="submit" class="btn btn-success">
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        var modal = new bootstrap.Modal('#{{ 'modal_'~view.prefix }}')
+        modal.show()
+    </script>
+{% endblock %}
+{% block view %}
+    <div class="modal" id="{{ 'modal_'~view.prefix }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+    <div class="modal-content modal-xl">
+        <div class="modal-header">
+            <div class="col-6">
+                <h5 class="modal-title">View {{ view.model|capitalize }}
+                    <span>
+                            {{ view.line.as_button_update(backdrop='view')|safe }}
+                        </span>
+                    <span>
+                            {{ view.line.as_button_create(backdrop='view')|safe }}
+                        </span>
+                    <span>
+                            {{ view.line.as_button_delete(backdrop='view')|safe }}
+                        </span>
+                </h5>
+            </div>
+            <div class="bx-pull-right">
+                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="modal-body text-center p-5">
+            <lord-icon
+                    src="https://cdn.lordicon.com/ghhwiltn.json"
+                    trigger="loop"
+                    style="width:150px;height:150px">
+            </lord-icon>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        {% for field in view.line.fields if not field.field_name in ( 'vars', 'id', 'lsn') if not field.type in ('model_list_rel') %}
+                            {% if loop.length % 3 != 0 and loop.first %}
+                                <div class="row">
+                            {% endif %}
+                            {% if loop.index0 % 3 == 0 %}
+                                <div class="row" style="margin-bottom: 1rem">
+                            {% endif %}
+                        <div class="col text-start">
+                            <p style="margin-bottom: 0; margin-top: 1rem"
+                               class="sort text-uppercase text-muted text-start "
+                               for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                            {{ field.as_view()|safe }}
+
+                        </div>
+                        {% if loop.index % 3 == 0 %}
+                            </div>
+                        {% endif %}
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% for field in view.line.fields if not field.field_name in ( 'vars', 'id', 'lsn') if field.type in ('model_list_rel') %}
+                            <div class="row">
+                                <p style="margin-bottom: 0; margin-top: 1rem"
+                                   class="sort text-uppercase text-muted text-start "
+                                   for="{{ field.prefix~field.field_name }}">{{ field.title|capitalize }}:</p>
+                                {{ field.as_view()|safe }}
+
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var modal = new bootstrap.Modal('#{{ 'modal_'~view.prefix }}')
+        modal.show()
+    </script>
+{% endblock %}
+{% block delete %}
+    <div class="modal" id="{{ 'modal_'~view.prefix }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-5">
+                    <lord-icon
+                            src="https://cdn.lordicon.com/drxwpfop.json"
+                            trigger="loop"
+                            style="width:150px;height:150px">
+                    </lord-icon>
+                    <div class="mt-4">
+                        <h4 class="mb-3" style="padding-bottom: 0">Are you sure you want to
+                            delete {{ view.model|capitalize }} -> {{ view.line.display_title }}</h4>
+                        <p class="text-muted mb-1 text-center" style="padding-top: 0"> With id {{ view.line.id }} </p>
+                        <p class="text-muted mb-10"> The record will be permanently deleted, did you really think? </p>
+                        <div class="hstack gap-2 justify-content-center">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            <button type="button"
+                                    hx-trigger="click"
+                                    hx-post="/base/modal"
+                                    hx-ext="json-enc"
+                                    hx-vars='{
+                                "module": "{{ view.line.module }}",
+                                "model": "{{ view.line.model }}",
+                                "method": "delete",
+                                "id": "{{ view.line.id }}",
+                                "prefix": "{{ view.line.prefix }}",
+                                "delete_id": "{{ view.line.id }}"
+                            }'
+                                    {% if target_id %}
+                                    hx-target="#{{ target_id }}"
+                                    hx-swap="delete"
+                                    {% else %}
+                                    hx-swap="none"
+                                    {% endif %}
+                                    data-bs-dismiss="modal"
+                                    class="btn btn-danger">Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <script>
+        var modal = new bootstrap.Modal('#{{ 'modal_'~view.prefix }}')
+        modal.show()
+    </script>
+{% endblock %}

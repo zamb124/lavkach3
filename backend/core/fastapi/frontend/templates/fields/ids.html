@@ -1,0 +1,121 @@
+{% block as_form %}
+    <select class="form-control is-valid"
+            id="{{ field.prefix }}{{ field.field_name }}"
+            name="{{ field.prefix }}{{ field.field_name }}"
+            data-choices multiple
+    >   {% if field.val %}
+        {% for val in field.val %}
+            <option value="{{ val }}" selected></option>
+        {% endfor %}
+    {% endif %}
+    </select>
+    <script>
+        (async function () {
+            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+            let choices = new Choices(element, {
+                placeholder: true,
+                placeholderValue: "Enter {{ field.title }}",
+                removeItemButton: true
+            });
+
+            function check_valid() {
+                if (element.required) {
+                    choices.containerInner.element.classList.add('is-invalid');
+                    choices.containerInner.element.classList.remove('is-valid');
+                } else {
+                    choices.containerInner.element.classList.remove('is-invalid');
+                    choices.containerInner.element.classList.add('is-valid');
+                }
+            }
+
+            check_valid()
+
+            async function getValues() {
+                var id__in = ''
+                let values = await choices.getValue();
+                choices.setValue([])
+                for (let v in values) {
+                    if (id__in === '') {
+                        id__in += values[v].value
+                    } else {
+                        id__in += ',' + values[v].value
+                    }
+                }
+                try {
+                    if (id__in === '') {
+                        return []
+                    }
+                    const items = await fetch('/base/get_by_ids?module={{ field.module }}&model={{ field.model }}&id__in=' + encodeURIComponent(id__in));
+                    const results = await items.json();
+                    if (0 === results.length) { // Handle error from result, for example.
+                        return []
+                    }
+                    return results;
+                } catch (err) {
+                    console.error(err);
+                    choices.input.element.style = ""
+                    return []
+                }
+            }
+
+            let init_values = await getValues()
+            choices.removeActiveItems()
+            choices.clearChoices()
+            choices.setValue(init_values)
+            element.addEventListener('search', async e => {
+                element.focus()
+                let value = e.detail.value;
+                console.log(value);
+                choices.clearChoices()// Test!
+                choices.setChoices(async () => {
+                    try {
+                        const items = await fetch('/base/search?module={{ field.module }}&model={{ field.model }}&query=' + encodeURIComponent(value));
+                        const results = await items.json();
+                        if (0 === results.length) { // Handle error from result, for example.
+                            throw 'Empty!';
+                        }
+                        return results;
+                    } catch (err) {
+                        console.error(err);
+                        choices.input.element.style = ""
+                    }
+                }).then(() => {
+                    e.target.parentNode.querySelector('input').focus();
+                });
+                choices.input.element.style = ""
+            });
+            check_valid()
+        })();
+    </script>
+
+{% endblock %}
+
+{% block as_view %}
+        <div class="text-start" id="{{ field.prefix }}{{ field.field_name }}">
+        </div>
+    <script>
+        (async function () {
+            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+
+            async function getValues() {
+                var id__in = {% if field.val %}"{{ ','.join(field.val) }}"{% else %}""{% endif %}
+                try {
+                    const items = await fetch('/base/get_by_ids?module={{ field.module }}&model={{ field.model }}&id__in=' + encodeURIComponent(id__in));
+                    const results = await items.json();
+                    if (0 === results.length) { // Handle error from result, for example.
+                        return []
+                    } else {
+                        results.forEach(function (line) {
+                            element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary">' + line.label + '</span>');
+                        });
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+
+            }
+
+            getValues()
+        })();
+    </script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% block as_form %}
+    <select class="form-control select"
+            id="{{ field.prefix ~ field.field_name }}"
+            name="{{ field.prefix ~ field.field_name }}"
+            data-choices
+    >
+
+                {% if field.val %}
+                    <option value="{{ field.val.id }}" selected> {{ field.val.name }}</option>
+                {% endif %}
+    </select>
+    <script>
+        (async function () {
+            let element = document.getElementById("{{field.prefix ~ field.field_name }}");
+            let choices = new Choices(element, {
+                removeItemButton: true
+            });
+            function check_valid() {
+                if (element.required) {
+                    choices.containerInner.element.classList.add('is-invalid');
+                    choices.containerInner.element.classList.remove('is-valid');
+                } else {
+                    choices.containerInner.element.classList.remove('is-invalid');
+                    choices.containerInner.element.classList.add('is-valid');
+                }
+            }
+            function init(){
+                choices.setChoices(async () => {
+                    try {
+                        const items = await fetch('/base/search?module={{ field.module }}&model={{ field.model }}&query=');
+                        const results = await items.json();
+                        if (0 === results.length) { // Handle error from result, for example.
+                            throw 'Empty!';
+                        }
+                        return results;
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }).then(() => {
+                    choices.input.element.focus()
+                });
+            }
+            init()
+            if (!element.id.includes('__')){
+                check_valid()
+            }
+
+        })();
+    </script>
+{% endblock %}
+{% block as_view %}
+{{ field.val.english_name or field.val.name or field.val}}
+{% endblock %}
