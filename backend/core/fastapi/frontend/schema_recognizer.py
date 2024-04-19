@@ -323,10 +323,11 @@ class ModelView:
             if config_sort:
                 self.sort = {v: i for i, v in enumerate(config_sort)}
 
-    def get_module_by_model(self, model):
+    def _get_module_by_model(self, model):
         for k, v in self.services.items():
             if v['schema'].get(model):
                 return k
+
 
     def _get_field(self, field_name, schema: BaseModel, **kwargs):
         """
@@ -366,7 +367,7 @@ class ModelView:
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_ids'):
                 model_name = field_name.replace('_ids', '')
                 res += 'ids'
-                module = self.get_module_by_model(model_name)
+                module = self._get_module_by_model(model_name)
                 model = model_name
             elif issubclass(class_types[0], TypeLocale) or field_name.startswith('locale'):
                 res += 'locale'
@@ -392,30 +393,30 @@ class ModelView:
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_src_id'):
                 model_name = field_name.replace('_src_id', '')
                 res += 'model_id'
-                module = self.get_module_by_model(model_name)
+                module = self._get_module_by_model(model_name)
                 model = model_name
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_dest_id'):
                 model_name = field_name.replace('_dest_id', '')
                 res += 'model_id'
-                module = self.get_module_by_model(model_name)
+                module = self._get_module_by_model(model_name)
                 model = model_name
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id'):
                 model_name = field_name.replace('_id', '')
                 res += 'model_id'
-                module = self.get_module_by_model(model_name)
+                module = self._get_module_by_model(model_name)
                 model = model_name
 
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id__in'):
                 model_name = field_name.replace('_id__in', '')
                 res += 'model_id'
-                module = self.get_module_by_model(model_name)
+                module = self._get_module_by_model(model_name)
                 model = model_name or model
             elif issubclass(class_types[0], datetime.datetime):
                 res += 'datetime'
             elif issubclass(class_types[0], BaseModel) and field_name.endswith('_list_rel'):
                 model_name = field_name.replace('_list_rel', '')
                 res += 'model_list_rel'
-                module = self.get_module_by_model(model_name)
+                module = self._get_module_by_model(model_name)
                 model = model_name
                 schema = class_types[0]
                 submodel = ModelView(request=self.request, module=module, model=model)
@@ -423,7 +424,7 @@ class ModelView:
             elif issubclass(class_types[0], BaseModel) and field_name.endswith('_rel'):
                 model_name = field_name.replace('_rel', '')
                 res += 'model_rel'
-                module = self.get_module_by_model(model_name)
+                module = self._get_module_by_model(model_name)
                 model = model_name
             else:
                 res += 'str'
@@ -468,6 +469,7 @@ class ModelView:
                 self._get_field(field_name=k, schema=schema, **kwargs)
             )
         return sorted(fields, key=lambda x: x.sort_idx)
+
 
     @timed
     def _get_line(self, schema: BaseModel, **kwargs) -> HtmxLine:

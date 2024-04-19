@@ -54,8 +54,7 @@ async def login(
         password: Annotated[str, Form()]):
     async with request.scope['env'].basic as a:
         data = await a.login(username, password)
-    return templates.TemplateResponse(request, 'components/write_ls.html',
-                                      context={'token': data['token'], 'refresh_token': data['refresh_token']})
+    return templates.TemplateResponse(request, 'components/write_ls.html', context={'token': data['token'], 'refresh_token': data['refresh_token']})
 
 
 class RefreshTokenSchema(BaseModel):
@@ -77,4 +76,4 @@ async def dropdown_ids(request: Request, module: str, model: str, id: str, iteml
      _named означает, что так же будет отдат name для отрисовки на тайтле кнопки
     """
     data = await request.scope['env'].basic.dropdown_ids(model, id, itemlink, is_named)
-    return templates.TemplateResponse(request, 'widgets/widgets/dropdown-ids-named-htmx.html', context=data)
+    return templates.TemplateResponse(request, 'widgets/dropdown-ids-named-htmx.html', context=data)
