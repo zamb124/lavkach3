@@ -27,7 +27,7 @@
             function init(){
                 choices.setChoices(async () => {
                     try {
-                        const items = await fetch('/bff/search?module={{ field.module }}&model={{ field.model }}&query=');
+                        const items = await fetch('/base/search?module={{ field.module }}&model={{ field.model }}&query=');
                         const results = await items.json();
                         if (0 === results.length) { // Handle error from result, for example.
                             throw 'Empty!';

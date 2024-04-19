@@ -19,7 +19,7 @@
             });
             async function searchChoices(value){
                     try {
-                        const items = await fetch('/bff/search?module={{ field.module }}&model={{ field.model }}&query=' + encodeURIComponent(value));
+                        const items = await fetch('/base/search?module={{ field.module }}&model={{ field.model }}&query=' + encodeURIComponent(value));
                         const results = await items.json();
                         if (0 === results.length) { // Handle error from result, for example.
                             throw 'Empty!';
@@ -75,7 +75,7 @@
                         id__in = value.value
                     }
 
-                    const items = await fetch('/bff/get_by_ids?module={{ field.module }}&model={{ field.model }}&id__in=' + encodeURIComponent(id__in));
+                    const items = await fetch('/base/get_by_ids?module={{ field.module }}&model={{ field.model }}&id__in=' + encodeURIComponent(id__in));
                     const results = await items.json();
                     if (0 === results.length) { // Handle error from result, for example.
                         return []

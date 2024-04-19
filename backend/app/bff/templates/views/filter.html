@@ -1,7 +1,7 @@
 {% block widget %}
 <div id="{{ 'filter_' ~ model.prefix }}"
       hx-ext="json-enc"
-      hx-post="/bff/filter"
+      hx-post="/base/filter"
       hx-trigger="load"
       hx-vars='{
         "module": "{{ model.module }}",
