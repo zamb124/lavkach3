@@ -172,12 +172,14 @@ async def modal(request: Request, schema: ModalSchema):
     """
     model = ModelView(request, schema.module, schema.model)
     if data := schema.model_extra:
+        _json = {}
         data = clean_filter(data, schema.prefix)
         method_schema = getattr(model.schemas, schema.method)
-        method_schema_obj = method_schema(**data[0])
+        if data:
+            method_schema_obj = method_schema(**data[0])
+            _json = method_schema_obj.model_dump(mode='json')
         adapter_method = getattr(model.adapter, schema.method)
-        responce = await adapter_method(id=schema.id, model=schema.model,
-                                        json=method_schema_obj.model_dump(mode='json'))
+        responce = await adapter_method(id=schema.id, model=schema.model, json=_json)
         return model.send_message(f'{model.model.capitalize()}: is {schema.method.capitalize()}')
     else:
         model_method = getattr(model, f'get_{schema.method}')

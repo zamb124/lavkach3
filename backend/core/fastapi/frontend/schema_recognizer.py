@@ -25,7 +25,7 @@ class DeleteSchema(BaseModel):
 
 
 def _get_prefix():
-    return f'{uuid.uuid4().hex[:10]}'
+    return f'A{uuid.uuid4().hex[:10]}'
 
 
 async def render(obj: BaseModel, block_name: str, path: str = None) -> object:
