@@ -11,11 +11,11 @@ from core.schemas import BaseFilter
 
 
 class UomBaseScheme(BaseModel):
-    title: str = Field(description="Title")
-    uom_category_id: UUID4
-    type: UomType
-    ratio: float
-    precision: float
+    title: str = Field(title="Title", table=True)
+    uom_category_id: UUID4 = Field(title="Uom Categoty", table=True, description='Select category of UOM Category')
+    type: UomType = Field(title="Uom Type", table=True, description='Select type \n SMALLER: this category is smaller \n BIGGER... STANDART')
+    ratio: float = Field(title="Uom Type", table=True, description='Ratio')
+    precision: float = Field(title="Presicion", table=True, description='Precision')
 
     class Config:
         extra = 'allow'
@@ -24,14 +24,15 @@ class UomBaseScheme(BaseModel):
         service = 'app.basic.uom.services.UomService'
 
 class UomUpdateScheme(UomBaseScheme):
-    pass
+    ...
 
 
 class UomCreateScheme(UomBaseScheme):
-    company_id: UUID4
+    ...
 
 
 class UomScheme(UomCreateScheme, TimeStampScheme):
+    company_id: UUID4
     id: UUID4
     lsn: int
 

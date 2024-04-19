@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from starlette.responses import Response
 
+from app.bff.bff_config import config
 from app.bff.template_spec import templates
 
 
@@ -36,7 +37,7 @@ async def topbar(request: Request):
 
 @index_router.get("/", response_class=HTMLResponse)
 async def root_page(request: Request):
-    return templates.TemplateResponse(request, 'index.html', context={})
+    return templates.TemplateResponse(request, 'index.html', context={'ws_domain': ws_domain})
 
 
 @index_router.get("/basic/login", responses={"404": {"model": ExceptionResponseSchema}}, )

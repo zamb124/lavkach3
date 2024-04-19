@@ -65,10 +65,10 @@
                                     </div>
                                 </th>
                                 {% for field in line.fields %}
-                                    <td>{{ field.as_view()|safe }}</td>
+                                    <td class="text-center">{{ field.as_view()|safe }}</td>
                                 {% endfor %}
-                                <td>
-                                    <ul class="list-inline hstack gap-2 mb-0">
+                                <td class="text-center">
+                                    <ul class="list-inline text-center">
                                         <li class="list-inline-item view-btn" title="View">
                                             {{ line.as_button_view()|safe }}
                                         </li>
