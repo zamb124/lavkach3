@@ -111,21 +111,35 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
     @timed
     async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
         to_set = []
+        exclude_rel = []
+        relcations_to_create = []
         for key, value in obj.__dict__.items():
             if is_pydantic(value):
                 if isinstance(value, list):
                     for _obj in value:
                         rel_service = import_service(_obj.Config.service)
+                        rel = rel_service(self.request)
+                        if hasattr(_obj, 'id'):
+                            rel_entity = await rel.update(id=_obj.id, obj=_obj, commit=False)
+                        else:
+                            _dump = _obj.model_dump()
+                            create_obj = rel.create_schema(**_dump)
+                            relcations_to_create.append((rel.create, create_obj))
+                        exclude_rel.append(key)
                 else:
-                    pass
+                    pass # TTODO: дописать такую логику где не list а model
             else:
                 to_set.append((key, value))
-        entity = self.model(**obj.model_dump())
+        entity = self.model(**obj.model_dump(exclude=exclude_rel))
         entity.company_id = self.user.company_id
         self.session.add(entity)
         if commit:
             try:
                 await self.session.commit()
+                await self.session.refresh(entity)
+                for _rel_method, _rel_dump in relcations_to_create:
+                    setattr(_rel_dump, 'order_id', entity.id)
+                    await _rel_method(obj=_rel_dump, commit=True)
                 await self.session.refresh(entity)
             except IntegrityError as e:
                 await self.session.rollback()
@@ -137,6 +151,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         else:
             await self.session.flush([entity])
+
         return entity
 
 
