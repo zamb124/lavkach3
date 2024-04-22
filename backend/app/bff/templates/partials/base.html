@@ -52,7 +52,6 @@
             }
 
 
-
             .choices__inner .choices__list {
                 background: transparent;
             }
@@ -158,13 +157,17 @@
             select option[selected] {
                 background-color: var(--vz-form-valid-border-color)
             }
+
+            .modal-xl {
+                min-width: 80%;
+            }
         </style>
     {% endblock css %}
 </head>
 
 <body>
-{{request.ws}}
-<div id="websocket_bus" hx-ext="ws" ws-connect="{{ws}}"></div>
+{{ request.ws }}
+<div id="websocket_bus" hx-ext="ws" ws-connect="{{ ws }}"></div>
 <div class="position-fixed top-0 end-0 p-3">
     <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
          aria-atomic="true">

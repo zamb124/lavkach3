@@ -127,7 +127,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                             relcations_to_create.append((rel.create, create_obj))
                         exclude_rel.append(key)
                 else:
-                    pass # TTODO: дописать такую логику где не list а model
+                    pass # TODO: дописать такую логику где не list а model
             else:
                 to_set.append((key, value))
         entity = self.model(**obj.model_dump(exclude=exclude_rel))
