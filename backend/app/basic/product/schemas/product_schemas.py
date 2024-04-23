@@ -21,7 +21,7 @@ class ProductBaseScheme(BaseModel):
     uom_id: UUID4 = Field(title='Uom', table=True, form=True)
     product_category_id: UUID4 = Field(title='Product Category', table=True, form=True)
     product_storage_type_id: UUID4 = Field(title='Product Storage type', table=True, form=True)
-    barcode_list: list[str] = Field(title='Barcodes', table=True, form=True)
+    barcode_list: list[str] = Field(default=None, title='Barcodes', table=True, form=True)
 
     class Config:
         extra = 'allow'

@@ -14,9 +14,9 @@ from app.basic.company.schemas.company_schemas import CompanyScheme
 from enum import Enum
 class PartnerBaseScheme(BaseModel):
     company_id: UUID4
-    title: str = Field(description="Title")
-    type: PartnerType
-    external_number: Optional[str]
+    title: str = Field(title='Title', description="Title")
+    type: PartnerType = Field(title='Type', description='')
+    external_number: Optional[str] = Field(title='External ID')
     partner_id: Optional[str]
     phone_number: Optional[TypePhone]
     email: Optional[str]
@@ -24,11 +24,14 @@ class PartnerBaseScheme(BaseModel):
     locale: Optional[TypeLocale]
     currency: Optional[TypeCurrency]
 
+
     class Config:
         extra = 'allow'
         from_attributes = True
         orm_model = Partner
         service = 'app.basic.partner.services.PartnerService'
+
+
 
 
 class PartnerUpdateScheme(PartnerBaseScheme):

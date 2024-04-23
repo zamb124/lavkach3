@@ -11,12 +11,20 @@ from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 
 class PartnerType(str, Enum):
-    PARTNER: str = 'partner' # Просто партнер у которого можно закупать или продавать
-    CONTACT: str = 'contact' # Контакт типа просто субкарточка с контактами
-    SUBPARTNER: str = 'subpartner' # Субпартнер аля контакт, но как бы у него тоже можно покупать и продавать
-    INTERCOMPANY: str = 'intercompany' # Это другое подразделение своей же компании
-    STORE: str = 'store' # Карточка для стора
-    USER: str = 'user' # Карточка для юзера, для того, что бы у Юзера тоже можно было что то покупать тк любой сотрудник компании это тоже партнер
+    """
+    PARTNER: Просто партнер у которого можно закупать или продавать
+    CONTACT: Контакт типа просто субкарточка с контактами
+    SUBPARTNER: Субпартнер аля контакт, но как бы у него тоже можно покупать и продавать
+    INTERCOMPANY: Это другое подразделение своей же компании
+    STORE: Карточка для стора
+    USER:Карточка для юзера, для того, что бы у Юзера тоже можно было что то покупать тк любой сотрудник компании это тоже партнер
+    """
+    PARTNER: str = 'partner'
+    CONTACT: str = 'contact'
+    SUBPARTNER: str = 'subpartner'
+    INTERCOMPANY: str = 'intercompany'
+    STORE: str = 'store'
+    USER: str = 'user'
 
 class Partner(Base,AllMixin):
     __tablename__ = "partner"

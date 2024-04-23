@@ -7,6 +7,7 @@ from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, fu
     String
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
+from app.inventory.location.models import Location
 from core.db import Base
 from core.db.mixins import AllMixin, guid, guid_primary_key
 from app.inventory.quant.models import Lot
@@ -174,10 +175,10 @@ class Move(Base, AllMixin):
     move_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order.id', ondelete='RESTRICT'))
     order_rel: Mapped[Order] = relationship(back_populates='move_list_rel')
-    location_src_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
-    location_dest_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
+    location_src_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
+    location_dest_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
     lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
-    location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
+    location_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
     # ONE OF Возможно либо location_id либо product_id
     product_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)

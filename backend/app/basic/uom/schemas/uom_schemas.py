@@ -14,8 +14,8 @@ class UomBaseScheme(BaseModel):
     title: str = Field(title="Title", table=True)
     uom_category_id: UUID4 = Field(title="Uom Categoty", table=True, description='Select category of UOM Category')
     type: UomType = Field(title="Uom Type", table=True, description='Select type \n SMALLER: this category is smaller \n BIGGER... STANDART')
-    ratio: float = Field(title="Uom Type", table=True, description='Ratio')
-    precision: float = Field(title="Presicion", table=True, description='Precision')
+    ratio: float = Field(title="Ratio", table=True, description='Ratio')
+    precision: float = Field(title="Presicion", table=True, description='Rouding Precision')
 
     class Config:
         extra = 'allow'

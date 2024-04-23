@@ -19,7 +19,7 @@
             });
             async function searchChoices(value){
                     try {
-                        const items = await fetch('/base/search?module={{ field.module }}&model={{ field.model }}&query=' + encodeURIComponent(value));
+                        const items = await fetch('/base/search?module={{ field.module }}&model={{ field.model }}&filter={{field.filter_as_string()|safe}}&search=' + encodeURIComponent(value));
                         const results = await items.json();
                         if (0 === results.length) { // Handle error from result, for example.
                             throw 'Empty!';

@@ -62,7 +62,7 @@ class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
 
 
 class OrderTypeFilter(BaseFilter):
-    store_id__in: Optional[List[UUID4]] = Field(default=None, filter=True)
+    store_id__in: Optional[List[UUID4]] = Field(default=None)
 
     class Config:
         populate_by_name = True

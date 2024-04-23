@@ -5,6 +5,7 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
+from app.inventory.location.enums import LocationClass
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
@@ -15,10 +16,10 @@ from app.inventory.order.models.order_models import MoveStatus, ReservationMetho
 
 class MoveBaseScheme(BaseModel):
     type: MoveType = Field(title='Move Type')
-    location_src_id: Optional[UUID4] = Field(default=None, title='Location src', table=True)
+    location_src_id: Optional[UUID4] = Field(default=None, title='Location src', table=True, )
     location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest', table=True)
     lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True)
-    location_id: Optional[UUID4] = Field(default=None, title='Package', table=True)
+    location_id: Optional[UUID4] = Field(default=None, title='Package', table=True, filter={'location_class__in': LocationClass.PACKAGE})
     # ONE OF Возможно либо location_id либо product_id
     product_id: Optional[UUID4] = Field(default=None, title='Product', table=True)
     quantity: float = Field(title='Quantity', table=True)

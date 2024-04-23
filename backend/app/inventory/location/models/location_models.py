@@ -44,6 +44,7 @@ class Location(Base, AllMixin):
     __tablename__ = "location"
     lsn_seq = Sequence(f'location_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
+    location_class: Mapped[LocationClass] = mapped_column(index=True)
     title: Mapped[str]
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
     location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id"), index=True)

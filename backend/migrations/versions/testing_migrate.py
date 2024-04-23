@@ -17,9 +17,9 @@ from sqlalchemy_utils.types import PasswordType
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'
-down_revision = '7c539bc761d4'
+down_revision = 'd371730769df'
 branch_labels = None
-depends_on = '7c539bc761d4'
+depends_on = 'd371730769df'
 
 
 def upgrade():
@@ -643,6 +643,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_partner_company_1,
+            'location_class': 'partner',
             "title": f"LOCATION_PARTNER_COMPANY 1",
         },
         {
@@ -653,6 +654,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_resource_company_1,
+            'location_class': 'resource',
             "title": f"LOCATION_RESOURCE_COMPANY 1",
         },
         {
@@ -663,6 +665,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_zone_company_1,
+            'location_class': 'zone',
             "title": f"LOCATION_ZONE_COMPANY 1",
         },
 
@@ -674,6 +677,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_lost_company_1,
+            'location_class': 'lost',
             "title": f"LOCATION_LOST_COMPANY 1",
         },
         {
@@ -684,6 +688,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_inventory_company_1,
+            'location_class': 'inventory',
             "title": f"LOCATION_INVENTORY_COMPANY 1",
         },
         {
@@ -694,6 +699,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_scrap_company_1,
+            'location_class': 'scrap',
             "title": f"LOCATION_SCRAP_COMPANY 1",
         },
         {
@@ -704,6 +710,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_scrapped_company_1,
+            'location_class': 'scrapped',
             "title": f"LOCATION_SCRAPED_COMPANY 1",
         },
         {
@@ -714,6 +721,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_buffer_company_1,
+            'location_class': 'buffer',
             "title": f"LOCATION_BUFFER_COMPANY 1",
         },
         {
@@ -724,6 +732,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_partner_company_1,
+            'location_class': 'partner',
             "title": f"LOCATION_PARTNER_COMPANY 2",
         },
         {
@@ -734,6 +743,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_resource_company_2,
+            'location_class': 'resource',
             "title": f"LOCATION_RESOURCE_COMPANY 2",
         },
         {
@@ -744,6 +754,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_zone_company_2,
+            'location_class': 'zone',
             "title": f"LOCATION_ZONE_COMPANY 2",
         },
 
@@ -756,6 +767,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_lost_company_2,
+            'location_class': 'lost',
             "title": f"LOCATION_LOST_COMPANY 2",
         },
         {
@@ -766,6 +778,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_inventory_company_2,
+            'location_class': 'inventory',
             "title": f"LOCATION_INVENTORY_COMPANY 2",
         },
         {
@@ -776,6 +789,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_scrap_company_2,
+            'location_class': 'scrap',
             "title": f"LOCATION_SCRAP_COMPANY 2",
         },
         {
@@ -786,6 +800,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_scrapped_company_2,
+            'location_class': 'scrapped',
             "title": f"LOCATION_SCRAPED_COMPANY 2",
         },
         {
@@ -796,6 +811,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_buffer_company_2,
+            'location_class': 'buffer',
             "title": f"LOCATION_BUFFER_COMPANY 2",
         },
     ])
@@ -809,6 +825,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_place_company_1,
+            'location_class': 'place',
             "title": f"LOCATION_PLACE_COMPANY 1",
         },
 
@@ -821,6 +838,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_package_company_1,
+            'location_class': 'package',
             "title": f"LOCATION_PACKAGE_COMPANY 1",
         },
         {
@@ -832,6 +850,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_place_company_2,
+            'location_class': 'place',
             "title": f"LOCATION_PLACE_COMPANY 2",
         },
         {
@@ -843,6 +862,7 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_package_company_2,
+            'location_class': 'package',
             "title": f"LOCATION_PACKAGE_COMPANY 2",
         },
     ])

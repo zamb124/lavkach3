@@ -1,4 +1,5 @@
 import datetime
+import enum
 import logging
 import uuid
 from collections import defaultdict
@@ -93,6 +94,7 @@ class HtmxField(BaseModel):
     lines: Optional[list['HtmxLine']] = []
     description: str
     schema: Any
+    filter: Optional[dict] = None
 
     def render(self, block_name: str, type: str = None):
         type = type or self.type
@@ -129,6 +131,17 @@ class HtmxField(BaseModel):
             block_name='as_view',
             view=self
         )
+
+    def filter_as_string(self):
+        filter = ''
+        if self.filter:
+            filter +='{'
+            for k, v in self.filter.items():
+                if isinstance(v, Enum):
+                    v= v.name
+                filter+= f'"{k}":"{v}",'
+            filter+= '}'
+        return filter
 
     def as_table_form(self):
         return render_block(
@@ -339,6 +352,8 @@ class ModelView:
         res = ''
         enums = []
         line = None
+        if field_name in ('ratio', 'precision'):
+            a=1
         class_types = get_types(fielinfo.annotation, [])
         for i, c in enumerate(class_types):
             if i > 0:
@@ -366,6 +381,8 @@ class ModelView:
                 model_name = field_name.replace('_ids', '')
                 res += 'ids'
                 module = self._get_module_by_model(model_name)
+                if not module:
+                    module = fielinfo.json_schema_extra.get('model')
                 model = model_name
             elif issubclass(class_types[0], TypeLocale) or field_name.startswith('locale'):
                 res += 'locale'
@@ -386,6 +403,8 @@ class ModelView:
                 res += 'dict'
             elif issubclass(class_types[0], int):
                 res += 'number'
+            elif issubclass(class_types[0], float):
+                res += 'float'
             elif issubclass(class_types[0], str) and field_name.endswith('_list'):
                 res += 'list'
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_src_id'):
@@ -403,7 +422,6 @@ class ModelView:
                 res += 'model_id'
                 module = self._get_module_by_model(model_name)
                 model = model_name
-
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id__in'):
                 model_name = field_name.replace('_id__in', '')
                 res += 'model_id'
@@ -426,6 +444,12 @@ class ModelView:
                 model = model_name
             else:
                 res += 'str'
+        if fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {}:
+            a=1
+        if not module:
+            module = fielinfo.json_schema_extra.get('module')
+        if not model:
+            model = fielinfo.json_schema_extra.get('model')
         return HtmxField(**{
             'field_name': field_name,
             'type': res,
@@ -435,6 +459,7 @@ class ModelView:
             'title': fielinfo.title or model,
             'enums': enums,
             'widget': fielinfo.json_schema_extra or {},
+            'filter': fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {},
             'sort_idx': self.sort.get(field_name, 999),
             'description': fielinfo.description or field_name,
             'prefix': prefix,

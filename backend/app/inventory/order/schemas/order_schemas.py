@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Any
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, computed_field
@@ -30,6 +30,10 @@ class OrderBaseScheme(BaseModel):
     description: Optional[str] = Field(default=None, title='Description', table=True, form=True)
     status: OrderStatus = Field(title='Status', table=True, form=True)
     order_id: Optional[UUID4] = Field(default=None, title='Parent', form=True)
+
+    @classmethod
+    def __init__(cls, /, **data: Any):
+        super().__init__(**data)
 
     class Config:
         extra = 'allow'
@@ -73,11 +77,11 @@ def empty_erray(val):
 
 
 class OrderFilter(BaseFilter):
-    planned_datetime__gte: Optional[datetime] = Field(title="bigger or equal planned date", default=None, filter=True)
-    planned_datetime__lt: Optional[datetime] = Field(title="less planned date", default=None, filter=True)
-    status__in: Optional[List[OrderStatus]] = Field(default=None, title='Order Status', filter=True)
-    store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', filter=True)
-    order_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Order Type', filter=True)
+    planned_datetime__gte: Optional[datetime] = Field(title="bigger or equal planned date", default=None)
+    planned_datetime__lt: Optional[datetime] = Field(title="less planned date", default=None)
+    status__in: Optional[List[OrderStatus]] = Field(default=None, title='Order Status')
+    store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store')
+    order_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Order Type')
 
     class Constants(Filter.Constants):
         model = Order

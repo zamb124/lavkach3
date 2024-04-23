@@ -1,10 +1,10 @@
 import uuid
-from typing import Optional
+from typing import Optional, Any
 
 from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, field_validator, UUID4
+from pydantic import BaseModel, field_validator, UUID4, model_validator
 from starlette.responses import JSONResponse
 
 from core.fastapi.frontend.schema_recognizer import ModelView
@@ -38,7 +38,22 @@ async def _filter(request: Request, filschema: FilterSchema):
 class SearchSchema(BaseModel):
     module: str
     model: str
-    query: str = ''
+    search: str = ''
+    filter: Any
+
+    @model_validator(mode='before')
+    def _filter(cls, value):
+        """
+            Так же убираем все пустые params
+        """
+
+        if f:=value.get('filter'):
+            if isinstance(f, str):
+                try:
+                    value['filter'] = eval(f)
+                except TypeError as ex:
+                    raise 'Type Error'
+        return value
 
 
 @router.get("/search", response_class=JSONResponse)
@@ -46,7 +61,9 @@ async def search(request: Request, schema: SearchSchema = Depends(SearchSchema))
     """
      Универсальный запрос поиска
     """
-    params = {'search': schema.query}
+    params = {'search': schema.search}
+    if schema.filter:
+        params.update(schema.filter)
     async with getattr(request.scope['env'], schema.module) as a:
         data = await a.list(params=params, model=schema.model)
     return [
