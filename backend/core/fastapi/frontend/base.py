@@ -39,7 +39,7 @@ class SearchSchema(BaseModel):
     module: str
     model: str
     search: str = ''
-    filter: Any
+    filter: Optional[Any] = None
 
     @model_validator(mode='before')
     def _filter(cls, value):

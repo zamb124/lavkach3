@@ -15,7 +15,8 @@
             let choices = new Choices(element, {
                 placeholder: true,
                 placeholderValue: "Enter {{ field.title }}",
-                removeItemButton: true
+                removeItemButton: true,
+                searchFloor: 5
             });
             async function searchChoices(value){
                     try {
