@@ -10,6 +10,6 @@ product_router = APIRouter()
 
 @product_router.get("", response_class=HTMLResponse)
 async def product(request: Request):
-    model = ClassView(request, 'basic', 'product')
-    return templates.TemplateResponse(request,'widgets/list-full.html', context={'model': model})
+    cls = ClassView(request,  'product')
+    return templates.TemplateResponse(request,'widgets/list-full.html', context={'cls': cls})
 

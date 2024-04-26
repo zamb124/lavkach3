@@ -297,6 +297,7 @@ class ClassView:
             self.model = model
         else:
             self.model = request.scope['env'][model]
+        assert self.model, 'Model is not defined'
         self.env = request.scope['env']
         self.prefix = prefix or _get_prefix()
         self.exclude = exclude or []

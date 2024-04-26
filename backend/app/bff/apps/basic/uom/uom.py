@@ -10,6 +10,6 @@ uom_router = APIRouter()
 
 @uom_router.get("", response_class=HTMLResponse)
 async def uom(request: Request):
-    model = ClassView(request, 'basic', 'uom')
-    return templates.TemplateResponse(request,'widgets/list-full.html', context={'model': model})
+    cls = ClassView(request, 'uom')
+    return templates.TemplateResponse(request,'widgets/list-full.html', context={'cls': cls})
 

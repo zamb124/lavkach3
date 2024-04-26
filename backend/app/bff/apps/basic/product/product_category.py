@@ -10,6 +10,6 @@ product_category_router = APIRouter()
 
 @product_category_router.get("", response_class=HTMLResponse)
 async def product_category(request: Request):
-    model = ClassView(request, 'basic', 'product_category')
-    return templates.TemplateResponse(request,'widgets/list-full.html', context={'model': model})
+    cls = ClassView(request, 'product_category')
+    return templates.TemplateResponse(request,'widgets/list-full.html', context={'cls': cls})
 

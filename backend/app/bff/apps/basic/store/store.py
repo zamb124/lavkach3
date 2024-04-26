@@ -10,5 +10,5 @@ store_router = APIRouter()
 
 @store_router.get("", response_class=HTMLResponse)
 async def store(request: Request):
-    model = ClassView(request, 'basic', 'store')
-    return templates.TemplateResponse(request,'widgets/list-full.html', context={'model': model})
+    cls = ClassView(request, 'store')
+    return templates.TemplateResponse(request,'widgets/list-full.html', context={'cls': cls})
