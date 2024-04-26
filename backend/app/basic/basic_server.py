@@ -9,7 +9,7 @@ from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.basic.basic_router import basic_router
-from core.config import config
+from core.db_config import config
 from core.env import Env, domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging

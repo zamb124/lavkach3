@@ -19,7 +19,7 @@ from core.fastapi.middlewares import (
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
-from core.config import config
+from core.db_config import config
 
 class EnvMidlleWare:
     """

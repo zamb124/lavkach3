@@ -4,7 +4,7 @@ import os
 import boto3
 from botocore.exceptions import ClientError
 
-from core.config import config
+from core.db_config import config
 
 
 class S3:

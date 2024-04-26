@@ -4,25 +4,7 @@ import os
 from dotenv import load_dotenv
 from pydantic import BaseConfig
 
-from app.basic.company.schemas import CompanyUpdateScheme, CompanyCreateScheme, CompanyScheme, CompanyFilter
-from app.basic.partner.schemas import PartnerScheme, PartnerCreateScheme, PartnerUpdateScheme, PartnerFilter
-from app.basic.product.schemas import ProductScheme, ProductCreateScheme, ProductUpdateScheme, ProductFilter, \
-    ProductCategoryScheme, ProductCategoryCreateScheme, ProductCategoryUpdateScheme, ProductCategoryFilter, \
-    ProductStorageTypeScheme, ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, ProductStorageTypeFilter
-from app.basic.store.schemas import StoreScheme, StoreCreateScheme, StoreUpdateScheme, StoreFilter
-from app.basic.uom.schemas import UomScheme, UomCreateScheme, UomUpdateScheme, UomFilter, UomCategoryScheme, \
-    UomCategoryCreateScheme, UomCategoryUpdateScheme, UomCategoryFilter
-from app.basic.user.schemas import UserScheme, UserCreateScheme, UserUpdateScheme, UserFilter, RoleScheme
-from app.basic.user.schemas.role_schemas import *
-from app.bff.adapters.basic_adapter import BasicAdapter
-from app.bff.adapters.inventory_adapter import InventoryAdapter
-from app.inventory.location.schemas import LocationScheme, LocationCreateScheme, LocationUpdateScheme, LocationFilter, \
-    LocationTypeScheme, LocationTypeFilter, LocationTypeUpdateScheme, LocationTypeCreateScheme
-from app.inventory.order.schemas import OrderUpdateScheme, OrderCreateScheme, OrderScheme, OrderFilter, OrderTypeFilter, \
-    OrderTypeUpdateScheme, OrderTypeCreateScheme, OrderTypeScheme
-from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme, MoveFilter
-from app.inventory.quant.schemas import LotScheme, LotCreateScheme, LotUpdateScheme, LotFilter
-from core.config import Config as CoreConfig
+from core.db_config import Config as CoreConfig
 
 BaseConfig.arbitrary_types_allowed = True
 logging.basicConfig(level=logging.INFO)

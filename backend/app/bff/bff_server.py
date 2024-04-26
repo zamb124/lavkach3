@@ -21,7 +21,7 @@ from core.fastapi.middlewares import (
     AuthBffBackend,
     SQLAlchemyMiddleware,
 )
-from core.config import  config
+from core.db_config import  config
 from core.helpers.cache import Cache, CustomKeyMaker, CacheTag
 from core.helpers.cache import RedisBackend
 from core.utils.timeit import add_timing_middleware

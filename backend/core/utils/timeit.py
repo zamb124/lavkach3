@@ -15,7 +15,7 @@ from starlette.responses import Response
 from starlette.routing import Match, Mount
 from starlette.types import Scope
 
-from core.jwt_config import config
+from core.db_config import config
 
 TIMER_ATTRIBUTE = "__fastapi_restful_timer__"
 
