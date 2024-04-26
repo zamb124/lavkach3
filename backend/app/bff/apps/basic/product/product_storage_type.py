@@ -10,6 +10,6 @@ product_storage_type_router = APIRouter()
 
 @product_storage_type_router.get("", response_class=HTMLResponse)
 async def product_storage_type(request: Request):
-    cls = ClassView(request, 'basic', 'product_storage_type')
+    cls = ClassView(request, 'product_storage_type')
     return templates.TemplateResponse(request,'widgets/list-full.html', context={'cls': cls})
 

@@ -16,5 +16,5 @@ async def move(request: Request):
         2 - модуль/сервис и модель lля фильтрации
         3 - какие фильтры используем на странице (важно, что порядок будет тот же)
     """
-    model = ClassView(request, 'inventory', 'move')
-    return templates.TemplateResponse(request,'widgets/list-full.html', context={'model': model})
+    cls = ClassView(request, 'move')
+    return templates.TemplateResponse(request,'widgets/list-full.html', context={'cls': cls})
