@@ -1,22 +1,18 @@
-import logging
-from datetime import datetime
-from typing import Any, Generic, List, Optional, Type, TypeVar, Dict, Sequence
-from functools import wraps
+from dataclasses import dataclass
+from dataclasses import dataclass
+from typing import Any, Generic, Optional, Type, TypeVar
 from uuid import uuid4
 
+from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel
+from sqlalchemy import select, Row, RowMapping
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 
-from app.basic.user.schemas import UserCreateScheme
 from core.db.session import Base, session
-from sqlalchemy import select, Row, RowMapping
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
-from fastapi_filter.contrib.sqlalchemy import Filter
 from core.fastapi.middlewares.authentication import CurrentUser
-
-
 from core.utils.timeit import timed
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -25,6 +21,10 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 FilterSchemaType = TypeVar("FilterSchemaType", bound=Filter)
 before_fields = ['role_ids', 'company_ids', 'is_admin', 'store_id']
 
+@dataclass
+class Model:
+    service: object
+    model: object
 def import_service(service_name):
     components = service_name.split('.')
     mod = __import__(components[0])
@@ -81,6 +81,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         self.create_schema = create_schema
         self.update_schema = update_schema
         self.request = request
+        self.env = request.scope['env']
         self.session = db_session if db_session else session
 
     def sudo(self):
@@ -109,7 +110,9 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         return result
 
     @timed
-    async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
+    async def create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
+        if isinstance(obj, dict):
+            obj = self.create_schema(**obj)
         to_set = []
         exclude_rel = []
         relcations_to_create = []
@@ -139,7 +142,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 await self.session.refresh(entity)
                 for _rel_method, _rel_dump in relcations_to_create:
                     setattr(_rel_dump, 'order_id', entity.id)
-                    await _rel_method(obj=_rel_dump, commit=True)
+                    await _rel_method(obj=_rel_dump, commit=True, parent=entity)
                 await self.session.refresh(entity)
             except IntegrityError as e:
                 await self.session.rollback()
@@ -214,4 +217,5 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         return True
+
 

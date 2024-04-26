@@ -3,14 +3,14 @@
     <div class="card-header">
         <div class="d-flex align-items-center flex-wrap gap-2">
             <div class="flex-grow-1">
-                {{ model.as_button_create()|safe }}
+                {{ cls.as_button_create()|safe }}
             </div>
             <div class="flex-shrink-0">
                 <div class="hstack text-nowrap gap-2">
                     <button class="btn btn-soft-danger" id="remove-actions"
                             onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i>
                     </button>
-                    <button class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="{{ '#filter_' ~ model.prefix }}"><i
+                    <button class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="{{ '#filter_' ~ cls.prefix }}"><i
                             class="ri-filter-2-line me-1 align-bottom"></i> Filters
                     </button>
                     <button class="btn btn-soft-success">Import</button>

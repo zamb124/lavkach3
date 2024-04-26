@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, field_validator, UUID4, model_validator
 from starlette.responses import JSONResponse
 
-from core.fastapi.frontend.schema_recognizer import ModelView
+from core.fastapi.frontend.schema_recognizer import ClassView
 from core.fastapi.frontend.uttils import clean_filter
 
 
@@ -21,7 +21,6 @@ router = APIRouter(
 
 
 class FilterSchema(BaseModel):
-    module: str
     model: str
     prefix: str
 
@@ -31,12 +30,11 @@ async def _filter(request: Request, filschema: FilterSchema):
     """
      Универсальный запрос, который отдает фильтр обьекта по его модулю и модели
     """
-    htmx_orm = ModelView(request, filschema.module, filschema.model, prefix=filschema.prefix)
-    return htmx_orm.get_filter()
+    cls = ClassView(request, filschema.model, prefix=filschema.prefix)
+    return cls.get_filter()
 
 
 class SearchSchema(BaseModel):
-    module: str
     model: str
     search: str = ''
     filter: Optional[Any] = None
@@ -64,7 +62,7 @@ async def search(request: Request, schema: SearchSchema = Depends(SearchSchema))
     params = {'search': schema.search}
     if schema.filter:
         params.update(schema.filter)
-    async with getattr(request.scope['env'], schema.module) as a:
+    async with request.scope['env'][schema.model].adapter as a:
         data = await a.list(params=params, model=schema.model)
     return [
         {
@@ -76,7 +74,6 @@ async def search(request: Request, schema: SearchSchema = Depends(SearchSchema))
 
 
 class SearchIds(BaseModel):
-    module: str
     model: str
     id__in: str
 
@@ -89,7 +86,7 @@ async def get_by_ids(request: Request, schema: SearchSchema = Depends(SearchIds)
     if not schema.id__in:
         return []
     params = {'id__in': schema.id__in}
-    async with getattr(request.scope['env'], schema.module) as a:
+    async with request.scope['env'][schema.model].adapter as a:
         data = await a.list(params=params, model=schema.model)
     return [
         {
@@ -101,7 +98,6 @@ async def get_by_ids(request: Request, schema: SearchSchema = Depends(SearchIds)
 
 
 class TableSchema(BaseModel):
-    module: str
     model: str
     cursor: Optional[int] = 0
     prefix: str
@@ -119,12 +115,11 @@ async def table(request: Request, schema: TableSchema):
         qp = clean_filter(form_data, form_data['prefix'])
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}
-    view = ModelView(request, params=qp, module=schema.module, model=schema.model, prefix=schema.prefix)
-    return await view.get_table()
+    cls = ClassView(request, params=qp, model=schema.model, prefix=schema.prefix)
+    return await cls.get_table()
 
 
 class LineSchema(BaseModel):
-    module: str
     model: str
     prefix: str
 
@@ -141,13 +136,11 @@ async def line(request: Request, schema: TableSchema):
         qp = clean_filter(form_data, form_data['prefix'])
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}
-    view = ModelView(request, params=qp, module=schema.module, model=schema.model,
-                     prefix=f'{schema.prefix}--{new_id}--')
-    return await view.get_create_line()
+    cls = ClassView(request, params=qp, model=schema.model, prefix=f'{schema.prefix}--{new_id}--')
+    return await cls.get_create_line()
 
 
 class ModelSchema(BaseModel):
-    module: str
     model: str
     prefix: str
     id: UUID4
@@ -164,14 +157,13 @@ async def model_id(request: Request, schema: ModelSchema):
      отдает простой контрол для чтения
     """
     form_data = await request.json()
-    model = ModelView(request, schema.module, schema.model)
-    link_view = await model.get_link_view(model_id=schema.id)
+    cls = ClassView(request, schema.model)
+    link_view = await cls.get_link_view(model_id=schema.id)
     return link_view
 
 
 class ModalSchema(BaseModel):
     prefix: str
-    module: str
     model: str
     method: str
     backdrop: Optional[str] = None
@@ -187,17 +179,17 @@ async def modal(request: Request, schema: ModalSchema):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    model = ModelView(request, schema.module, schema.model)
+    cls = ClassView(request, schema.model)
     if data := schema.model_extra:
         _json = {}
         data = clean_filter(data, schema.prefix)
-        method_schema = getattr(model.schemas, schema.method)
+        method_schema = getattr(cls.model.schemas, schema.method)
         if data:
             method_schema_obj = method_schema(**data[0])
             _json = method_schema_obj.model_dump(mode='json')
-        adapter_method = getattr(model.adapter, schema.method)
+        adapter_method = getattr(cls.model.adapter, schema.method)
         await adapter_method(id=schema.id, model=schema.model, json=_json)
-        return model.send_message(f'{model.model.capitalize()}: is {schema.method.capitalize()}')
+        return cls.send_message(f'{cls.model.name.capitalize()}: is {schema.method.capitalize()}')
     else:
-        model_method = getattr(model, f'get_{schema.method}')
+        model_method = getattr(cls, f'get_{schema.method}')
         return await model_method(model_id=schema.id, target_id=schema.target_id, backdrop=schema.backdrop)

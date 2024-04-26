@@ -1,14 +1,13 @@
 {% block widget %}
-    <div id="{{ 'table_' ~ model.prefix }}"
+    <div id="{{ 'table_' ~ cls.prefix }}"
          hx-post="/base/table"
          hx-ext="json-enc"
          hx-vals='{
-        "module": "{{ model.module }}",
-        "model": "{{ model.model }}",
-        "prefix": "{{ model.prefix }}"
+        "model": "{{ cls.model.name }}",
+        "prefix": "{{ cls.prefix }}"
      }'
-         hx-trigger="change from:{{ '#filter_' ~ model.prefix }} delay:500ms, load, update delay:500ms"
-         hx-include="{{ '#filter_' ~ model.prefix }}"
+         hx-trigger="change from:{{ '#filter_' ~ cls.prefix }} delay:500ms, load, update delay:500ms"
+         hx-include="{{ '#filter_' ~ cls.prefix }}"
     >
         <div class="card htmx-indicator ">
             <table class="table ">
@@ -88,8 +87,7 @@
                                         hx-ext="json-enc"
                                         hx-trigger="revealed" hx-swap="afterend" hx-select="#rows"
                                         hx-vals='{
-                                        "module": "{{ view.module }}",
-                                        "model": "{{ view.model }}",
+                                        "model": "{{ view.model.name }}",
                                         "{{ view.line.prefix }}--cursor": "{{ line.lsn }}",
                                         "prefix": "{{ view.prefix }}"
                                      }'
@@ -149,11 +147,10 @@
                                hx-ext="json-enc"
                                hx-target="#newlink"
                                hx-swap="beforeend"
-                               hx-params="module,model,prefix"
+                               hx-params="model,prefix"
                                hx-post="/base/table/line"
                                hx-vals='{
-                                "module": "{{ view.module }}",
-                                "model": "{{ view.model }}",
+                                "model": "{{ view.model.name }}",
                                 "prefix": "{{ view.prefix }}{{ view.field_name }}"
                                 }'
                                class="btn btn-soft-secondary fw-medium">
@@ -173,15 +170,14 @@
     <div class="d-flex flex-wrap gap-2">
         {% for line in view.lines %}
             <a href="#"
-               hx-params="module, model, id, prefix, method"
+               hx-params="model, id, prefix, method"
                hx-trigger="click"
                hx-target="#modal"
                hx-ext="json-enc"
                hx-post="/base/modal"
                hx-vars='{
-                "module": "{{ line.module }}",
-                "model": "{{ line.model }}",
-                "method": "view",
+                "model": "{{ line.model.name }}",
+                "method": "get",
                 "id": "{{ line.id }}",
                 "prefix": "{{ line.prefix }}"
                 }'

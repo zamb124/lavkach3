@@ -1,1 +1,1 @@
-from .store_service import *
+from .store_service import StoreService

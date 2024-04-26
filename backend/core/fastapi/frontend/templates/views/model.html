@@ -10,12 +10,11 @@
             hx-ext="json-enc"
             hx-post="/base/modal"
             hx-vars='{
-"module": "{{ line.module }}",
-"model": "{{ line.model }}",
+"model": "{{ line.model.name }}",
 "method": "create",
 {% if line.id %}"id": "{{ line.id }}", {% endif %}
 "prefix": "{{ line.prefix }}"
 }'>
-        <i class="ri-add-fill me-1 align-bottom"> Add {{ line.model|capitalize }}</i>
+        <i class="ri-add-fill me-1 align-bottom"> Add {{ line.model.name|capitalize }}</i>
     </button>
 {% endblock %}

@@ -5,7 +5,7 @@
                 <div class="modal-header">
 
                     <div class="col-6">
-                        <h5 class="modal-title">Edit {{ view.model|capitalize }}
+                        <h5 class="modal-title">Edit {{ view.model.name|capitalize }}
                             <span>
                             {{ view.line.as_button_view(backdrop='update')|safe }}
                         </span>
@@ -30,8 +30,7 @@
                       hx-include="this"
                       hx-target="#trash"
                       hx-vals='{
-                "module": "{{ view.module }}",
-                "model": "{{ view.model }}",
+                "model": "{{ view.model.name }}",
                 "method": "update",
                 "id": "{{ view.line.id }}",
                 "prefix": "{{ view.prefix }}"
@@ -89,7 +88,7 @@
             <div class="modal-content modal-xl">
                 <div class="modal-header">
                     <div class="col-6">
-                        <h5 class="modal-title">Create {{ view.model|capitalize }}
+                        <h5 class="modal-title">Create {{ view.model.name|capitalize }}
                             <span>
                             {{ view.line.as_button_view()|safe }}
                         </span>
@@ -111,8 +110,7 @@
                       hx-include="this"
                       hx-target="#trash"
                       hx-vals='{
-                "module": "{{ view.module }}",
-                "model": "{{ view.model }}",
+                "model": "{{ view.model.name }}",
                 "method": "create",
                 {% if view.id %}"id": "{{ view.id }}", {% endif %}
                 "prefix": "{{ view.prefix }}"
@@ -170,7 +168,7 @@
     <div class="modal-content modal-xl">
         <div class="modal-header">
             <div class="col-6">
-                <h5 class="modal-title">View {{ view.model|capitalize }}
+                <h5 class="modal-title">View {{ view.model.name|capitalize }}
                     <span>
                             {{ view.line.as_button_update(backdrop='view')|safe }}
                         </span>
@@ -250,7 +248,7 @@
                     </lord-icon>
                     <div class="mt-4">
                         <h4 class="mb-3" style="padding-bottom: 0">Are you sure you want to
-                            delete {{ view.model|capitalize }} -> {{ view.line.display_title }}</h4>
+                            delete {{ view.model.name|capitalize }} -> {{ view.line.display_title }}</h4>
                         <p class="text-muted mb-1 text-center" style="padding-top: 0"> With id {{ view.line.id }} </p>
                         <p class="text-muted mb-10"> The record will be permanently deleted, did you really think? </p>
                         <div class="hstack gap-2 justify-content-center">
@@ -260,8 +258,7 @@
                                     hx-post="/base/modal"
                                     hx-ext="json-enc"
                                     hx-vars='{
-                                "module": "{{ view.line.module }}",
-                                "model": "{{ view.line.model }}",
+                                "model": "{{ view.line.model.name }}",
                                 "method": "delete",
                                 "id": "{{ view.line.id }}",
                                 "prefix": "{{ view.line.prefix }}",

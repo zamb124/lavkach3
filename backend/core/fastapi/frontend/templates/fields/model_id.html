@@ -13,14 +13,11 @@
         (async function () {
             let element = document.getElementById("{{field.prefix ~ field.field_name }}");
             let choices = new Choices(element, {
-                placeholder: true,
-                placeholderValue: "Enter {{ field.title }}",
                 removeItemButton: true,
-                searchFloor: 5
             });
             async function searchChoices(value){
                     try {
-                        const items = await fetch('/base/search?module={{ field.module }}&model={{ field.model }}&filter={{field.filter_as_string()|safe}}&search=' + encodeURIComponent(value));
+                        const items = await fetch('/base/search?model={{ field.model.name }}&filter={{field.filter_as_string()|safe}}&search=' + encodeURIComponent(value));
                         const results = await items.json();
                         if (0 === results.length) { // Handle error from result, for example.
                             throw 'Empty!';
@@ -76,7 +73,7 @@
                         id__in = value.value
                     }
 
-                    const items = await fetch('/base/get_by_ids?module={{ field.module }}&model={{ field.model }}&id__in=' + encodeURIComponent(id__in));
+                    const items = await fetch('/base/get_by_ids?model={{ field.model.name }}&id__in=' + encodeURIComponent(id__in));
                     const results = await items.json();
                     if (0 === results.length) { // Handle error from result, for example.
                         return []
@@ -125,9 +122,8 @@
              hx-ext="json-enc"
              hx-post="/base/model_id"
              hx-vals='{
-            "module": "{{ field.module }}",
-            "model": "{{ field.model }}",
-            "method": "view",
+            "model": "{{ field.model.name }}",
+            "method": "get",
             "id": "{{ field.val }}",
             "prefix": "{{ field.prefix }}"
             }'

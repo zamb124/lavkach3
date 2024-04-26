@@ -5,16 +5,15 @@ from typing import Optional
 from sqlalchemy import ForeignKey, Sequence
 from sqlalchemy import Numeric, Uuid
 from sqlalchemy.orm import relationship, mapped_column, Mapped
+from typing import TYPE_CHECKING
 
-from app.basic.product.models import Product
+from app.basic.uom.enums.uom_enum import UomType
 from core.db import Base
 from core.db.mixins import AllMixin
+if TYPE_CHECKING:
+    from app.basic.product.models import Product
+    from app.basic.uom.models.uom_category_models import UomCategory
 
-
-class UomType(str, Enum):
-    SMALLER: str = 'smaller'
-    STANDART: str = 'standart'
-    BIGGER: str = 'bigger'
 
 
 class Uom(Base, AllMixin):
@@ -25,7 +24,6 @@ class Uom(Base, AllMixin):
     title: Mapped[str] = mapped_column(index=True)
     uom_category_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey("uom_category.id"))
     uom_category_rel: Mapped['UomCategory'] = relationship(back_populates='uom_list_rel', lazy='selectin')
-    product_list_rel: Mapped[Optional[list['Product']]] = relationship(back_populates='uom_rel', lazy='selectin')
     type: Mapped[str] = mapped_column(index=True, default=UomType.STANDART)
     ratio: Mapped[float] = mapped_column(Numeric(12, 2), default=1)
     precision: Mapped[float] = mapped_column(Numeric(12, 2), default=0.01)

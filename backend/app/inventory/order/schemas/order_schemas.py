@@ -31,9 +31,6 @@ class OrderBaseScheme(BaseModel):
     status: OrderStatus = Field(title='Status', table=True, form=True)
     order_id: Optional[UUID4] = Field(default=None, title='Parent', form=True)
 
-    @classmethod
-    def __init__(cls, /, **data: Any):
-        super().__init__(**data)
 
     class Config:
         extra = 'allow'

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, UTC
 
 import jwt
 
-from core.config import config
+from core.jwt_config import config
 from core.exceptions import DecodeTokenException, ExpiredTokenException
 
 

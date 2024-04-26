@@ -27,7 +27,7 @@
             function init(){
                 choices.setChoices(async () => {
                     try {
-                        const items = await fetch('/base/search?module={{ field.module }}&model={{ field.model }}&search=');
+                        const items = await fetch('/base/search?model={{ field.model.name }}&search=');
                         const results = await items.json();
                         if (0 === results.length) { // Handle error from result, for example.
                             throw 'Empty!';
@@ -51,5 +51,5 @@
 {{ field.val.english_name or field.val.name or field.val}}
 {% endblock %}
 {% block as_table %}
-<a href="#" hx-params="none" hx-get="/base/table/row?module={{ field.module }}&model={{ field.model }}">{{ field.val.code or field.val.english_name}}</a>
+<a href="#" hx-params="none" hx-get="/base/table/row?model={{ field.model.name }}">{{ field.val.code or field.val.english_name}}</a>
 {% endblock %}

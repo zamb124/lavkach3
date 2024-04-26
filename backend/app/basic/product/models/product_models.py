@@ -6,6 +6,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm import Mapped, mapped_column, composite
 from core.db import Base
 from core.db.mixins import AllMixin
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.basic.uom.models import Uom
 
 
 class ProductCategory(Base, AllMixin):
@@ -39,7 +42,7 @@ class Product(Base, AllMixin):
     external_number: Mapped[Optional[str]]
     product_type: Mapped[str] = mapped_column(default=ProductType.STORABLE)
     uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("uom.id"), index=True)
-    uom_rel: Mapped['Uom'] = relationship(lazy='selectin', back_populates="product_list_rel")
+    uom_rel: Mapped['Uom'] = relationship(lazy='selectin')
     product_category_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("product_category.id"), index=True)
     product_storage_type_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("product_storage_type.id"), index=True)
     barcode_list: Mapped[list[str]] = mapped_column(type_=ARRAY(String), index=True, nullable=True)

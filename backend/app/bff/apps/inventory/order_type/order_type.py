@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
-from core.fastapi.frontend.schema_recognizer import ModelView
+from core.fastapi.frontend.schema_recognizer import ClassView
 from app.bff.template_spec import templates
 
 order_type_router = APIRouter()
@@ -16,6 +16,6 @@ async def order_type(request: Request):
         2 - модуль/сервис и модель lля фильтрации
         3 - какие фильтры используем на странице (важно, что порядок будет тот же)
     """
-    model = ModelView(request, 'inventory', 'order_type')
+    model = ClassView(request, 'inventory', 'order_type')
 
     return templates.TemplateResponse(request,'widgets/list-full.html', context={'model': model})

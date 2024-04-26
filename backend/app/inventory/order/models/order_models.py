@@ -78,9 +78,13 @@ class OrderType(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     order_class: Mapped[OrderClass]                                                                             # Класс ордера
     allowed_location_src_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)       # Разрешенные зоны для подбора
-    exclusive_location_src_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)     # Искличенные зоны из подбора
+    exclude_location_src_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)     # Искличенные зоны из подбора
     allowed_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)      # Разрешенные зона для назначения
-    exclusive_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)    # Исключение зон из назначения
+    exclude_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)    # Исключение зон из назначения
+    allowed_location_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)       # Разрешенные типы зоны для подбора
+    exclude_location_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)     # Искличенные типы зоны из подбора
+    allowed_location_classes: Mapped[Optional[list[LocationClass]]] = mapped_column(type_=ARRAY(String), index=True)                 # Разрешенные классы зона для назначения
+    exclude_location_classes: Mapped[Optional[list[LocationClass]]] = mapped_column(type_=ARRAY(String), index=True)               # Исключение классы зон из назначения
     order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order_type.id", ondelete='CASCADE'))# Тип Ордера возврата разницы
     backorder_action_type: Mapped[BackOrderAction] = mapped_column(default=BackOrderAction.ASK)                 # Поведение возврата разницы
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                     # Склад
@@ -88,7 +92,7 @@ class OrderType(Base, AllMixin):
     reservation_method: Mapped[ReservationMethod] = mapped_column(default=ReservationMethod.AT_CONFIRM)         # Метод резервирование
     reservation_time_before: Mapped[Optional[int]] = mapped_column(default=0)                                   # Минуты до начала резервирования
     allowed_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)            # Разрешенные типы упаковок
-    exclusive_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)          # Исключение типы упаковок
+    exclude_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)          # Исключение типы упаковок
     is_homogeneity: Mapped[bool]                                                                                   # Признак Гомогенности
     is_allow_create_package: Mapped[bool]                                                                          # Можно ли создавать упаковки
     is_can_create_order_manualy: Mapped[bool]                                                                      # Можно ли создавать Ордер вручную

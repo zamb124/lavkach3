@@ -12,9 +12,8 @@
        hx-ext="json-enc"
        hx-post="/base/modal"
        hx-vars='{
-"module": "{{ line.module }}",
-"model": "{{ line.model }}",
-"method": "view",
+"model": "{{ line.model.name }}",
+"method": "get",
 "id": "{{ line.id }}",
 "prefix": "{{ line.prefix }}"
 }'
@@ -35,8 +34,7 @@
             hx-ext="json-enc"
             hx-post="/base/modal"
             hx-vars='{
-"module": "{{ line.module }}",
-"model": "{{ line.model }}",
+"model": "{{ line.model.name }}",
 "method": "update",
 "id": "{{ line.id }}",
 "prefix": "{{ line.prefix }}"
@@ -57,8 +55,7 @@
        hx-ext="json-enc"
        hx-post="/base/modal"
        hx-vars='{
-"module": "{{ line.module }}",
-"model": "{{ line.model }}",
+"model": "{{ line.model.name }}",
 "method": "create",
 {% if line.id %}"id": "{{ line.id }}", {% endif %}
 "prefix": "{{ line.prefix }}"
@@ -79,8 +76,7 @@
        hx-ext="json-enc"
        hx-post="/base/modal"
        hx-vars='{
-"module": "{{ line.module }}",
-"model": "{{ line.model }}",
+"model": "{{ line.model.name }}",
 "method": "delete",
 "id": "{{ line.id }}",
 "prefix": "{{ line.prefix }}",

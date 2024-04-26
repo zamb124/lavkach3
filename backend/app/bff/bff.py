@@ -53,7 +53,8 @@ async def login(
         request: Request,
         username: Annotated[str, Form()],
         password: Annotated[str, Form()]):
-    async with request.scope['env'].basic as a:
+    request.scope['env']
+    async with request.scope['env']['company'].adapter as a:
         data = await a.login(username, password)
     return templates.TemplateResponse(request, 'components/write_ls.html', context={'token': data['token'], 'refresh_token': data['refresh_token']})
 
@@ -76,5 +77,5 @@ async def dropdown_ids(request: Request, module: str, model: str, id: str, iteml
      Виджет на вход получает модуль-модель-ид- и обратную ссылку если нужно, если нет будет /module/model/{id}
      _named означает, что так же будет отдат name для отрисовки на тайтле кнопки
     """
-    data = await request.scope['env'].basic.dropdown_ids(model, id, itemlink, is_named)
+    data = await request.scope['env']['company'].adapter.dropdown_ids(model, id, itemlink, is_named)
     return templates.TemplateResponse(request, 'widgets/dropdown-ids-named-htmx.html', context=data)

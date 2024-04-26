@@ -1,5 +1,5 @@
 import redis.asyncio as aioredis
-from core.config import config
+from core.db_config import config
 
 redis = aioredis.StrictRedis(
     username='default',

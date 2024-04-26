@@ -1,11 +1,7 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.requests import Request
-
 from app.basic.company.models.company_models import Company
 from app.basic.company.schemas.company_schemas import CompanyCreateScheme, CompanyUpdateScheme, CompanyFilter
-from core.db.session import session
-from core.service.base import BaseService, CreateSchemaType, ModelType
 from core.permissions.permissions import permit
+from core.service.base import BaseService, CreateSchemaType, ModelType
 
 
 class CompanyService(BaseService[Company, CompanyCreateScheme, CompanyUpdateScheme, CompanyFilter]):

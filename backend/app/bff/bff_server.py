@@ -11,9 +11,9 @@ from fastapi.staticfiles import StaticFiles
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
-from app.bff.bff_config import config
 from app.bff.bff_router import bff_router
 from app.bff.bff_tasks import remove_expired_tokens
+from core.env import Env, domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -21,6 +21,7 @@ from core.fastapi.middlewares import (
     AuthBffBackend,
     SQLAlchemyMiddleware,
 )
+from core.config import  config
 from core.helpers.cache import Cache, CustomKeyMaker, CacheTag
 from core.helpers.cache import RedisBackend
 from core.utils.timeit import add_timing_middleware
@@ -29,11 +30,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class env:
-    ...
 
 
-class AdapterMidlleWare:
+class EnvMidlleWare:
     """
     Адартер кладется в request для удобства
     """
@@ -44,11 +43,7 @@ class AdapterMidlleWare:
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
         if scope['type'] in  ("http", "websocket"):
             conn = HTTPConnection(scope)
-            e = env()
-            for i, v in config.services.items():
-                e.__setattr__(i, v['adapter'](conn, v, i))
-            scope['env'] = e
-            scope['services'] = config.services
+            scope['env'] = Env(domains, conn)
         await self.app(scope, receive, send)
 
 
@@ -81,7 +76,7 @@ def on_auth_error(request: Request, exc: Exception):
 
 def make_middleware() -> List[Middleware]:
     middleware = [
-        Middleware(AdapterMidlleWare),
+        Middleware(EnvMidlleWare),
         Middleware(
             CORSMiddleware,
             allow_origins=["*"],

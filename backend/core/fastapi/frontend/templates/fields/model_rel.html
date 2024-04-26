@@ -9,9 +9,8 @@
            hx-ext="json-enc"
            hx-post="/base/modal"
            hx-vals='{
-"module": "{{ field.module }}",
-"model": "{{ field.model }}",
-"method": "view",
+"model": "{{ field.model.name }}",
+"method": "get",
 "id": "{{ field.val.id }}",
 "prefix": "{{ field.prefix }}"
 }'
@@ -28,9 +27,8 @@
            hx-ext="json-enc"
            hx-post="/base/modal"
            hx-vals='{
-"module": "{{ field.module }}",
-"model": "{{ field.model }}",
-"method": "view",
+"model": "{{ field.model.name }}",
+"method": "get",
 "id": "{{ field.val.id }}",
 "prefix": "{{ field.prefix }}"
 }'

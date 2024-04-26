@@ -3,11 +3,11 @@
         <div class="d-flex align-items-center flex-wrap gap-2">
             <div class="flex-grow-1">
                 <button class="btn btn-secondary add-btn"
-                        hx-get="/base/modal-create?module={{ model.module }}&model={{ model.model }}"
+                        hx-get="/base/modal-create?module={{ model.module }}&model={{ model.model.name }}"
                         data-bs-toggle="modal" hx-trigger="click"
                         data-bs-target="#{{ modal_id }}" hx-target="#{{ modal_id }}"
                         hx-swap="innerHTML">
-                    <i class="ri-add-fill me-1 align-bottom"></i> Add {{ model.model|capitalize }}
+                    <i class="ri-add-fill me-1 align-bottom"></i> Add {{ model.model.name|capitalize }}
                 </button>
             </div>
             <div class="flex-shrink-0">

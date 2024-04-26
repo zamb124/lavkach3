@@ -1,11 +1,8 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, UUID4, model_validator, field_validator, computed_field
-from typing import Optional, List, TYPE_CHECKING, Any
-
-from pydantic_core import PydanticCustomError
+from pydantic import BaseModel, Field, UUID4, model_validator
 
 created_at_gte_default = datetime.now() - timedelta(days=365)
 created_at_lt_default = datetime.now() + timedelta(days=365)

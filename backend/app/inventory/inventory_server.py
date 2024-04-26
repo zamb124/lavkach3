@@ -4,9 +4,12 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.requests import HTTPConnection
+from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.inventory.inventory_router import inventory_router
-from core.config import config
+from app.inventory.inventory_config import config
+from core.env import Env, domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -16,7 +19,21 @@ from core.fastapi.middlewares import (
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
+from core.config import config
 
+class EnvMidlleWare:
+    """
+    Адартер кладется в request для удобства
+    """
+
+    def __init__(self, app: ASGIApp, *args, **kwargs):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        if scope['type'] in  ("http", "websocket"):
+            conn = HTTPConnection(scope)
+            scope['env'] = Env(domains, conn)
+        await self.app(scope, receive, send)
 
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(inventory_router)
@@ -47,6 +64,8 @@ def on_auth_error(request: Request, exc: Exception):
 
 def make_middleware() -> List[Middleware]:
     middleware = [
+        Middleware(EnvMidlleWare),
+
         Middleware(
             CORSMiddleware,
             allow_origins=["*"],

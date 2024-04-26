@@ -4,18 +4,17 @@ from sqlalchemy import select, Row, RowMapping
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 
-from app.basic.company.services import CompanyService
 from app.basic.user.models.role_models import Role
 from app.basic.user.models.user_models import User
 from app.basic.user.schemas.user_schemas import SignUpScheme, ChangeCompanyScheme
 from app.basic.user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme, UserFilter
-from app.basic.user.services.role_service import RoleService
+#from app.basic.user.services.role_service import RoleService
 from core.exceptions import (
     PasswordDoesNotMatchException,
     DuplicateEmailOrNicknameException,
     UserNotFoundException,
 )
-from core.fastapi.schemas import CurrentUser
+#from core.fastapi.schemas import CurrentUser
 from core.permissions.permissions import permit, permits
 from core.service.base import BaseService, ModelType, FilterSchemaType
 from core.utils.token_helper import TokenHelper
@@ -59,7 +58,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         return entity
 
-    async def login(self, email: str = None, password: str = None, user: CurrentUser | None = None):
+    async def login(self, email: str = None, password: str = None, user = None):
         # Получаем юзера из бд
         if not user:
             result_user = await self.session.execute(

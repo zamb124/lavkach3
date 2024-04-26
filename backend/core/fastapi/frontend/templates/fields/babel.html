@@ -4,11 +4,10 @@
             hx-ext="json-enc"
             hx-post="/bff/select"
             hx-vals='{
-                    "module": "{{ field.module }}",
-                    "model": "{{ field.model }}",
+                    "model": "{{ field.model.name }}",
                     "value": "{{ field.val.id if field.val else None }}",
                     "prefix": "{{ model.update.prefix }}",
-                    "name": "{{ field.model }}",
+                    "name": "{{ field.model.name }}",
                     "required": "{{ field.required }}"
                  }'
             hx-trigger="load"

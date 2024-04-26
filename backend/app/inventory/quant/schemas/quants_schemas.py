@@ -36,10 +36,11 @@ class QuantUpdateScheme(QuantBaseScheme):
     uom_id: Optional[UUID4] = None
 
 class QuantCreateScheme(QuantBaseScheme):
-    company_id: UUID4
+    ...
 
 
 class QuantScheme(QuantCreateScheme, TimeStampScheme):
+    company_id: UUID4
     lsn: int
     id: UUID4
 

@@ -20,12 +20,12 @@ class LocationTypeBaseScheme(BaseModel):
     is_mix_products: Optional[bool] = None
     is_allow_create_package: Optional[bool] = None
     allowed_package_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location_id', filter={'location_class__in': 'package'})
-    exclusive_package_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location_id', filter={'location_class__in': 'package'})
+    exclude_package_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location_id', filter={'location_class__in': 'package'})
     allowed_order_type_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='order_type')
-    exclusive_order_type_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='order_type')
+    exclude_order_type_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='order_type')
     strategy: Optional[PutawayStrategy] = PutawayStrategy.FEFO
     product_storage_type_ids: Optional[list[str]] = None
-
+    is_can_negative: bool = Field(default=False, title='Can be Negative')
     class Config:
         extra = 'allow'
         from_attributes = True

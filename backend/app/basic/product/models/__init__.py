@@ -1,1 +1,1 @@
-from .product_models import Product, ProductCategory, ProductType
+from .product_models import Product, ProductCategory, ProductType, ProductStorageType

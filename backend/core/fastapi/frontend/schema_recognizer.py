@@ -16,13 +16,10 @@ from pydantic.fields import Field
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
+from core.env import Model
 from core.fastapi.adapters import BaseAdapter
 from core.types import TypeLocale, TypePhone, TypeCountry, TypeCurrency
 from core.utils.timeit import timed
-
-
-class DeleteSchema(BaseModel):
-    delete_id: uuid.UUID
 
 
 def _get_prefix():
@@ -74,15 +71,13 @@ def get_types(annotation, _class=[]):
         get_types(annotate[0], _class)
     return _class
 
-
-class HtmxField(BaseModel):
+class Field(BaseModel):
     """
         Описание поля
     """
     field_name: str
     type: Optional[str]
-    module: str
-    model: str
+    model: Any
     required: Optional[bool]
     title: Optional[str]
     enums: Optional[list] = []
@@ -90,8 +85,8 @@ class HtmxField(BaseModel):
     val: Any = None
     sort_idx: Optional[int] = 0
     prefix: Optional[str] = None
-    line: Optional['HtmxLine'] = None
-    lines: Optional[list['HtmxLine']] = []
+    line: Optional['Line'] = None
+    lines: Optional[list['Line']] = []
     description: str
     schema: Any
     filter: Optional[dict] = None
@@ -152,15 +147,14 @@ class HtmxField(BaseModel):
         )
 
 
-class HtmxLine(BaseModel):
+class Line(BaseModel):
     """"
         Описание строчки
     """
-    module: str
-    model: str
+    model: Any
     prefix: str
     schema: Any
-    fields: list[HtmxField]
+    fields: list[Field]
     id: Optional[uuid.UUID] = None
     lsn: Optional[int] = None
     vars: Optional[dict] = None
@@ -210,44 +204,44 @@ class HtmxLine(BaseModel):
         return self.render(block_name='as_create')
 
 
-class HtmxCreate(BaseModel):
+class ViewCreate(BaseModel):
     """"
         Описание строчки
     """
-    module: str
-    model: str
+
+    model: Any
     prefix: str
-    line: HtmxLine
+    line: Line
     id: Optional[uuid.UUID] = None
 
 
-class HtmxFilter(HtmxCreate):
+class ViewFilter(ViewCreate):
     """"
         Описание строчки
     """
     ...
 
 
-class HtmxUpdate(HtmxCreate):
+class ViewUpdate(ViewCreate):
     """"
         Редактирование
     """
     id: uuid.UUID
 
 
-class HtmxView(HtmxCreate):
+class ViewGet(ViewCreate):
     """"
         Cоздание
     """
     id: uuid.UUID
 
 
-class HtmxTable(HtmxView):
+class ViewTable(ViewGet):
     """
         Описание таблицы
     """
     cursor: int
-    lines: list[HtmxLine] = Field(default=[], description='Строки таблицы')
+    lines: list[Line] = []
     id: Optional[uuid.UUID] = None
 
     @timed
@@ -267,30 +261,20 @@ class HtmxTable(HtmxView):
         return self.render()
 
 
-class HtmxConstructorSchemas:
-    base: BaseModel
-    create: BaseModel
-    update: BaseModel
-    filter: BaseModel
-    delete: DeleteSchema
 
 
-class ModelView:
+class ClassView:
     """
         Класс управление собирания таблиц, форм, строчек и тд связанных с HTMX
     """
-    services = dict
     request: Request
-    module: str
-    model: str
-    schemas: HtmxConstructorSchemas = HtmxConstructorSchemas()
-    adapter: BaseAdapter
+    model: Model
     params: Optional[QueryParams]
-    table: Optional[HtmxTable] = None
-    create: Optional[HtmxCreate] = None
-    update: Optional[HtmxUpdate] = None
-    filter: Optional[HtmxFilter] = None
-    view: Optional[HtmxView] = None
+    table: Optional[ViewTable] = None
+    create: Optional[ViewCreate] = None
+    update: Optional[ViewUpdate] = None
+    filter: Optional[ViewFilter] = None
+    view: Optional[ViewGet] = None
     exclude: Optional[list] = [None]
     join_related: Optional[bool] = True  # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
@@ -300,7 +284,6 @@ class ModelView:
     @timed
     def __init__(self,
                  request,
-                 module: str,
                  model: str,
                  prefix: str = None,
                  params: QueryParams | dict = None,
@@ -310,17 +293,13 @@ class ModelView:
                  sort: list = None
                  ):
         self.request = request
-        self.services = request.scope['services']
-        self.module = module
-        self.model = model
+        if isinstance(model, Model):
+            self.model = model
+        else:
+            self.model = request.scope['env'][model]
+        self.env = request.scope['env']
         self.prefix = prefix or _get_prefix()
         self.exclude = exclude or []
-        self.schemas.base = self.services[self.module]['schema'][self.model]['base']
-        self.schemas.create = self.services[self.module]['schema'][self.model]['create']
-        self.schemas.update = self.services[self.module]['schema'][self.model]['update']
-        self.schemas.filter = self.services[self.module]['schema'][self.model]['filter']
-        self.schemas.delete = DeleteSchema
-        self.adapter = getattr(self.request.scope['env'], self.module)
         if params:
             self.params = params
         else:
@@ -330,7 +309,7 @@ class ModelView:
         if sort:
             self.sort = {v: i for i, v in enumerate(sort)}
         else:
-            config_sort = self.services[self.module]['schema'][self.model].get('sort')
+            config_sort = self.model.sort
             if config_sort:
                 self.sort = {v: i for i, v in enumerate(config_sort)}
 
@@ -344,17 +323,18 @@ class ModelView:
         """
         Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
         """
-
+        if field_name == 'order_type':
+            a=1
         fielinfo = schema.model_fields[field_name]
-        module = kwargs.get('module') or self.module
         model = kwargs.get('model') or self.model
         prefix = kwargs.get('prefix') or self.prefix
         res = ''
         enums = []
         line = None
-        if field_name in ('ratio', 'precision'):
-            a=1
         class_types = get_types(fielinfo.annotation, [])
+        model_name = ''
+        if fielinfo.json_schema_extra:
+            model_name = fielinfo.json_schema_extra.get('model')
         for i, c in enumerate(class_types):
             if i > 0:
                 res += '_'
@@ -365,37 +345,33 @@ class ModelView:
                 enums = fielinfo.default
             elif field_name.endswith('_by'):
                 res += 'model_id'
-                model = 'user'
-                module = 'basic'
+                model = self.env['user']
             elif field_name == 'search':
                 res += 'search'
             elif issubclass(class_types[0], bool):
                 res += 'bool'
             elif issubclass(class_types[0], uuid.UUID) and field_name in (
-                    'allowed_location_src_ids', 'exclusive_location_src_ids', 'allowed_location_dest_ids',
-                    'exclusive_location_dest_ids', 'allowed_package_ids', 'exclusive_package_ids'):
+                    'allowed_location_src_ids', 'exclude_location_src_ids', 'allowed_location_dest_ids',
+                    'exclude_location_dest_ids', 'allowed_package_ids', 'exclusive_package_ids'):
                 res += 'ids'
-                model = 'location'
-                module = 'inventory'
+                model = self.env['location']
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_ids'):
-                model_name = field_name.replace('_ids', '')
+                if not model_name:
+                    model_name = field_name.replace('_ids', '')
                 res += 'ids'
-                module = self._get_module_by_model(model_name)
-                if not module:
-                    module = fielinfo.json_schema_extra.get('model')
-                model = model_name
+                model = self.env[model_name]
             elif issubclass(class_types[0], TypeLocale) or field_name.startswith('locale'):
                 res += 'locale'
-                model = 'locale'
+                model = self.env['locale']
             elif issubclass(class_types[0], TypeCurrency) or field_name.startswith('currency'):
                 res += 'currency'
-                model = 'currency'
+                model = self.env['currency']
             elif issubclass(class_types[0], TypeCountry) or field_name.startswith('country'):
                 res += 'country'
-                model = 'country'
+                model = self.env['country']
             elif issubclass(class_types[0], TypePhone) or field_name.startswith('phone'):
                 res += 'phone'
-                model = 'phone'
+                model = self.env['phone']
             elif issubclass(c, Enum):
                 res += 'enum'
                 enums = class_types[0]
@@ -408,55 +384,49 @@ class ModelView:
             elif issubclass(class_types[0], str) and field_name.endswith('_list'):
                 res += 'list'
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_src_id'):
-                model_name = field_name.replace('_src_id', '')
+                if not model_name:
+                    model_name = field_name.replace('_src_id', '')
                 res += 'model_id'
-                module = self._get_module_by_model(model_name)
-                model = model_name
+                model = self.env[model_name]
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_dest_id'):
-                model_name = field_name.replace('_dest_id', '')
+                if not model_name:
+                    model_name = field_name.replace('_dest_id', '')
                 res += 'model_id'
-                module = self._get_module_by_model(model_name)
-                model = model_name
+                model = self.env[model_name]
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id'):
-                model_name = field_name.replace('_id', '')
+                if not model_name:
+                    model_name = field_name.replace('_id', '')
                 res += 'model_id'
-                module = self._get_module_by_model(model_name)
-                model = model_name
+                model = self.env[model_name]
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id__in'):
-                model_name = field_name.replace('_id__in', '')
+                if not model_name:
+                    model_name = field_name.replace('_id__in', '')
                 res += 'model_id'
-                module = self._get_module_by_model(model_name)
-                model = model_name or model
+                model = self.env[model_name]
             elif issubclass(class_types[0], datetime.datetime):
                 res += 'datetime'
             elif issubclass(class_types[0], BaseModel) and field_name.endswith('_list_rel'):
-                model_name = field_name.replace('_list_rel', '')
+                if not model_name:
+                    model_name = field_name.replace('_list_rel', '')
                 res += 'model_list_rel'
-                module = self._get_module_by_model(model_name)
-                model = model_name
+                model = self.env[model_name]
                 schema = class_types[0]
-                submodel = ModelView(request=self.request, module=module, model=model)
-                line = submodel._get_line(schema=schema, module=module, model=model, prefix=prefix)
+                submodel = ClassView(request=self.request, model=model.name)
+                line = submodel._get_line(schema=schema, model=model, prefix=prefix)
             elif issubclass(class_types[0], BaseModel) and field_name.endswith('_rel'):
-                model_name = field_name.replace('_rel', '')
+                if not model_name:
+                    model_name = field_name.replace('_rel', '')
                 res += 'model_rel'
-                module = self._get_module_by_model(model_name)
-                model = model_name
+                model = self.env[model_name]
             else:
                 res += 'str'
-        if fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {}:
-            a=1
-        if not module:
-            module = fielinfo.json_schema_extra.get('module')
-        if not model:
-            model = fielinfo.json_schema_extra.get('model')
-        return HtmxField(**{
+        assert model, f'Model for field {field_name} is not defined'
+        return Field(**{
             'field_name': field_name,
             'type': res,
-            'module': module,
             'model': model,
             'required': fielinfo.is_required(),
-            'title': fielinfo.title or model,
+            'title': fielinfo.title or model.name,
             'enums': enums,
             'widget': fielinfo.json_schema_extra or {},
             'filter': fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {},
@@ -468,7 +438,7 @@ class ModelView:
         })
 
     @timed
-    def _get_schema_fields(self, schema: BaseModel, **kwargs) -> list[HtmxField]:
+    def _get_schema_fields(self, schema: BaseModel, **kwargs) -> list[Field]:
         """
             base, filte, update, create
             Отдает ту модель, которая нужна или базовую
@@ -495,9 +465,7 @@ class ModelView:
 
 
     @timed
-    def _get_line(self, schema: BaseModel, **kwargs) -> HtmxLine:
-        module = kwargs.get('module') or self.module
-        model = kwargs.get('model') or self.model
+    def _get_line(self, schema: BaseModel, **kwargs) -> Line:
         prefix = kwargs.get('prefix') or self.prefix
         id = kwargs.get('model_id')
         lsn = kwargs.get('lsn')
@@ -508,10 +476,9 @@ class ModelView:
         if not fields:
             fields = self._get_schema_fields(schema=schema, prefix=prefix, exclude=kwargs.get('exclude'),
                                              type=kwargs.get('type'))
-        return HtmxLine(
+        return Line(
             schema=schema,
-            module=module,
-            model=model,
+            model=self.model,
             lsn=lsn,
             vars=vars,
             display_title=display_title,
@@ -526,8 +493,8 @@ class ModelView:
         """
             Метод отдает фильтр , те столбцы с типами для HTMX шаблонов
         """
-        line = self._get_line(schema=self.schemas.filter, prefix=f'{self.prefix}--0--')
-        self.filter = HtmxFilter(module=self.module, model=self.model, line=line, prefix=self.prefix)
+        line = self._get_line(schema=self.model.schemas.filter, prefix=f'{self.prefix}--0--')
+        self.filter = ViewFilter(model=self.model, line=line, prefix=self.prefix)
         return render_block(
             environment=environment, template_name=f'views/filter.html',
             block_name='filter', filter=self.filter
@@ -538,7 +505,7 @@ class ModelView:
             Метод отдает создать схему , те столбцы с типами для HTMX шаблонов
         """
         prefix = self.prefix
-        line = self._get_line(schema=self.schemas.create, model_id=model_id, prefix=prefix)
+        line = self._get_line(schema=self.model.schemas.create, model_id=model_id, prefix=prefix)
         return render_block(
             environment=environment,
             template_name=f'views/line.html',
@@ -551,8 +518,8 @@ class ModelView:
             Метод отдает создать схему , те столбцы с типами для HTMX шаблонов
         """
         prefix = self.prefix
-        line = self._get_line(schema=self.schemas.create, model_id=model_id, prefix=f'{self.prefix}--0--')
-        self.create = HtmxCreate(line=line, id=model_id, prefix=prefix, module=self.module, model=self.model)
+        line = self._get_line(schema=self.model.schemas.create, model_id=model_id, prefix=f'{self.prefix}--0--')
+        self.create = ViewCreate(line=line, id=model_id, prefix=prefix, model=self.model)
         return render_block(
             environment=environment,
             template_name=f'views/modal.html',
@@ -567,12 +534,11 @@ class ModelView:
         params = {'id__in': model_id}
         line, lines, _ = await self._get_data(
             params=params,
-            schema=self.schemas.update,
+            schema=self.model.schemas.update,
             join_related=False,
         )
         assert len(lines) == 1 or 0
-        self.update = HtmxUpdate(model=self.model, module=self.module, line=lines[0], prefix=self.prefix,
-                                 id=lines[0].id)
+        self.update = ViewUpdate(model=self.model, line=lines[0], prefix=self.prefix, id=lines[0].id)
         self._sort_columns()
         return render_block(
             environment=environment,
@@ -580,7 +546,7 @@ class ModelView:
             block_name='update', view=self.update, backdrop=kwargs.get('backdrop')
         )
 
-    async def get_view(self, model_id: uuid.UUID, **kwargs) -> str:
+    async def get_get(self, model_id: uuid.UUID, **kwargs) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
@@ -588,12 +554,11 @@ class ModelView:
         params = {'id__in': model_id}
         line, lines, _ = await self._get_data(
             params=params,
-            schema=self.schemas.base,
+            schema=self.model.schemas.get,
             join_related=True,
         )
         assert len(lines) == 1 or 0
-        self.view = HtmxView(
-            module=self.module,
+        self.view = ViewGet(
             model=self.model,
             line=lines[0],
             prefix=self.prefix,
@@ -615,12 +580,11 @@ class ModelView:
         params = {'id__in': model_id}
         line, lines, _ = await self._get_data(
             params=params,
-            schema=self.schemas.base,
+            schema=self.model.schemas.get,
             join_related=False,
         )
         assert len(lines) == 1 or 0
-        self.view = HtmxView(
-            module=self.module,
+        self.view = ViewGet(
             model=self.model,
             line=lines[0],
             prefix=self.prefix,
@@ -640,12 +604,11 @@ class ModelView:
         params = {'id__in': model_id}
         line, lines, _ = await self._get_data(
             params=params,
-            schema=self.schemas.base,
+            schema=self.model.schemas.get,
             join_related=True, backdrop=kwargs.get('backdrop')
         )
         assert len(lines) == 1 or 0
-        self.view = HtmxView(
-            module=self.module,
+        self.view = ViewGet(
             model=self.model,
             line=lines[0],
             prefix=self.prefix,
@@ -667,14 +630,14 @@ class ModelView:
         """
         # line = self._get_line(schema=self.schemas.base, prefix=f'{self.prefix}--0--', type='table')
         line, lines, cursor = await self._get_data(
-            schema=self.schemas.base,
+            schema=self.model.schemas.get,
             params=params,
             join_related=join_related,
             join_field=join_field,
             type='table'
         )
-        self.table = HtmxTable(
-            prefix=self.prefix, module=self.module, model=self.model, lines=lines,
+        self.table = ViewTable(
+            prefix=self.prefix, model=self.model, lines=lines,
             cursor=cursor, line=line
         )
         self._sort_columns()
@@ -704,15 +667,14 @@ class ModelView:
             self.join_related = join_related
         if join_field:
             self.join_fields = join_field or []
-        module = kwargs.get('module') or self.module
         model = kwargs.get('model') or self.model
         prefix = kwargs.get('prefix') or self.prefix
         type = kwargs.get('type')
         cursor = 0
         line = self._get_line(schema=schema, prefix=f'{prefix}--0--', type=type)
         if not data:
-            async with getattr(self.request.scope['env'], module) as a:
-                data = await a.list(params=params, model=model)
+            async with model.adapter as a:
+                data = await a.list(params=params)
                 cursor = data['cursor']
                 data = data['data']
             logging.info(f"_GET_DATA END REQUEST: {datetime.datetime.now() - time_start}")
@@ -721,7 +683,7 @@ class ModelView:
         lines = []
         htmx_line_temp = line.model_dump()
         for row_number, row in enumerate(data):
-            line_dict = deepcopy(htmx_line_temp)
+            line_dict = htmx_line_temp.copy()
             line_dict['prefix'] = prefix + f'--{row_number}--'
             for col in line_dict['fields']:
                 col['prefix'] = line_dict['prefix']
@@ -735,15 +697,14 @@ class ModelView:
                 elif col['type'].endswith('_list_rel'):
                     if val_data := col['val']:
                         line_prefix = f'{line_dict["prefix"]}{col["field_name"]}'
-                        submodel = ModelView(request=self.request, module=col['module'], model=col['model'])
+                        submodel = ClassView(request=self.request, model=col['model'])
                         col['line'], col['lines'], _ = await submodel._get_data(
                             schema=col['schema'], data=val_data, prefix=line_prefix,
-                            module=col['module'], model=col['model'], join_related=False
+                            model=col['model'], join_related=False
                         )
 
             lines.append(self._get_line(
                 schema=line_dict['schema'],
-                module=module,
                 model=model,
                 model_id=row['id'],
                 lsn=row['lsn'],
@@ -761,7 +722,9 @@ class ModelView:
             for line in lines:
                 """Достаем все релейтед обьекты у которых модуль отличается"""
                 for field in line.fields:
-                    if field.module != module or self.model == field.field_name.replace('_id', ''):
+                    if isinstance(field.model, str):
+                        a=1
+                    if field.model.domain != model.domain or self.model.domain == field.field_name.replace('_id', ''):
                         # if field.widget.get('table'):  # TODO: может все надо а не ток table
                         if not self.join_fields:
                             missing_fields[field.field_name].append((field.val, field))
@@ -771,14 +734,14 @@ class ModelView:
             for miss_key, miss_value in missing_fields.items():
                 _data = []
                 _vals, _fields = [i[0] for i in miss_value], [i[1] for i in miss_value]
-                a = getattr(self.request.scope['env'], _fields[0].module)
+                #a = getattr(self.request.scope['env'], _fields[0].module)
                 miss_value_str = ''
                 _corutine_data = None
                 if isinstance(_vals, list):
                     miss_value_str = ','.join([i for i in _vals if i])
                 if miss_value_str:
                     qp = {'id__in': miss_value_str}
-                    _corutine_data = a.list(params=qp, model=_fields[0].model)
+                    _corutine_data = _fields[0].model.adapter.list(params=qp)
                     # _join_lines = {i['id']: i for i in _data['data']}
                 to_serialize.append((_vals, _fields, _corutine_data))
             logging.info(f"_GET_DATA GET CORUTINE CREATED: {datetime.datetime.now() - time_start}")
@@ -844,7 +807,7 @@ class ModelView:
         if join_related: self.join_related = join_related
         if join_field: self.join_fields = join_field or []
         self.create = self.get_create()
-        self.view = self.get_view()
+        self.view = self.get_get()
         # self.update = await self.get_update()
         self.table = self.get_table()
         self._sort_columns()
@@ -867,7 +830,7 @@ class ModelView:
             environment=environment,
             template_name=f'views/table.html',
             block_name='widget',
-            model=self
+            cls=self
         )
 
     def as_filter_widget(self):
@@ -875,7 +838,7 @@ class ModelView:
             environment=environment,
             template_name=f'views/filter.html',
             block_name='widget',
-            model=self
+            cls=self
         )
 
     def as_header_widget(self):
@@ -883,11 +846,11 @@ class ModelView:
             environment=environment,
             template_name=f'views/header.html',
             block_name='widget',
-            model=self
+            cls=self
         )
 
     def as_button_create(self):
-        line = self._get_line(schema=self.schemas.create)
+        line = self._get_line(schema=self.model.schemas.create)
         try:
             rendered_html = render_block(
                 environment=environment,
@@ -904,6 +867,6 @@ class ModelView:
             environment=environment,
             template_name=f'components/message.html',
             block_name='success',
-            model=self,
+            cls=self,
             message=message
         )

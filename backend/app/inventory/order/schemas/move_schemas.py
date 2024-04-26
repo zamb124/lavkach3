@@ -36,7 +36,7 @@ class MoveUpdateScheme(MoveBaseScheme):
 
 
 class MoveCreateScheme(MoveBaseScheme):
-    ...
+    order_id: UUID4
 
 
 
@@ -45,9 +45,7 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
     move_id: Optional[UUID4] = None
-    order_id: UUID4
     partner_id: Optional[UUID4] = None
-    type: MoveType
     status: MoveStatus
 
     class Config:

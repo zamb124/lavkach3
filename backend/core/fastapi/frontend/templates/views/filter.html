@@ -1,12 +1,11 @@
 {% block widget %}
-<div id="{{ 'filter_' ~ model.prefix }}"
+<div id="{{ 'filter_' ~ cls.prefix }}"
       hx-ext="json-enc"
       hx-post="/base/filter"
       hx-trigger="load"
       hx-vars='{
-        "module": "{{ model.module }}",
-        "model": "{{ model.model }}",
-        "prefix": "{{ model.prefix }}"
+        "model": "{{ cls.model.name }}",
+        "prefix": "{{ cls.prefix }}"
       }'
 >
     <!--HTMX CONTENT-->
