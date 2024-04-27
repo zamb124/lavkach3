@@ -53,7 +53,7 @@
 
             .choices__inner .choices__list {
                 background: transparent;
-                                background: transparent;
+                background: transparent;
                 background-color: transparent;
             }
 
@@ -166,7 +166,7 @@
     {% endblock css %}
 </head>
 
-<body>
+<body onload="main()">
 <div id="websocket_bus" hx-ext="ws" ws-connect="{{ ws }}"></div>
 <div class="position-fixed top-0 end-0 p-3">
     <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
@@ -181,7 +181,6 @@
 <!-- Begin page -->
 
 <div id="layout-wrapper">
-
     <div hx-get="/bff/topbar" hx-trigger="load"></div>
     <div id="errors"></div>
     {% block sidebar %}
@@ -417,15 +416,15 @@
             if (message.message_type === 'COMPANY_CHANGED') {
                 refreshToken()
                 var table = htmx.find("table")
-                if (table){
+                if (table) {
                     htmx.trigger(table, 'update')
                 }
                 var form = htmx.find("form")
-                if (form){
+                if (form) {
                     htmx.trigger(form, 'update')
                 }
                 var modal = htmx.find("modal")
-                if (modal){
+                if (modal) {
                     htmx.trigger(modal, 'update')
                 }
             }
@@ -467,6 +466,9 @@
 {% endblock javascript %}
 
 </body>
+<script>
+
+</script>
 
 
 </html>
