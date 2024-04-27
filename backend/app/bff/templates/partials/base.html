@@ -417,7 +417,18 @@
             console.log(message)
             if (message.message_type === 'COMPANY_CHANGED') {
                 refreshToken()
-                htmx.trigger("#table", "update");
+                var table = htmx.find("#table_{{ cls.prefix }}")
+                if (table){
+                    htmx.trigger(table, 'update')
+                }
+                var form = htmx.find("#form_{{ cls.prefix }}")
+                if (form){
+                    htmx.trigger(form, 'update')
+                }
+                var modal = htmx.find("#modal_{{ cls.prefix }}")
+                if (modal){
+                    htmx.trigger(modal, 'update')
+                }
             }
         })
 

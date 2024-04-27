@@ -66,7 +66,7 @@ class RefreshTokenSchema(BaseModel):
 
 @index_router.post("/basic/user/refresh", responses={"404": {"model": ExceptionResponseSchema}}, )
 async def refresh_token(request: Request, refresh_schema: RefreshTokenSchema):
-    async with request.scope['env'].basic as a:
+    async with request.scope['env']['user'].adapter as a:
         return await a.refresh_token(refresh_schema)
 
 
