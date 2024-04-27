@@ -14,7 +14,7 @@ async def company_change(request: Request, company_id: uuid.UUID):
         Смена компании юзерану не па
     """
 
-    async with request.scope['env'].basic as a:
+    async with request.scope['env']['user'].adapter as a:
         data = await a.user_company_change(user_id=request.user.user_id.hex, company_id=company_id.hex)
         message = "Company changed"
         data = await a.dropdown_ids('company', data['company_id'], '/basic/user/company_change', message=message)
