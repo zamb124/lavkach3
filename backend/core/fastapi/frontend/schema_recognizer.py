@@ -324,18 +324,20 @@ class ClassView:
         """
         Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
         """
-        if field_name == 'order_type':
+        if field_name == 'allowed_location_type_ids':
             a=1
         fielinfo = schema.model_fields[field_name]
-        model = kwargs.get('model') or self.model
         prefix = kwargs.get('prefix') or self.prefix
         res = ''
         enums = []
         line = None
         class_types = get_types(fielinfo.annotation, [])
-        model_name = ''
+        model = None
+        model_name = self.model.name
         if fielinfo.json_schema_extra:
-            model_name = fielinfo.json_schema_extra.get('model')
+            if fielinfo.json_schema_extra.get('model'):
+                model_name = fielinfo.json_schema_extra.get('model')
+                model = self.env[model_name]
         for i, c in enumerate(class_types):
             if i > 0:
                 res += '_'
@@ -346,7 +348,7 @@ class ClassView:
                 enums = fielinfo.default
             elif field_name.endswith('_by'):
                 res += 'model_id'
-                model = self.env['user']
+                model_name = 'user'
             elif field_name == 'search':
                 res += 'search'
             elif issubclass(class_types[0], bool):
@@ -355,24 +357,18 @@ class ClassView:
                     'allowed_location_src_ids', 'exclude_location_src_ids', 'allowed_location_dest_ids',
                     'exclude_location_dest_ids', 'allowed_package_ids', 'exclusive_package_ids'):
                 res += 'ids'
-                model = self.env['location']
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_ids'):
-                if not model_name:
+                if not model:
                     model_name = field_name.replace('_ids', '')
                 res += 'ids'
-                model = self.env[model_name]
             elif issubclass(class_types[0], TypeLocale) or field_name.startswith('locale'):
                 res += 'locale'
-                model = self.env['locale']
             elif issubclass(class_types[0], TypeCurrency) or field_name.startswith('currency'):
                 res += 'currency'
-                model = self.env['currency']
             elif issubclass(class_types[0], TypeCountry) or field_name.startswith('country'):
                 res += 'country'
-                model = self.env['country']
             elif issubclass(class_types[0], TypePhone) or field_name.startswith('phone'):
                 res += 'phone'
-                model = self.env['phone']
             elif issubclass(c, Enum):
                 res += 'enum'
                 enums = class_types[0]
@@ -385,29 +381,25 @@ class ClassView:
             elif issubclass(class_types[0], str) and field_name.endswith('_list'):
                 res += 'list'
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_src_id'):
-                if not model_name:
+                if not model:
                     model_name = field_name.replace('_src_id', '')
                 res += 'model_id'
-                model = self.env[model_name]
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_dest_id'):
-                if not model_name:
+                if not model:
                     model_name = field_name.replace('_dest_id', '')
                 res += 'model_id'
-                model = self.env[model_name]
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id'):
-                if not model_name:
+                if not model:
                     model_name = field_name.replace('_id', '')
                 res += 'model_id'
-                model = self.env[model_name]
             elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id__in'):
-                if not model_name:
+                if not model:
                     model_name = field_name.replace('_id__in', '')
                 res += 'model_id'
-                model = self.env[model_name]
             elif issubclass(class_types[0], datetime.datetime):
                 res += 'datetime'
             elif issubclass(class_types[0], BaseModel) and field_name.endswith('_list_rel'):
-                if not model_name:
+                if not model:
                     model_name = field_name.replace('_list_rel', '')
                 res += 'model_list_rel'
                 model = self.env[model_name]
@@ -415,12 +407,16 @@ class ClassView:
                 submodel = ClassView(request=self.request, model=model.name)
                 line = submodel._get_line(schema=schema, model=model, prefix=prefix)
             elif issubclass(class_types[0], BaseModel) and field_name.endswith('_rel'):
-                if not model_name:
+                if not model:
                     model_name = field_name.replace('_rel', '')
                 res += 'model_rel'
-                model = self.env[model_name]
             else:
                 res += 'str'
+        if not model and model_name:
+            if model_name == self.model.name:
+                model = self.model
+            elif model_name != self.model.name:
+                model = self.env[model_name]
         assert model, f'Model for field {field_name} is not defined'
         return Field(**{
             'field_name': field_name,
@@ -584,7 +580,7 @@ class ClassView:
             schema=self.model.schemas.get,
             join_related=False,
         )
-        assert len(lines) == 1 or 0
+        assert len(lines) == 1 or 0, f'Model: {self.model.name}, params: {params}'
         self.view = ViewGet(
             model=self.model,
             line=lines[0],

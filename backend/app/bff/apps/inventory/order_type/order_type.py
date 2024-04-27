@@ -16,6 +16,6 @@ async def order_type(request: Request):
         2 - модуль/сервис и модель lля фильтрации
         3 - какие фильтры используем на странице (важно, что порядок будет тот же)
     """
-    model = ClassView(request, 'inventory', 'order_type')
+    cls = ClassView(request,  'order_type')
 
-    return templates.TemplateResponse(request,'widgets/list-full.html', context={'model': model})
+    return templates.TemplateResponse(request,'widgets/list-full.html', context={'cls': cls})
