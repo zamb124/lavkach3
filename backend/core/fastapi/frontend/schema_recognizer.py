@@ -697,7 +697,7 @@ class ClassView:
                         submodel = ClassView(request=self.request, model=col['model'])
                         col['line'], col['lines'], _ = await submodel._get_data(
                             schema=col['schema'], data=val_data, prefix=line_prefix,
-                            model=col['model'], join_related=False
+                            model=col['model'], join_related=False, type='inline'
                         )
 
             lines.append(self._get_line(

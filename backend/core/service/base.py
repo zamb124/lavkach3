@@ -178,7 +178,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                             _dump = _obj.model_dump()
                             _dump[f'{self.model.__tablename__}_id'] = id
                             create_obj = rel.create_schema(**_dump)
-                            rel_entity = await rel.create(obj=create_obj, commit=False)
+                            rel_entity = await rel.create(obj=create_obj, parent=entity, commit=False)
                         self.session.add(rel_entity)
                 else:
                     to_set.append((key, value))

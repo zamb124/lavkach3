@@ -15,9 +15,9 @@ from app.inventory.order.models.order_models import MoveStatus, ReservationMetho
 
 
 class MoveBaseScheme(BaseModel):
-    type: MoveType = Field(title='Move Type')
-    location_src_id: Optional[UUID4] = Field(default=None, title='Location src', table=True, )
-    location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest', table=True)
+    type: MoveType = Field(title='Move Type',table=True)
+    location_src_id: Optional[UUID4] = Field(default=None, title='Location src', table=True, filter={'location_class__not_in': LocationClass.PACKAGE})
+    location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest', table=True, filter={'location_class__not_in': LocationClass.PACKAGE})
     lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True)
     location_id: Optional[UUID4] = Field(default=None, title='Package', table=True, filter={'location_class__in': LocationClass.PACKAGE})
     # ONE OF Возможно либо location_id либо product_id
@@ -36,7 +36,7 @@ class MoveUpdateScheme(MoveBaseScheme):
 
 
 class MoveCreateScheme(MoveBaseScheme):
-    order_id: UUID4
+    ...
 
 
 

@@ -104,10 +104,10 @@
     </div>
 {% endblock %}
 {% block as_form %}
-    <div class="card">
+    <div class="card" style="min-height: 400px">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="invoice-table table table-borderless table-nowrap mb-0">
+                <table class="invoice-table table table-borderless table-nowrap mb-0"  style="min-height: 400px">
                     <thead class="align-middle">
                     <tr class="table-active">
                         <th scope="col">
@@ -117,7 +117,7 @@
                             </div>
                         </th>
                         {% for field in view.line.fields %}
-                            <td class="text-capitalize text-muted">{{ field.as_table_header()|safe }}</td>
+                            <td class="text-capitalize text-muted">{{ field.as_table_header()|safe if field.field_name != 'id' }}</td>
                         {% endfor %}
                     </tr>
 

@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, field_validator, UUID4, model_validator
+from pydantic_core import ValidationError
+from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
 
 from core.fastapi.frontend.schema_recognizer import ClassView
@@ -185,7 +187,10 @@ async def modal(request: Request, schema: ModalSchema):
         data = clean_filter(data, schema.prefix)
         method_schema = getattr(cls.model.schemas, schema.method)
         if data:
-            method_schema_obj = method_schema(**data[0])
+            try:
+                method_schema_obj = method_schema(**data[0])
+            except ValidationError as e:
+                raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
             _json = method_schema_obj.model_dump(mode='json')
         adapter_method = getattr(cls.model.adapter, schema.method)
         await adapter_method(id=schema.id, model=schema.model, json=_json)

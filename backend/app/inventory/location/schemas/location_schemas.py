@@ -49,6 +49,7 @@ class LocationFilter(BaseFilter):
     title__in: Optional[str] = Field(default=None, title='Title')
     store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store')
     location_class__in: Optional[List[str]] = Field(default=None, title='Class')
+    location_class__not_in: Optional[List[str]] = Field(default=None, title='Class')
     is_active: Optional[bool] = Field(default=None, title='Active')
     class Config:
         populate_by_name = True

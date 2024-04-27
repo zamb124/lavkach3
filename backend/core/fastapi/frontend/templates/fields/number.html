@@ -4,6 +4,7 @@
             class="form-control"
             name="{{ field.prefix~field.field_name }}"
             placeholder="Enter {{ field.title }}"
+            {% if field.is_required %}required {% endif %}
             value="{{ field.val }}"
             style="padding-right: 1rem; padding-left: 1rem"
     >
