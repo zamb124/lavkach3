@@ -1,0 +1,52 @@
+{% block as_form %}
+    <select id="{{ field.prefix~field.field_name }}"
+            name="{{ field.prefix~field.field_name }}"
+            class="form-control"
+            data-choices data-choices-removeItem
+            multiple
+    >
+        {% for i in field.enums %}
+            <option value="{{ i.value }}"  {% if field.val %}{% if i.value in field.val %} selected {% endif %}{% endif %}> {{ i.name }}</option>
+        {% endfor %}
+    </select>
+    <script>
+        (async function () {
+            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+            let choices = new Choices(element, {
+                placeholderValue: "Enter {{ field.title }}",
+                multiple: true,
+                removeItemButton: true,
+            });
+        })();
+    </script>
+{% endblock %}
+{% block as_view %}
+    <select id="{{ field.prefix~field.field_name }}"
+            name="{{ field.prefix~field.field_name }}"
+            class="form-control"
+            data-choices
+            multiple
+    >
+        {% for i in field.enums %}
+            <option value="{{ i.value }}" {% if field.val %}{% if i.value in field.val %} selected {% endif %}{% endif %}> {{ i.name }}</option>
+        {% endfor %}
+    </select>
+    <script>
+        (async function () {
+            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+            let choices = new Choices(element, {
+                multiple: true,
+            });
+            choices.disable()
+            debugger
+        })();
+    </script>
+{% endblock %}
+
+{% block as_table_header %}
+    {{ field.title }}
+{% endblock %}
+
+{% block as_table %}
+    {{ field.val if field.val else '' }}
+{% endblock %}

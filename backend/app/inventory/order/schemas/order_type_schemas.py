@@ -24,8 +24,8 @@ class OrderTypeBaseScheme(BaseModel):
     exclude_location_dest_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location', title='Exclude locations dest')
     allowed_location_type_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location_type', title='Allowed locations type',)
     exclude_location_type_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location_type', title='Exclude locations type')
-    allowed_location_classes: Optional[list[str]] = Field(default=None,  title='Allowed locations class')
-    exclude_location_classes: Optional[list[str]] = Field(default=None, title='Exclude locations class', )
+    allowed_location_class_ids: Optional[list[LocationClass]] = Field(default=None,  title='Allowed locations class')
+    exclude_location_class_ids: Optional[list[LocationClass]] = Field(default=None, title='Exclude locations class', )
 
     order_type_id: Optional[UUID4] = Field(default=None, title='Back Order', form=True)
     backorder_action_type: BackOrderAction = Field(default=BackOrderAction.ASK, title='Backorder action', form=True)

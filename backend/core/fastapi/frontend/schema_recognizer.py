@@ -324,7 +324,7 @@ class ClassView:
         """
         Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
         """
-        if field_name == 'allowed_package_ids':
+        if field_name == 'allowed_location_classes':
             a=1
         fielinfo = schema.model_fields[field_name]
         prefix = kwargs.get('prefix') or self.prefix
@@ -369,6 +369,9 @@ class ClassView:
                 res += 'country'
             elif issubclass(class_types[0], TypePhone) or field_name.startswith('phone'):
                 res += 'phone'
+            elif issubclass(c, Enum) and field_name.endswith('_ids'):
+                res += 'enum_ids'
+                enums = class_types[0]
             elif issubclass(c, Enum):
                 res += 'enum'
                 enums = class_types[0]
