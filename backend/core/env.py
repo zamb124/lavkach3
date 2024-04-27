@@ -11,11 +11,11 @@ from app.inventory import __domain__ as inventory_domain
 from core.helpers.cache import CacheStrategy
 from pydantic import BaseModel
 
-from core.service.base import Model
+
 
 if TYPE_CHECKING:
-
     from core.fastapi.adapters import BaseAdapter
+    from core.service.base import Model, BaseService
     from core.db import Base
 
 
@@ -33,6 +33,7 @@ class Schemas:
 class Model:
     name: str
     _adapter: 'BaseAdapter'
+    _service: 'BaseService'
     domain: 'Domain'
     schemas: Schemas
     model: Any
@@ -40,9 +41,10 @@ class Model:
     cache_strategy: 'CacheStrategy' = CacheStrategy.NONE
 
 
-    def __init__(self , name, _adapter, domain, schemas, model, sort=[], cache_strategy=CacheStrategy.NONE):
+    def __init__(self , name, _adapter,_service, domain, schemas, model, sort=[], cache_strategy=CacheStrategy.NONE):
         self.name = name
         self._adapter = _adapter
+        self._service = _service
         self.domain = domain
         self.schemas = Schemas(**schemas)
         self.model = model
@@ -57,6 +59,12 @@ class Model:
             domain=self.domain,
             model=self,
             env=self.domain._env
+        )
+
+    @property
+    def service(self):
+        return self._service(
+            self.domain._env.request,
         )
 
 class Domain:
@@ -77,6 +85,7 @@ class Domain:
                 models.update({name: Model(
                     name=name,
                     _adapter=self._adapter,
+                    _service=value.get('service'),
                     schemas=shemas,
                     model=value.get('model'),
                     domain=self

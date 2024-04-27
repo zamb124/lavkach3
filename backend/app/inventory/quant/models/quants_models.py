@@ -5,6 +5,7 @@ import datetime
 from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
+from app.inventory.location.enums import LocationClass
 from core.db import Base
 from core.db.mixins import AllMixin, guid, guid_primary_key
 
@@ -47,8 +48,10 @@ class Quant(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)                                          # ForeignKey("basic.product.id")
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)                                            # ForeignKey("basic.store.id")
-    location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
-    lot_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
+    location_class: Mapped[LocationClass] = mapped_column(index=True)
+    location_type: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location_type.id", ondelete="SET NULL"), index=True)
+    location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"), index=True)
+    lot_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"), index=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     quantity: Mapped[float]
     reserved_quantity: Mapped[float]

@@ -40,6 +40,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         if isinstance(parent, Move):
             order = parent.order_id
         """Проверяем, что мув может быть создан согласно праавилам в Order type """
+        quant_service = self.env['quant'].service
         if obj.location_src_id:
             """Если указали локацию насильно, то нужно проверить все что возможно, что эта локация имеет место быть"""
             if parent.order_type_rel.allowed_location_src_ids:
@@ -56,8 +57,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                         status_code=406,
                         detail=f"Source Location is not allowed for Order Type {parent.order_type_rel.title}"
                     )
-            loc_service = self.env['location'].service
-            location_entity = await loc_service.get(obj.location_src_id)
+            loc_env = self.env['location']
+            location_entity = await loc_env.service.get(obj.location_src_id)
             if parent.order_type_rel.allowed_location_type_ids:
                 """Еслли есть правила разрешаюшее по типу локации"""
                 if not location_entity.location_type_id in parent.order_type_rel.allowed_location_type_ids:
@@ -88,7 +89,6 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                         detail=f"Source Location Class is not allowed for Order Type Location Class {parent.order_type_rel.title}"
                     )
             """Далее нужно достать доступные кванты товара для создания движения"""
-            quant_service = self.env['quant'].service
             available_quants = await quant_service.get_available_quants(
                 order_type=order.order_type_rel,
                 product_id=obj.product_id,
@@ -112,6 +112,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                         "reserved_quantity": obj.quantity,
                         "uom_id": obj.uom_id,
                         }, commit=False)
+                    else:
+                        raise HTTPException(status_code=406, detail='Not enouth quantity in source')
             else:
                 remainder = obj.quantity
                 for q in available_quants:
@@ -131,7 +133,14 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 if remainder:
                     pass
         else:
-            pass
+            available_quants = await quant_service.get_available_quants(
+                order_type=order.order_type_rel,
+                product_id=obj.product_id,
+                package=obj.location_id,
+                uom_id=obj.uom_id,
+                lot=order.lot_id,
+                partner_id=order.partner_id
+            )
         move =  await super(MoveService, self).create(obj, commit=False)
         try:
             await self.session.commit()

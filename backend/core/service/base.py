@@ -9,7 +9,7 @@ from sqlalchemy import select, Row, RowMapping
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
-from starlette.requests import Request
+from starlette.requests import Request, HTTPConnection
 
 from core.db.session import Base, session
 from core.fastapi.middlewares.authentication import CurrentUser
@@ -75,7 +75,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
     ):
         if isinstance(request, CurrentUser):
             self.user = CurrentUser
-        elif isinstance(request, Request):
+        else:
             self.user = request.user
         self.model = model
         self.create_schema = create_schema
@@ -90,6 +90,8 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def get(self, id: Any) -> Row | RowMapping:
         query = select(self.model).where(self.model.id == id)
+        if not self.user:
+            a=1
         if self.user.is_admin:
             query = select(self.model).where(self.model.id == id)
         result = await self.session.execute(query)

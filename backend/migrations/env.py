@@ -28,7 +28,7 @@ fileConfig(config.config_file_name)
 
 # For auto generate schemas
 
-from core.config import config
+from core.db_config import config
 from app.inventory.quant.models import *
 from app.basic.company.models import *
 from app.basic.product.models import *

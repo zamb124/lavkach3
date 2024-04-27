@@ -51,6 +51,10 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
         assert any([product_id, package])
         filter = {}
         query = select(self.model)
+        if order_type.allowed_location_type_ids:
+            query = query.where(self.model.location_id.in_(order_type.allowed_location_type_ids))
+        if order_type.allowed_location_type_ids:
+            query = query.where(self.model.location_id.in_(order_type.allowed_location_type_ids))
         if product_id:
             filter.update({})
             query = query.where(self.model.product_id == product_id)

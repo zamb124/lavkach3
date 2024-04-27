@@ -15,6 +15,8 @@ class QuantBaseScheme(BaseModel):
     vars: Optional[dict] = None
     product_id: UUID4
     store_id: UUID4
+    location_class: UUID4
+    location_type: UUID4
     location_id: Optional[UUID4] = None
     lot_id: Optional[UUID4] = None
     partner_id: Optional[UUID4] = None

@@ -324,7 +324,7 @@ class ClassView:
         """
         Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
         """
-        if field_name == 'allowed_location_type_ids':
+        if field_name == 'allowed_package_ids':
             a=1
         fielinfo = schema.model_fields[field_name]
         prefix = kwargs.get('prefix') or self.prefix
