@@ -54,7 +54,7 @@ async def login(
         username: Annotated[str, Form()],
         password: Annotated[str, Form()]):
     request.scope['env']
-    async with request.scope['env']['company'].adapter as a:
+    async with request.scope['env']['user'].adapter as a:
         data = await a.login(username, password)
     return templates.TemplateResponse(request, 'components/write_ls.html', context={'token': data['token'], 'refresh_token': data['refresh_token']})
 

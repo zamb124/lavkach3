@@ -15,7 +15,7 @@ class BasicAdapter(BaseAdapter):
             'token': refresh_schema.token,
             'refresh_token': refresh_schema.refresh_token
         }
-        responce = await self.client.post(self.domain + path, json=body, params=None)
+        responce = await self.client.post(self.host + path, json=body, params=None)
         return responce.json()
 
     async def user_company_change(self, user_id, company_id):
@@ -24,7 +24,7 @@ class BasicAdapter(BaseAdapter):
             'user_id': user_id,
             'company_id': company_id
         }
-        responce = await self.client.post(self.domain + path, json=body, params=None)
+        responce = await self.client.post(self.host + path, json=body, params=None)
         return responce.json()
 
     async def login(self, username, password):
@@ -33,7 +33,7 @@ class BasicAdapter(BaseAdapter):
             'email': username,
             'password': password
         }
-        responce = await self.client.post(self.domain + path, json=body, params=None)
+        responce = await self.client.post(self.host + path, json=body, params=None)
         return responce.json()
 
     async def dropdown_ids(self, model: str, id: str, itemlink: str, is_named=False, message=None):
