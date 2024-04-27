@@ -7,7 +7,6 @@ from app.bff.template_spec import templates
 
 order_router = APIRouter()
 
-
 @order_router.get("", response_class=HTMLResponse)
 async def order(request: Request):
     """
@@ -16,5 +15,6 @@ async def order(request: Request):
         2 - модуль/сервис и модель lля фильтрации
         3 - какие фильтры используем на странице (важно, что порядок будет тот же)
     """
+    template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     cls = ClassView(request, model='order')
-    return templates.TemplateResponse(request,'widgets/list-full.html', context={'cls': cls})
+    return templates.TemplateResponse(request, template, context={'cls': cls})

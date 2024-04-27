@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
 from typing import List
 
 from fastapi import FastAPI, Request, Depends
@@ -30,11 +31,33 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class Htmx:
+    hx_target: str = None
+    hx_current_url: str = None
+    hx_request: bool = None
+class HTMXMidlleWare:
+    """
+    Адартер кладется в request для удобства htmx переменных
+    """
+
+    def __init__(self, app: ASGIApp, *args, **kwargs):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        if scope['type'] in  ("http", "websocket"):
+            conn = HTTPConnection(scope)
+            scope['htmx'] = Htmx(
+                hx_target=conn.headers.get('hx-target'),
+                hx_current_url=conn.headers.get('hx-current-url'),
+                hx_request=True if conn.headers.get('hx-request') == 'true' else False
+            )
+        await self.app(scope, receive, send)
 
 
 class EnvMidlleWare:
     """
-    Адартер кладется в request для удобства
+    Адартер кладется в request для удобства обращений к обьектам сервисов
     """
 
     def __init__(self, app: ASGIApp, *args, **kwargs):
@@ -77,6 +100,7 @@ def on_auth_error(request: Request, exc: Exception):
 def make_middleware() -> List[Middleware]:
     middleware = [
         Middleware(EnvMidlleWare),
+        Middleware(HTMXMidlleWare),
         Middleware(
             CORSMiddleware,
             allow_origins=["*"],

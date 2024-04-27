@@ -11,4 +11,5 @@ company_router = APIRouter()
 @company_router.get("", response_class=HTMLResponse)
 async def company(request: Request):
     cls = ClassView(request, 'company')
-    return templates.TemplateResponse(request, 'widgets/list-full.html', context={'cls': cls})
+    template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
+    return templates.TemplateResponse(request, template, context={'cls': cls})

@@ -17,5 +17,5 @@ async def order_type(request: Request):
         3 - какие фильтры используем на странице (важно, что порядок будет тот же)
     """
     cls = ClassView(request,  'order_type')
-
-    return templates.TemplateResponse(request,'widgets/list-full.html', context={'cls': cls})
+    template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
+    return templates.TemplateResponse(request, template, context={'cls': cls})
