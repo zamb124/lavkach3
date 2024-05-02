@@ -73,6 +73,10 @@ class LocalCache:
     def get(self, id: uuid.UUID):
         return self._data.get(id)
     def set(self, sql_obj):
+        if isinstance(sql_obj, list):
+            for obj in sql_obj:
+                self._data[obj.id] = obj
+            return sql_obj
         self._data[sql_obj.id] = sql_obj
         return sql_obj.id
 
@@ -130,6 +134,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             query_filter = _filter.sort(query_filter)
         executed_data = await self.session.execute(query_filter)
         result = executed_data.scalars().all()
+        self.local_cache.set(result)
         return result
 
 
