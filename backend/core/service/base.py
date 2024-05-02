@@ -1,7 +1,6 @@
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from dataclasses import dataclass
 from typing import Any, Generic, Optional, Type, TypeVar
 from uuid import uuid4
 
@@ -11,11 +10,9 @@ from sqlalchemy import select, Row, RowMapping
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
-from starlette.requests import Request, HTTPConnection
 
 from core.db.session import Base, session
 from core.fastapi.middlewares.authentication import CurrentUser
-from core.utils.timeit import timed
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -23,16 +20,20 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 FilterSchemaType = TypeVar("FilterSchemaType", bound=Filter)
 before_fields = ['role_ids', 'company_ids', 'is_admin', 'store_id']
 
+
 @dataclass
 class Model:
     service: object
     model: object
+
+
 def import_service(service_name):
     components = service_name.split('.')
     mod = __import__(components[0])
     for comp in components[1:]:
         mod = getattr(mod, comp)
     return mod
+
 
 def is_pydantic(obj: object | list):
     """ Checks whether an object is pydantic. """
@@ -65,6 +66,7 @@ def model_to_entity(schema):
 
     return schema
 
+
 class LocalCache:
 
     def __init__(self):
@@ -73,15 +75,18 @@ class LocalCache:
 
 localcache = LocalCache()
 
+
 class BaseCache:
     service: 'BaseService'
+
     def __init__(self, service: 'BaseService'):
         self.service = service
         self.cache = localcache._data
 
     def get(self, id: uuid.UUID):
         return self.cache[self.service.model.__tablename__].get(id)
-    def set(self, sql_obj):
+
+    def set(self, sql_obj:list | object):
         if isinstance(sql_obj, list):
             for obj in sql_obj:
                 self.set(obj)
@@ -89,9 +94,11 @@ class BaseCache:
         self.cache[self.service.model.__tablename__][sql_obj.id] = sql_obj
         return sql_obj.id
 
-    def delete(self, id):
-        self._data.pop(id, False)
+    def delete(self, id: uuid.UUID):
+        self.cache[self.service.model.__tablename__].pop(id, False)
         return True
+
+
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterSchemaType]):
     def __init__(
             self,
@@ -135,7 +142,6 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             self.basecache.set(entity)
         return entity
 
-
     async def _list(self, _filter: FilterSchemaType, size: int):
         if self.model.__tablename__ not in ('company', 'user'):
             setattr(_filter, 'company_id__in', [self.user.company_id])
@@ -150,7 +156,6 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         entitys = await self._list(_filter, size)
         self.basecache.set(entitys)
         return entitys
-
 
     async def _create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
         if isinstance(obj, dict):
@@ -172,7 +177,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                             relcations_to_create.append((rel.create, create_obj))
                         exclude_rel.append(key)
                 else:
-                    pass # TODO: дописать такую логику где не list а model
+                    pass  # TODO: дописать такую логику где не list а model
             else:
                 to_set.append((key, value))
         entity = self.model(**obj.model_dump(exclude=exclude_rel))
@@ -203,8 +208,6 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         self.basecache.set(entity)
         return entity
 
-
-
     async def _update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
         entity = await self.get(id)
         if not entity:
@@ -230,7 +233,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                     to_set.append((key, value))
         for k, v in to_set:
             setattr(entity, k, v)
-        #entity.mode_list_rel = new_entity.move_list_rel
+        # entity.mode_list_rel = new_entity.move_list_rel
         self.session.add(entity)
         if commit:
             try:
@@ -269,8 +272,6 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         return True
 
     async def delete(self, id: Any) -> bool:
-        res = await self._delete(id)
         self.basecache.delete(id)
+        res = await self._delete(id)
         return res
-
-
