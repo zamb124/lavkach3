@@ -1,3 +1,5 @@
+import uuid
+from collections import defaultdict
 from dataclasses import dataclass
 from dataclasses import dataclass
 from typing import Any, Generic, Optional, Type, TypeVar
@@ -63,6 +65,22 @@ def model_to_entity(schema):
 
     return schema
 
+class LocalCache:
+
+    def __init__(self):
+        self._data = defaultdict(dict)
+
+    def get(self, id: uuid.UUID):
+        return self._data.get(id)
+    def set(self, sql_obj):
+        self._data[sql_obj.id] = sql_obj
+        return sql_obj.id
+
+    def delete(self, id):
+        self._data.pop(id, False)
+        return True
+
+localcache = LocalCache()
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterSchemaType]):
     def __init__(
             self,
@@ -83,24 +101,27 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         self.request = request
         self.env = request.scope['env']
         self.session = db_session if db_session else session
+        self.local_cache = localcache
 
     def sudo(self):
         self.user = CurrentUser(id=uuid4(), is_admin=True)
         return self
 
+
     async def get(self, id: Any) -> Row | RowMapping:
+        if entity := self.local_cache.get(id):
+            return entity
         query = select(self.model).where(self.model.id == id)
-        if not self.user:
-            a=1
         if self.user.is_admin:
             query = select(self.model).where(self.model.id == id)
         result = await self.session.execute(query)
-        sql_obj = result.scalars().first()
-        if not sql_obj:
+        entity = result.scalars().first()
+        if not entity:
             raise HTTPException(status_code=404, detail=f"Not found")
-        return sql_obj
+        self.local_cache.set(entity)
+        return entity
 
-    @timed
+
     async def list(self, _filter: FilterSchemaType, size: int):
         if self.model.__tablename__ not in ('company', 'user'):
             setattr(_filter, 'company_id__in', [self.user.company_id])
@@ -111,7 +132,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         result = executed_data.scalars().all()
         return result
 
-    @timed
+
     async def create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
         if isinstance(obj, dict):
             obj = self.create_schema(**obj)
@@ -156,11 +177,11 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         else:
             await self.session.flush([entity])
-
+        self.local_cache.set(entity)
         return entity
 
 
-    @timed
+
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
         entity = await self.get(id)
         if not entity:
@@ -202,9 +223,10 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         else:
             await self.session.flush([entity])
+        self.local_cache.set(entity)
         return entity
 
-    @timed
+
     async def delete(self, id: Any):
         entity = await self.get(id)
         await self.session.delete(entity)
@@ -218,6 +240,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
+        self.local_cache.delete(id)
         return True
 
 

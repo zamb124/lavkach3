@@ -162,5 +162,5 @@ def create_app() -> FastAPI:
 
 app = create_app()
 
-add_timing_middleware(app, record=logger.info, prefix="app", exclude="untimed")
+add_timing_middleware(app, record=logger.info, prefix="bff", exclude="untimed")
 app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")

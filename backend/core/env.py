@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from starlette.requests import HTTPConnection
+from httpx import AsyncClient
+from starlette.requests import HTTPConnection, Request
 
 from app.basic import __domain__ as basic_domain
 from app.inventory import __domain__ as inventory_domain
@@ -100,7 +101,7 @@ class Env:
     domains: dict[str: object]
     request: HTTPConnection = None
 
-    def __init__(self, domains: list, conn: HTTPConnection):
+    def __init__(self, domains: list, conn: HTTPConnection | AsyncClient | Request):
         _domains = {}
         for d in domains:
             d._env = self
