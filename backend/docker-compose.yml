@@ -69,18 +69,15 @@ services:
     env_file:
       - .env-docker
     container_name: celery_app
-    command: ["/fastapi/docker/celery.sh", "celery"]
-    depends_on:
-      - redis
+    command: ["/basic/docker/celery.sh", "celery"]
   flower:
     build:
       context: .
     env_file:
       - .env-docker
     container_name: flower_app
-    command: ["/fastapi/docker/celery.sh", "flower"]
+    command: ["/basic/docker/celery.sh", "flower"]
     depends_on:
-      - redis
       - celery
     ports:
       - 5555:5555

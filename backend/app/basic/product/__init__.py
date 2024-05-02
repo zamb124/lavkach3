@@ -1,3 +1,4 @@
+from core.helpers.cache import CacheStrategy
 from .services import ProductService, ProductCategoryService, ProductStorageTypeService
 from .models import Product, ProductCategory, ProductStorageType
 from .schemas.product_schemas import ProductCreateScheme, ProductUpdateScheme, ProductFilter, ProductScheme
@@ -10,6 +11,7 @@ __domain__ = {
     'product': {
         'service': ProductService,
         'model': Product,
+        'cache_strategy': CacheStrategy.FULL,
         'schemas': {
             'create': ProductCreateScheme,
             'update': ProductUpdateScheme,
@@ -20,6 +22,7 @@ __domain__ = {
     'product_category': {
         'service': ProductCategoryService,
         'model': ProductCategory,
+        'cache_strategy': CacheStrategy.FULL,
         'schemas': {
             'create': ProductCategoryCreateScheme,
             'update': ProductCategoryUpdateScheme,
@@ -30,6 +33,7 @@ __domain__ = {
     'product_storage_type': {
         'service': ProductStorageTypeService,
         'model': ProductStorageType,
+        'cache_strategy': CacheStrategy.FULL,
         'schemas': {
             'create': ProductStorageTypeCreateScheme,
             'update': ProductStorageTypeUpdateScheme,

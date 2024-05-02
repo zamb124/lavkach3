@@ -88,6 +88,7 @@ class Domain:
                     _service=value.get('service'),
                     schemas=shemas,
                     model=value.get('model'),
+                    cache_strategy=value.get('cache_strategy'),
                     domain=self
                 )})
         self.models = models

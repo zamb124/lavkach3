@@ -28,7 +28,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return await super(MoveService, self).list(_filter, size)
 
     @permit('move_create')
-    async def create(self, obj: CreateSchemaType, parent: Order | Move, commit=True ) -> ModelType:
+    async def create(self, obj: CreateSchemaType, parent: Order | Move, commit=True) -> ModelType:
         """
         Создание мува, здесь важно проверить все
         1 - Проверить, что тип ордера не противоречит правилам локаций

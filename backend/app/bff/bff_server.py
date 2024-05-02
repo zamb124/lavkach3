@@ -8,12 +8,13 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.bff.bff_router import bff_router
 from app.bff.bff_tasks import remove_expired_tokens
+from app.bff.tkq import broker
+from core.db_config import config
 from core.env import Env, domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
@@ -22,8 +23,7 @@ from core.fastapi.middlewares import (
     AuthBffBackend,
     SQLAlchemyMiddleware,
 )
-from core.db_config import  config
-from core.helpers.cache import Cache, CustomKeyMaker, CacheTag
+from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
 from core.utils.timeit import add_timing_middleware
 
@@ -36,6 +36,8 @@ class Htmx:
     hx_target: str = None
     hx_current_url: str = None
     hx_request: bool = None
+
+
 class HTMXMidlleWare:
     """
     Адартер кладется в request для удобства htmx переменных
@@ -45,7 +47,7 @@ class HTMXMidlleWare:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        if scope['type'] in  ("http", "websocket"):
+        if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
             scope['htmx'] = Htmx(
                 hx_target=conn.headers.get('hx-target'),
@@ -64,7 +66,7 @@ class EnvMidlleWare:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        if scope['type'] in  ("http", "websocket"):
+        if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
             scope['env'] = Env(domains, conn)
         await self.app(scope, receive, send)
@@ -127,19 +129,19 @@ def fake_answer_to_everything_ml_model(x: float):
     return x * 42
 
 
-
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
         Старт сервера
     """
     await remove_expired_tokens()
+    await broker.startup()
     yield
     """
             Выключение сервера
     """
+    await broker.shutdown()
+
 
 def create_app() -> FastAPI:
     app_ = FastAPI(
@@ -162,7 +164,3 @@ app = create_app()
 
 add_timing_middleware(app, record=logger.info, prefix="app", exclude="untimed")
 app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
-
-
-
-
