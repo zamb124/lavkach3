@@ -68,23 +68,30 @@ def model_to_entity(schema):
 class LocalCache:
 
     def __init__(self):
-        self._data = defaultdict(dict)
+        self._data = defaultdict(defaultdict)
+
+
+localcache = LocalCache()
+
+class BaseCache:
+    service: 'BaseService'
+    def __init__(self, service: 'BaseService'):
+        self.service = service
+        self.cache = localcache._data
 
     def get(self, id: uuid.UUID):
-        return self._data.get(id)
+        return self.cache[self.service.model.__tablename__].get(id)
     def set(self, sql_obj):
         if isinstance(sql_obj, list):
             for obj in sql_obj:
-                self._data[obj.id] = obj
+                self.set(obj)
             return sql_obj
-        self._data[sql_obj.id] = sql_obj
+        self.cache[self.service.model.__tablename__][sql_obj.id] = sql_obj
         return sql_obj.id
 
     def delete(self, id):
         self._data.pop(id, False)
         return True
-
-localcache = LocalCache()
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterSchemaType]):
     def __init__(
             self,
@@ -105,16 +112,13 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         self.request = request
         self.env = request.scope['env']
         self.session = db_session if db_session else session
-        self.local_cache = localcache
+        self.basecache = BaseCache(self)
 
     def sudo(self):
         self.user = CurrentUser(id=uuid4(), is_admin=True)
         return self
 
-
-    async def get(self, id: Any) -> Row | RowMapping:
-        if entity := self.local_cache.get(id):
-            return entity
+    async def _get(self, id: Any) -> Row | RowMapping:
         query = select(self.model).where(self.model.id == id)
         if self.user.is_admin:
             query = select(self.model).where(self.model.id == id)
@@ -122,11 +126,17 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         entity = result.scalars().first()
         if not entity:
             raise HTTPException(status_code=404, detail=f"Not found")
-        self.local_cache.set(entity)
+        return entity
+
+    async def get(self, id: Any) -> Row | RowMapping:
+        entity = self.basecache.get(id)
+        if not entity:
+            entity = await self._get(id)
+            self.basecache.set(entity)
         return entity
 
 
-    async def list(self, _filter: FilterSchemaType, size: int):
+    async def _list(self, _filter: FilterSchemaType, size: int):
         if self.model.__tablename__ not in ('company', 'user'):
             setattr(_filter, 'company_id__in', [self.user.company_id])
         query_filter = _filter.filter(select(self.model)).limit(size)
@@ -134,11 +144,15 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             query_filter = _filter.sort(query_filter)
         executed_data = await self.session.execute(query_filter)
         result = executed_data.scalars().all()
-        self.local_cache.set(result)
         return result
 
+    async def list(self, _filter: FilterSchemaType, size: int):
+        entitys = await self._list(_filter, size)
+        self.basecache.set(entitys)
+        return entitys
 
-    async def create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
+
+    async def _create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
         if isinstance(obj, dict):
             obj = self.create_schema(**obj)
         to_set = []
@@ -182,12 +196,16 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         else:
             await self.session.flush([entity])
-        self.local_cache.set(entity)
+        return entity
+
+    async def create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
+        entity = await self._create(obj, commit=commit)
+        self.basecache.set(entity)
         return entity
 
 
 
-    async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
+    async def _update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
         entity = await self.get(id)
         if not entity:
             raise HTTPException(status_code=404, detail=f"Not Found with id {id}")
@@ -228,11 +246,14 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         else:
             await self.session.flush([entity])
-        self.local_cache.set(entity)
         return entity
 
+    async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
+        entity = await self._update(id, obj, commit=True)
+        self.basecache.set(entity)
+        return entity
 
-    async def delete(self, id: Any):
+    async def _delete(self, id: Any) -> bool:
         entity = await self.get(id)
         await self.session.delete(entity)
         try:
@@ -245,7 +266,11 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
-        self.local_cache.delete(id)
         return True
+
+    async def delete(self, id: Any) -> bool:
+        res = await self._delete(id)
+        self.basecache.delete(id)
+        return res
 
 
