@@ -1,6 +1,7 @@
 {% block as_form %}
     <select id="{{ field.prefix~field.field_name }}"
             name="{{ field.prefix~field.field_name }}"
+            {% if field.required %} required {% endif %}
             class="form-control"
             data-choices data-choices-removeItem
             multiple
@@ -17,6 +18,16 @@
                 multiple: true,
                 removeItemButton: true,
             });
+            function check_valid() {
+                if (element.required) {
+                    choices.containerInner.element.classList.add('is-invalid');
+                    choices.containerInner.element.classList.remove('is-valid');
+                } else {
+                    choices.containerInner.element.classList.remove('is-invalid');
+                    choices.containerInner.element.classList.add('is-valid');
+                }
+            }
+            check_valid()
         })();
     </script>
 {% endblock %}

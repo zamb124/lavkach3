@@ -223,6 +223,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                         rel = rel_service(self.request)
                         if _obj.id:
                             rel_entity = await rel.update(id=_obj.id, obj=_obj, commit=False)
+                            self.session.refresh(entity)
                         else:
                             _dump = _obj.model_dump()
                             _dump[f'{self.model.__tablename__}_id'] = id

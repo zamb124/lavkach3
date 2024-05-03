@@ -1,16 +1,13 @@
 import uuid
-from enum import Enum
 from typing import Optional
-import datetime
-from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, String
-from sqlalchemy.orm import relationship, mapped_column, Mapped
+
+from sqlalchemy import Sequence, Uuid, ForeignKey, String
+from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy.sql.sqltypes import ARRAY
 
+from app.inventory.location.enums import LocationClass, PutawayStrategy
 from core.db import Base
 from core.db.mixins import AllMixin
-from app.inventory.location.enums import LocationClass, PutawayStrategy
-
-
 
 
 class LocationType(Base, AllMixin):
@@ -28,8 +25,8 @@ class LocationType(Base, AllMixin):
     is_allow_create_package: Mapped[Optional[bool]] = mapped_column(default=True)  # Можно ли создавать упаковки# Признак Гомогенности
     allowed_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Разрешенные типы упаковок
     exclude_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Исключение типы упаковок
-    allowed_order_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Разрешенные типы упаковок
-    exclude_order_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Разрешенные типы упаковок
+    allowed_order_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Разрешенные типы Ордеров
+    exclude_order_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Исключения типы Ордеров
     strategy: Mapped[Optional['PutawayStrategy']] = mapped_column(default=PutawayStrategy.FEFO)  # Стратегия комплектования
     is_can_negative: Mapped[bool] = mapped_column(default=False) # Может иметь отрицательный остаток
 

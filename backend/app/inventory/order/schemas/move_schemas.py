@@ -10,12 +10,14 @@ from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import Move, MoveType
-from app.inventory.order.models.order_models import MoveStatus, ReservationMethod
+from app.inventory.order.models.order_models import MoveStatus
+
 
 
 
 class MoveBaseScheme(BaseModel):
-    type: MoveType = Field(title='Move Type',table=True)
+    type: MoveType = Field(title='Move Type', table=True)
+    order_id: Optional[UUID4] = Field(default=None, title='Order ID')
     location_src_id: Optional[UUID4] = Field(default=None, title='Location src', table=True, filter={'location_class__not_in': LocationClass.PACKAGE})
     location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest', table=True, filter={'location_class__not_in': LocationClass.PACKAGE})
     lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True)

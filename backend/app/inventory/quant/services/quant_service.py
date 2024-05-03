@@ -1,20 +1,19 @@
 import uuid
 from typing import Any, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.inventory.location.enums import LocationClass, VirtualLocationClass
-from app.inventory.location.models import LocationType, Location
-
-from app.inventory.quant.models.quants_models import Quant, Lot
+from app.inventory.location.models import Location
+from app.inventory.quant.models.quants_models import Quant
 from app.inventory.quant.schemas.quants_schemas import QuantCreateScheme, QuantUpdateScheme, QuantFilter
-from core.db.session import session
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from app.inventory.order.models import OrderType
+
 
 class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, QuantFilter]):
     def __init__(self, request, db_session: AsyncSession = None):
@@ -65,4 +64,3 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
 
         executed_data = await self.session.execute(query)
         return executed_data.scalars().all()
-
