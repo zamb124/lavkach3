@@ -55,7 +55,6 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
         if order_type.store_id:
             query = query.where(self.model.store_id == order_type.store_id)
         if product_id:
-            filter.update({})
             query = query.where(self.model.product_id == product_id)
         # if location:
         #     query = query.where(self.model.location_id == location.id)

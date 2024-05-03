@@ -18,6 +18,8 @@ from app.inventory.order.models.order_models import MoveStatus
 class MoveBaseScheme(BaseModel):
     type: MoveType = Field(title='Move Type', table=True)
     order_id: Optional[UUID4] = Field(default=None, title='Order ID')
+    order_type_id: UUID4 = Field(title='Order type')
+    partner_id: Optional[UUID4] = Field(default=None, title='Partner ID')
     location_src_id: Optional[UUID4] = Field(default=None, title='Location src', table=True, filter={'location_class__not_in': LocationClass.PACKAGE})
     location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest', table=True, filter={'location_class__not_in': LocationClass.PACKAGE})
     lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True)

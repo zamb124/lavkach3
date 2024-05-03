@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
 
-from app.inventory.order.models.order_models import Move, MoveType, Order
+from app.inventory.order.models.order_models import Move, MoveType, Order, OrderType
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from core.db import Transactional
 from core.db.session import session
@@ -28,65 +28,69 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return await super(MoveService, self).list(_filter, size)
 
     @permit('move_create')
-    async def create(self, obj: CreateSchemaType, parent: Order | Move, commit=True) -> ModelType:
+    async def create(self, obj: CreateSchemaType, parent: Order | Move = None, commit=True) -> ModelType:
         """
-        Создание мува, здесь важно проверить все
-        1 - Проверить, что тип ордера не противоречит правилам локаций
-        2 - Проверить всю хурму в общем
+        Входом для создания Мува может быть
+         - Order - когда человек или система целенаправлено создают некий Ордер ( Ордер на примеку или Ордер на перемещение)
+         - OrderType - когда Выбирается некий тип(правила) применяемые к определенному обьекту, Товарру/Упаковке
+         - Move - Когда идет двуэтапное движение, тогда правила беруться из Родительского Мува
+         - None - Тогда система подберет автоматически OrderType согласно стратегии размещения
         """
         assert parent, 'You cannot create a move without a parent Order'
         if isinstance(parent, Order):
-            order = parent
+            order_type_entity = parent.order_type_rel
         if isinstance(parent, Move):
-            order = parent.order_id
+            order_type_entity = self.env['order_type'].service.get(parent.order_type_id)
+        if isinstance(parent, OrderType):
+            order_type_entity = parent
         """Проверяем, что мув может быть создан согласно праавилам в Order type """
         quant_service = self.env['quant'].service
         if obj.location_src_id:
             """Если указали локацию насильно, то нужно проверить все что возможно, что эта локация имеет место быть"""
-            if parent.order_type_rel.allowed_location_src_ids:
+            if order_type_entity.allowed_location_src_ids:
                 """Если есть разрешенные локации"""
-                if not obj.location_src_id in parent.order_type_rel.allowed_location_src_ids:
+                if not obj.location_src_id in order_type_entity.allowed_location_src_ids:
                     raise HTTPException(
                         status_code=406,
-                        detail=f"Source Location is not allowed for Order Type {parent.order_type_rel.title}"
+                        detail=f"Source Location is not allowed for Order Type {order_type_entity.title}"
                     )
-            if parent.order_type_rel.exclude_location_src_ids:
+            if order_type_entity.exclude_location_src_ids:
                 """Если есть исключающие локации"""
-                if obj.location_src_id in parent.order_type_rel.exclude_location_src_ids:
+                if obj.location_src_id in order_type_entity.exclude_location_src_ids:
                     raise HTTPException(
                         status_code=406,
                         detail=f"Source Location is not allowed for Order Type {parent.order_type_rel.title}"
                     )
             loc_env = self.env['location']
             location_entity = await loc_env.service.get(obj.location_src_id)
-            if parent.order_type_rel.allowed_location_type_ids:
+            if order_type_entity.allowed_location_type_src_ids:
                 """Еслли есть правила разрешаюшее по типу локации"""
-                if not location_entity.location_type_id in parent.order_type_rel.allowed_location_type_ids:
+                if not location_entity.location_type_id in order_type_entity.allowed_location_type_src_ids:
                     raise HTTPException(
                         status_code=406,
-                        detail=f"Source Location Type is not allowed for Order Type Location Type {parent.order_type_rel.title}"
+                        detail=f"Source Location Type is not allowed for Order Type Location Type {order_type_entity.title}"
                     )
-            if parent.order_type_rel.exclude_location_type_ids:
+            if order_type_entity.exclude_location_type_ids:
                 """Еслли есть правила разрешаюшее по типу локации"""
-                if location_entity.location_type_id in parent.order_type_rel.exclude_location_type_ids:
+                if location_entity.location_type_id in order_type_entity.exclude_location_type_ids:
                     raise HTTPException(
                         status_code=406,
-                        detail=f"Source Location Type is not allowed for Order Type Location Type {parent.order_type_rel.title}"
+                        detail=f"Source Location Type is not allowed for Order Type Location Type {order_type_entity.title}"
                     )
 
-            if parent.order_type_rel.allowed_location_classes:
+            if order_type_entity.allowed_location_classes:
                 """Еслли есть правила разрешаюшее по классу локации"""
-                if not location_entity.location_class in parent.order_type_rel.allowed_location_classes:
+                if not location_entity.location_class in order_type_entity.allowed_location_classes:
                     raise HTTPException(
                         status_code=406,
-                        detail=f"Source Location Class is not allowed for Order Type Location Class {parent.order_type_rel.title}"
+                        detail=f"Source Location Class is not allowed for Order Type Location Class {order_type_entity.title}"
                     )
-            if parent.order_type_rel.exclude_location_classes:
+            if order_type_entity.exclude_location_classes:
                 """Еслли есть правила разрешаюшее по классу локации"""
-                if  location_entity.location_class in parent.order_type_rel.exclude_location_classes:
+                if  location_entity.location_class in order_type_entity.exclude_location_classes:
                     raise HTTPException(
                         status_code=406,
-                        detail=f"Source Location Class is not allowed for Order Type Location Class {parent.order_type_rel.title}"
+                        detail=f"Source Location Class is not allowed for Order Type Location Class {order_type_entity.title}"
                     )
             """Далее нужно достать доступные кванты товара для создания движения"""
             available_quants = await quant_service.get_available_quants(
@@ -137,7 +141,6 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 order_type=order.order_type_rel,
                 product_id=obj.product_id,
                 package=obj.location_id,
-                uom_id=obj.uom_id,
                 lot=order.lot_id,
                 partner_id=order.partner_id
             )

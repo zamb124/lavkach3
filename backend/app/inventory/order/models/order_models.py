@@ -181,6 +181,7 @@ class Move(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     type: Mapped[MoveType]
     move_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
+    order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='RESTRICT'), nullable=True)
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order.id', ondelete='RESTRICT'), nullable=True)
     order_rel: Mapped[Order] = relationship(back_populates='move_list_rel')
     location_src_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))

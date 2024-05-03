@@ -1,4 +1,5 @@
 import uuid
+import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Generic, Optional, Type, TypeVar
@@ -7,7 +8,7 @@ from uuid import uuid4
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel
 from sqlalchemy import select, Row, RowMapping
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
 
@@ -20,6 +21,8 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 FilterSchemaType = TypeVar("FilterSchemaType", bound=Filter)
 before_fields = ['role_ids', 'company_ids', 'is_admin', 'store_id']
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @dataclass
 class Model:
@@ -223,19 +226,20 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                         rel = rel_service(self.request)
                         if _obj.id:
                             rel_entity = await rel.update(id=_obj.id, obj=_obj, commit=False)
-                            self.session.refresh(entity)
                         else:
                             _dump = _obj.model_dump()
                             _dump[f'{self.model.__tablename__}_id'] = id
                             create_obj = rel.create_schema(**_dump)
-                            rel_entity = await rel.create(obj=create_obj, parent=entity, commit=False)
-                        self.session.add(rel_entity)
+                            await rel.create(obj=create_obj, parent=entity, commit=False)
                 else:
                     to_set.append((key, value))
         for k, v in to_set:
             setattr(entity, k, v)
         # entity.mode_list_rel = new_entity.move_list_rel
-        self.session.add(entity)
+        try:
+            self.session.add(entity)
+        except InvalidRequestError as ex:
+            logger.warning(ex)
         if commit:
             try:
                 await self.session.commit()
