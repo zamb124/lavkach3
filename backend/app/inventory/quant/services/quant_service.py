@@ -41,29 +41,27 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
             order_type: 'OrderType',
             product_id: uuid.uuid4 = None,
             package: Location = None,
-            uom_id: uuid.uuid4 = None,
-            location_class: LocationClass = None,
-            location_type: LocationType = None,
-            location: Location = None,
-            lot: Lot = None,
             partner_id: uuid.uuid4 = None
     ) -> list(Quant):
         assert any([product_id, package])
         filter = {}
         query = select(self.model)
-        if order_type.allowed_location_type_ids:
-            query = query.where(self.model.location_id.in_(order_type.allowed_location_type_ids))
-        if order_type.allowed_location_type_ids:
-            query = query.where(self.model.location_id.in_(order_type.allowed_location_type_ids))
+
+        if partner_id:
+            query = query.where(self.model.partner_id == partner_id)
+        if order_type.allowed_location_class_src_ids:
+            query = query.where(self.model.location_class.in_(order_type.allowed_location_class_src_ids))
+        if order_type.allowed_location_type_src_ids:
+            query = query.where(self.model.location_type.in_(order_type.allowed_location_type_src_ids))
+        if order_type.store_id:
+            query = query.where(self.model.store_id == order_type.store_id)
         if product_id:
             filter.update({})
             query = query.where(self.model.product_id == product_id)
-        if location:
-            query = query.where(self.model.location_id == location.id)
-        if lot:
-            query = query.where(self.model.lot_id == lot.id)
-        if partner_id:
-            query = query.where(self.model.partner_id == partner_id)
+        # if location:
+        #     query = query.where(self.model.location_id == location.id)
+        # if lot:
+        #     query = query.where(self.model.lot_id == lot.id)
 
         executed_data = await self.session.execute(query)
         return executed_data.scalars().all()

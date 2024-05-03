@@ -141,6 +141,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 lot=order.lot_id,
                 partner_id=order.partner_id
             )
+            if not available_quants:
+                raise HTTPException(status_code=406, detail='Not enouth quantity in source')
         move =  await super(MoveService, self).create(obj, commit=False)
         try:
             await self.session.commit()
