@@ -4,13 +4,13 @@ from enum import Enum
 from typing import Optional
 import datetime
 from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint, ARRAY, \
-    String
+    String, JSON
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from app.inventory.location.models import Location
 from core.db import Base
 from core.db.mixins import AllMixin, guid, guid_primary_key
-from app.inventory.quant.models import Lot
+from app.inventory.quant.models import Lot, Quant
 #from app.inventory.location.models import Location, LocationClass
 from app.inventory.location.enums import LocationClass, PutawayStrategy
 
@@ -181,6 +181,7 @@ class Move(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     type: Mapped[MoveType]
     move_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
+    store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
     order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='RESTRICT'), nullable=True)
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order.id', ondelete='RESTRICT'), nullable=True)
     order_rel: Mapped[Order] = relationship(back_populates='move_list_rel')
@@ -193,6 +194,8 @@ class Move(Base, AllMixin):
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     quantity: Mapped[float]     # Если перемещение кпаковки, то всегда 0
     uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=False) # Если перемещение упаковкой то None
+    quant_src_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="SET NULL"), index=True)
+    quant_dest_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="SET NULL"), index=True)
     status: Mapped[MoveStatus] = mapped_column(default=MoveStatus.DRAFT)
 
 

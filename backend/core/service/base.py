@@ -7,13 +7,14 @@ from uuid import uuid4
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel
-from sqlalchemy import select, Row, RowMapping
+from sqlalchemy import select, Row, RowMapping, inspect
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
 
 from core.db.session import Base, session
 from core.fastapi.middlewares.authentication import CurrentUser
+from core.schemas import BaseFilter
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -143,9 +144,18 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         if not entity:
             entity = await self._get(id)
             self.basecache.set(entity)
+        insp = inspect(entity)
+        if not insp.persistent:
+
+            self.session.add(entity)
+            await self.session.refresh(entity)
+
         return entity
 
-    async def _list(self, _filter: FilterSchemaType, size: int):
+    async def _list(self, _filter: FilterSchemaType | dict, size: int):
+        if not isinstance(_filter, BaseFilter):
+            if isinstance(_filter, dict):
+                _filter = self.env[self.model.__tablename__].schemas.filter(**_filter)
         if self.model.__tablename__ not in ('company', 'user'):
             setattr(_filter, 'company_id__in', [self.user.company_id])
         query_filter = _filter.filter(select(self.model)).limit(size)
@@ -155,14 +165,17 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         result = executed_data.scalars().all()
         return result
 
-    async def list(self, _filter: FilterSchemaType, size: int):
+    async def list(self, _filter: FilterSchemaType | dict, size: int = 100):
         entitys = await self._list(_filter, size)
         self.basecache.set(entitys)
         return entitys
 
     async def _create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
         if isinstance(obj, dict):
-            obj = self.create_schema(**obj)
+            try:
+                obj = self.create_schema(**obj)
+            except Exception as ex:
+                raise HTTPException(status_code=422, detail=str(ex))
         to_set = []
         exclude_rel = []
         relcations_to_create = []

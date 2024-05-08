@@ -2,8 +2,10 @@ import uuid
 from enum import Enum
 from typing import Optional
 import datetime
-from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint
+from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint, JSON, ARRAY
+from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import relationship, mapped_column, Mapped
+from sqlalchemy_utils import JSONType
 
 from app.inventory.location.enums import LocationClass
 from core.db import Base
@@ -49,7 +51,7 @@ class Quant(Base, AllMixin):
     product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)                                          # ForeignKey("basic.product.id")
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)                                            # ForeignKey("basic.store.id")
     location_class: Mapped[LocationClass] = mapped_column(index=True)
-    location_type: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location_type.id", ondelete="SET NULL"), index=True)
+    location_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location_type.id", ondelete="SET NULL"), index=True)
     location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"), index=True)
     lot_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"), index=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
@@ -57,3 +59,8 @@ class Quant(Base, AllMixin):
     reserved_quantity: Mapped[float]
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=False)
+    move_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(MutableList.as_mutable(ARRAY(Uuid)), index=True)
+
+    @property
+    def available_quantity(self):
+        return self.quantity - self.reserved_quantity

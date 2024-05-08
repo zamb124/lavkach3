@@ -37,29 +37,33 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
 
     async def get_available_quants(
             self,
-            order_type: 'OrderType',
-            product_id: uuid.uuid4 = None,
-            package: Location = None,
-            partner_id: uuid.uuid4 = None
+            product_id:                         uuid.UUID,
+            store_id:                           uuid.UUID,
+            location_class_ids:                 [uuid.UUID] = None,
+            location_ids:                       [uuid.UUID] = None,
+            location_type_ids:                  [uuid.UUID] = None,
+            lot_ids:                            [uuid.UUID] = None,
+            partner_id:                         uuid.UUID = None,
     ) -> list(Quant):
-        assert any([product_id, package])
-        filter = {}
+        """
+            Метод получения квантов по параметрам
+        """
         query = select(self.model)
-
-        if partner_id:
-            query = query.where(self.model.partner_id == partner_id)
-        if order_type.allowed_location_class_src_ids:
-            query = query.where(self.model.location_class.in_(order_type.allowed_location_class_src_ids))
-        if order_type.allowed_location_type_src_ids:
-            query = query.where(self.model.location_type.in_(order_type.allowed_location_type_src_ids))
-        if order_type.store_id:
-            query = query.where(self.model.store_id == order_type.store_id)
         if product_id:
             query = query.where(self.model.product_id == product_id)
-        # if location:
-        #     query = query.where(self.model.location_id == location.id)
-        # if lot:
-        #     query = query.where(self.model.lot_id == lot.id)
+        if store_id:
+            query = query.where(self.model.store_id == store_id)
+        if location_class_ids:
+            query = query.where(self.model.location_class.in_(location_class_ids))
+        if location_ids:
+            query = query.where(self.model.location_id.in_(location_ids))
+        if location_type_ids:
+            query = query.where(self.model.location_type_id.in_(location_type_ids))
+        if lot_ids:
+            query = query.where(self.model.lot_id.in_(lot_ids))
+
+        """Если не указываем партнера, то партнер None тк тут не подходит логика --> Любой"""
+        query = query.where(self.model.partner_id == partner_id)
 
         executed_data = await self.session.execute(query)
         return executed_data.scalars().all()

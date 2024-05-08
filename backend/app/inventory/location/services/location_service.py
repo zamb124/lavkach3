@@ -18,7 +18,7 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
         return await super(LocationService, self).update(id, obj)
 
     @permit('location_list')
-    async def list(self, _filter: FilterSchemaType, size: int):
+    async def list(self, _filter: FilterSchemaType, size: int = None):
         return await super(LocationService, self).list(_filter, size)
 
     @permit('location_create')
