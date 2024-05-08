@@ -1,11 +1,8 @@
 from typing import Any, Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.requests import Request
-
-from app.basic.product.models.product_models import ProductStorageType
-from app.basic.product.schemas import ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, ProductStorageTypeFilter
-from core.db.session import session
+from app.inventory.product_storage.models.product_storage_models import ProductStorageType
+from app.inventory.product_storage.schemas import ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, \
+    ProductStorageTypeFilter
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 

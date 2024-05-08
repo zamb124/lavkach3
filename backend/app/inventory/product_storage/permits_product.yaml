@@ -1,0 +1,6 @@
+permits:
+  product_storage_type_create: Может создавать магазин
+  product_storage_type_edit: Может редактировать магазин
+  product_storage_type_list: Может получать список магазинов
+  product_storage_type_delete: Может удалять магазин
+  product_storage_type_get: Может смотреть на магазин

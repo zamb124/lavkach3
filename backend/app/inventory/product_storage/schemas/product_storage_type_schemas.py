@@ -1,14 +1,13 @@
-from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
-from app.basic.product.models.product_models import ProductStorageType
+
+from app.inventory.product_storage.models.product_storage_models import ProductStorageType
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.basic.company.schemas import CompanyScheme
 
 
 class ProductStorageTypeBaseScheme(BaseModel):

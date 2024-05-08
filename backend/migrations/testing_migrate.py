@@ -6,7 +6,9 @@ from app.basic.company.models.company_models import Company
 from app.basic.user.models.user_models import User
 from app.basic.user.models.role_models import Role
 from app.basic.store.models.store_models import Store
-from app.basic.product.models.product_models import Product, ProductCategory, ProductStorageType
+from app.basic.product.models.product_models import Product, ProductCategory
+
+from app.inventory.product_storage.models.product_storage_models import ProductStorageType
 from app.basic.uom.models.uom_models import Uom
 from app.basic.uom.models.uom_category_models import UomCategory
 from datetime import datetime

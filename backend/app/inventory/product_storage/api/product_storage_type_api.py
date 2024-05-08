@@ -4,7 +4,7 @@ import uuid
 from fastapi import APIRouter, Query, Request
 from fastapi_filter import FilterDepends
 
-from app.basic.product.schemas import (
+from app.inventory.product_storage.schemas import (
     ProductStorageTypeScheme,
     ProductStorageTypeCreateScheme,
     ProductStorageTypeUpdateScheme,
@@ -12,7 +12,7 @@ from app.basic.product.schemas import (
     ProductStorageTypeFilter,
     ExceptionResponseSchema,
 )
-from app.basic.product.services import ProductStorageTypeService
+from app.inventory.product_storage.services import ProductStorageTypeService
 
 product_storage_type_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],

@@ -42,7 +42,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         """
         if obj.type == MoveType.PRODUCT:
 
-            """ ПОДБОР ИСХОДЯЩЕГО КВАНТА"""
+            """ ПОДБОР ИСХОДЯЩЕГО КВАНТА/ЛОКАЦИИ"""
 
             quant_src_entity = None
             available_quants = None
@@ -262,6 +262,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                                     remainder = 0.0
                                     quant_src_entity = q
                                     self.session.add(quant_src_entity)
+                                    break
                             else:
                                 ... #TODO: единицы измерения
                     else:
@@ -269,10 +270,28 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                         logger.warning(f'The number in the move has been reduced')
                         obj.quantity -= remainder
 
-            obj.quant_src_id = quant_src_entity.id
-            obj.location_src_id = quant_src_entity.location_id
-            obj.lot_id = quant_src_entity.lot_id
-            obj.partner_id = quant_src_entity.partner_id
+            obj.quant_src_id =      quant_src_entity.id
+            obj.location_src_id =   quant_src_entity.location_id
+            obj.lot_id =            quant_src_entity.lot_id
+            obj.partner_id =        quant_src_entity.partner_id
+
+            """ ПОИСК КВАНТА/ЛОКАЦИИ НАЗНАЧЕНИЯ """
+            if obj.location_dest_id:
+                """ Если у муве насильно указали location_dest_id"""
+                """ Нужно проверить, что данная локация подходит под правила OrderType и правила самой выбранной локации"""
+
+                location_class_dest_ids = list(
+                    set(order_type_entity.allowed_location_class_dest_ids) -
+                    set(order_type_entity.exclude_location_class_dest_ids)
+                )
+                location_type_dest_ids = list(
+                    set(order_type_entity.allowed_location_type_dest_ids) -
+                    set(order_type_entity.exclude_location_type_dest_ids)
+                )
+                location_dest_ids = list(
+                    set(order_type_entity.allowed_location_dest_ids) -
+                    set(order_type_entity.exclude_location_dest_ids)
+                )
 
             move = await super(MoveService, self).create(obj, commit=False)
             if not quant_src_entity.move_ids:
