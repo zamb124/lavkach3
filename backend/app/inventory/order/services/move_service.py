@@ -135,16 +135,16 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "Если локации в задании нет, то подбираем локацию из правила OrderType"
 
                 location_class_src_ids = list(
-                    set(order_type_entity.allowed_location_class_src_ids) -
-                    set(order_type_entity.exclude_location_class_src_ids)
+                    set(order_type_entity.allowed_location_class_src_ids or []) -
+                    set(order_type_entity.exclude_location_class_src_ids or [])
                 )
                 location_type_src_ids = list(
-                    set(order_type_entity.allowed_location_type_src_ids) -
-                    set(order_type_entity.exclude_location_type_src_ids)
+                    set(order_type_entity.allowed_location_type_src_ids or []) -
+                    set(order_type_entity.exclude_location_type_src_ids or [])
                 )
                 location_src_ids = list(
-                    set(order_type_entity.allowed_location_src_ids) -
-                    set(order_type_entity.exclude_location_src_ids)
+                    set(order_type_entity.allowed_location_src_ids or []) -
+                    set(order_type_entity.exclude_location_src_ids or [])
                 )
                 available_quants = await quant_service.get_available_quants(
                     product_id=obj.product_id,
@@ -163,10 +163,10 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                             "Если указана локация, то она в приоритете на изьятия кванта"
                             location_env = self.env['location']
                             locations_src = await location_env.service.list(_filter={'id__in': location_src_ids})
-                            locayion_types_ids = {i.id: i.location_type_id for i in locations_src}
+                            location_types_ids = {i.id: i.location_type_id for i in locations_src}
                             location_types_src = {
                                 i.id: i
-                                for i in await self.env['location_type'].service.list(_filter={'id__in': locayion_types_ids.values()})
+                                for i in await self.env['location_type'].service.list(_filter={'id__in': location_types_ids.values()})
                             }
                             for location in locations_src:
                                 if loc_type := location_types_src.get(location.location_type_id):

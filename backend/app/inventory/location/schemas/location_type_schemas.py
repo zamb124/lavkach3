@@ -17,14 +17,10 @@ class LocationTypeBaseScheme(BaseModel):
     title: str
     location_class: LocationClass
     is_homogeneity: Optional[bool] = None
-    is_mix_products: Optional[bool] = None
-    is_allow_create_package: Optional[bool] = None
     allowed_package_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location', filter={'location_class__in': LocationClass.PACKAGE})
     exclude_package_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location', filter={'location_class__in': LocationClass.PACKAGE})
-    allowed_order_type_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='order_type')
-    exclude_order_type_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='order_type')
     strategy: Optional[PutawayStrategy] = PutawayStrategy.FEFO
-    product_storage_type_ids: Optional[list[str]] = None
+
     is_can_negative: bool = Field(default=False, title='Can be Negative')
     class Config:
         extra = 'allow'

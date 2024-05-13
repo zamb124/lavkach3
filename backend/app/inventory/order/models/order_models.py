@@ -1,7 +1,7 @@
 import enum
 import uuid
 from enum import Enum
-from typing import Optional
+from typing import Optional, Annotated
 import datetime
 from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint, ARRAY, \
     String, JSON
@@ -42,6 +42,7 @@ class ReservationMethod(str, Enum):
     AT_DATE:            str = 'at_date'                     # В определенную дату, но она должна быть не меньше planned_date, иначе запустится само
     TIME_BEFORE_DATE:   str = 'time_before_date'            # За определенное количество минут до начала planned_date
 
+ids = Annotated[list[uuid.UUID], mapped_column(ARRAY(Uuid), server_default='{}', nullable=False)]
 
 class OrderType(Base, AllMixin):
     """
@@ -77,18 +78,18 @@ class OrderType(Base, AllMixin):
     title: Mapped[str] = mapped_column(index=True)                                                              # Человекочетабельное имя
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     order_class: Mapped[OrderClass]                                                                             # Класс ордера
-    allowed_location_src_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)       # Разрешенные зоны для подбора
-    exclude_location_src_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)     # Искличенные зоны из подбора
-    allowed_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)      # Разрешенные зона для назначения
-    exclude_location_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)    # Исключение зон из назначения
-    allowed_location_type_src_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)       # Разрешенные типы зоны для подбора
-    exclude_location_type_src_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)     # Искличенные типы зоны из подбора
-    allowed_location_type_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)       # Разрешенные типы зоны для назначения
-    exclude_location_type_dest_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)     # Искличенные типы зоны для назначения
-    allowed_location_class_src_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(type_=ARRAY(String), index=True)                 # Разрешенные классы зона для подбора
-    exclude_location_class_src_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(type_=ARRAY(String), index=True)               # Исключение классы зон для подбора
-    allowed_location_class_dest_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(type_=ARRAY(String), index=True)                 # Разрешенные классы зона для назначения
-    exclude_location_class_dest_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(type_=ARRAY(String), index=True)               # Исключение классы зон для назначения
+    allowed_location_src_ids: Mapped[ids] = mapped_column(index=True)      # Разрешенные зоны для подбора
+    exclude_location_src_ids: Mapped[ids] = mapped_column(index=True)    # Искличенные зоны из подбора
+    allowed_location_dest_ids: Mapped[ids] = mapped_column(index=True)     # Разрешенные зона для назначения
+    exclude_location_dest_ids: Mapped[ids] = mapped_column(index=True)    # Исключение зон из назначения
+    allowed_location_type_src_ids: Mapped[ids] = mapped_column(index=True)      # Разрешенные типы зоны для подбора
+    exclude_location_type_src_ids: Mapped[ids] = mapped_column(index=True)     # Искличенные типы зоны из подбора
+    allowed_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)        # Разрешенные типы зоны для назначения
+    exclude_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)     # Искличенные типы зоны для назначения
+    allowed_location_class_src_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(ARRAY(String), index=True)                 # Разрешенные классы зона для подбора
+    exclude_location_class_src_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(ARRAY(String), index=True)               # Исключение классы зон для подбора
+    allowed_location_class_dest_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(ARRAY(String), index=True)                 # Разрешенные классы зона для назначения
+    exclude_location_class_dest_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(ARRAY(String), index=True)               # Исключение классы зон для назначения
     order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order_type.id", ondelete='CASCADE'))# Тип Ордера возврата разницы
     backorder_action_type: Mapped[BackOrderAction] = mapped_column(default=BackOrderAction.ASK)                 # Поведение возврата разницы
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                     # Склад

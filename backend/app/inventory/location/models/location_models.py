@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import Sequence, Uuid, ForeignKey, String
+from sqlalchemy import Sequence, Uuid, ForeignKey, String, text
 from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy.sql.sqltypes import ARRAY
 
@@ -19,16 +19,11 @@ class LocationType(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str]
     location_class: Mapped[LocationClass]
-    product_storage_type_ids: Mapped[Optional[list[str]]] = mapped_column(type_=ARRAY(String), index=True)  # Температурный режим если пусто значит можно все
     is_homogeneity: Mapped[Optional[bool]] = mapped_column(default=False)  # Запрет на 1KU 2х разных партий
-    is_mix_products: Mapped[Optional[bool]] = mapped_column(default=False)  # Можно смешивать ( положить 2+ разных SKU)
-    is_allow_create_package: Mapped[Optional[bool]] = mapped_column(default=True)  # Можно ли создавать упаковки# Признак Гомогенности
     allowed_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Разрешенные типы упаковок
     exclude_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Исключение типы упаковок
-    allowed_order_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Разрешенные типы Ордеров
-    exclude_order_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Исключения типы Ордеров
     strategy: Mapped[Optional['PutawayStrategy']] = mapped_column(default=PutawayStrategy.FEFO)  # Стратегия комплектования
-    is_can_negative: Mapped[bool] = mapped_column(default=False) # Может иметь отрицательный остаток
+    is_can_negative: Mapped[Optional[bool]] = mapped_column(server_default=text('false')) # Может иметь отрицательный остаток
 
 
 class Location(Base, AllMixin):

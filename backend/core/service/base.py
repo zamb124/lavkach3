@@ -146,7 +146,6 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             self.basecache.set(entity)
         insp = inspect(entity)
         if not insp.persistent:
-
             self.session.add(entity)
             await self.session.refresh(entity)
 
