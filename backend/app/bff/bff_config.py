@@ -44,8 +44,7 @@ def my_import(name):
 class Config(CoreConfig):
     services: dict = {
         'basic': {
-            'DOMAIN': os.environ.get("BASIC_DOMAIN") or '127.0.0.1',
-            'PORT': '8001',
+            'DOMAIN': os.environ.get("BASIC_APP_URL") or 'http://127.0.0.1:8001',
             'adapter': BasicAdapter,
             'schema': {
                 'store': {
@@ -121,8 +120,7 @@ class Config(CoreConfig):
             }
         },
         'inventory': {
-            'DOMAIN': os.environ.get("INVENTORY_DOMAIN") or '127.0.0.1',
-            'PORT': '8002',
+            'DOMAIN': os.environ.get("INVENTORY_APP_URL") or 'http://127.0.0.1:8002',
             'adapter': InventoryAdapter,
             'schema': {
                 'order': {
@@ -172,7 +170,21 @@ class Config(CoreConfig):
                 #     'filter': SuggestFilter,
                 # },
             },
-        }
+        },
+        'terminal': {
+            'DOMAIN': os.environ.get("TERMINAL_APP_URL") or 'http://127.0.0.1:8004',
+            'adapter': BasicAdapter,
+            'schema': {
+                'order': {
+                    'base': StoreScheme,
+                    'create': StoreCreateScheme,
+                    'update': StoreUpdateScheme,
+                    'filter': StoreFilter,
+                    'cache_strategy': 'full'
+                },
+
+            }
+        },
     }
 
 

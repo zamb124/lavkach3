@@ -1,63 +1,21 @@
 import asyncio
 import logging
 import random
-import time
 
-from fastapi import APIRouter, WebSocket, Request
-from fastapi_htmx import htmx
+from app.bff.dff_helpers.schema_recognizer import ModelView
+from app.bff.template_spec import templates
+from app.terminal.suggest.schemas.order import Order
+from sse_starlette.sse import EventSourceResponse
 from starlette.responses import HTMLResponse
 
-from app.bff.dff_helpers.htmx_decorator import s
-from app.bff.template_spec import templates
-from app.terminal.apps.suggest.schemas.order import Order
-from sse_starlette.sse import EventSourceResponse
+from fastapi import APIRouter, WebSocket, Request
 
 orders_router = APIRouter()
 _logger = logging.getLogger(__name__)
-#
-#
-# class OrderAdapter:
-#     headers: str
-#     session: aiohttp.ClientSession = None
-#     basic_url: str = f"http://{config.services['basic']['DOMAIN']}:{config.services['basic']['PORT']}"
-#     path = '/api/company'
-#     def __init__(self, request: Request):
-#         self.headers = {'Authorization': request.headers.get('Authorization') or request.cookies.get('token')}
-#     async def __aenter__(self):
-#         self.session = aiohttp.ClientSession(headers=self.headers)
-#         return self
-#
-#     async def __aexit__(self, *args, **kwargs):
-#         await self.session.close()
-#
-#     async def get_company_list(self, **kwargs):
-#
-#         async with self.session.get(self.basic_url + self.path) as resp:
-#             data = await resp.json()
-#         return data
-#
-#     async def get_company(self, company_id: uuid.UUID):
-#         async with self.session.get(self.basic_url + self.path +f'/{company_id.__str__()}') as resp:
-#             data = await resp.json()
-#         return data
-
-# #/terminal/orders
-# @orders_router.get("/orders", response_class=HTMLResponse)
-# @htmx(*s('order-kanban'))
-# async def company(request: Request):
-#     return {
-#         'orders': [{
-#             'number': "test1",
-#         }, {
-#             'number': "test2",
-#         }
-#         ]
-#     }
 
 #
 # #/terminal/main
 @orders_router.get("/main", response_class=HTMLResponse)
-@htmx(*s('main'))
 async def company(request: Request):
     return {}
 
@@ -102,10 +60,8 @@ async def orders_websocket(websocket: WebSocket):
         await asyncio.sleep(10)
 
 
-
- # используем вебсокеты для ожидания ордеров от бэкенда
 @orders_router.get("/orders")
-@htmx(*s('order-msg-socket'))
+# @htmx(*s('order-msg-socket'))
 async def orders_handler(request: Request):
 
     mock_orders_data = [
@@ -128,7 +84,9 @@ async def orders_handler(request: Request):
     ]
 
     orders_from_inventory = [Order(**order) for order in mock_orders_data]
-    return orders_from_inventory
+
+    model = ModelView(request, 'inventory', 'order')
+    return templates.TemplateResponse(request, 'widgets/list-full.html', context={'model': model})
 
 
 
@@ -141,7 +99,6 @@ async def message_stream(request: Request):
         yield 'orders_updated'
     async def event_generator():
         while True:
-            # If client closes connection, stop sending events
             if await request.is_disconnected():
                 break
 
@@ -160,3 +117,8 @@ async def message_stream(request: Request):
     return EventSourceResponse(event_generator())
 
 
+
+@orders_router.get("/view_orders", response_class=HTMLResponse)
+async def company(request: Request):
+    model = ModelView(request, 'terminal', 'order')
+    return templates.TemplateResponse(request, 'widgets/list-full.html', context={'model': model})

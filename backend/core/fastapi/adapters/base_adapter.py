@@ -24,11 +24,13 @@ class Client(httpx.AsyncClient):
         qp = QueryParams(query_param_cleaned)
         responce = await super().request(method=method, url=url, json=json, params=qp, timeout=timeout)
         if responce.status_code != 200:
+            logger.error(responce.json())
             raise HTTPException(responce.status_code, detail=responce.json())
         return responce
 
     @timed
     async def get(self, url, *, params):
+        logger.info('Adapter %s %s', url, params)
         responce = await self.request('GET', url=url, params=params)
         return responce
 
@@ -64,11 +66,11 @@ class BaseAdapter:
             self.module = module
         if model:
             self.model = model
-        self.domain = f"http://{conf['DOMAIN']}:{conf['PORT']}"
+        self.domain = conf['DOMAIN']
         self.conf = conf
         self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token') or ''}
-        if self.headers.get('Authorization'):
-            self.client = Client(headers=self.headers)
+        # if self.headers.get('Authorization'):
+        self.client = Client(headers=self.headers)
 
     async def __aenter__(self):
         self.client = Client(headers=self.headers)

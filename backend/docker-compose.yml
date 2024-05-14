@@ -28,9 +28,9 @@ services:
     env_file:
       - .env-docker
     container_name: basic_app
-    command: ["/fastapi/docker/basic_app.sh"]
+    command: gunicorn app.basic.basic_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
     ports:
-      - 8001:8001
+      - 8001:80
     depends_on:
       - db
       - redis
@@ -41,22 +41,23 @@ services:
     env_file:
       - .env-docker
     container_name: inventory_app
-    command: [ "/fastapi/docker/inventory_app.sh" ]
+    command: gunicorn app.inventory.inventory_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
     ports:
-      - 8002:8002
+      - 8002:80
     depends_on:
       - basic-app
       - db
       - redis
+
   bff-app:
     build:
       context: .
     env_file:
       - .env-docker
     container_name: bff_app
-    command: [ "/fastapi/docker/bff_app.sh" ]
+    command: gunicorn app.bff.bff_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
     ports:
-      - 8003:8003
+      - 8003:80
     depends_on:
       - basic-app
       - inventory-app
@@ -69,12 +70,10 @@ services:
     env_file:
       - .env-docker
     container_name: terminal_app
-    command: [ "/fastapi/docker/terminal_app.sh" ]
+    command: gunicorn app.terminal.server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
     ports:
-      - 9994:8004
+      - 8004:80
     depends_on:
-      - basic-app
-      - inventory-app
       - db
       - redis
 
@@ -84,16 +83,17 @@ services:
     env_file:
       - .env-docker
     container_name: celery_app
-    command: ["/fastapi/docker/celery.sh", "celery"]
+    command: celery --app=core.helpers.celery.celery:celery_app worker -l INFO
     depends_on:
       - redis
+
   flower:
     build:
       context: .
     env_file:
       - .env-docker
     container_name: flower_app
-    command: ["/fastapi/docker/celery.sh", "flower"]
+    command: celery --app=core.helpers.celery.celery:celery_app flower
     depends_on:
       - redis
       - celery

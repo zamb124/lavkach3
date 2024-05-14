@@ -20,7 +20,7 @@ async def remove_expired_tokens() -> None:
         "password": config.SUPERUSER_PASSWORD
     }
     responce = await client.post(
-        url=f'http://{config.services["basic"]["DOMAIN"]}:{config.services["basic"]["PORT"]}/api/basic/user/login',
+        url=f'{config.services["basic"]["DOMAIN"]}/api/basic/user/login',
         json=body
     )
     data = responce.json()
