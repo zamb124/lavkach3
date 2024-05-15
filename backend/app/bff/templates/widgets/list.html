@@ -10,12 +10,12 @@
                 <!-- end page title -->
                 <div class="row">
                     <div class="col-lg-12">
-                        {{model.as_header_widget()|safe}}
-                        {{ model.as_filter_widget()|safe }}
+                        {{cls.as_header_widget()|safe}}
+                        {{ cls.as_filter_widget()|safe }}
                     </div>
                     <!--end col-->
                     <div class="col-xxl-12">
-                        {{ model.as_table_widget()|safe }}
+                        {{ cls.as_table_widget()|safe }}
                     </div>
                     <!--end col-->
                     <!--end col-->

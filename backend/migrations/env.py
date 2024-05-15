@@ -28,7 +28,7 @@ fileConfig(config.config_file_name)
 
 # For auto generate schemas
 
-from core.config import config
+from core.db_config import config
 from app.inventory.quant.models import *
 from app.basic.company.models import *
 from app.basic.product.models import *
@@ -38,6 +38,7 @@ from app.basic.partner.models import *
 from app.basic.uom.models import *
 from app.inventory.location.models import *
 from app.inventory.order.models import *
+from app.inventory.product_storage.models import *
 
 target_metadata = Base.metadata
 

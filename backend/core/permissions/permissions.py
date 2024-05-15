@@ -1,13 +1,13 @@
-from typing import List, Dict, Tuple
-from enum import Enum
 import os
+from enum import Enum
+from uuid import UUID
+
 import yaml
 from sqlalchemy import select
 from starlette.exceptions import HTTPException
 
-from app.basic.user.models import Role
-from core.service.base import BaseService
-from uuid import UUID
+#from app.basic.user.models import Role
+#from core.service.base import BaseService
 
 Allow = 'ALLOW'
 Deny = 'Deny'
@@ -56,17 +56,18 @@ def permit(*arg):
             service = None
             res = False
             for a in args:
-                if isinstance(a, BaseService):
+                if isinstance(a, object):
                     service = a
                     break
             if not service:
                 raise HTTPException(status_code=403, detail=f"User not found")
+            role = service.env['role'].model
             if not service.user.is_admin:
                 service_roles = [UUID(i) for i in service.user.role_ids]
-                query = select(Role).where(
-                    Role.permission_allow_list.contains(arg)
+                query = select(role).where(
+                    role.permission_allow_list.contains(arg)
                 ).where(
-                    Role.company_id.in_(service.user.company_ids)
+                    role.company_id.in_(service.user.company_ids)
                 )
                 result = await service.session.execute(query)
                 roles = result.scalars().all()
@@ -79,10 +80,10 @@ def permit(*arg):
                         if r.parents:
                             parents += r.parents
                     while parents:
-                        query = select(Role).where(
-                            Role.id.in_(parents)
+                        query = select(role).where(
+                            role.id.in_(parents)
                         ).where(
-                            Role.company_id.in_(service.user.company_ids)
+                            role.company_id.in_(service.user.company_ids)
                         )
                         result = await service.session.execute(query)
                         roles = result.scalars().all()

@@ -5,7 +5,7 @@ from typing import Optional, List
 from sqlalchemy import select
 from core.db.session import session
 
-from app.basic.user.models import User
+#from app.basic.user.models import User
 from core.types import TypeLocale
 
 

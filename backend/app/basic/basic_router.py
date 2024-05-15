@@ -8,7 +8,7 @@ from app.basic.partner.api.partner_api import partner_router
 from app.basic.auth.api.auth import auth_router
 from app.basic.company.api.company_api import company_router
 from app.basic.store.api.store_api import store_router
-from app.basic.product.api import product_category_router, product_storage_type_router, product_router
+from app.basic.product.api import product_category_router, product_router
 from app.basic.bus.bus import ws_router
 from core.fastapi.dependencies import (
     PermissionDependency,
@@ -26,7 +26,6 @@ basic_router.include_router(store_router, prefix="/store", tags=["Store"], depen
 basic_router.include_router(uom_category_router, prefix="/uom_category", tags=["Uom", "Category"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 basic_router.include_router(uom_router, prefix="/uom", tags=["Uom", "Uom"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 basic_router.include_router(product_category_router, prefix="/product_category", tags=["ProductCategory"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
-basic_router.include_router(product_storage_type_router, prefix="/product_storage_type", tags=["ProductStorageType"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 basic_router.include_router(product_router, prefix="/product", tags=["Product"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 basic_router.include_router(ws_router,  tags=["WS"])
 

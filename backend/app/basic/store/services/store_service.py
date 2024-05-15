@@ -1,11 +1,9 @@
 from typing import Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.requests import Request
 
 from app.basic.store.models.store_models import Store
 from app.basic.store.schemas.store_schemas import StoreCreateScheme, StoreUpdateScheme, StoreFilter
-from core.db.session import session
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 

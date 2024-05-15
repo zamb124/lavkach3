@@ -36,6 +36,7 @@ async def websocket_endpoint(websocket: WebSocket, user: Annotated[str, Depends(
         await ws_manager.send_personal_message("connection accepted", user.user_id,)
         while True:
             message = await websocket.receive_text()
+
             await ws_manager.send_personal_message(
                 {"message": message},
                 user.user_id,

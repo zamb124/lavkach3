@@ -1,0 +1,37 @@
+{% block as_view %}
+    <div class="text-start">
+<h6><i
+                class="ri-links-fill fs-6 text-danger"> </i><a class="text-danger py-3 text-start"
+           href="#"
+           hx-include="none"
+           hx-trigger="click"
+           hx-target="#modal"
+           hx-ext="json-enc"
+           hx-post="/base/modal"
+           hx-vals='{
+"model": "{{ field.model.name }}",
+"method": "get",
+"id": "{{ field.val.id }}",
+"prefix": "{{ field.prefix }}"
+}'
+>{{ field.val.title or field.val.nickname }}
+        </a></h6></div>
+{% endblock %}
+{% block as_table %}
+    <i class="ri-links-fill fs-8 text-danger"> </i>
+        <a class="text-danger py-3"
+           href="#"
+           hx-include="none"
+           hx-trigger="click"
+           hx-target="#modal"
+           hx-ext="json-enc"
+           hx-post="/base/modal"
+           hx-vals='{
+"model": "{{ field.model.name }}",
+"method": "get",
+"id": "{{ field.val.id }}",
+"prefix": "{{ field.prefix }}"
+}'
+>{{ field.val.title or field.val.nickname }}
+        </a>
+{% endblock %}

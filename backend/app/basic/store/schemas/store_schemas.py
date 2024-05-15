@@ -53,7 +53,7 @@ class StoreScheme(StoreCreateScheme, TimeStampScheme):
 class StoreFilter(BaseFilter):
     title__in: Optional[List[str]] = Field(default=None, title='Title')
     address__in: Optional[List[str]] = Field(description="address", default=None)
-    source__in: Optional[List[str]] = Field(default=None, title='Source', filter=True)
+    source__in: Optional[List[str]] = Field(default=None, title='Source')
 
     class Config:
         populate_by_name = True

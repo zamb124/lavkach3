@@ -41,6 +41,7 @@ def upgrade():
     op.execute("create sequence company_lsn_seq")
     op.execute("create sequence user_lsn_seq")
     op.execute("create sequence store_lsn_seq")
+    op.execute("create sequence storage_type_lsn_seq")
 
 def downgrade():
     ${downgrades if downgrades else "pass"}
@@ -67,3 +68,4 @@ def downgrade():
     op.execute("drop sequence user_lsn_seq")
     op.execute("drop sequence contractor_lsn_seq")
     op.execute("drop sequence store_lsn_seq")
+    op.execute("drop sequence storage_type_lsn_seq")

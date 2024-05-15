@@ -25,6 +25,9 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
 
     @permit('order_create')
     async def create(self, obj: CreateSchemaType) -> ModelType:
+        """
+            Метод создания ордера, в нем особой проверки не нужно, тк в теории ордер может быть создан как угодно
+        """
         obj.number = datetime.datetime.now(datetime.UTC).strftime('%y%m%d%H%m%S')
         obj.created_by = self.user.user_id
         obj.edited_by = self.user.user_id

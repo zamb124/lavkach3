@@ -33,3 +33,10 @@ class LocationClass(str, Enum):
     SCRAP:      str = "scrap"
     SCRAPPED:   str = "scrapped"
     BUFFER:     str = "buffer"
+
+
+class VirtualLocationClass(str, Enum):
+    PARTNER: str = "partner"
+    LOST: str = "lost"
+    INVENTORY: str = "inventory"
+    SCRAPPED: str = "scrapped"

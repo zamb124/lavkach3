@@ -5,6 +5,7 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
+from app.inventory.location.enums import LocationClass
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
@@ -15,6 +16,8 @@ class QuantBaseScheme(BaseModel):
     vars: Optional[dict] = None
     product_id: UUID4
     store_id: UUID4
+    location_class: LocationClass
+    location_type_id: UUID4
     location_id: Optional[UUID4] = None
     lot_id: Optional[UUID4] = None
     partner_id: Optional[UUID4] = None
@@ -22,6 +25,7 @@ class QuantBaseScheme(BaseModel):
     reserved_quantity: Optional[float]
     expiration_datetime: Optional[datetime] = None
     uom_id: UUID4
+    move_ids: Optional[list[UUID4]] = None
 
     class Config:
         extra = 'allow'
@@ -36,10 +40,11 @@ class QuantUpdateScheme(QuantBaseScheme):
     uom_id: Optional[UUID4] = None
 
 class QuantCreateScheme(QuantBaseScheme):
-    company_id: UUID4
+    ...
 
 
 class QuantScheme(QuantCreateScheme, TimeStampScheme):
+    company_id: UUID4
     lsn: int
     id: UUID4
 

@@ -1,11 +1,7 @@
-from typing import List, Any, Optional
-
-from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.requests import Request
+from typing import Any, Optional
 
 from app.basic.user.models.role_models import Role
 from app.basic.user.schemas.role_schemas import RoleCreateScheme, RoleUpdateScheme, RoleFilter
-from core.db.session import session
 from core.permissions import permit, permits
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 

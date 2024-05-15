@@ -1,5 +1,5 @@
 import redis.asyncio as aioredis
-from core.config import config
+from core.db_config import config
 
 redis = aioredis.StrictRedis(
     username='default',
@@ -9,5 +9,5 @@ redis = aioredis.StrictRedis(
     ssl=config.REDIS_SSL,
     ssl_ca_certs=config.REDIS_CERT_PATH,
     ssl_cert_reqs=None,
-    socket_timeout=0.3
+    socket_timeout=1
 )

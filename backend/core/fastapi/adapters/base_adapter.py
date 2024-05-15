@@ -7,8 +7,11 @@ from fastapi import HTTPException
 from starlette.datastructures import QueryParams
 from starlette.requests import Request, HTTPConnection
 
-from core.helpers.cache import Cache
+from core.helpers.cache import Cache, CacheStrategy
 from core.utils.timeit import timed
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from core.env import Env, Model, Domain
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,8 +27,7 @@ class Client(httpx.AsyncClient):
         qp = QueryParams(query_param_cleaned)
         responce = await super().request(method=method, url=url, json=json, params=qp, timeout=timeout)
         if responce.status_code != 200:
-            logger.error(responce.json())
-            raise HTTPException(responce.status_code, detail=responce.json())
+            raise HTTPException(responce.status_code, detail=responce.json().get('detail'))
         return responce
 
     @timed
@@ -52,22 +54,22 @@ class BaseAdapter:
     При создании нужно указать модуль, или отнаследоваться с указанием модуля
     Так же при создании можно сразу указать и модуль и модель, если нужно много раз ходить
     """
-    module: str = None
-    model: str = None
+    model: 'Model' = None
+    client: Client = None
+    domain: 'Domain' = None
+    request: Request
+    env: 'Env'
     cache: str = Cache
     headers: dict
-    client: Client = None
-    domain: str = None
-    request: Request
-    conf = None
+    protocol: str = None
+    host: str = None
+    port: str = None
 
-    def __init__(self, conn: HTTPConnection = None, conf: dict = None, module: str = None, model: str = None):
-        if module:
-            self.module = module
-        if model:
-            self.model = model
-        self.domain = conf['DOMAIN']
-        self.conf = conf
+    def __init__(self, conn: HTTPConnection, domain: 'Domain', model: 'Model', env: 'Env'):
+        self.model = model
+        self.domain = domain
+        self.host = f"{self.protocol}://{self.host}:{self.port}"
+        self.env = env
         self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token') or ''}
         # if self.headers.get('Authorization'):
         self.client = Client(headers=self.headers)
@@ -92,7 +94,7 @@ class BaseAdapter:
         is_cached = False
         cached_data = []
         missed = []
-        if model in ('locale', 'currency','country') or self.conf['schema'][model or self.model].get('cache_strategy') != 'full':
+        if model in ('locale', 'currency','country') or self.model.cache_strategy != CacheStrategy.FULL:
             return is_cached, cached_data, missed
         if params:
             params.pop('module', None)
@@ -107,7 +109,7 @@ class BaseAdapter:
                 cached_courutins = []
                 for id in set(ids):
                     cached_courutins.append({
-                        'promise': Cache.get_model(self.module, model or self.model, id),
+                        'promise': Cache.get_model(self.model.domain.name, model or self.model, id),
                         'id': id
                     })
                 for cou in cached_courutins:
@@ -130,8 +132,8 @@ class BaseAdapter:
         if (is_cached and missed) or not is_cached:
             if missed:
                 params = QueryParams({'id__in': ','.join(missed)})
-            path = f'/api/{self.module}/{model or self.model}'
-            responce = await self.client.get(self.domain + path, params=params)
+            path = f'/api/{self.model.domain.name}/{model or self.model.name}'
+            responce = await self.client.get(self.host + path, params=params)
             return responce.json()
         return {
             'size': len(cached_data),
@@ -140,21 +142,24 @@ class BaseAdapter:
         }
 
     async def create(self, json: dict, model: str = None, params=None,id:uuid.UUID = None, **kwargs):
-        path = f'/api/{self.module}/{model or self.model}'
-        responce = await self.client.post(self.domain + path, json=json, params=params)
+        path = f'/api/{self.model.domain.name}/{model or self.model}'
+        responce = await self.client.post(self.host + path, json=json, params=params)
         return await self.common_exception_handler(responce)
 
     async def update(self, id: uuid.UUID, json: dict, model: str = None, params=None, **kwargs):
-        path = f'/api/{self.module}/{model or self.model}/{id}'
-        responce = await self.client.put(self.domain + path, json=json, params=params)
+        path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
+        responce = await self.client.put(self.host + path, json=json, params=params)
         return await self.common_exception_handler(responce)
 
     async def get(self, id: uuid.UUID, model: str = None, params=None, **kwargs):
-        path = f'/api/{self.module}/{model or self.model}/{id}'
-        responce = await self.client.get(self.domain + path, params=params)
+        path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
+        responce = await self.client.get(self.host + path, params=params)
         return await self.common_exception_handler(responce)
 
+    async def view(self, id: uuid.UUID, model: str = None, params=None, **kwargs):
+        return await self.get(id, model, params, kwargs)
+
     async def delete(self, id: uuid.UUID, model: str = None, params=None, **kwargs):
-        path = f'/api/{self.module}/{model or self.model}/{id}'
-        responce = await self.client.delete(self.domain + path, params=params)
+        path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
+        responce = await self.client.delete(self.host + path, params=params)
         return await self.common_exception_handler(responce)

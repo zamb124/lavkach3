@@ -1,0 +1,22 @@
+{% block as_form %}
+    <div    id="{{ field.prefix ~ field.field_name }}"
+            class="row"
+            hx-ext="json-enc"
+            hx-post="/bff/select"
+            hx-vals='{
+                    "model": "{{ field.model.name }}",
+                    "value": "{{ field.val.id if field.val else None }}",
+                    "prefix": "{{ model.update.prefix }}",
+                    "name": "{{ field.model.name }}",
+                    "required": "{{ field.required }}"
+                 }'
+            hx-trigger="load"
+    >
+    </div>
+{% endblock %}
+{% block as_view %}
+{{ field.val.english_name or field.val.name or field.val}}
+{% endblock %}
+{% block as_table %}
+{{ field.val if field.val else '' }}
+{% endblock %}

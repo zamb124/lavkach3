@@ -1,1 +1,1 @@
-from .company_models import *
+from .company_models import Company

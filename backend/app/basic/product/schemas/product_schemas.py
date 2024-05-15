@@ -1,14 +1,16 @@
-from datetime import datetime
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from typing import Optional, List, Any
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, model_validator
 from pydantic.types import UUID4
+
 from app.basic.product.models.product_models import Product, ProductType
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.basic.company.schemas import CompanyScheme
 from app.basic.uom.schemas import UomScheme
 
 
@@ -20,8 +22,7 @@ class ProductBaseScheme(BaseModel):
     product_type: ProductType = Field(default=ProductType.STORABLE, title='Type', table=True, form=True)
     uom_id: UUID4 = Field(title='Uom', table=True, form=True)
     product_category_id: UUID4 = Field(title='Product Category', table=True, form=True)
-    product_storage_type_id: UUID4 = Field(title='Product Storage type', table=True, form=True)
-    barcode_list: list[str] = Field(title='Barcodes', table=True, form=True)
+    barcode_list: list[str] = Field(default=None, title='Barcodes', table=True, form=True)
 
     class Config:
         extra = 'allow'
@@ -74,4 +75,4 @@ class ProductFilter(BaseFilter):
 
 
 class ProductListSchema(GenericListSchema):
-    data: Optional[List[ProductScheme]]
+    data: Optional[List['ProductScheme']]

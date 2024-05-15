@@ -2,6 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Query
 from fastapi_filter import FilterDepends
+from pydantic import BaseModel
 from starlette.requests import Request
 
 from app.basic.uom.schemas import (
@@ -9,7 +10,7 @@ from app.basic.uom.schemas import (
     UomCategoryCreateScheme,
     UomCategoryUpdateScheme,
     UomCategoryListSchema,
-    UomCategoryFilter
+    UomCategoryFilter, ConvertSchema
 )
 from app.basic.uom.schemas import (
     UomScheme,
@@ -19,7 +20,8 @@ from app.basic.uom.schemas import (
     UomListSchema,
     UomFilter
 )
-from app.basic.uom.services.uom_service import UomCategoryService, UomService
+from app.basic.uom.services.uom_service import UomService
+from app.basic.uom.services.uom_category_service import UomCategoryService
 
 uom_category_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
@@ -92,3 +94,8 @@ async def uom_update(request: Request, uom_id: uuid.UUID, schema: UomUpdateSchem
 @uom_router.delete("/{uom_id}")
 async def uom_delete(request: Request, uom_id: uuid.UUID):
     await UomService(request).delete(id=uom_id)
+
+
+@uom_router.post("/convert", response_model=list[ConvertSchema])
+async def uom_convert(request: Request, schema: list[ConvertSchema]):
+    await UomService(request).convert(schema)

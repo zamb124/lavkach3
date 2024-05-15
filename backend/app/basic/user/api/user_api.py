@@ -1,8 +1,7 @@
-import json
 import uuid
 
-import starlette
 from fastapi import APIRouter, Depends, Query, BackgroundTasks
+from fastapi import Response
 from fastapi_filter import FilterDepends
 from starlette.requests import Request
 
@@ -22,9 +21,6 @@ from core.fastapi.dependencies import (
 )
 from .schemas import LoginRequest
 from ..schemas.user_schemas import SignUpScheme, ChangeCompanyScheme
-from fastapi import Response
-
-from ...auth.api.schemas import RefreshTokenRequest
 from ...bus.managers import ws_manager
 
 user_router = APIRouter()

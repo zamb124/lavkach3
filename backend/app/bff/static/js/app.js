@@ -1,4 +1,4 @@
-!function () {
+function main () {
     var d = document.querySelector(".navbar-menu").innerHTML, M = 7, t = "en", a = localStorage.getItem("language");
 
     function o() {
@@ -499,7 +499,8 @@
     }), o(), s(), p(), window.addEventListener("resize", function () {
         q && clearTimeout(q), q = setTimeout(W, 2e3)
     })
-}();
+};
+
 var mybutton = document.getElementById("back-to-top");
 
 function scrollFunction() {

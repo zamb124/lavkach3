@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
 from typing import List
 
 from fastapi import FastAPI, Request, Depends
@@ -7,13 +8,14 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
-from app.bff.bff_config import config
 from app.bff.bff_router import bff_router
 from app.bff.bff_tasks import remove_expired_tokens
+from app.bff.tkq import broker
+from core.db_config import config
+from core.env import Env, domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -21,7 +23,7 @@ from core.fastapi.middlewares import (
     AuthBffBackend,
     SQLAlchemyMiddleware,
 )
-from core.helpers.cache import Cache, CustomKeyMaker, CacheTag
+from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
 from core.utils.timeit import add_timing_middleware
 
@@ -29,25 +31,44 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class env:
-    ...
+@dataclass
+class Htmx:
+    hx_target: str = None
+    hx_current_url: str = None
+    hx_request: bool = None
 
 
-class AdapterMidlleWare:
+class HTMXMidlleWare:
     """
-    Адартер кладется в request для удобства
+    Адартер кладется в request для удобства htmx переменных
     """
 
     def __init__(self, app: ASGIApp, *args, **kwargs):
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        if scope['type'] in  ("http", "websocket"):
+        if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
-            e = env()
-            for i, v in config.services.items():
-                e.__setattr__(i, v['adapter'](conn, v, i))
-            scope['env'] = e
+            scope['htmx'] = Htmx(
+                hx_target=conn.headers.get('hx-target'),
+                hx_current_url=conn.headers.get('hx-current-url'),
+                hx_request=True if conn.headers.get('hx-request') == 'true' else False
+            )
+        await self.app(scope, receive, send)
+
+
+class EnvMidlleWare:
+    """
+    Адартер кладется в request для удобства обращений к обьектам сервисов
+    """
+
+    def __init__(self, app: ASGIApp, *args, **kwargs):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        if scope['type'] in ("http", "websocket"):
+            conn = HTTPConnection(scope)
+            scope['env'] = Env(domains, conn)
         await self.app(scope, receive, send)
 
 
@@ -80,7 +101,8 @@ def on_auth_error(request: Request, exc: Exception):
 
 def make_middleware() -> List[Middleware]:
     middleware = [
-        Middleware(AdapterMidlleWare),
+        Middleware(EnvMidlleWare),
+        Middleware(HTMXMidlleWare),
         Middleware(
             CORSMiddleware,
             allow_origins=["*"],
@@ -107,19 +129,19 @@ def fake_answer_to_everything_ml_model(x: float):
     return x * 42
 
 
-
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
         Старт сервера
     """
     await remove_expired_tokens()
+    await broker.startup()
     yield
     """
             Выключение сервера
     """
+    await broker.shutdown()
+
 
 def create_app() -> FastAPI:
     app_ = FastAPI(
@@ -140,9 +162,5 @@ def create_app() -> FastAPI:
 
 app = create_app()
 
-add_timing_middleware(app, record=logger.info, prefix="app", exclude="untimed")
+add_timing_middleware(app, record=logger.info, prefix="bff", exclude="untimed")
 app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
-
-
-
-

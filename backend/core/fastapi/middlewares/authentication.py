@@ -1,15 +1,14 @@
 from typing import Optional, Tuple
-import json
+
 import jwt
 from starlette.authentication import AuthenticationBackend
 from starlette.middleware.authentication import (
     AuthenticationMiddleware as BaseAuthenticationMiddleware,
 )
-from starlette.requests import HTTPConnection, HTTPException
+from starlette.requests import HTTPConnection
 
-from core.config import config
+from core.db_config import config
 from ..schemas import CurrentUser
-from ...exceptions import DecodeTokenException
 
 
 class AuthBackend(AuthenticationBackend):

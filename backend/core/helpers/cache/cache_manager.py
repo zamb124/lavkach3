@@ -3,8 +3,6 @@ from typing import Any
 
 from .base import BaseBackend, BaseKeyMaker
 from .cache_tag import CacheTag
-from .custom_key_maker import cache_kay_maker
-from .redis_backend import redis_backend
 
 
 class CacheManager:

@@ -17,15 +17,11 @@ class LocationTypeBaseScheme(BaseModel):
     title: str
     location_class: LocationClass
     is_homogeneity: Optional[bool] = None
-    is_mix_products: Optional[bool] = None
-    is_allow_create_package: Optional[bool] = None
-    allowed_package_ids: Optional[list[UUID4]] = None
-    exclusive_package_ids: Optional[list[UUID4]] = None
-    allowed_order_type_ids: Optional[list[UUID4]] = None
-    exclusive_order_type_ids: Optional[list[UUID4]] = None
+    allowed_package_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location', filter={'location_class__in': LocationClass.PACKAGE})
+    exclude_package_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location', filter={'location_class__in': LocationClass.PACKAGE})
     strategy: Optional[PutawayStrategy] = PutawayStrategy.FEFO
-    product_storage_type_ids: Optional[list[str]] = None
 
+    is_can_negative: bool = Field(default=False, title='Can be Negative')
     class Config:
         extra = 'allow'
         from_attributes = True
@@ -50,13 +46,7 @@ class LocationTypeScheme(LocationTypeCreateScheme, TimeStampScheme):
 
 
 class LocationTypeFilter(BaseFilter):
-    lsn__gt: Optional[int] = Field(alias="cursor", default=0)
-    id__in: Optional[List[UUID4]] = Field(alias="id", default=None)
-    created_at__gte: Optional[datetime] = Field(description="bigger or equal created", default=None)
-    created_at__lt: Optional[datetime] = Field(description="less created", default=None)
-    updated_at__gte: Optional[datetime] = Field(description="bigger or equal updated", default=None)
-    updated_at__lt: Optional[datetime] = Field(description="less updated", default=None)
-    company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None)
+    ...
 
     class Config:
         populate_by_name = True

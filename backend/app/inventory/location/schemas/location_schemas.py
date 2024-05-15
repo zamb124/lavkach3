@@ -5,7 +5,7 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
-from app.inventory.location.enums import PutawayStrategy
+from app.inventory.location.enums import PutawayStrategy, LocationClass
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
@@ -14,6 +14,7 @@ from app.inventory.location.models import Location
 
 class LocationBaseScheme(BaseModel):
     vars: Optional[dict] = None
+    location_class: LocationClass
     title: str
     store_id: UUID4
     location_id: Optional[UUID4] = None
@@ -28,16 +29,15 @@ class LocationBaseScheme(BaseModel):
         service = 'app.inventory.location.services.LocationService'
 
 class LocationUpdateScheme(LocationBaseScheme):
-    title: Optional[str] = None
-    store_id: Optional[UUID4] = None
-    location_type_id: Optional[UUID4] = None
+    ...
 
 
 class LocationCreateScheme(LocationBaseScheme):
-    company_id: UUID4
+    ...
 
 
 class LocationScheme(LocationCreateScheme, TimeStampScheme):
+    company_id: UUID4
     lsn: int
     id: UUID4
 
@@ -46,9 +46,12 @@ class LocationScheme(LocationCreateScheme, TimeStampScheme):
 
 
 class LocationFilter(BaseFilter):
-    title__in: Optional[str] = Field(default=None)
-    store_id__in: Optional[List[UUID4]] = Field(default=None, filter=True)
-    is_active: Optional[bool] = Field(default=None, filter=True)
+    title__in: Optional[str] = Field(default=None, title='Title')
+    store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store')
+    location_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Location Type')
+    location_class__in: Optional[List[str]] = Field(default=None, title='Class')
+    location_class__not_in: Optional[List[str]] = Field(default=None, title='Class')
+    is_active: Optional[bool] = Field(default=None, title='Active')
     class Config:
         populate_by_name = True
 

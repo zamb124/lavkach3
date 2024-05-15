@@ -1,21 +1,25 @@
+from __future__ import annotations
 from datetime import datetime
 
 from pydantic import BaseModel, Field, UUID4
-from typing import Optional, List
+from typing import Optional, List, ForwardRef
 
 from core.schemas.timestamps import TimeStampScheme
 from fastapi_filter.contrib.sqlalchemy import Filter
-from app.basic.uom.models.uom_models import Uom, UomType
+from typing import TYPE_CHECKING
 from core.schemas.list_schema import GenericListSchema
+from app.basic.uom.models.uom_models import Uom
 from core.schemas import BaseFilter
+from app.basic.uom.models.uom_models import UomType
+
 
 
 class UomBaseScheme(BaseModel):
-    title: str = Field(description="Title")
-    uom_category_id: UUID4
-    type: UomType
-    ratio: float
-    precision: float
+    title: str = Field(title="Title", table=True)
+    uom_category_id: UUID4 = Field(title="Uom Categoty", table=True, description='Select category of UOM Category')
+    type: 'UomType' = Field(title="Uom Type", table=True, description='Select type \n SMALLER: this category is smaller \n BIGGER... STANDART')
+    ratio: float = Field(title="Ratio", table=True, description='Ratio')
+    precision: float = Field(title="Presicion", table=True, description='Rouding Precision')
 
     class Config:
         extra = 'allow'
@@ -24,14 +28,15 @@ class UomBaseScheme(BaseModel):
         service = 'app.basic.uom.services.UomService'
 
 class UomUpdateScheme(UomBaseScheme):
-    pass
+    ...
 
 
 class UomCreateScheme(UomBaseScheme):
-    company_id: UUID4
+    ...
 
 
 class UomScheme(UomCreateScheme, TimeStampScheme):
+    company_id: UUID4
     id: UUID4
     lsn: int
 
@@ -56,4 +61,12 @@ class UomFilter(BaseFilter):
 
 
 class UomListSchema(GenericListSchema):
-    data: Optional[List[UomScheme]]
+    data: Optional[List['UomScheme']]
+
+
+class ConvertSchema(BaseModel):
+    id: UUID4
+    uom_id_in: UUID4
+    quantity_in: float
+    uom_id_out: UUID4
+    quantity_out: Optional[float] = None

@@ -1,0 +1,22 @@
+{% set dropdown_id = 'dropdown-' + uuid().hex %}
+<div class="dropdown card-header-dropdown" id="{{ dropdown_id }}">
+    <a class="btn btn-soft-secondary btn" role="button" href="#" data-bs-toggle="dropdown" aria-haspopup="true"
+       aria-expanded="false">{{ title or model }}<i class="mdi mdi-chevron-down align-middle ms-1"></i></a>
+    <div class="dropdown-menu dropdown-menu-end" style="">
+        {% for item in items %}
+            <a class="dropdown-item" hx-target="#{{ dropdown_id }}" hx-post="{{ item.url }}" href="#">{{ item.title }}</a>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    {% if message %}
+        var myToast = Toastify({
+         text: "{{message}}",
+         duration: 3000,
+            style: {
+            //background: "{{background}}",
+          },
+        })
+        myToast.showToast();
+    {% endif %}
+</script>
