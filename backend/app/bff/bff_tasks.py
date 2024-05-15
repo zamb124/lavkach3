@@ -22,7 +22,7 @@ async def remove_expired_tokens_celery():
     }
 
     responce = await client.post(
-        url=f'{config.services["basic"]["DOMAIN"]}/api/basic/user/login',
+        url=f'http://{config.services["basic"]["DOMAIN"]}:{config.services["basic"]["PORT"]}/api/basic/user/login',
         json=body
     )
     data = responce.json()
