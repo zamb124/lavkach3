@@ -32,6 +32,7 @@ class Client(httpx.AsyncClient):
 
     @timed
     async def get(self, url, *, params):
+        logger.info('Adapter %s %s', url, params)
         responce = await self.request('GET', url=url, params=params)
         return responce
 
@@ -70,8 +71,8 @@ class BaseAdapter:
         self.host = f"{self.protocol}://{self.host}:{self.port}"
         self.env = env
         self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token') or ''}
-        if self.headers.get('Authorization'):
-            self.client = Client(headers=self.headers)
+        # if self.headers.get('Authorization'):
+        self.client = Client(headers=self.headers)
 
     async def __aenter__(self):
         self.client = Client(headers=self.headers)

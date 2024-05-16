@@ -95,3 +95,4 @@ wcwidth==0.2.13
 websockets==12.0
 wheel==0.38.4
 yarl==1.9.4
+sse_starlette==2.0.0
