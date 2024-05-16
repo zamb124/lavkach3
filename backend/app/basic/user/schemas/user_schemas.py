@@ -71,8 +71,6 @@ class UserScheme(UserBaseScheme, TimeStampScheme):
     company_rel: Optional['CompanyScheme']
     store_rel: Optional['StoreScheme']
 
-    class Config:
-        from_attributes = True
 
 
 class UserFilter(BaseFilter):

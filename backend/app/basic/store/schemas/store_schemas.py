@@ -46,8 +46,6 @@ class StoreScheme(StoreCreateScheme, TimeStampScheme):
     id: UUID
     company_rel: Optional[CompanyScheme] = Field(table=True, form=True, title='Company')
 
-    class Config:
-        from_attributes = True
 
 
 class StoreFilter(BaseFilter):

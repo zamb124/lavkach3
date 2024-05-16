@@ -52,9 +52,6 @@ class PartnerParent(PartnerBaseScheme, TimeStampScheme):
 class PartnerScheme(PartnerParent, TimeStampScheme):
     partner_rel: Optional[PartnerParent]
 
-    class Config:
-        from_attributes = True
-        arbitrary_types_allowed = True
 
 class PartnerFilter(BaseFilter):
     title__in: Optional[str] = Field(default=None, title='Title')

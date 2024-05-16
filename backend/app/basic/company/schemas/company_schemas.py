@@ -37,9 +37,6 @@ class CompanyScheme(CompanyCreateScheme, TimeStampScheme):
     id: UUID4
     lsn: int
 
-    class Config:
-        from_attributes = True
-        arbitrary_types_allowed = True
 
 
 class CompanyFilter(BaseFilter):

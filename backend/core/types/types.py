@@ -1,8 +1,10 @@
-from typing import Any, Dict
+from typing import Any, Dict, Annotated
+from uuid import UUID
 
 from babel import Locale
-from pydantic import GetJsonSchemaHandler, model_validator
-from pydantic_core import CoreSchema
+from pydantic import GetJsonSchemaHandler, model_validator, GetCoreSchemaHandler
+from pydantic.types import UuidVersion
+from pydantic_core import CoreSchema, core_schema
 from sqlalchemy_utils.types.country import Country
 from sqlalchemy_utils.types.currency import Currency
 from sqlalchemy_utils.types.phone_number import PhoneNumber

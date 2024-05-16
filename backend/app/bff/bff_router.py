@@ -12,5 +12,3 @@ bff_router.include_router(basic_router, prefix="/basic", tags=["frontend"])
 bff_router.include_router(inventory_router, prefix="/inventory", tags=["frontend"])
 
 
-
-

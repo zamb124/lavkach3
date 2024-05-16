@@ -54,6 +54,8 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
     partner_id: Optional[UUID4] = None
     status: MoveStatus
 
+    class Config:
+        from_attributes = True
 
 
 class MoveFilter(BaseFilter):

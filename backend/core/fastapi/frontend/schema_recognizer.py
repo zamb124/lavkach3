@@ -6,7 +6,8 @@ from collections import defaultdict
 from copy import deepcopy
 from enum import Enum
 from inspect import isclass
-from typing import Optional, Any, get_args, get_origin
+from types import UnionType
+from typing import Optional, Any, get_args, get_origin, Annotated, Union
 
 from fastapi import HTTPException
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -17,8 +18,6 @@ from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
 from core.env import Model
-from core.fastapi.adapters import BaseAdapter
-from core.types import TypeLocale, TypePhone, TypeCountry, TypeCurrency
 from core.utils.timeit import timed
 
 
@@ -54,7 +53,12 @@ def list_from_str(v: Any) -> list:
         return list(set(eval(v)))
     except Exception as ex:
         return []
-
+passed_classes = [
+    Annotated,
+    Union,
+    UnionType,
+]
+types_map = {}
 
 def get_types(annotation, _class=[]):
     """
@@ -64,9 +68,9 @@ def get_types(annotation, _class=[]):
         _class.append(annotation)
         return _class
     else:
+        origin = get_origin(annotation)
         annotate = get_args(annotation)
-        origin = get_origin(annotate)
-        if origin:
+        if origin and origin not in passed_classes:
             _class.append(origin)
         get_types(annotate[0], _class)
     return _class
@@ -76,7 +80,7 @@ class Field(BaseModel):
         Описание поля
     """
     field_name: str
-    type: Optional[str]
+    type: str
     model: Any
     required: Optional[bool]
     title: Optional[str]
@@ -101,6 +105,7 @@ class Field(BaseModel):
                 field=self
             )
         except Exception as ex:
+            print(ex)
             raise
         return rendered_html
 
@@ -324,8 +329,6 @@ class ClassView:
         """
         Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
         """
-        if field_name == 'allowed_location_classes':
-            a=1
         fielinfo = schema.model_fields[field_name]
         prefix = kwargs.get('prefix') or self.prefix
         res = ''
@@ -339,82 +342,26 @@ class ClassView:
                 model_name = fielinfo.json_schema_extra.get('model')
                 model = self.env[model_name]
         for i, c in enumerate(class_types):
+            import enum
             if i > 0:
                 res += '_'
-            if field_name == 'id':
+            if fielinfo == 'id':
                 res += 'id'
-            elif field_name == 'order_by':
-                res += 'order_by'
-                enums = fielinfo.default
-            elif field_name.endswith('_by'):
-                res += 'model_id'
-                model_name = 'user'
-            elif field_name == 'search':
-                res += 'search'
-            elif issubclass(class_types[0], bool):
-                res += 'bool'
-            elif issubclass(class_types[0], uuid.UUID) and field_name in (
-                    'allowed_location_src_ids', 'exclude_location_src_ids', 'allowed_location_dest_ids',
-                    'exclude_location_dest_ids', 'allowed_package_ids', 'exclusive_package_ids'):
-                res += 'ids'
-            elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_ids'):
-                if not model:
-                    model_name = field_name.replace('_ids', '')
-                res += 'ids'
-            elif issubclass(class_types[0], TypeLocale) or field_name.startswith('locale'):
-                res += 'locale'
-            elif issubclass(class_types[0], TypeCurrency) or field_name.startswith('currency'):
-                res += 'currency'
-            elif issubclass(class_types[0], TypeCountry) or field_name.startswith('country'):
-                res += 'country'
-            elif issubclass(class_types[0], TypePhone) or field_name.startswith('phone'):
-                res += 'phone'
-            elif issubclass(c, Enum) and field_name.endswith('_ids'):
-                res += 'enum_ids'
-                enums = class_types[0]
-            elif issubclass(c, Enum):
+            elif issubclass(c, enum.Enum):
                 res += 'enum'
-                enums = class_types[0]
-            elif issubclass(class_types[0], dict):
-                res += 'dict'
-            elif issubclass(class_types[0], int):
-                res += 'number'
-            elif issubclass(class_types[0], float):
-                res += 'float'
-            elif issubclass(class_types[0], str) and field_name.endswith('_list'):
-                res += 'list'
-            elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_src_id'):
-                if not model:
-                    model_name = field_name.replace('_src_id', '')
-                res += 'model_id'
-            elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_dest_id'):
-                if not model:
-                    model_name = field_name.replace('_dest_id', '')
-                res += 'model_id'
-            elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id'):
-                if not model:
-                    model_name = field_name.replace('_id', '')
-                res += 'model_id'
-            elif issubclass(class_types[0], uuid.UUID) and field_name.endswith('_id__in'):
-                if not model:
-                    model_name = field_name.replace('_id__in', '')
-                res += 'model_id'
-            elif issubclass(class_types[0], datetime.datetime):
-                res += 'datetime'
-            elif issubclass(class_types[0], BaseModel) and field_name.endswith('_list_rel'):
-                if not model:
-                    model_name = field_name.replace('_list_rel', '')
-                res += 'model_list_rel'
+                enums = c
+            elif issubclass(c, BaseModel):
+                try:
+                    model_name = c.Config.orm_model.__tablename__
+                except Exception as ex:
+                    model_name = c.Config.__name__.lower()
+                res += 'rel'
                 model = self.env[model_name]
-                schema = class_types[0]
                 submodel = ClassView(request=self.request, model=model.name)
-                line = submodel._get_line(schema=schema, model=model, prefix=prefix)
-            elif issubclass(class_types[0], BaseModel) and field_name.endswith('_rel'):
-                if not model:
-                    model_name = field_name.replace('_rel', '')
-                res += 'model_rel'
+                line = submodel._get_line(schema=c, model=model, prefix=prefix)
             else:
-                res += 'str'
+                res += c.__name__.lower()
+
         if not model and model_name:
             if model_name == self.model.name:
                 model = self.model
@@ -691,10 +638,10 @@ class ClassView:
                 if col['type'] in ('date', 'datetime'):
                     if col['val']:
                         col['val'] = datetime.datetime.fromisoformat(col['val'])
-                elif col['type'] == 'ids':
+                elif col['type'] == 'id':
                     if not col['val']:
                         col['val'] = []
-                elif col['type'].endswith('_list_rel'):
+                elif col['type'].endswith('list_id'):
                     if val_data := col['val']:
                         line_prefix = f'{line_dict["prefix"]}{col["field_name"]}'
                         submodel = ClassView(request=self.request, model=col['model'])
@@ -760,34 +707,19 @@ class ClassView:
                         _field.val = _new_vals
                     else:
                         _field.val = _join_lines.get(_val)
-                    if _field.field_name.endswith('_by'):
-                        _field.field_name = _field.field_name.replace('_by', '_rel')
-                        _field.type = 'model_rel'
-                    elif _field.field_name.endswith('_id'):
-                        _field.field_name = _field.field_name.replace('_id', '_rel')
-                        _field.type = 'model_rel'
-                    elif _field.field_name.endswith('_ids'):
-                        _field.field_name = _field.field_name.replace('_ids', 'list_rel')
-                        _field.type = 'model_list_rel'
+                    if _field.type == 'uuid':
+                        _field.type = 'rel'
+                    elif _field.type == 'list_uuid':
+                        _field.type = 'list_rel'
                     else:
                         raise HTMXException(status_code=500,
                                             detail=f'Wrong field name {_field.field_name} in table model {_field.model}')
             logging.info(f"_GET_DATA GET CORUTINE REALEASE: {datetime.datetime.now() - time_start}")
             for col in missing_fields.keys():
-                if col.endswith('_by'):
-                    new_field_name = col.replace('_by', '_rel')
-                elif col.endswith('_id'):
-                    new_field_name = col.replace('_id', '_rel')
-                elif col.endswith('_ids'):
-                    new_field_name = col.replace('_ids', '_list_rel')
-                else:
-                    raise HTMXException(status_code=500,
-                                        detail=f'Wrong field name {col} in table model {self.header.model}')
                 for _header_col in line.fields:
                     if col == _header_col.field_name:
-                        _header_col.field_name = new_field_name
-                        _header_col.type = _header_col.type.replace('_id', '_rel')
-                        _header_col.type = _header_col.type.replace('_ids', '_list_rel')
+                        _header_col.type = _header_col.type.replace('uuid', 'rel')
+                        _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
         return line, lines, cursor
 
     def get_complete(

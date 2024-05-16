@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Annotated
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
@@ -11,8 +11,8 @@ from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import OrderType
 from app.inventory.order.models.order_models import OrderClass, BackOrderAction, ReservationMethod
-
-
+from typing import NewType
+Ids = NewType('Ids', list[UUID4])
 
 class OrderTypeBaseScheme(BaseModel):
     prefix: str = Field(title='Prefix', table=True, form=True)
@@ -65,9 +65,6 @@ class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
     id: UUID4
     created_by: UUID4
     edited_by: UUID4
-
-    class Config:
-        from_attributes = True
 
 
 class OrderTypeFilter(BaseFilter):

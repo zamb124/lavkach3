@@ -34,8 +34,6 @@ class ProductCategoryScheme(ProductCategoryCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
     company_id: UUID4
-    class Config:
-        from_attributes = True
 
 
 class ProductCategoryFilter(BaseFilter):

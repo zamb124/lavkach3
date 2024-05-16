@@ -41,8 +41,6 @@ class LocationTypeScheme(LocationTypeCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
 
-    class Config:
-        from_attributes = True
 
 
 class LocationTypeFilter(BaseFilter):

@@ -57,8 +57,6 @@ class ProductScheme(ProductCreateScheme, TimeStampScheme):
     uom_rel: UomScheme
     company_id: UUID4
 
-    class Config:
-        from_attributes = True
 
 
 class ProductFilter(BaseFilter):
