@@ -36,22 +36,21 @@ class LoginResponseSchema(BaseModel):
 class UserBaseScheme(BaseModel):
     vars: Optional[dict] = {}
     email: str = Field(title="Email")
-    country: Optional[TypeCountry] = Field(default=None, title='Country', table=True, form=True)
-    locale: TypeLocale = Field(default=None, title='Locale', table=True, form=True)
+    locale: Optional[TypeLocale] = Field(default='en_US', title='Locale', table=True, form=True, model='locale')
+    country: Optional[TypeCountry] = Field(default='US', title='Country', table=True, form=True, model='country')
+    currency: TypeCurrency | str = Field(default='USD', title='Currency', table=True, form=True, model='currency')
     phone_number: Optional[TypePhone] = Field(default=None, title='Phone', table=True, form=True)
     nickname: str = Field(title='Nickname', table=True, form=True)
     is_admin: Optional[bool] = Field(default=False, title='Is Admin')
     type: Optional[UserType] = Field(default=UserType.COMMON, title='Type')
     external_number: Optional[str] = Field(default=False, title='External #', table=True)
-    store_id: Optional[UUID4] = Field(default=None, title='Store Id')
-    company_ids: Optional[list[UUID4]] = Field(default=None, title='Сompanies')
-    role_ids: Optional[list[UUID4]] = Field(default=None, title='Roles')
+    store_id: Optional[UUID4] = Field(default=None, title='Store Id', model='store')
+    company_ids: Optional[list[UUID4]] = Field(default=None, title='Сompanies', model='company')
+    role_ids: Optional[list[UUID4]] = Field(default=None, title='Roles', model='role')
 
 
 class UserUpdateScheme(UserBaseScheme):
-    nickname: Optional[str] = Field(default=None,title='Nickname', table=True, form=True)
-    locale: TypeLocale = None
-    email: str = None
+    ...
 
 
 class UserCreateScheme(UserBaseScheme):
@@ -64,9 +63,6 @@ class UserCreateScheme(UserBaseScheme):
 class UserScheme(UserBaseScheme, TimeStampScheme):
     id: UUID4
     lsn: int
-    phone_number: Optional[TypePhone]
-    locale: Optional[TypeLocale]
-    country: Optional[TypeCountry]
     company_id: Optional[UUID4]
     company_rel: Optional['CompanyScheme']
     store_rel: Optional['StoreScheme']

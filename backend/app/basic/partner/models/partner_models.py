@@ -40,6 +40,6 @@ class Partner(Base,AllMixin):
     email: Mapped[Optional[str]] = mapped_column(EmailType)
     country: Mapped[str] = mapped_column(CountryType, default='US')
     #
-    created_user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("user.id"), index=True)
+    created_by: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("user.id"), index=True)
     locale: Mapped[str] = mapped_column(LocaleType, default='en_US')
     currency: Mapped[str] = mapped_column(CurrencyType, default='USD')

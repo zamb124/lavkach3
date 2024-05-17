@@ -3,7 +3,6 @@ import enum
 import logging
 import uuid
 from collections import defaultdict
-from copy import deepcopy
 from enum import Enum
 from inspect import isclass
 from types import UnionType
@@ -319,11 +318,6 @@ class ClassView:
             if config_sort:
                 self.sort = {v: i for i, v in enumerate(config_sort)}
 
-    def _get_module_by_model(self, model):
-        for k, v in self.services.items():
-            if v['schema'].get(model):
-                return k
-
 
     def _get_field(self, field_name, schema: BaseModel, **kwargs):
         """
@@ -342,7 +336,6 @@ class ClassView:
                 model_name = fielinfo.json_schema_extra.get('model')
                 model = self.env[model_name]
         for i, c in enumerate(class_types):
-            import enum
             if i > 0:
                 res += '_'
             if fielinfo == 'id':
@@ -367,6 +360,8 @@ class ClassView:
                 model = self.model
             elif model_name != self.model.name:
                 model = self.env[model_name]
+        if not model:
+            a=1
         assert model, f'Model for field {field_name} is not defined'
         return Field(**{
             'field_name': field_name,

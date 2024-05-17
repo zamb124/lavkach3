@@ -10,6 +10,7 @@ from sqlalchemy_utils import JSONType
 from app.inventory.location.enums import LocationClass
 from core.db import Base
 from core.db.mixins import AllMixin, guid, guid_primary_key
+from core.db.types import ids
 
 
 class Lot(Base, AllMixin):
@@ -59,7 +60,7 @@ class Quant(Base, AllMixin):
     reserved_quantity: Mapped[float]
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=False)
-    move_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(MutableList.as_mutable(ARRAY(Uuid)), index=True)
+    move_ids: Mapped[Optional[ids]] = mapped_column(MutableList.as_mutable(ARRAY(Uuid)), index=True)
 
     @property
     def available_quantity(self):

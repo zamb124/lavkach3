@@ -30,7 +30,7 @@ class RoleUpdateScheme(RoleBaseScheme):
 class RoleCreateScheme(RoleBaseScheme):
     title: str
     company_id: UUID4
-    role_ids: Optional[List[UUID4]] = None
+    role_ids: Optional[List[UUID4]] = Field(title='Roles', model='role')
 
 
 class RoleScheme(RoleCreateScheme, TimeStampScheme):

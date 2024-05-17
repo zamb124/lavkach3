@@ -13,6 +13,7 @@ from core.db.mixins import AllMixin, guid, guid_primary_key
 from app.inventory.quant.models import Lot, Quant
 #from app.inventory.location.models import Location, LocationClass
 from app.inventory.location.enums import LocationClass, PutawayStrategy
+from core.db.types import ids
 
 
 class OrderClass(str, Enum):
@@ -42,7 +43,7 @@ class ReservationMethod(str, Enum):
     AT_DATE:            str = 'at_date'                     # В определенную дату, но она должна быть не меньше planned_date, иначе запустится само
     TIME_BEFORE_DATE:   str = 'time_before_date'            # За определенное количество минут до начала planned_date
 
-ids = Annotated[list[uuid.UUID], mapped_column(ARRAY(Uuid), server_default='{}', nullable=False)]
+
 
 class OrderType(Base, AllMixin):
     """

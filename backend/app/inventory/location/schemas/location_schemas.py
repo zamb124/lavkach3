@@ -16,17 +16,16 @@ class LocationBaseScheme(BaseModel):
     vars: Optional[dict] = None
     location_class: LocationClass
     title: str
-    store_id: UUID4
-    location_id: Optional[UUID4] = None
-    is_active: bool = None
-    location_type_id: UUID4
-    partner_id: Optional[UUID4] = None
+    store_id: UUID4 = Field(title='Store', model='store')
+    location_id: Optional[UUID4] = Field(default=None, title='Parent Location', model='location')
+    is_active: bool = Field(default=True, title='Is Active')
+    location_type_id: UUID4 = Field(title='Location Type', model='location_type')
+    partner_id: Optional[UUID4] = Field(default=None, title='Partner', model='partner')
 
     class Config:
         extra = 'allow'
         from_attributes = True
         orm_model = Location
-        service = 'app.inventory.location.services.LocationService'
 
 class LocationUpdateScheme(LocationBaseScheme):
     ...
@@ -47,10 +46,10 @@ class LocationScheme(LocationCreateScheme, TimeStampScheme):
 
 class LocationFilter(BaseFilter):
     title__in: Optional[str] = Field(default=None, title='Title')
-    store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store')
-    location_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Location Type')
-    location_class__in: Optional[List[str]] = Field(default=None, title='Class')
-    location_class__not_in: Optional[List[str]] = Field(default=None, title='Class')
+    store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', model='store')
+    location_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Location Type', model='location_type')
+    location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Class')
+    location_class__not_in: Optional[List[LocationClass]] = Field(default=None, title='Class')
     is_active: Optional[bool] = Field(default=None, title='Active')
 
     class Constants(Filter.Constants):

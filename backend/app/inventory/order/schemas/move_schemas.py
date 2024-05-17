@@ -17,19 +17,19 @@ from app.inventory.order.models.order_models import MoveStatus
 
 class MoveBaseScheme(BaseModel):
     type: MoveType = Field(title='Move Type', table=True)
-    order_id: Optional[UUID4] = Field(default=None, title='Order ID')
-    order_type_id: UUID4 = Field(title='Order type')
-    store_id: UUID4 = Field(title='Store', table=True, form=True)
-    partner_id: Optional[UUID4] = Field(default=None, title='Partner ID')
-    location_src_id: Optional[UUID4] = Field(default=None, title='Location src', table=True, filter={'location_class__not_in': LocationClass.PACKAGE})
-    location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest', table=True, filter={'location_class__not_in': LocationClass.PACKAGE})
-    lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True)
-    location_id: Optional[UUID4] = Field(default=None, title='Package', table=True, filter={'location_class__in': LocationClass.PACKAGE})
+    order_id: Optional[UUID4] = Field(default=None, title='Order ID', model='order')
+    order_type_id: UUID4 = Field(title='Order type', model='order_type')
+    store_id: UUID4 = Field(title='Store', table=True, form=True, model='store')
+    partner_id: Optional[UUID4] = Field(default=None, title='Partner ID', model='partner')
+    location_src_id: Optional[UUID4] = Field(default=None, title='Location src', model='location', table=True, filter={'location_class__not_in': LocationClass.PACKAGE.value})
+    location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest', model='location', table=True, filter={'location_class__not_in': LocationClass.PACKAGE.value})
+    lot_id: Optional[UUID4] = Field(default=None, title='Lot', table=True, model='lot')
+    location_id: Optional[UUID4] = Field(default=None, title='Package', table=True, model='location', filter={'location_class__in': LocationClass.PACKAGE.value})
     # ONE OF Возможно либо location_id либо product_id
-    product_id: Optional[UUID4] = Field(default=None, title='Product', table=True)
+    product_id: Optional[UUID4] = Field(default=None, title='Product', table=True, model='product')
     quantity: float = Field(title='Quantity', table=True)
-    uom_id: Optional[UUID4] = Field(default=None, title='Uom', table=True)
-    quant_id: Optional[UUID4] = Field(default=None, title='Quant', table=True)
+    uom_id: Optional[UUID4] = Field(default=None, title='Uom', table=True, model='uom')
+    quant_id: Optional[UUID4] = Field(default=None, title='Quant', table=True, model='quant')
 
     class Config:
         extra = 'allow'
@@ -50,14 +50,13 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
     company_id: UUID4
     lsn: int
     id: UUID4
-    move_id: Optional[UUID4] = None
-    partner_id: Optional[UUID4] = None
+    move_id: Optional[UUID4] = Field(default=None, model='move', title='Parent Move')
     status: MoveStatus
 
 
 
 class MoveFilter(BaseFilter):
-    store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store')
+    store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', model='store')
 
     class Config:
         populate_by_name = True

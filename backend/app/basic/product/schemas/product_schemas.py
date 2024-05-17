@@ -28,7 +28,6 @@ class ProductBaseScheme(BaseModel):
         extra = 'allow'
         from_attributes = True
         orm_model = Product
-        service = 'app.basic.product.services.ProductService'
 
     @model_validator(mode='before')
     @classmethod

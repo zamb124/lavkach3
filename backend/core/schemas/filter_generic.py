@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import Optional, List, Iterable
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4, model_validator
 
 created_at_gte_default = datetime.now() - timedelta(days=365)
 created_at_lt_default = datetime.now() + timedelta(days=365)
+
+
 
 
 class BaseFilter(Filter):
@@ -32,6 +34,9 @@ class BaseFilter(Filter):
 
         to_del = []
         for k, v in value.items():
+            if _id := value.get('id__in'):
+                if not isinstance(_id, Iterable):
+                    value['id__in'] = [_id,]
             if not v:
                 to_del.append(k)
         for i in to_del:
@@ -48,6 +53,16 @@ class BaseFilter(Filter):
         search_field_name = "search"
 
 
+    def as_params(self):
+        params = {}
+        dump = self.model_dump(mode='json')
+        for field in self.model_fields_set:
+            f = dump.get(field)
+            if isinstance(f, Iterable):
+                params.update({field: ','.join(f)})
+            else:
+                params.update({field: f})
+        return params
 class CustomBaseModel(BaseModel):
 
     def ui_sort(self):

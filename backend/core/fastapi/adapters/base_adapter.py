@@ -4,6 +4,7 @@ import uuid
 import httpx
 import redis.exceptions
 from fastapi import HTTPException
+from fastapi_filter.base.filter import _list_to_str_fields
 from starlette.datastructures import QueryParams
 from starlette.requests import Request, HTTPConnection
 
@@ -128,6 +129,9 @@ class BaseAdapter:
         return is_cached, cached_data, missed
     @timed
     async def list(self, model: str = None, params=None, **kwargs):
+
+        filter = self.model.schemas.filter(**params)
+        params = filter.as_params()
         is_cached, cached_data, missed = await self.check_in_cache(params, model or self.model)
         if (is_cached and missed) or not is_cached:
             if missed:

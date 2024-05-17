@@ -1,18 +1,10 @@
-import enum
 import uuid
-from enum import Enum
-from typing import Optional, Annotated
-import datetime
-from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint, ARRAY, \
-    String, JSON
-from sqlalchemy.orm import relationship, mapped_column, Mapped
+from typing import Annotated
 
-from app.inventory.location.models import Location
-from core.db import Base
-from core.db.mixins import AllMixin, guid, guid_primary_key
-from app.inventory.quant.models import Lot, Quant
+from sqlalchemy import Uuid, ARRAY
+from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.orm import mapped_column
+
 # from app.inventory.location.models import Location, LocationClass
-from app.inventory.location.enums import LocationClass, PutawayStrategy
 
-ids = Annotated[list[uuid.UUID], mapped_column(ARRAY(Uuid), default=[], nullable=False)]
-enum_ids = Annotated[list, mapped_column(type_=ARRAY(String))]
+ids = Annotated[list[uuid.UUID], mapped_column(MutableList.as_mutable(ARRAY(Uuid)), server_default='{}', nullable=False)]

@@ -13,16 +13,15 @@ from app.basic.partner.models.partner_models import PartnerType, Partner
 from app.basic.company.schemas.company_schemas import CompanyScheme
 from enum import Enum
 class PartnerBaseScheme(BaseModel):
-    company_id: UUID4
     title: str = Field(title='Title', description="Title")
     type: PartnerType = Field(title='Type', description='')
     external_number: Optional[str] = Field(title='External ID')
-    partner_id: Optional[str]
+    partner_id: Optional[str] = Field(model='partner')
     phone_number: Optional[TypePhone]
     email: Optional[str]
-    country: Optional[TypeCountry]
-    locale: Optional[TypeLocale]
-    currency: Optional[TypeCurrency]
+    locale: Optional[TypeLocale] = Field(default='en_US', title='Locale', table=True, form=True, model='locale')
+    country: Optional[TypeCountry] = Field(default='US', title='Country', table=True, form=True, model='country')
+    currency: TypeCurrency | str = Field(default='USD', title='Currency', table=True, form=True, model='currency')
 
 
     class Config:
@@ -44,10 +43,7 @@ class PartnerCreateScheme(PartnerBaseScheme):
 class PartnerParent(PartnerBaseScheme, TimeStampScheme):
     id: UUID4
     lsn: int
-    country: TypeCountry
-    company_id: CompanyScheme
-    locale: TypeLocale
-    currency: TypeCurrency
+
 
 class PartnerScheme(PartnerParent, TimeStampScheme):
     partner_rel: Optional[PartnerParent]
@@ -57,13 +53,13 @@ class PartnerFilter(BaseFilter):
     title__in: Optional[str] = Field(default=None, title='Title')
     type__in: Optional[str] = Field(default=None, title='Type')
     external_number__in: Optional[str] = Field(default=None, title='External ID')
-    partner_id__in: Optional[UUID4] = Field(default=None, title='Parent')
+    partner_id__in: Optional[UUID4] = Field(default=None, title='Parent', model='partner')
     phone_number__in: Optional[str] = Field(default=None, title='Phone')
     email__in: Optional[str] = Field(default=None, title='Email')
-    created_user_id__in: Optional[UUID4] = Field(default=None, title='User')
-    country__in: Optional[List[str]] = Field(default=None, title='Country')
-    currency__in: Optional[List[str]] = Field( default=None, title='Currency')
-    locale__in: Optional[List[str]] = Field(default=None, title='Locale')
+    created_by: Optional[UUID4] = Field(default=None, title='User', model='user')
+    country__in: Optional[List[TypeCountry]] = Field(default=None, model='country')
+    currency__in: Optional[List[TypeCurrency]] = Field(default=None, model='currency')
+    locale__in: Optional[list[TypeLocale]] = Field(default=None, model='locale')
 
 
     class Config:

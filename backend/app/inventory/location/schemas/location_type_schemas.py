@@ -17,16 +17,15 @@ class LocationTypeBaseScheme(BaseModel):
     title: str
     location_class: LocationClass
     is_homogeneity: Optional[bool] = None
-    allowed_package_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location', filter={'location_class__in': LocationClass.PACKAGE})
-    exclude_package_ids: Optional[list[UUID4]] = Field(default=None, module='inventory', model='location', filter={'location_class__in': LocationClass.PACKAGE})
+    allowed_package_ids: Optional[list[UUID4]] = Field(default=[], module='inventory', model='location', filter={'location_class__in': LocationClass.PACKAGE})
+    exclude_package_ids: Optional[list[UUID4]] = Field(default=[], module='inventory', model='location', filter={'location_class__in': LocationClass.PACKAGE})
     strategy: Optional[PutawayStrategy] = PutawayStrategy.FEFO
-
     is_can_negative: bool = Field(default=False, title='Can be Negative')
+
     class Config:
         extra = 'allow'
         from_attributes = True
         orm_model = LocationType
-        service = 'app.inventory.location.services.LocationTypeService'
 
 class LocationTypeUpdateScheme(LocationTypeBaseScheme):
     title: Optional[str] = None

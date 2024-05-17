@@ -1,27 +1,28 @@
-from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
+
 from app.basic.product.models.product_models import ProductCategory
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.basic.company.schemas import CompanyScheme
 
 
 class ProductCategoryBaseScheme(BaseModel):
     vars: Optional[dict] = None
     title: str
     external_number: Optional[str] = None
-    product_category_ids: Optional[list[UUID4]] = None
+    product_category_ids: Optional[list[UUID4]] = Field(default=[], model='product_category')
 
     class Config:
         extra = 'allow'
         from_attributes = True
         orm_model = ProductCategory
         service = 'app.basic.product.services.ProductCategoryService'
+
+
 class ProductCategoryUpdateScheme(ProductCategoryBaseScheme):
     title: Optional[str] = None
 
