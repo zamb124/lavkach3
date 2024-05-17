@@ -51,13 +51,13 @@ class OrderCreateScheme(OrderBaseScheme):
 class OrderScheme(OrderCreateScheme, TimeStampScheme, CustomBaseModel):
     lsn: int
     id: UUID4
-    company_id: UUID
+    company_id: UUID = Field(title='Company', model='company')
     vars: Optional[dict] = None
     number: str = Field(title='Order #', table=True, form=True, description="Internal number of order")
     actual_datetime: Optional[datetime] = Field(title='Actual Date', table=True, form=True)
-    created_by: UUID = Field(title='Created By', table=True)
-    edited_by: UUID = Field(title='Edit By')
-    user_ids: Optional[list[UUID]] = Field(default=[], title='Users', form=True)
+    created_by: UUID = Field(title='Created By', table=True, model='user')
+    edited_by: UUID = Field(title='Edit By', model='user')
+    user_ids: Optional[list[UUID]] = Field(default=[], title='Users', form=True, model='user')
     move_list_rel: Optional[list[MoveScheme]] = Field(default=[], title='Order Movements', form=True)
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True)
 
@@ -76,8 +76,8 @@ class OrderFilter(BaseFilter):
     planned_datetime__gte: Optional[datetime] = Field(title="bigger or equal planned date", default=None)
     planned_datetime__lt: Optional[datetime] = Field(title="less planned date", default=None)
     status__in: Optional[List[OrderStatus]] = Field(default=None, title='Order Status')
-    store_id__in: Optional[List[UUID]] = Field(default=None, title='Store')
-    order_type_id__in: Optional[List[UUID]] = Field(default=None, title='Order Type')
+    store_id__in: Optional[List[UUID]] = Field(default=None, title='Store', model='store')
+    order_type_id__in: Optional[List[UUID]] = Field(default=None, title='Order Type', model='order_type')
 
     class Constants(Filter.Constants):
         model = Order
