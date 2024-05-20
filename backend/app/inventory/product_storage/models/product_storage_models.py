@@ -16,7 +16,7 @@ class StorageType(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str]
     priority: Mapped[int]  # Приоритет данной стратегии хранения
-    location_ids: Mapped[ids] = mapped_column(MutableList.as_mutable(ARRAY(Uuid)), nullable=True)
+    location_ids: Mapped[ids]
 
 
 class ProductStorageType(Base, AllMixin):

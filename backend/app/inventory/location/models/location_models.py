@@ -21,8 +21,8 @@ class LocationType(Base, AllMixin):
     title: Mapped[str]
     location_class: Mapped[LocationClass]
     is_homogeneity: Mapped[Optional[bool]] = mapped_column(default=False)  # Запрет на 1KU 2х разных партий
-    allowed_package_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True)  # Разрешенные типы упаковок
-    exclude_package_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True)  # Исключение типы упаковок
+    allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Разрешенные типы упаковок
+    exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Исключение типы упаковок
     strategy: Mapped[Optional['PutawayStrategy']] = mapped_column(default=PutawayStrategy.FEFO)  # Стратегия комплектования
     is_can_negative: Mapped[Optional[bool]] = mapped_column(server_default=text('false')) # Может иметь отрицательный остаток
 

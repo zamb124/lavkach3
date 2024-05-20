@@ -22,7 +22,7 @@ class ProductCategory(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     external_number: Mapped[Optional[str]]
     title: Mapped[str] = mapped_column(index=True)
-    product_category_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True)
+    product_category_ids: Mapped[Optional[ids]] = mapped_column(index=True)
 
 class ProductType(str, Enum):
     CONSUMABLE: str = 'consumable'

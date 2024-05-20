@@ -130,8 +130,8 @@ class BaseAdapter:
                         missed.append(cou['id'])
         return is_cached, cached_data, missed
 
-    @timed
-    async def list(self, model: str | None = None, params=None, **kwargs):
+
+    async def list(self, model: str | None = None, params = {}, **kwargs):
 
         filter = self.model.schemas.filter(**params)
         params = filter.as_params()

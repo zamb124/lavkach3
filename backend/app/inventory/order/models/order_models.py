@@ -97,8 +97,8 @@ class OrderType(Base, AllMixin):
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                   # Партнер (если у опредленного партнера своя стратегия)
     reservation_method: Mapped[ReservationMethod] = mapped_column(default=ReservationMethod.AT_CONFIRM)         # Метод резервирование
     reservation_time_before: Mapped[Optional[int]] = mapped_column(default=0)                                   # Минуты до начала резервирования
-    allowed_package_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True)            # Разрешенные типы упаковок
-    exclude_package_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True)          # Исключение типы упаковок
+    allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)            # Разрешенные типы упаковок
+    exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)          # Исключение типы упаковок
     is_homogeneity: Mapped[bool]                                                                                   # Признак Гомогенности
     is_allow_create_package: Mapped[bool]                                                                          # Можно ли создавать упаковки
     is_can_create_order_manualy: Mapped[bool]                                                                      # Можно ли создавать Ордер вручную
@@ -144,7 +144,7 @@ class Order(Base, AllMixin):
     created_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
     edited_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
-    user_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True)
+    user_ids: Mapped[Optional[ids]] = mapped_column(index=True)
     description: Mapped[Optional[str]]
     status: Mapped['OrderStatus'] = mapped_column(default=OrderStatus.DRAFT)
     move_list_rel: Mapped[Optional[list["Move"]]] = relationship(back_populates="order_rel", lazy="selectin")

@@ -52,5 +52,5 @@ class User(Base, TimestampMixin, VarsMixin, LsnMixin):
     store_rel: Mapped['Store'] = relationship(back_populates='store_user_list_rel', lazy='selectin')
     company_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey("company.id"), index=True)
     company_rel: Mapped[Optional['Company']] = relationship(lazy='selectin')
-    company_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True)
-    role_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True, default=[])
+    company_ids: Mapped[Optional[ids]] = mapped_column(index=True)
+    role_ids: Mapped[Optional[ids]] = mapped_column(index=True)

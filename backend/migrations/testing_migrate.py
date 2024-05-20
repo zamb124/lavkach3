@@ -18,9 +18,9 @@ from sqlalchemy_utils.types import PasswordType
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'
-down_revision = 'b38d21d34604'
+down_revision = 'f25a26c3c221'
 branch_labels = None
-depends_on = 'b38d21d34604'
+depends_on = 'f25a26c3c221'
 
 
 def upgrade():
@@ -323,8 +323,8 @@ def upgrade():
                            "phone_number": "+449534771093",
                            "nickname": "Admin",
                            "is_admin": True,
-                           # "company_id": company_1_id,
-                           # "company_ids": [company_1_id, company_2_id],
+                           "company_id": company_1_id,
+                           "company_ids": [company_1_id, company_2_id],
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                            "password": '1402'
@@ -343,6 +343,8 @@ def upgrade():
                                role_1_company_1_id
                            ],
                            "is_admin": False,
+                           "company_id": company_1_id,
+                           "company_ids": [company_1_id],
                            "password": '1402'
                        },
                        {
@@ -353,6 +355,8 @@ def upgrade():
                            "locale": "ru_RU",
                            "phone_number": "+449534771093",
                            "nickname": "Albert",
+                           "company_id": company_1_id,
+                           "company_ids": [company_1_id],
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                            "roles": [
@@ -372,6 +376,8 @@ def upgrade():
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                            "is_admin": False,
+                           "company_id": company_2_id,
+                           "company_ids": [company_2_id],
                            "roles": [
                                role_1_company_2_id
                            ],
@@ -386,6 +392,8 @@ def upgrade():
                            "phone_number": "+449534771093",
                            "nickname": "Albert",
                            "is_admin": False,
+                           "company_id": company_2_id,
+                           "company_ids": [company_2_id],
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                            "roles": [
@@ -433,6 +441,7 @@ def upgrade():
                            "company_id": company_1_id,
                            "title": "place",
                            "location_class": "place",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -442,6 +451,7 @@ def upgrade():
                            "company_id": company_1_id,
                            "title": "resource",
                            "location_class": "resource",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -451,6 +461,7 @@ def upgrade():
                            "company_id": company_1_id,
                            "title": "package",
                            "location_class": "package",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -460,6 +471,7 @@ def upgrade():
                            "company_id": company_1_id,
                            "title": "zone",
                            "location_class": "zone",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -489,6 +501,7 @@ def upgrade():
                            "company_id": company_1_id,
                            "title": "scrap",
                            "location_class": "scrap",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -498,6 +511,7 @@ def upgrade():
                            "company_id": company_1_id,
                            "title": "scrapped",
                            "location_class": "scrapped",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -507,6 +521,7 @@ def upgrade():
                            "company_id": company_1_id,
                            "title": "buffer",
                            "location_class": "buffer",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -516,6 +531,7 @@ def upgrade():
                            "company_id": company_2_id,
                            "title": "partner",
                            "is_can_negative": True,
+                           "is_can_negative": False,
                            "location_class": "partner",
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
@@ -526,6 +542,7 @@ def upgrade():
                            "company_id": company_2_id,
                            "title": "place",
                            "location_class": "place",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -535,6 +552,7 @@ def upgrade():
                            "company_id": company_2_id,
                            "title": "resource",
                            "location_class": "resource",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -544,6 +562,7 @@ def upgrade():
                            "company_id": company_2_id,
                            "title": "package",
                            "location_class": "package",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -583,6 +602,7 @@ def upgrade():
                            "company_id": company_2_id,
                            "title": "scrap",
                            "location_class": "scrap",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -592,6 +612,7 @@ def upgrade():
                            "company_id": company_2_id,
                            "title": "scrapped",
                            "location_class": "scrapped",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
@@ -601,6 +622,7 @@ def upgrade():
                            "company_id": company_2_id,
                            "title": "buffer",
                            "location_class": "buffer",
+                           "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
                        },
