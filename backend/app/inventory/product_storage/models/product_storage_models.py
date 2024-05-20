@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from core.db import Base
 from core.db.mixins import AllMixin
+from core.db.types import ids
 
 
 class StorageType(Base, AllMixin):
@@ -15,7 +16,7 @@ class StorageType(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     title: Mapped[str]
     priority: Mapped[int]  # Приоритет данной стратегии хранения
-    location_ids: Mapped[list] = mapped_column(MutableList.as_mutable(ARRAY(Uuid)), nullable=True)
+    location_ids: Mapped[ids] = mapped_column(MutableList.as_mutable(ARRAY(Uuid)), nullable=True)
 
 
 class ProductStorageType(Base, AllMixin):
@@ -34,8 +35,8 @@ class ProductStorageType(Base, AllMixin):
     product_id: Mapped[uuid.UUID] = mapped_column(index=True)
     storage_uom_id: Mapped[Optional[uuid.UUID]]
     storage_image_url: Mapped[Optional[str]]
-    allowed_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Разрешенные типы упаковок
-    exclude_package_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)  # Исключение типы упаковок
+    allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Разрешенные типы упаковок
+    exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Исключение типы упаковок
     is_homogeneity: Mapped[bool] = mapped_column(default=False)  # Товар может хранится только в гомогенных ячейках
     is_mix_products: Mapped[Optional[bool]] = mapped_column(default=False)  # товар может хранится в микс ячейках
-    storage_type_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(MutableList.as_mutable(ARRAY(Uuid)))
+    storage_type_ids: Mapped[Optional[ids]]

@@ -1,21 +1,22 @@
 import logging
 import uuid
+from typing import TYPE_CHECKING
 
 import httpx
 import redis.exceptions
 from fastapi import HTTPException
-from fastapi_filter.base.filter import _list_to_str_fields
 from starlette.datastructures import QueryParams
 from starlette.requests import Request, HTTPConnection
 
 from core.helpers.cache import Cache, CacheStrategy
 from core.utils.timeit import timed
-from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from core.env import Env, Model, Domain
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class Client(httpx.AsyncClient):
     @timed
@@ -37,9 +38,10 @@ class Client(httpx.AsyncClient):
         responce = await self.request('GET', url=url, params=params)
         return responce
 
-    async def post(self, url,json, *, params):
+    async def post(self, url, json, *, params):
         responce = await self.request('POST', url=url, json=json, params=params)
         return responce
+
     async def put(self, url, json, *, params):
         responce = await self.request('PUT', url=url, json=json, params=params)
         return responce
@@ -49,22 +51,31 @@ class Client(httpx.AsyncClient):
         return responce
 
 
+async def common_exception_handler(responce):
+    if responce.status_code != 200:
+        raise HTTPException(
+            status_code=responce.status_code,
+            detail=f"{str(responce.text)}"
+        )
+    return responce.json()
+
+
 class BaseAdapter:
     """
     Универсальный адаптер, что бы ходить в другие сервисы,
     При создании нужно указать модуль, или отнаследоваться с указанием модуля
     Так же при создании можно сразу указать и модуль и модель, если нужно много раз ходить
     """
-    model: 'Model' = None
-    client: Client = None
-    domain: 'Domain' = None
+    model: 'Model'
+    client: Client
+    domain: 'Domain'
     request: Request
     env: 'Env'
     cache: str = Cache
     headers: dict
-    protocol: str = None
-    host: str = None
-    port: str = None
+    protocol: str
+    host: str
+    port: str
 
     def __init__(self, conn: HTTPConnection, domain: 'Domain', model: 'Model', env: 'Env'):
         self.model = model
@@ -82,20 +93,11 @@ class BaseAdapter:
     async def __aexit__(self, *args, **kwargs):
         await self.client.aclose()
 
-    async def common_exception_handler(self, responce):
-        if responce.status_code != 200:
-            raise HTTPException(
-                status_code=responce.status_code,
-                detail=f"{str(responce.text)}"
-            )
-        return responce.json()
-
-    @timed
     async def check_in_cache(self, params, model):
         is_cached = False
         cached_data = []
         missed = []
-        if model in ('locale', 'currency','country') or self.model.cache_strategy != CacheStrategy.FULL:
+        if model in ('locale', 'currency', 'country') or self.model.cache_strategy != CacheStrategy.FULL:
             return is_cached, cached_data, missed
         if params:
             params.pop('module', None)
@@ -104,7 +106,7 @@ class BaseAdapter:
             if len(params) == 1 and id__in:
                 is_cached = True
                 if isinstance(id__in, uuid.UUID):
-                    ids = [id__in.__str__(),]
+                    ids = [id__in.__str__(), ]
                 else:
                     ids = id__in.split(',')
                 cached_courutins = []
@@ -127,8 +129,9 @@ class BaseAdapter:
                     else:
                         missed.append(cou['id'])
         return is_cached, cached_data, missed
+
     @timed
-    async def list(self, model: str = None, params=None, **kwargs):
+    async def list(self, model: str | None = None, params=None, **kwargs):
 
         filter = self.model.schemas.filter(**params)
         params = filter.as_params()
@@ -145,25 +148,25 @@ class BaseAdapter:
             'data': cached_data
         }
 
-    async def create(self, json: dict, model: str = None, params=None,id:uuid.UUID = None, **kwargs):
+    async def create(self, json: dict, model: str | None = None, params=None, id: uuid.UUID | None = None, **kwargs):
         path = f'/api/{self.model.domain.name}/{model or self.model}'
         responce = await self.client.post(self.host + path, json=json, params=params)
-        return await self.common_exception_handler(responce)
+        return await common_exception_handler(responce)
 
-    async def update(self, id: uuid.UUID, json: dict, model: str = None, params=None, **kwargs):
+    async def update(self, id: uuid.UUID, json: dict, model: str | None = None, params=None, **kwargs):
         path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
         responce = await self.client.put(self.host + path, json=json, params=params)
-        return await self.common_exception_handler(responce)
+        return await common_exception_handler(responce)
 
-    async def get(self, id: uuid.UUID, model: str = None, params=None, **kwargs):
+    async def get(self, id: uuid.UUID, model: str | None = None, params=None, **kwargs):
         path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
-        responce = await self.client.get(self.host + path, params=params)
-        return await self.common_exception_handler(responce)
+        responce = await self.client.get(self.host + path, params=params, kwargs=kwargs)
+        return await common_exception_handler(responce)
 
-    async def view(self, id: uuid.UUID, model: str = None, params=None, **kwargs):
-        return await self.get(id, model, params, kwargs)
+    async def view(self, id: uuid.UUID, model: str | None = None, params=None, **kwargs):
+        return await self.get(id, model, params, kwargs=kwargs)
 
-    async def delete(self, id: uuid.UUID, model: str = None, params=None, **kwargs):
+    async def delete(self, id: uuid.UUID, model: str | None = None, params=None, **kwargs):
         path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
         responce = await self.client.delete(self.host + path, params=params)
-        return await self.common_exception_handler(responce)
+        return await common_exception_handler(responce)

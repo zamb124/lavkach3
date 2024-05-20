@@ -70,7 +70,7 @@ class Model:
 
 class Domain:
     name: str
-    models: dict[str: Model]
+    models: dict[str, Model]
     _env: 'Env'
     _adapter: 'BaseAdapter' = None
 

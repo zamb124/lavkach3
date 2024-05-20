@@ -9,6 +9,7 @@ from sqlalchemy.orm import relationship
 
 from core.db import Base
 from core.db.mixins import AllMixin
+from core.db.types import ids
 
 if TYPE_CHECKING:
     from app.basic.uom.models import Uom
@@ -21,7 +22,7 @@ class ProductCategory(Base, AllMixin):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     external_number: Mapped[Optional[str]]
     title: Mapped[str] = mapped_column(index=True)
-    product_category_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
+    product_category_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True)
 
 class ProductType(str, Enum):
     CONSUMABLE: str = 'consumable'

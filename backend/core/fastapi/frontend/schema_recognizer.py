@@ -12,7 +12,7 @@ from fastapi import HTTPException
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2_fragments import render_block, render_block_async
 from pydantic import BaseModel
-from pydantic.fields import Field
+
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
@@ -24,7 +24,7 @@ def _get_prefix():
     return f'A{uuid.uuid4().hex[:10]}'
 
 
-async def render(obj: BaseModel, block_name: str, path: str = None) -> object:
+async def render(obj: BaseModel, block_name: str, path: str = '') -> object:
     try:
         rendered_html = await render_block_async(
             environment=environment,
@@ -57,7 +57,6 @@ passed_classes = [
     Union,
     UnionType,
 ]
-types_map = {}
 
 def get_types(annotation, _class=[]):
     """
@@ -86,7 +85,7 @@ class Field(BaseModel):
     enums: Optional[list] = []
     widget: Optional[dict]
     val: Any = None
-    sort_idx: Optional[int] = 0
+    sort_idx: int = 0
     prefix: Optional[str] = None
     line: Optional['Line'] = None
     lines: Optional[list['Line']] = []
@@ -94,7 +93,7 @@ class Field(BaseModel):
     schema: Any
     filter: Optional[dict] = None
 
-    def render(self, block_name: str, type: str = None):
+    def render(self, block_name: str, type: str = ''):
         type = type or self.type
         try:
             rendered_html = render_block(
@@ -166,7 +165,7 @@ class Line(BaseModel):
     display_title: Optional[str] = None
     selected: Optional[bool] = False
 
-    def render(self, block_name: str, target_id: str = None, backdrop: str = None):
+    def render(self, block_name: str, target_id: str | None = None, backdrop: str | None = None):
         try:
             rendered_html = render_block(
                 environment=environment,
@@ -185,19 +184,19 @@ class Line(BaseModel):
             return getattr(self, f'as_button_{backdrop}')()
         return None
 
-    def as_button_view(self, backdrop: str = None):
+    def as_button_view(self, backdrop: str|None = None):
         backdrop = self.get_backdrop_method(backdrop)
         return self.render('button_view', backdrop=backdrop)
 
-    def as_button_update(self, backdrop: str = None):
+    def as_button_update(self, backdrop: str|None = None):
         backdrop = self.get_backdrop_method(backdrop)
         return self.render('button_update', backdrop=backdrop)
 
-    def as_button_create(self, backdrop: str = None):
+    def as_button_create(self, backdrop: str|None = None):
         backdrop = self.get_backdrop_method(backdrop)
         return self.render('button_create', backdrop=backdrop)
 
-    def as_button_delete(self, target_id: str = None, backdrop: str = None):
+    def as_button_delete(self, target_id: str|None = None, backdrop: str|None = None):
         backdrop = self.get_backdrop_method(backdrop)
         return self.render(block_name='button_delete', target_id=target_id, backdrop=backdrop)
 
@@ -237,7 +236,7 @@ class ViewGet(ViewCreate):
     """"
         Cоздание
     """
-    id: uuid.UUID
+    id: uuid.UUID | None
 
 
 class ViewTable(ViewGet):
@@ -246,7 +245,7 @@ class ViewTable(ViewGet):
     """
     cursor: int
     lines: list[Line] = []
-    id: Optional[uuid.UUID] = None
+    id: Optional[uuid.UUID] | None = None
 
     @timed
     def render(self):
@@ -273,7 +272,7 @@ class ClassView:
     """
     request: Request
     model: Model
-    params: Optional[QueryParams]
+    params: Optional[QueryParams] | dict | None
     table: Optional[ViewTable] = None
     create: Optional[ViewCreate] = None
     update: Optional[ViewUpdate] = None
@@ -289,12 +288,12 @@ class ClassView:
     def __init__(self,
                  request,
                  model: str,
-                 prefix: str = None,
-                 params: QueryParams | dict = None,
-                 exclude: list = None,
+                 prefix: str | None = None,
+                 params: QueryParams | dict | None = None,
+                 exclude: list = [],
                  join_related: bool = True,
-                 join_fields: list = None,
-                 sort: list = None
+                 join_fields: list | None = None,
+                 sort: list | None = None
                  ):
         self.request = request
         if isinstance(model, Model):
@@ -332,8 +331,8 @@ class ClassView:
         model = None
         model_name = self.model.name
         if fielinfo.json_schema_extra:
-            if fielinfo.json_schema_extra.get('model'):
-                model_name = fielinfo.json_schema_extra.get('model')
+            if fielinfo.json_schema_extra.get('model'):  # type: ignore
+                model_name = fielinfo.json_schema_extra.get('model')  # type: ignore
                 model = self.env[model_name]
         for i, c in enumerate(class_types):
             if i > 0:
@@ -371,8 +370,8 @@ class ClassView:
             'title': fielinfo.title or model.name,
             'enums': enums,
             'widget': fielinfo.json_schema_extra or {},
-            'filter': fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {},
-            'sort_idx': self.sort.get(field_name, 999),
+            'filter': fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {},   # type: ignore
+            'sort_idx': self.sort.get(field_name, 999),  # type: ignore
             'description': fielinfo.description or field_name,
             'prefix': prefix,
             'line': line,
@@ -386,13 +385,13 @@ class ClassView:
             Отдает ту модель, которая нужна или базовую
         """
         fields = []
-        exclude = kwargs.get('exclude') or self.exclude
+        exclude = kwargs.get('exclude') or self.exclude or []
         exclude_add = []
         type = kwargs.get('type')
         if type == 'table':
             for f, v in schema.model_fields.items():
                 if v.json_schema_extra:
-                    if not v.json_schema_extra.get('table'):
+                    if not v.json_schema_extra.get('table'):  # type: ignore
                         exclude_add.append(f)
                 else:
                     exclude_add.append(f)
@@ -442,7 +441,7 @@ class ClassView:
             block_name='filter', filter=self.filter
         )
 
-    async def get_create_line(self, model_id: uuid.UUID = None, **kwargs) -> str:
+    async def get_create_line(self, model_id: uuid.UUID | None = None, **kwargs) -> str:
         """
             Метод отдает создать схему , те столбцы с типами для HTMX шаблонов
         """
@@ -455,7 +454,7 @@ class ClassView:
         )
 
     @timed
-    async def get_create(self, model_id: uuid.UUID = None, **kwargs) -> str:
+    async def get_create(self, model_id: uuid.UUID | None = None, **kwargs) -> str:
         """
             Метод отдает создать схему , те столбцы с типами для HTMX шаблонов
         """
@@ -539,7 +538,7 @@ class ClassView:
             view=self.view, backdrop=kwargs.get('backdrop')
         )
 
-    async def get_delete(self, model_id: uuid.UUID, target_id: str = None, **kwargs) -> str:
+    async def get_delete(self, model_id: uuid.UUID, target_id: str | None = None, **kwargs) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
@@ -565,7 +564,7 @@ class ClassView:
         )
 
     @timed
-    async def get_table(self, params: QueryParams | dict = None, join_related: bool = True, join_field: list = None,
+    async def get_table(self, params: QueryParams | dict | None = None, join_related: bool = True, join_field: list | None = None,
                         widget: str = 'as_view', **kwargs) -> str:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
@@ -592,10 +591,10 @@ class ClassView:
     async def _get_data(
             self,
             schema: BaseModel,
-            params: QueryParams | dict = None,
+            params: QueryParams | dict | None = None,
             join_related: bool = True,
-            join_field: list = None,
-            data: list = None,
+            join_field: list | None = None,
+            data: list|dict|None = None,
             **kwargs
     ):
         """
@@ -616,9 +615,9 @@ class ClassView:
         line = self._get_line(schema=schema, prefix=f'{prefix}--0--', type=type)
         if not data:
             async with model.adapter as a:
-                data = await a.list(params=params)
-                cursor = data['cursor']
-                data = data['data']
+                resp_data = await a.list(params=params)
+                cursor = resp_data['cursor']
+                data = resp_data['data']
             logging.info(f"_GET_DATA END REQUEST: {datetime.datetime.now() - time_start}")
         if not data:
             return line, [], 0
@@ -664,8 +663,6 @@ class ClassView:
             for line in lines:
                 """Достаем все релейтед обьекты у которых модуль отличается"""
                 for field in line.fields:
-                    if isinstance(field.model, str):
-                        a=1
                     if field.model.domain != model.domain or self.model.domain == field.field_name.replace('_id', ''):
                         # if field.widget.get('table'):  # TODO: может все надо а не ток table
                         if not self.join_fields:
@@ -674,9 +671,8 @@ class ClassView:
                             missing_fields[field.field_name].append((field.val, field))
             to_serialize = []
             for miss_key, miss_value in missing_fields.items():
-                _data = []
+                #_data = []
                 _vals, _fields = [i[0] for i in miss_value], [i[1] for i in miss_value]
-                #a = getattr(self.request.scope['env'], _fields[0].module)
                 miss_value_str = ''
                 _corutine_data = None
                 if isinstance(_vals, list):
@@ -717,27 +713,6 @@ class ClassView:
                         _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
         return line, lines, cursor
 
-    def get_complete(
-            self,
-            exclude: list = None,
-            params: QueryParams | dict = None,
-            filter: str = None,
-            data: list | dict = None,
-            join_related: bool = True,
-            join_field: list = None):
-
-        if exclude: self.exclude = exclude
-        if params: self._check_params(params)
-        if data: self._check_data(data)
-        if filter: self.param_filter = filter
-        if data: self._check_data(data)
-        if join_related: self.join_related = join_related
-        if join_field: self.join_fields = join_field or []
-        self.create = self.get_create()
-        self.view = self.get_get()
-        # self.update = await self.get_update()
-        self.table = self.get_table()
-        self._sort_columns()
 
     def _sort_columns(self):
         if self.table:

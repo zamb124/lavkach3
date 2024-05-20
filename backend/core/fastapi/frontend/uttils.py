@@ -5,14 +5,14 @@ def clean_filter(qp: QueryParams | dict, _filter: str) -> list:
     """
         Отбирает параметры согласно фильтру
     """
-    models = {}
-    new_qp = {}
+    models: dict = {}
+    new_qp: dict = {}
     keys_to_pop = []
     for k, v in qp.items():
         if not k.startswith(_filter):
             continue
         if v == '':
-            qp[k] = None
+            qp[k] = None  # type: ignore
         model, line_number, field_name = k.split('--')[:3]
         if len(k.split('--')) == 3:
             if not models.get(model):

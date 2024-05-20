@@ -60,7 +60,7 @@ class Quant(Base, AllMixin):
     reserved_quantity: Mapped[float]
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=False)
-    move_ids: Mapped[Optional[ids]] = mapped_column(MutableList.as_mutable(ARRAY(Uuid)), index=True)
+    move_ids: Mapped[Optional[ids]] = mapped_column(index=True)
 
     @property
     def available_quantity(self):

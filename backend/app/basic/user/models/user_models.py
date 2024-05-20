@@ -12,7 +12,11 @@ from sqlalchemy_utils.types import PasswordType, EmailType, CountryType, LocaleT
 
 from core.db import Base
 from core.db.mixins import TimestampMixin, VarsMixin, LsnMixin
-
+from core.db.types import ids
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.basic.company.models.company_models import Company
+    from app.basic.store.models.store_models import Store
 
 class UserType(str, Enum):
     COMMON: str = _('Common User')
@@ -48,5 +52,5 @@ class User(Base, TimestampMixin, VarsMixin, LsnMixin):
     store_rel: Mapped['Store'] = relationship(back_populates='store_user_list_rel', lazy='selectin')
     company_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, ForeignKey("company.id"), index=True)
     company_rel: Mapped[Optional['Company']] = relationship(lazy='selectin')
-    company_ids: Mapped[Optional[list[uuid.UUID]]] = mapped_column(ARRAY(Uuid), index=True)
-    role_ids: Mapped[Optional[uuid.UUID]] = mapped_column(ARRAY(Uuid), index=True, default=[])
+    company_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True)
+    role_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(Uuid), index=True, default=[])
