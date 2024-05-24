@@ -58,6 +58,7 @@ class Quant(Base, AllMixin):
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     quantity: Mapped[float]
     reserved_quantity: Mapped[float]
+    incoming_quantity: Mapped[float]
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=False)
     move_ids: Mapped[Optional[ids]] = mapped_column(index=True)

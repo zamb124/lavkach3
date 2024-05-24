@@ -200,6 +200,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                                     "partner_id": obj.partner_id.id if obj.partner_id else None,
                                     "quantity": 0.0,
                                     "reserved_quantity": obj.quantity,
+                                    "incoming_quantity": 0.0,
                                     "uom_id": obj.uom_id,
                                 }, commit=False)
 
@@ -221,6 +222,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                                     "partner_id": obj.partner_id.id if obj.partner_id else None,
                                     "quantity": 0.0,
                                     "reserved_quantity": obj.quantity,
+                                    "incoming_quantity": 0.0,
                                     "uom_id": obj.uom_id,
                                 }, commit=False)
                         else:
@@ -276,22 +278,80 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             obj.partner_id =        quant_src_entity.partner_id
 
             """ ПОИСК КВАНТА/ЛОКАЦИИ НАЗНАЧЕНИЯ """
-            if obj.location_dest_id:
-                """ Если у муве насильно указали location_dest_id"""
-                """ Нужно проверить, что данная локация подходит под правила OrderType и правила самой выбранной локации"""
 
-                location_class_dest_ids = list(
-                    set(order_type_entity.allowed_location_class_dest_ids) -
-                    set(order_type_entity.exclude_location_class_dest_ids)
+            """ Если у муве насильно указали location_dest_id"""
+            """ Нужно проверить, что данная локация подходит под правила OrderType и правила самой выбранной локации"""
+
+            location_class_dest_ids = list(
+                set(order_type_entity.allowed_location_class_dest_ids) -
+                set(order_type_entity.exclude_location_class_dest_ids)
+            )
+            location_type_dest_ids = list(
+                set(order_type_entity.allowed_location_type_dest_ids) -
+                set(order_type_entity.exclude_location_type_dest_ids)
+            )
+            location_dest_ids = list(
+                set(order_type_entity.allowed_location_dest_ids) -
+                set(order_type_entity.exclude_location_dest_ids)
+            )
+
+            if obj.location_dest_id:
+                """Если указали локацию назначения насильно, то нужно проверить все что возможно, что эта локация имеет место быть"""
+                if location_dest_ids:
+                    """Если есть разрешенные локации"""
+                    if not obj.location_dest_id not in location_dest_ids:
+                        raise HTTPException(
+                            status_code=406,
+                            detail=f"Destination Location is not allowed for Order Type {order_type_entity.title}"
+                        )
+                loc_env = self.env['location']
+                location_dest_entity = await loc_env.service.get(obj.location_dest_id)
+                if location_type_dest_ids:
+                    """Если есть исключающие локации"""
+                    if location_dest_entity.location_type_id not in location_type_dest_ids:
+                        raise HTTPException(
+                            status_code=406,
+                            detail=f"Source Location Type is not allowed for Order Type {parent.order_type_rel.title}"
+                        )
+
+                if location_class_dest_ids:
+                    """Еслли есть правила разрешаюшее по классу"""
+                    if not location_dest_entity.location_class not in location_class_dest_ids:
+                        raise HTTPException(
+                            status_code=406,
+                            detail=f"Source Location class is not allowed for Order Type Location Type {order_type_entity.title}"
+                        )
+                """Далее нужно достать доступные кванты товара для создания движения"""
+                available_quants = await quant_service.get_available_quants(
+                    product_id=obj.product_id,
+                    store_id=obj.store_id,
+                    location_class_ids=[location_dest_entity.location_class],
+                    location_ids=[obj.location_src_id],
+                    location_type_ids=[location_dest_entity.location_type_id],
+                    lot_ids=[obj.lot_id],
+                    partner_id=obj.partner_id
                 )
-                location_type_dest_ids = list(
-                    set(order_type_entity.allowed_location_type_dest_ids) -
-                    set(order_type_entity.exclude_location_type_dest_ids)
-                )
-                location_dest_ids = list(
-                    set(order_type_entity.allowed_location_dest_ids) -
-                    set(order_type_entity.exclude_location_dest_ids)
-                )
+                if not available_quants:
+                    if location_dest_entity.location_type_id:
+                        location_type = await self.env['location_type'].service.get(location_dest_entity.location_type_id)
+                        if location_type.is_can_negative:
+                            quant_dest_entity = await self.env['quant'].service.create(obj={
+                                "product_id": obj.product_id,
+                                "store_id": obj.store_id,
+                                "location_id": obj.location_dest_id,
+                                "location_class": location_dest_entity.location_class,
+                                "location_type_id": location_dest_entity.location_type_id,
+                                "lot_id": obj.lot_id,
+                                "partner_id": obj.partner_id,
+                                "quantity": 0.0,
+                                "reserved_quantity": obj.quantity,
+                                "uom_id": obj.uom_id,
+                            }, commit=False)
+                        else:
+                            raise HTTPException(status_code=406, detail='Not enouth quantity in source')
+
+            else:
+                pass
 
             move = await super(MoveService, self).create(obj, commit=False)
             if not quant_src_entity.move_ids:

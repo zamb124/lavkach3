@@ -23,6 +23,7 @@ class QuantBaseScheme(BaseModel):
     partner_id: Optional[UUID4] = None
     quantity: float
     reserved_quantity: Optional[float]
+    reserved_quantity: Optional[float]
     expiration_datetime: Optional[datetime] = None
     uom_id: UUID4
     move_ids: Optional[list[UUID4]] = None
