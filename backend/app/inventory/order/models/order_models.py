@@ -87,10 +87,10 @@ class OrderType(Base, AllMixin):
     exclude_location_type_src_ids: Mapped[ids] = mapped_column(index=True)     # Искличенные типы зоны из подбора
     allowed_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)        # Разрешенные типы зоны для назначения
     exclude_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)     # Искличенные типы зоны для назначения
-    allowed_location_class_src_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(ARRAY(String), index=True)                 # Разрешенные классы зона для подбора
-    exclude_location_class_src_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(ARRAY(String), index=True)               # Исключение классы зон для подбора
-    allowed_location_class_dest_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(ARRAY(String), index=True)                 # Разрешенные классы зона для назначения
-    exclude_location_class_dest_ids: Mapped[Optional[list[LocationClass]]] = mapped_column(ARRAY(String), index=True)               # Исключение классы зон для назначения
+    allowed_location_class_src_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}',index=True)                 # Разрешенные классы зона для подбора
+    exclude_location_class_src_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}', index=True)               # Исключение классы зон для подбора
+    allowed_location_class_dest_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}', index=True)                 # Разрешенные классы зона для назначения
+    exclude_location_class_dest_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}', index=True)               # Исключение классы зон для назначения
     order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order_type.id", ondelete='CASCADE'))# Тип Ордера возврата разницы
     backorder_action_type: Mapped[BackOrderAction] = mapped_column(default=BackOrderAction.ASK)                 # Поведение возврата разницы
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                     # Склад

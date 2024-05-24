@@ -36,7 +36,7 @@ class LocationCreateScheme(LocationBaseScheme):
 
 
 class LocationScheme(LocationCreateScheme, TimeStampScheme):
-    company_id: UUID4
+    company_id: UUID4 = Field(model='company', title='Company')
     lsn: int
     id: UUID4
 

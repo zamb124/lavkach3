@@ -29,8 +29,8 @@ class MoveBaseScheme(BaseModel):
     product_id: Optional[UUID4] = Field(default=None, title='Product', table=True, model='product')
     quantity: float = Field(title='Quantity', table=True)
     uom_id: Optional[UUID4] = Field(default=None, title='Uom', table=True, model='uom')
-    quant_id: Optional[UUID4] = Field(default=None, title='Quant', table=True, model='quant')
-
+    quant_src_id: Optional[UUID4] = Field(default=None, title='Quant source', table=True, model='quant')
+    quant_dest_id: Optional[UUID4] = Field(default=None, title='Quant dest', table=True, model='quant')
     class Config:
         extra = 'allow'
         from_attributes = True
@@ -47,7 +47,7 @@ class MoveCreateScheme(MoveBaseScheme):
 
 
 class MoveScheme(MoveCreateScheme, TimeStampScheme):
-    company_id: UUID4
+    company_id: UUID4 = Field(model='company', title='Company')
     lsn: int
     id: UUID4
     move_id: Optional[UUID4] = Field(default=None, model='move', title='Parent Move')

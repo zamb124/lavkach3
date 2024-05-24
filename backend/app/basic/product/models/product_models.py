@@ -41,4 +41,4 @@ class Product(Base, AllMixin):
     uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("uom.id"), index=True)
     uom_rel: Mapped['Uom'] = relationship(lazy='selectin')
     product_category_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("product_category.id"), index=True)
-    barcode_list: Mapped[list[str]] = mapped_column(type_=ARRAY(String), index=True, nullable=True)
+    barcode_list: Mapped[ids] = mapped_column(ARRAY(String), index=True, server_default='{}')

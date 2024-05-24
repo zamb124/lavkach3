@@ -69,9 +69,9 @@ class OrderTypeBaseScheme(BaseModel):
     store_id: Optional[UUID4] = Field(default=None, title='Store', table=True, form=True, model='store')
     partner_id: Optional[UUID4] = Field(default=None, title='Partner', table=True, form=True, model='partner')
     reservation_time_before: Optional[int] = Field(default=None, title='Reserve time before', form=True)
-    allowed_package_ids: Optional[list[UUID4]] = Field(default=None, model='location', title='Allowed packages dest',
+    allowed_package_ids: Optional[list[UUID4]] = Field(default=[], model='location', title='Allowed packages dest',
                                                        form=True)
-    exclude_package_ids: Optional[list[UUID4]] = Field(default=None, model='location', title='Exclude packages dest',
+    exclude_package_ids: Optional[list[UUID4]] = Field(default=[], model='location', title='Exclude packages dest',
                                                        form=True)
     is_homogeneity: bool = Field(default=False, title='Is homogeneity', form=True)
     is_allow_create_package: bool = Field(default=True, title='Is allow create package', form=True)

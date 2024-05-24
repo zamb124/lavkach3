@@ -7,7 +7,7 @@ from enum import Enum
 from inspect import isclass
 from types import UnionType
 from typing import Optional, Any, get_args, get_origin, Annotated, Union
-
+from fastapi_filter.contrib.sqlalchemy import Filter
 from fastapi import HTTPException
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2_fragments import render_block, render_block_async
@@ -17,6 +17,7 @@ from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
 from core.env import Model
+from core.schemas import BaseFilter
 from core.utils.timeit import timed
 
 
@@ -322,6 +323,8 @@ class ClassView:
         """
         Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
         """
+        if field_name == 'company_id':
+            a=1
         fielinfo = schema.model_fields[field_name]
         prefix = kwargs.get('prefix') or self.prefix
         res = ''
@@ -388,6 +391,11 @@ class ClassView:
         exclude = kwargs.get('exclude') or self.exclude or []
         exclude_add = []
         type = kwargs.get('type')
+        if issubclass(schema, Filter):
+            for f, v in schema.model_fields.items():
+                if v.json_schema_extra:
+                    if v.json_schema_extra.get('filter') is False:
+                        exclude.append(f)
         if type == 'table':
             for f, v in schema.model_fields.items():
                 if v.json_schema_extra:

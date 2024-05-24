@@ -1,12 +1,10 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import Column
-from sqlalchemy import ForeignKey
-from sqlalchemy import Table, UniqueConstraint
-from sqlalchemy import Unicode, Boolean, Uuid, Sequence, String
+from sqlalchemy import UniqueConstraint
+from sqlalchemy import Uuid, Sequence, String
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm import relationship, mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped
 
 from core.db import Base
 from core.db.mixins import AllMixin
@@ -22,5 +20,3 @@ class Role(Base, AllMixin):
     role_ids: Mapped[Optional[ids]] = mapped_column(index=True)
     permission_allow_list: Mapped[Optional[ids]] = mapped_column(ARRAY(String), index=True)
     permission_deny_list: Mapped[Optional[ids]] = mapped_column(ARRAY(String), index=False)
-
-

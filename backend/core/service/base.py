@@ -95,8 +95,8 @@ class BaseCache:
             for obj in sql_obj:
                 self.set(obj)
             return sql_obj
-        self.cache[self.service.model.__tablename__][sql_obj.id] = sql_obj
-        return sql_obj.id
+        self.cache[self.service.model.__tablename__][sql_obj.id] = sql_obj  # type: ignore
+        return sql_obj.id  # type: ignore
 
     def delete(self, id: uuid.UUID):
         self.cache[self.service.model.__tablename__].pop(id, False)
@@ -157,9 +157,9 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 _filter = self.env[self.model.__tablename__].schemas.filter(**_filter)
         if self.model.__tablename__ not in ('company', 'user'):
             setattr(_filter, 'company_id__in', [self.user.company_id])
-        query_filter = _filter.filter(select(self.model)).limit(size)
+        query_filter = _filter.filter(select(self.model)).limit(size)  # type: ignore
         if getattr(_filter, 'order_by'):
-            query_filter = _filter.sort(query_filter)
+            query_filter = _filter.sort(query_filter)  # type: ignore
         executed_data = await self.session.execute(query_filter)
         result = executed_data.scalars().all()
         return result

@@ -135,16 +135,16 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "Если локации в задании нет, то подбираем локацию из правила OrderType"
 
                 location_class_src_ids = list(
-                    set(order_type_entity.allowed_location_class_src_ids or []) -
-                    set(order_type_entity.exclude_location_class_src_ids or [])
+                    set(order_type_entity.allowed_location_class_src_ids) -
+                    set(order_type_entity.exclude_location_class_src_ids)
                 )
                 location_type_src_ids = list(
-                    set(order_type_entity.allowed_location_type_src_ids or []) -
-                    set(order_type_entity.exclude_location_type_src_ids or [])
+                    set(order_type_entity.allowed_location_type_src_ids) -
+                    set(order_type_entity.exclude_location_type_src_ids)
                 )
                 location_src_ids = list(
-                    set(order_type_entity.allowed_location_src_ids or []) -
-                    set(order_type_entity.exclude_location_src_ids or [])
+                    set(order_type_entity.allowed_location_src_ids) -
+                    set(order_type_entity.exclude_location_src_ids)
                 )
                 available_quants = await quant_service.get_available_quants(
                     product_id=obj.product_id,

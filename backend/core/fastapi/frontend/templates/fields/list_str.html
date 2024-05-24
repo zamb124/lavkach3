@@ -16,7 +16,7 @@
 {% endblock %}
 {% block as_view %}
     <input name="{{ field.prefix~field.field_name }}" id="{{ field.prefix~field.field_name }}"
-            class="form-control" data-choices data-choices-text-disabled-true
+            class="list_str form-control" data-choices data-choices-text-disabled-true
            value="{% if field.val %}{{ ','.join(field.val) }}{% endif %}"
     />
     <script>

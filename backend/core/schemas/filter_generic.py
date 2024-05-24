@@ -16,14 +16,14 @@ class BaseFilter(Filter):
         Можно переопределить дальше эту схему уже в BFF
     """
     search: Optional[str] = Field(default='',  title='Search')
-    lsn__gt: Optional[int] = Field(alias="cursor", title='Lsn', default=0)
-    id__in: Optional[List[UUID4]] = Field(default=None, title='ID')
+    lsn__gt: Optional[int] = Field(alias="cursor", title='Lsn', default=0, filter=False)
+    id__in: Optional[List[UUID4]] = Field(default=None, title='ID', filter=False)
     created_at__gte: Optional[datetime] = Field(default=None,  title='Created at from')
     created_at__lt: Optional[datetime] = Field(default=None,  title='Created at to')
     updated_at__gte: Optional[datetime] = Field(default=None,  title='Updated at from')
     updated_at__lt: Optional[datetime] = Field(default=None,  title='Updated at to')
     #company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None, title='Company')
-    order_by: Optional[List[str]] = Field(default=["lsn", ], title='Order by')
+    order_by: Optional[List[str]] = Field(default=["lsn", ], title='Order by', filter=False)
 
 
     @model_validator(mode='before')
