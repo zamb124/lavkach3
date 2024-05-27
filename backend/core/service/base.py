@@ -140,10 +140,10 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         return entity
 
     async def get(self, id: Any) -> Row | RowMapping:
-        entity = self.basecache.get(id)
+        entity = None
         if not entity:
             entity = await self._get(id)
-            self.basecache.set(entity)
+            #self.basecache.set(entity)
         insp = inspect(entity)
         if not insp.persistent:
             self.session.add(entity)
@@ -166,7 +166,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def list(self, _filter: FilterSchemaType | dict, size: int = 100):
         entitys = await self._list(_filter, size)
-        self.basecache.set(entitys)
+        #self.basecache.set(entitys)
         return entitys
 
     async def _create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
@@ -220,7 +220,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
         entity = await self._create(obj, commit=commit)
-        self.basecache.set(entity)
+        #self.basecache.set(entity)
         return entity
 
     async def _update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
@@ -270,7 +270,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
         entity = await self._update(id, obj, commit=True)
-        self.basecache.set(entity)
+        #self.basecache.set(entity)
         return entity
 
     async def _delete(self, id: Any) -> bool:
@@ -289,6 +289,6 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         return True
 
     async def delete(self, id: Any) -> bool:
-        self.basecache.delete(id)
+        #self.basecache.delete(id)
         res = await self._delete(id)
         return res

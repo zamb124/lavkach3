@@ -1,15 +1,14 @@
-import uuid
-from enum import Enum
-from typing import Optional
 import datetime
-from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint, JSON, ARRAY
-from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy.orm import relationship, mapped_column, Mapped
-from sqlalchemy_utils import JSONType
+import uuid
+from typing import Optional
+
+from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint
+from sqlalchemy.orm import mapped_column, Mapped
 
 from app.inventory.location.enums import LocationClass
+from app.inventory.mixins import StockMixin
 from core.db import Base
-from core.db.mixins import AllMixin, guid, guid_primary_key
+from core.db.mixins import AllMixin
 from core.db.types import ids
 
 
@@ -28,7 +27,7 @@ class Lot(Base, AllMixin):
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
 
 
-class Quant(Base, AllMixin):
+class Quant(Base, AllMixin, StockMixin):
     """
     **Квант** -  это минимальная и уникальная единица остатка являющаяся одинаковой по своим свойствам в рамках местоположения
     Например, если в ячейку "A" на которой находится уже товар "A" с партией "A" и количеством 5 добавляется товар
@@ -48,14 +47,6 @@ class Quant(Base, AllMixin):
         'store_id', 'location_id', 'lot_id', 'expiration_datetime', name='_quant_st_loc_lot_ex_id_uc'
     ),)
     lsn_seq = Sequence(f'quant_lsn_seq')
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)                                          # ForeignKey("basic.product.id")
-    store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)                                            # ForeignKey("basic.store.id")
-    location_class: Mapped[LocationClass] = mapped_column(index=True)
-    location_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location_type.id", ondelete="SET NULL"), index=True)
-    location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"), index=True)
-    lot_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"), index=True)
-    partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     quantity: Mapped[float]
     reserved_quantity: Mapped[float]
     incoming_quantity: Mapped[float]

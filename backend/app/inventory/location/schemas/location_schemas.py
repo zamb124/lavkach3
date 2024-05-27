@@ -22,6 +22,12 @@ class LocationBaseScheme(BaseModel):
     location_type_id: UUID4 = Field(title='Location Type', model='location_type')
     partner_id: Optional[UUID4] = Field(default=None, title='Partner', model='partner')
 
+    location_class: LocationClass = Field(default=LocationClass.PLACE, title='Location Class')
+    lot_id: Optional[UUID4] = Field(default=None, title='Lot')
+    is_can_negative: bool = Field(default=False, title='Can Negative')
+    allowed_package_ids: Optional[list[UUID4]] = Field(default=[], title='Allowed Packages')  # Разрешенные типы упаковок
+    exclude_package_ids: Optional[list[UUID4]] = Field(default=[], title='Exclude Packages')  # Разрешенные типы упаковок
+
     class Config:
         extra = 'allow'
         from_attributes = True
@@ -51,6 +57,7 @@ class LocationFilter(BaseFilter):
     location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Class')
     location_class__not_in: Optional[List[LocationClass]] = Field(default=None, title='Class')
     is_active: Optional[bool] = Field(default=None, title='Active')
+    is_can_negative: Optional[bool] = Field(default=None, title='Is can negative')
 
     class Constants(Filter.Constants):
         model = Location
