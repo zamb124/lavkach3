@@ -158,10 +158,9 @@ class Order(Base, AllMixin):
         super().__init__(**kwargs)
 
 class MoveStatus(str, Enum):
-    DRAFT:      str = 'draft'
+    CREATED:    str = 'created'
     WAITING:    str = 'waiting'
     CONFIRMED:  str = 'confirmed'
-    PARTIALY:   str = 'partially'
     ASSIGNED:   str = 'assigned'
     DONE:       str = 'done'
     CANCELED:   str = 'canceled'
@@ -198,7 +197,7 @@ class Move(Base, AllMixin):
     uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=False) # Если перемещение упаковкой то None
     quant_src_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="SET NULL"), index=True)
     quant_dest_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="SET NULL"), index=True)
-    status: Mapped[MoveStatus] = mapped_column(default=MoveStatus.DRAFT)
+    status: Mapped[MoveStatus] = mapped_column(default=MoveStatus.CREATED)
 
 
 class MoveLogType(str, Enum):
@@ -225,7 +224,7 @@ class SuggestStatus(str, enum.Enum):
 
 class Suggest(Base, AllMixin):
     """
-    Suggest Саджест, это набор минимальных действий для  [[Move]] выполнив который Move будет выполнен, например
+    Suggest Саджест, это набор минимальных д ействий для  [[Move]] выполнив который Move будет выполнен, например
     """
     __tablename__ = "suggest"
     lsn_seq = Sequence(f'suggest_lsn_seq')

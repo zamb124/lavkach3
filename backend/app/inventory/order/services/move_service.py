@@ -18,6 +18,18 @@ logger = logging.getLogger(__name__)
 
 
 class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilter]):
+    """
+    Сервис для работы с Мувами
+    CRUD+
+    Мув нельзя создать, если запаса недостаточно (это прям правило)
+    Путь мува такоф:
+        CREATED:    мув создан, но уже зарезервированы кванты что бы их никто не забрал
+        WAITING:    мув ждет распределение в Order - этот шаг может быть пропущен, если мув исполняют без ордера
+        CONFIRMED:  мув получил Order - этот шаг может быть пропущен, если мув исполняют без ордера
+        ASSIGNED:   мув взял в работу сотрудник
+        DONE:       мув завершен (terminal)
+        CANCELED:   мув отменен (terminal)
+    """
     def __init__(self, request, db_session: AsyncSession = None):
         super(MoveService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme, db_session)
 
@@ -28,6 +40,24 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
     @permit('move_list')
     async def list(self, _filter: FilterSchemaType, size: int):
         return await super(MoveService, self).list(_filter, size)
+
+    async def create_suggests(self, move):
+        """
+            Создаются саджесты в зависимости от OrderType и Product
+        """
+        if move.type == MoveType.PRODUCT:
+            a=1
+
+    @permit('move_user_assign')
+    async def user_assign(self, move_id: uuid.UUID, user_id: uuid.UUID):
+        """
+            Если прикрепился пользователь, то значит, что необходимо создать саджесты для выполнения
+        """
+        move = await self.get(move_id)
+        await move.create_suggests()
+        move.user_id = user_id
+        await self.session.commit()
+        return move
 
     @permit('move_create')
     async def create(self, obj: CreateSchemaType, parent: Order | Move = None, commit=True) -> ModelType:
@@ -40,16 +70,17 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
 
          Стратегия такова
          Если указана локация в move, то проверяется допустимость этой локации согласно правилам OrderType
+         Если указан Quant, то сразу идем в Quant и фильтруем только его
          Если локация не указана, то поиск доступных квантов будет происходить в допустимых в OrderType
         """
+        location_env = self.env['location']
         if obj.type == MoveType.PRODUCT:
 
             """ ПОДБОР ИСХОДЯЩЕГО КВАНТА/ЛОКАЦИИ"""
 
             quant_src_entity: Quant | None = None
             quant_dest_entity: Quant | None = None
-            available_src_quants: list[Quant] = []
-            available_dest_quants: list[Quant] = []
+
             assert obj.product_id, 'Product is required if Move Type is  Product'
             if obj.order_type_id:
                 order_type_entity = await self.env['order_type'].service.get(obj.order_type_id)
@@ -61,7 +92,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 order_type_entity = parent
             """Проверяем, что мув может быть создан согласно праавилам в Order type """
             quant_service = self.env['quant'].service
-            location_src_entity: Location | None = None
+
             location_class_src_ids = list(
                 set(order_type_entity.allowed_location_class_src_ids) -
                 set(order_type_entity.exclude_location_class_src_ids)
@@ -75,157 +106,77 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 set(order_type_entity.exclude_location_src_ids)
             )
             if obj.location_src_id:
-                """Если указали локацию назначения насильно, то нужно проверить все что возможно, что эта локация имеет место быть"""
-                if location_src_ids:
-                    """Если есть разрешенные локации"""
-                    if obj.location_src_id not in location_src_ids:
-                        raise HTTPException(
-                            status_code=406,
-                            detail=f"Destination Location is not allowed for Order Type {order_type_entity.title}"
-                        )
-                loc_env = self.env['location']
-                location_src_entity = await loc_env.service.get(obj.location_src_id)
-                if location_type_src_ids:
-                    """Если есть исключающие локации"""
-                    if location_src_entity.location_type_id not in location_type_src_ids:
-                        raise HTTPException(
-                            status_code=406,
-                            detail=f"Source Location Type is not allowed for Order Type {parent.order_type_rel.title}"
-                        )
-
-                if location_class_src_ids:
-                    """Еслли есть правила разрешаюшее по классу"""
-                    if not location_src_entity.location_class not in location_class_src_ids:
-                        raise HTTPException(
-                            status_code=406,
-                            detail=f"Source Location class is not allowed for Order Type Location Type {order_type_entity.title}"
-                        )
-                location_src_ids = [obj.location_src_id, ] # Если локация указана насильно, то подменяем список локаций на одну
-                """Далее нужно достать доступные кванты товара для создания движения"""
+                """Если мы указали локацию, то нас уже не интересуют правила из OrderType"""
+                location_class_src_ids, location_type_src_ids,  location_src_ids = [], [], [obj.location_src_id,]
 
             available_src_quants = await quant_service.get_available_quants(
                 product_id=obj.product_id,
                 store_id=obj.store_id,
+                id=obj.quant_src_id,
                 location_class_ids=location_class_src_ids,
                 location_ids=location_src_ids,
                 location_type_ids=location_type_src_ids,
-                lot_ids=[obj.lot_id],
-                partner_id=obj.partner_id
+                lot_ids=[obj.lot_id] if obj.lot_id else None,
+                partner_id=obj.partner_id if obj.partner_id else None
             )
             if not available_src_quants:
+                """Поиск локаций, которые могут быть negative"""
                 location_src_search_params = {
-                    "location_class_src_ids": location_class_src_ids,
-                    "location_type_src_ids": location_type_src_ids,
-                    "location_src_ids": location_src_ids,
+                    "location_class__in": location_class_src_ids,
+                    "location_type_id__in": location_type_src_ids,
+                    "id__in": location_src_ids,
+                    "is_active": True,
+                    "is_can_negative": True
                 }
-                if order_type_entity.order_class == OrderClass.INCOMING:
-                    """Если ничего не нашлось, то идем по пути поиска локаций с отрицательными остатками"""
-                    """Если класс ордера INCOMING и локейшен, или тип локации или класс локации Допустим к отрицательным остаткам"""
-                    if location_src_ids:
-                        "Если указана локация, то она в приоритете на изьятия кванта"
-                        location_env = self.env['location']
-                        locations_src = await location_env.service.list(_filter={'id__in': location_src_ids, 'is_can_negative': True})
-                        location_types_ids = {i.id: i.location_type_id for i in locations_src}
-                        location_types_src = {
-                            i.id: i
-                            for i in await self.env['location_type'].service.list(_filter={'id__in': location_types_ids.values()})
-                        }
-                        for location in locations_src:
-                            if loc_type := location_types_src.get(location.location_type_id):
-                                if loc_type.is_can_negative:
-                                    quant_src_entity = await self.env['quant'].service.create(obj={
-                                        "product_id": obj.product_id,
-                                        "store_id": obj.store_id,
-                                        "location_id": location.id,
-                                        "location_class": location.location_class,
-                                        "location_type_id": loc_type.id,
-                                        "lot_id": obj.lot_id.id if obj.lot_id else None,
-                                        "partner_id": obj.partner_id.id if obj.partner_id else None,
-                                        "quantity": 0.0,
-                                        "reserved_quantity": obj.quantity,
-                                        "incoming_quantity": 0.0,
-                                        "uom_id": obj.uom_id,
-                                    }, commit=False)
-                    elif location_type_src_ids:
-                        """Если нет локации ищем по типу локации с подходящим c возможностью отрицательного остатка"""
-                        location_type_src_entities = await self.env['location_type'].service.list(_filter={'id__in': location_type_src_ids})
-                        location_type_src_is_can_negative = {i.id: i for i in location_type_src_entities if i.is_can_negative}
-                        location_env = self.env['location']
-                        location = await location_env.service.list(_filter={'location_type_id__in': location_type_src_is_can_negative.keys()}, size=1)
-                        if location:
-                            quant_src_entity = await self.env['quant'].service.create(obj={
-                                "product_id": obj.product_id,
-                                "store_id": obj.store_id,
-                                "location_id": location[0].id,
-                                "location_class": location[0].location_class,
-                                "location_type_id": location_type_src_is_can_negative.get(location[0].location_type_id).id,
-                                "lot_id": obj.lot_id.id if obj.lot_id else None,
-                                "partner_id": obj.partner_id.id if obj.partner_id else None,
-                                "quantity": 0.0,
-                                "reserved_quantity": obj.quantity,
-                                "incoming_quantity": 0.0,
-                                "uom_id": obj.uom_id,
-                            }, commit=False)
-
-                    elif location_class_src_ids:
-                        """Если нет локации  ищем по классу локации с подходящим c возможностью отрицательного остатка"""
-                        location_type_src_entities = await self.env['location_type'].service.list(_filter={'location_class__in': location_class_src_ids})
-                        location_type_src_is_can_negative = {i.id: i for i in location_type_src_entities if i.is_can_negative}
-                        location_env = self.env['location']
-                        location = await location_env.service.list(
-                            _filter={'location_type_id__in': location_type_src_is_can_negative.keys()}, size=1)
-                        if location:
-                            quant_src_entity = await self.env['quant'].service.create(obj={
-                                "product_id": obj.product_id,
-                                "store_id": obj.store_id,
-                                "location_id": location[0].id,
-                                "location_class": location[0].location_class,
-                                "location_type_id": location_type_src_is_can_negative.get(location[0].location_type_id).id,
-                                "lot_id": obj.lot_id.id if obj.lot_id else None,
-                                "partner_id": obj.partner_id.id if obj.partner_id else None,
-                                "quantity": 0.0,
-                                "reserved_quantity": obj.quantity,
-                                "incoming_quantity": 0.0,
-                                "uom_id": obj.uom_id,
-                            }, commit=False)
-                    else:
-                        raise HTTPException(status_code=406, detail='Not enouth quantity in source')
+                locations_src = await location_env.service.list(_filter=location_src_search_params)
+                for loc_src in locations_src:
+                    quant_src_entity = await self.env['quant'].service.create(obj={
+                        "product_id": obj.product_id,
+                        "store_id": obj.store_id,
+                        "location_id": loc_src.id,
+                        "location_class": loc_src.location_class,
+                        "location_type_id": loc_src.location_type_id,
+                        "lot_id": obj.lot_id.id if obj.lot_id else None,
+                        "partner_id": obj.partner_id.id if obj.partner_id else None,
+                        "quantity": 0.0,
+                        "reserved_quantity": 0.0,
+                        "incoming_quantity": 0.0,
+                        "uom_id": obj.uom_id,
+                    }, commit=False)
+                    available_src_quants = [quant_src_entity,]
+                    break
 
 
-                elif order_type_entity.order_class == OrderClass.OUTGOING:
-                    ...
-                elif order_type_entity.order_class == OrderClass.INTERNAL:
-                    ...
-                if not quant_src_entity:
-                    raise HTTPException(status_code=406, detail='Not enouth quantity in source')
             if available_src_quants:
                 """Если кванты нашлись"""
                 remainder = obj.quantity
-                for q in available_src_quants:
-                    if obj.uom_id == q.uom_id:
-                        if q.available_quantity <= 0.0:
+                for src_quant in available_src_quants:
+                    if obj.uom_id == src_quant.uom_id:
+                        if src_quant.available_quantity <= 0.0:
                             pass
-                        elif remainder <= q.available_quantity:
+                        elif remainder <= src_quant.available_quantity:
+                            src_quant.reserved_quantity += remainder
                             remainder = 0.0
-                            q.reserved_quantity += remainder
+                            quant_src_entity = src_quant
+                            self.session.add(src_quant)
                             break
-                        elif remainder >= q.available_quantity:
-                            remainder -= q.quantity
-                            q.quantity = 0.0
-                            self.session.add(q)
+                        elif remainder >= src_quant.available_quantity:
+                            remainder -= src_quant.quantity
+                            src_quant.quantity = 0.0
+                            self.session.add(src_quant)
                     else:
                         pass#TODO: единицы измерения
                 if remainder:
                     if remainder == obj.quantity:
                         "Если не нашли свободного количества вообще"
                         "снова идем по квантам и берем то, у которого локация позволяет сделать отрицательный остсток"
-                        for q in available_src_quants:
-                            if obj.uom_id == q.uom_id:
-                                quant_location_type = await self.env['location_type'].service.get(q.location_type_id)
-                                if quant_location_type.is_can_negative:
-                                    q.reserved_quantity += remainder
+                        for src_quant in available_src_quants:
+                            if obj.uom_id == src_quant.uom_id:
+                                q_location = await self.env['location'].service.get(src_quant.location_id)
+                                if q_location.is_can_negative:
+                                    src_quant.reserved_quantity += remainder
                                     remainder = 0.0
-                                    quant_src_entity = q
+                                    quant_src_entity = src_quant
                                     self.session.add(quant_src_entity)
                                     break
                             else:
@@ -234,6 +185,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                         "Если квант нашелся, но на частичное количество уменьшаем количество в муве тк 1 мув = 1квант"
                         logger.warning(f'The number in the move has been reduced')
                         obj.quantity -= remainder
+            if not quant_src_entity:
+                raise HTTPException(status_code=406, detail=f"It was not possible to create and find a Stock Source, perhaps the parameters were set incorrectly")
 
             obj.quant_src_id =      quant_src_entity.id
             obj.location_src_id =   quant_src_entity.location_id
@@ -244,7 +197,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
 
             """ Если у муве насильно указали location_dest_id"""
             """ Нужно проверить, что данная локация подходит под правила OrderType и правила самой выбранной локации"""
-            location_dest_entity: Location | None = None
+
 
             location_class_dest_ids = list(
                 set(order_type_entity.allowed_location_class_dest_ids) -
@@ -260,36 +213,13 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             )
 
             if obj.location_dest_id:
-                """Если указали локацию назначения насильно, то нужно проверить все что возможно, что эта локация имеет место быть"""
-                if location_dest_ids:
-                    """Если есть разрешенные локации"""
-                    if obj.location_dest_id not in location_dest_ids:
-                        raise HTTPException(
-                            status_code=406,
-                            detail=f"Destination Location is not allowed for Order Type {order_type_entity.title}"
-                        )
-                loc_env = self.env['location']
-                location_dest_entity = await loc_env.service.get(obj.location_dest_id)
-                if location_type_dest_ids:
-                    """Если есть исключающие локации"""
-                    if location_dest_entity.location_type_id not in location_type_dest_ids:
-                        raise HTTPException(
-                            status_code=406,
-                            detail=f"Source Location Type is not allowed for Order Type {parent.order_type_rel.title}"
-                        )
+                """Если мы указали локацию, то нас уже не интересуют правила из OrderType"""
+                location_class_dest_ids, location_type_dest_ids, location_dest_ids = [], [], [obj.location_dest_id, ]
 
-                if location_class_dest_ids:
-                    """Еслли есть правила разрешаюшее по классу"""
-                    if not location_dest_entity.location_class not in location_class_dest_ids:
-                        raise HTTPException(
-                            status_code=406,
-                            detail=f"Source Location class is not allowed for Order Type Location Type {order_type_entity.title}"
-                        )
-                location_dest_ids = [obj.location_dest_id, ] # Если локация указана насильно, то подменяем список локаций на одну
-                """Далее нужно достать доступные кванты товара для создания движения"""
             available_dest_quants = await quant_service.get_available_quants(
                 product_id=obj.product_id,
                 store_id=obj.store_id,
+                id=obj.quant_dest_id,
                 location_class_ids=location_class_dest_ids,
                 location_ids=location_dest_ids,
                 location_type_ids=location_type_dest_ids,
@@ -297,30 +227,44 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 partner_id=obj.partner_id if obj.partner_id else None
             )
             if not available_dest_quants:
-                """Если не нашли доступных квантов, то создаем квант в указанной локации"""
-                if location_dest_entity.location_type_id:
+                """Поиск локаций, которые могут быть negative"""
+                location_dest_search_params = {
+                    "location_class__in": location_class_dest_ids,
+                    "location_type_id__in": location_type_dest_ids,
+                    "id__in": location_dest_ids,
+                    "is_active": True,
+                }
+                locations_dest = await location_env.service.list(_filter=location_dest_search_params)
+                for loc_dest in locations_dest:
                     quant_dest_entity = await self.env['quant'].service.create(obj={
                         "product_id": obj.product_id,
                         "store_id": obj.store_id,
-                        "location_id": obj.location_dest_id,
-                        "location_class": location_dest_entity.location_class,
-                        "location_type_id": location_dest_entity.location_type_id,
-                        "lot_id": obj.lot_id,
-                        "partner_id": obj.partner_id,
+                        "location_id": loc_dest.id,
+                        "location_class": loc_dest.location_class,
+                        "location_type_id": loc_dest.location_type_id,
+                        "lot_id": obj.lot_id.id if obj.lot_id else None,
+                        "partner_id": obj.partner_id.id if obj.partner_id else None,
                         "quantity": 0.0,
                         "reserved_quantity": 0.0,
-                        "incoming_quantity": obj.quantity, # Прописываем ожидаемое количество товара
+                        "incoming_quantity": 0.0,
                         "uom_id": obj.uom_id,
                     }, commit=False)
-            else:
-                for dest_quant in available_dest_quants:
-                    quant_dest_entity = dest_quant
-                    quant_dest_entity.incoming_quantity += obj.quantity
-                    self.session.add(quant_dest_entity)
+                    available_dest_quants = [quant_dest_entity, ]
                     break
+
+            for dest_quant in available_dest_quants:
+                quant_dest_entity = dest_quant
+                quant_dest_entity.incoming_quantity += obj.quantity
+                self.session.add(quant_dest_entity)
+                break
+            if not quant_dest_entity:
+                raise HTTPException(status_code=406, detail=f"It was not possible to create and find a Stock Dest, perhaps the parameters were set incorrectly")
 
             obj.quant_dest_id =      quant_dest_entity.id
             obj.location_dest_id =   quant_dest_entity.location_id
+
+            if quant_src_entity == quant_dest_entity:
+                raise HTTPException(status_code=406, detail=f"Source Quant and Destination Quant cannot be the same")
 
             move = await super(MoveService, self).create(obj, commit=False)
             if not quant_src_entity.move_ids:

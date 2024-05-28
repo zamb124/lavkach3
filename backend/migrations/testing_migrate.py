@@ -744,7 +744,6 @@ def upgrade():
             "company_id": company_2_id,
             'created_at': datetime.now(),
             'updated_at': datetime.now(),
-            'store_id': store_1_company_2_id,
             'location_type_id': location_type_partner_company_2,
             'location_class': 'partner',
             "title": f"LOCATION_PARTNER_COMPANY 2",

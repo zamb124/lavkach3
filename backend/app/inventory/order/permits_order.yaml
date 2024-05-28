@@ -9,3 +9,4 @@ permits:
   move_list: Может получать список квант
   move_delete: Может удалять квант
   move_get: Может смотреть на квант
+  move_user_assign: Может прикрепить пользователя к move
