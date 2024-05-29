@@ -32,8 +32,8 @@ class ProductStorageType(Base, AllMixin):
     lsn_seq = Sequence(f'product_storage_type_lsn_seq')
     __table_args__ = (UniqueConstraint('product_id', 'company_id', name='stor_type_product_company_id_uc'),)
     product_id: Mapped[uuid.UUID] = mapped_column(index=True)
-    storage_uom_id: Mapped[Optional[uuid.UUID]]         # Разрешенные типы упаковок
-    storage_image_url: Mapped[Optional[str]]
+    storage_uom_id: Mapped[Optional[uuid.UUID]]         # Единица измерения склада
+    storage_image_url: Mapped[Optional[str]]            # Картинка для склада
     allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Разрешенные типы упаковок
     exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Исключение типы упаковок
     is_homogeneity: Mapped[bool] = mapped_column(default=False)  # Товар может хранится только в гомогенных ячейках

@@ -216,7 +216,7 @@ async def action(request: Request, schema: ActionSchema):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    cls = ClassView(request, schema.model)
+    cls = ClassView(request, schema.model, prefix=schema.prefix)
     func = cls.actions.get(schema.action)
     build_func = func['func']
     res = await build_func(payload=schema.model_dump_json())
