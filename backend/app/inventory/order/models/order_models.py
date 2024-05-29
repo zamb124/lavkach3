@@ -1,18 +1,19 @@
+import datetime
 import enum
 import uuid
 from enum import Enum
-from typing import Optional, Annotated
-import datetime
-from sqlalchemy import Column, Unicode, Sequence, Uuid, ForeignKey, DateTime, func, text, UniqueConstraint, ARRAY, \
-    String, JSON
+from typing import Optional
+
+from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint, ARRAY, \
+    String
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
-from app.inventory.location.models import Location
-from core.db import Base
-from core.db.mixins import AllMixin, guid, guid_primary_key
-from app.inventory.quant.models import Lot, Quant
-#from app.inventory.location.models import Location, LocationClass
+# from app.inventory.location.models import Location, LocationClass
 from app.inventory.location.enums import LocationClass, PutawayStrategy
+from app.inventory.location.models import Location
+from app.inventory.quant.models import Lot, Quant
+from core.db import Base
+from core.db.mixins import AllMixin, CreatedEdited
 from core.db.types import ids
 
 
@@ -45,7 +46,7 @@ class ReservationMethod(str, Enum):
 
 
 
-class OrderType(Base, AllMixin):
+class OrderType(Base, AllMixin, CreatedEdited):
     """
     Order Type - Тип складского задания, определяет поведение складсхих заданий при создании или выполнении
     такие как :
@@ -103,8 +104,6 @@ class OrderType(Base, AllMixin):
     is_allow_create_package: Mapped[bool]                                                                          # Можно ли создавать упаковки
     is_can_create_order_manualy: Mapped[bool]                                                                      # Можно ли создавать Ордер вручную
     is_overdelivery: Mapped[bool]                                                                                  # Возможно ли Overdelivery
-    created_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)                                   # Кем создан/изменен
-    edited_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)                                    # Кем создан/изменен
     barcode: Mapped[str]                                                                                        # Штрих-код ордера для быстрого доступа
     strategy: Mapped['PutawayStrategy'] = mapped_column(default=PutawayStrategy.FEFO)                           # Стратегия комплектования
 
@@ -117,7 +116,7 @@ class OrderStatus(str, Enum):
     CANCELED:   str = 'canceled'
 
 
-class Order(Base, AllMixin):
+class Order(Base, AllMixin, CreatedEdited):
     """
     это складское задание(ордер), которое обьединяет в себе как общий документ основание
     так и складские движения (Move)
@@ -128,7 +127,6 @@ class Order(Base, AllMixin):
         UniqueConstraint('external_number', 'company_id', name='_order_companyid_external_number_uc'),
     )
     lsn_seq = Sequence(f'order_lsn_seq')
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     number: Mapped[str] = mapped_column(index=True)    # Человекочитаемый номер присвается по формуле - {ГОД(2)}-{МЕСЯЦ}-{ДЕНЬ}-{LSN}
     order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='CASCADE'))
     order_type_rel: Mapped[OrderType] = relationship(lazy='selectin')
@@ -141,8 +139,6 @@ class Order(Base, AllMixin):
     origin_number: Mapped[Optional[str]] = mapped_column(index=True)
     planned_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     actual_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
-    created_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
-    edited_by: Mapped[uuid.UUID] = mapped_column(index=True, nullable=False)
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     user_ids: Mapped[Optional[ids]] = mapped_column(index=True)
     description: Mapped[Optional[str]]
@@ -173,14 +169,12 @@ class MoveType(str, enum.Enum):
     PRODUCT: str = 'product' # Означает что задание товарное, те перемещается часть товара
     PACKAGE: str = 'package' # Перемещается упаковка вместе с товаром
 
-class Move(Base, AllMixin):
+class Move(Base, AllMixin, CreatedEdited):
     """
     Move - это часть Order, но определяющее уже конкретную позицию товара
     """
     __tablename__ = "move"
     lsn_seq = Sequence(f'move_lsn_seq')
-
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     type: Mapped[MoveType]
     move_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("move.id", ondelete='RESTRICT'))
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
@@ -209,13 +203,15 @@ class MoveLogType(str, Enum):
 
 
 class SuggestType(str, enum.Enum):
-    IN_QUANTITY: str = 'in_quantity'  # Саджест ввода количества (те на экране нужно ввести какуюто цифру)
-    IN_PACKAGE: str = 'in_package'    # саджест ввода/сканирования идентификатора упаковки
-    IN_LOCATION: str = 'in_location'  # саджест ввода/сканирования местоположения(location)
-    IN_RESOURCE: str = 'in_resource'  # сканирование ресурса
-    IN_VALID: str = 'in_valid'        # ввод даны истечения срока годности, когда просто ввод а не создание партии
-    NEW_PACKAGE: str = 'new_package'  # саджест создания новой package
-    NEW_LOT: str = 'new_lot'          # саджест создания партии / не путать с in_valid
+    IN_QUANTITY:    str = 'in_quantity'     # Саджест ввода количества (те на экране нужно ввести какуюто цифру)
+    IN_PRODUCT:     str = 'in_product'      # саджест ввода/сканирования идентификатора товара
+    IN_PACKAGE:     str = 'in_package'      # саджест ввода/сканирования идентификатора упаковки
+    IN_LOCATION:    str = 'in_location'     # саджест ввода/сканирования местоположения(location)
+    IN_LOT:         str = 'in_lot'          # ввод даты КСГ партии
+    IN_RESOURCE:    str = 'in_resource'     # сканирование ресурса
+    IN_VALID:       str = 'in_valid'        # ввод даны истечения срока годности, когда просто ввод а не создание партии
+    NEW_PACKAGE:    str = 'new_package'     # саджест создания новой package
+    NEW_LOT:        str = 'new_lot'         # саджест создания партии / не путать с in_valid
 
 
 class SuggestStatus(str, enum.Enum):
@@ -229,12 +225,11 @@ class Suggest(Base, AllMixin):
     """
     __tablename__ = "suggest"
     lsn_seq = Sequence(f'suggest_lsn_seq')
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     move_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('move.id', ondelete='CASCADE'), index=True)
     priority: Mapped[int]
     type: Mapped[SuggestType]
     value: Mapped[Optional[str]]    # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
-    user_done_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
+    user_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
 
 class MoveLog(Base, AllMixin):
     """
@@ -253,7 +248,6 @@ class MoveLog(Base, AllMixin):
     """
     __tablename__ = "move_log"
     lsn_seq = Sequence(f'move_log_lsn_seq')
-    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.product.id")
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.store.id")
     location_class: Mapped[LocationClass] = mapped_column(index=True)

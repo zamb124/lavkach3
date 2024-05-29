@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
 
 from app.inventory.location import Location
-from app.inventory.order.models.order_models import Move, MoveType, Order, OrderType, OrderClass, MoveStatus
+from app.inventory.location.enums import VirtualLocationClass
+from app.inventory.order.models.order_models import Move, MoveType, Order, OrderType, OrderClass, MoveStatus, \
+    SuggestType
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
 from core.permissions import permit
@@ -41,12 +43,42 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
     async def list(self, _filter: FilterSchemaType, size: int):
         return await super(MoveService, self).list(_filter, size)
 
-    async def create_suggests(self, move):
+    async def create_suggests(self, move: uuid.UUID | Move):
         """
             Создаются саджесты в зависимости от OrderType и Product
         """
+        if isinstance(move, uuid.UUID):
+            move = await self.get(move)
+        suggest_service = self.env['suggest'].service
+        location_service = self.env['location'].service
         if move.type == MoveType.PRODUCT:
-            a=1
+            """Если это перемещение товара из виртуальцой локации, то идентификация локации не нужна"""
+            location_src = await location_service.get(move.location_src_id)
+            if not location_src.location_class in VirtualLocationClass:
+                await suggest_service.create(obj={
+                    "move_id": move.id,
+                    "priority": 1,
+                    "type": SuggestType.IN_LOCATION,
+                    "user_id": self.user.user_id
+                })
+            """Ввод Партии""" #TODO:  пока хз как праильное
+            """Далее саджест на идентификацию товара"""
+            await suggest_service.create(obj={
+                "move_id": move.id,
+                "priority": 2,
+                "type": SuggestType.IN_PRODUCT,
+                "user_id": self.user.user_id
+            })
+            """Далее саджест на ввод срока годности"""  #TODO:  пока хз как праильное
+            """Далее саджест идентификации локации назначения"""
+            await suggest_service.create(obj={
+                "move_id": move.id,
+                "priority": 3,
+                "type": SuggestType.IN_LOCATION,
+                "user_id": self.user.user_id
+            })
+            # Итого простой кейс, отсканировал локацию-источник, отсканировал товар, отсканировал локацию-назначения
+
 
     @permit('move_user_assign')
     async def user_assign(self, move_id: uuid.UUID, user_id: uuid.UUID):
@@ -301,7 +333,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 quant_dest_entity.move_ids = [move.id]
             else:
                 quant_dest_entity.move_ids.append(move.id)
-
+        #TODO: это надо убрать в отдельный вызов
+        await self.create_suggests(move)
     @permit('move_create')
     async def create(self, obj: CreateSchemaType, parent: Order | Move | None = None, commit=True) -> ModelType:
         return await super(MoveService, self).create(obj)

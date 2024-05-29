@@ -19,8 +19,8 @@ class SuggestBaseScheme(BaseModel):
     move_id: UUID4 = Field(title='Move ID', model='move')
     priority: int = Field(title='Priority')
     type: SuggestType = Field(title='Type')
-    value: Optional[str]  # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
-    user_done_id: UUID4 = Field(default=None, title='User Done ID', model='user')
+    value: Optional[str] = Field(default=None, title='Value')  # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
+    user_id: UUID4 = Field(default=None, title='User Done ID', model='user')
 
     class Config:
         extra = 'allow'

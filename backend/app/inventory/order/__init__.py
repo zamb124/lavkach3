@@ -1,8 +1,10 @@
-from app.inventory.order.models import Move, Order, OrderType
+from app.inventory.order.models import Move, Order, OrderType, Suggest
 from app.inventory.order.schemas import OrderCreateScheme, OrderUpdateScheme, OrderFilter, OrderScheme, \
     OrderTypeCreateScheme, OrderTypeUpdateScheme, OrderTypeFilter, OrderTypeScheme
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter, MoveScheme
-from app.inventory.order.services import MoveService, OrderService, OrderTypeService
+from app.inventory.order.schemas.suggest_schemas import SuggestScheme, SuggestFilter, SuggestUpdateScheme, \
+    SuggestCreateScheme
+from app.inventory.order.services import MoveService, OrderService, OrderTypeService, SuggestService
 
 __domain__ = {
     'move': {
@@ -33,6 +35,16 @@ __domain__ = {
             'update': OrderTypeUpdateScheme,
             'filter': OrderTypeFilter,
             'get': OrderTypeScheme
+        }
+    },
+    'suggest': {
+        'service': SuggestService,
+        'model': Suggest,
+        'schemas': {
+            'create': SuggestCreateScheme,
+            'update': SuggestUpdateScheme,
+            'filter': SuggestFilter,
+            'get': SuggestScheme
         }
     }
 
