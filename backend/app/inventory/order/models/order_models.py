@@ -11,38 +11,12 @@ from sqlalchemy.orm import relationship, mapped_column, Mapped
 # from app.inventory.location.models import Location, LocationClass
 from app.inventory.location.enums import LocationClass, PutawayStrategy
 from app.inventory.location.models import Location
+from app.inventory.order.enums.order_enum import MoveStatus, OrderClass, BackOrderAction, ReservationMethod, \
+    OrderStatus, MoveType, SuggestType
 from app.inventory.quant.models import Lot, Quant
 from core.db import Base
 from core.db.mixins import AllMixin, CreatedEdited
 from core.db.types import ids
-
-
-class OrderClass(str, Enum):
-    """
-    Класс ордера
-    """
-    INCOMING: str = 'incoming'  # Входящие
-    OUTGOING: str = 'outgoing'  # Исходящий
-    INTERNAL: str = 'internal'  # Внутрислкдской
-
-
-class BackOrderAction(str, Enum):
-    """
-    Поведение бекордера
-    """
-    ASK:    str = 'ask'         # Спросить нужен ли Ордер на возврат
-    ALWAYS: str = 'always'      # Нельзя спросить он создается сам
-    NEVER:  str = 'never'       # Не создавать
-
-
-class ReservationMethod(str, Enum):
-    """
-    Тип медода резервирования
-    """
-    AT_CONFIRM:         str = 'at_confirm'                  # При утверждении
-    MANUAL:             str = 'manual'                      # Вручную запустить резервирование
-    AT_DATE:            str = 'at_date'                     # В определенную дату, но она должна быть не меньше planned_date, иначе запустится само
-    TIME_BEFORE_DATE:   str = 'time_before_date'            # За определенное количество минут до начала planned_date
 
 
 
@@ -107,13 +81,6 @@ class OrderType(Base, AllMixin, CreatedEdited):
     barcode: Mapped[str]                                                                                        # Штрих-код ордера для быстрого доступа
     strategy: Mapped['PutawayStrategy'] = mapped_column(default=PutawayStrategy.FEFO)                           # Стратегия комплектования
 
-class OrderStatus(str, Enum):
-    DRAFT:      str = 'draft'
-    WAITING:    str = 'waiting'
-    CONFIRMED:  str = 'confirmed'
-    ASSIGNED:   str = 'assigned'
-    DONE:       str = 'done'
-    CANCELED:   str = 'canceled'
 
 
 class Order(Base, AllMixin, CreatedEdited):
@@ -153,21 +120,8 @@ class Order(Base, AllMixin, CreatedEdited):
         kwargs = {k: v for k, v in kwargs.items() if k in allowed_args}
         super().__init__(**kwargs)
 
-class MoveStatus(str, Enum):
-    CREATED:    str = 'created'
-    CONFIRMED:  str = 'confirmed'
-    WAITING:    str = 'waiting'
-    ASSIGNED:   str = 'assigned'
-    PROCESSING: str = 'processing'
-    DONE:       str = 'done'
-    CANCELED:   str = 'canceled'
 
-class MoveType(str, enum.Enum):
-    """
-    Типа Move означает это перемещение упаковкой или товара
-    """
-    PRODUCT: str = 'product' # Означает что задание товарное, те перемещается часть товара
-    PACKAGE: str = 'package' # Перемещается упаковка вместе с товаром
+
 
 class Move(Base, AllMixin, CreatedEdited):
     """
@@ -193,30 +147,8 @@ class Move(Base, AllMixin, CreatedEdited):
     quant_src_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="SET NULL"), index=True)
     quant_dest_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="SET NULL"), index=True)
     status: Mapped[MoveStatus] = mapped_column(default=MoveStatus.CREATED)
+    suggest_list_rel: Mapped[Optional[list["Suggest"]]] = relationship(lazy="selectin")
 
-
-class MoveLogType(str, Enum):
-    GET: str = 'get'        # Взял квант
-    PUT: str = 'put'        # Положил квант
-    RES: str = 'res'        # Зарезервировал квант
-    UNR: str = 'unr'        # Разрезервировал квант
-
-
-class SuggestType(str, enum.Enum):
-    IN_QUANTITY:    str = 'in_quantity'     # Саджест ввода количества (те на экране нужно ввести какуюто цифру)
-    IN_PRODUCT:     str = 'in_product'      # саджест ввода/сканирования идентификатора товара
-    IN_PACKAGE:     str = 'in_package'      # саджест ввода/сканирования идентификатора упаковки
-    IN_LOCATION:    str = 'in_location'     # саджест ввода/сканирования местоположения(location)
-    IN_LOT:         str = 'in_lot'          # ввод даты КСГ партии
-    IN_RESOURCE:    str = 'in_resource'     # сканирование ресурса
-    IN_VALID:       str = 'in_valid'        # ввод даны истечения срока годности, когда просто ввод а не создание партии
-    NEW_PACKAGE:    str = 'new_package'     # саджест создания новой package
-    NEW_LOT:        str = 'new_lot'         # саджест создания партии / не путать с in_valid
-
-
-class SuggestStatus(str, enum.Enum):
-    WAITING: str = 'waiting'  # Ожидает подверждения
-    DONE: str = 'done'        # Выполнен
 
 
 class Suggest(Base, AllMixin):

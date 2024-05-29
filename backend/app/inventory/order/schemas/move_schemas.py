@@ -6,12 +6,14 @@ from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import LocationClass
+from typing import TYPE_CHECKING
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import Move, MoveType
-from app.inventory.order.models.order_models import MoveStatus
-
+from app.inventory.order.enums.order_enum import MoveStatus, OrderClass, BackOrderAction, ReservationMethod, \
+    OrderStatus, MoveType, SuggestType
+from app.inventory.order.schemas.suggest_schemas import SuggestScheme
 
 
 
@@ -53,7 +55,7 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
     id: UUID4
     move_id: Optional[UUID4] = Field(default=None, model='move', title='Parent Move')
     status: MoveStatus = Field(title='Status', table=True)
-
+    suggest_list_rel: Optional[list[SuggestScheme]] = Field(default=[], title='Suggests', form=True)
 
 
 class MoveFilter(BaseFilter):

@@ -8,7 +8,8 @@ from pydantic import BaseModel, Field, computed_field
 from pydantic.types import UUID4
 
 from app.inventory.order.models import Order
-from app.inventory.order.models.order_models import OrderStatus
+from app.inventory.order.enums.order_enum import MoveStatus, OrderClass, BackOrderAction, ReservationMethod, \
+    OrderStatus, MoveType, SuggestType
 from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme
 from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
 from core.schemas import BaseFilter
@@ -58,7 +59,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme, CustomBaseModel):
     edited_by: UUID = Field(title='Edit By', model='user')
     user_ids: Optional[list[UUID]] = Field(default=[], title='Users', form=True, model='user')
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True)
-
+    move_list_rel: Optional[list[MoveScheme]] = Field(default=[], title='Order Movements', form=True)
     @computed_field
     def title(self) -> str:
         return f'{self.order_type_rel.title}: [{self.number}]'

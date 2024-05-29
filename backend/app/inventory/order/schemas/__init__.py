@@ -17,6 +17,7 @@ OrderTypeCreateScheme,
     OrderTypeListSchema
 )
 
+from .suggest_schemas import *
 
 class ExceptionResponseSchema(BaseModel):
     error: str

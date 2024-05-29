@@ -16,19 +16,19 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
         super(SuggestService, self).__init__(request, Suggest, SuggestCreateScheme, SuggestUpdateScheme, db_session)
 
     @permit('order_edit')
-    async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
-        return await super(SuggestService, self).update(id, obj)
+    async def update(self, id: Any, obj: UpdateSchemaType, commit=False) -> Optional[ModelType]:
+        return await super(SuggestService, self).update(id, obj, commit=commit)
 
     @permit('order_list')
     async def list(self, _filter: FilterSchemaType, size: int):
         return await super(SuggestService, self).list(_filter, size)
 
     @permit('order_create')
-    async def create(self, obj: CreateSchemaType) -> ModelType:
+    async def create(self, obj: CreateSchemaType, commit=False) -> ModelType:
         """
             Метод создания ордера, в нем особой проверки не нужно, тк в теории ордер может быть создан как угодно
         """
-        return await super(SuggestService, self).create(obj)
+        return await super(SuggestService, self).create(obj, commit)
 
     @permit('order_delete')
     async def delete(self, id: Any) -> None:

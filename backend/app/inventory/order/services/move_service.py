@@ -54,31 +54,35 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         if move.type == MoveType.PRODUCT:
             """Если это перемещение товара из виртуальцой локации, то идентификация локации не нужна"""
             location_src = await location_service.get(move.location_src_id)
+            location_dest = await location_service.get(move.location_dest_id)
             if not location_src.location_class in VirtualLocationClass:
                 await suggest_service.create(obj={
                     "move_id": move.id,
                     "priority": 1,
                     "type": SuggestType.IN_LOCATION,
+                    "value": f'{location_src.id}',
                     "user_id": self.user.user_id
-                })
+                }, commit=False)
             """Ввод Партии""" #TODO:  пока хз как праильное
             """Далее саджест на идентификацию товара"""
             await suggest_service.create(obj={
                 "move_id": move.id,
                 "priority": 2,
                 "type": SuggestType.IN_PRODUCT,
+                "value": f'{move.quantity}',
                 "user_id": self.user.user_id
-            })
+            }, commit=False)
             """Далее саджест на ввод срока годности"""  #TODO:  пока хз как праильное
             """Далее саджест идентификации локации назначения"""
             await suggest_service.create(obj={
                 "move_id": move.id,
                 "priority": 3,
                 "type": SuggestType.IN_LOCATION,
+                "value":f'{location_dest.id}',
                 "user_id": self.user.user_id
-            })
+            }, commit=False)
             # Итого простой кейс, отсканировал локацию-источник, отсканировал товар, отсканировал локацию-назначения
-
+            a=1
 
     @permit('move_user_assign')
     async def user_assign(self, move_id: uuid.UUID, user_id: uuid.UUID):

@@ -5,12 +5,10 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
-from app.inventory.location.enums import LocationClass
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import Suggest, SuggestType
-from app.inventory.order.models.order_models import SuggestStatus
 
 
 
