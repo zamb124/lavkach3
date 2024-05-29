@@ -87,6 +87,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         """
         if isinstance(move, uuid.UUID):
             move = await self.get(move)
+        if move.status != MoveStatus.CREATED:
+            raise HTTPException(status_code=406, detail=f"Move is not in CREATED status")
         location_service = self.env['location'].service
         order_type_service = self.env['order_type'].service
         quant_service = self.env['quant'].service
@@ -305,7 +307,11 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return await super(MoveService, self).create(obj)
 
     @permit('move_delete')
-    async def delete(self, id: Any) -> None:
+    async def delete(self, id: uuid.UUID) -> None:
+        if isinstance(id, uuid.UUID):
+            move = await self.get(id)
+            if move.status != MoveStatus.CREATED:
+                raise HTTPException(status_code=406, detail=f"Move is not in CREATED status")
         return await super(MoveService, self).delete(id)
 
 
