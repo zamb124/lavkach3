@@ -514,3 +514,4 @@ function topFunction() {
 mybutton && (window.onscroll = function () {
     scrollFunction()
 });
+main()

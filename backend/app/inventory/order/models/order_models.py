@@ -159,9 +159,10 @@ class Order(Base, AllMixin):
 
 class MoveStatus(str, Enum):
     CREATED:    str = 'created'
-    WAITING:    str = 'waiting'
     CONFIRMED:  str = 'confirmed'
+    WAITING:    str = 'waiting'
     ASSIGNED:   str = 'assigned'
+    PROCESSING: str = 'processing'
     DONE:       str = 'done'
     CANCELED:   str = 'canceled'
 

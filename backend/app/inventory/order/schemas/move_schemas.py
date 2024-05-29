@@ -31,6 +31,7 @@ class MoveBaseScheme(BaseModel):
     uom_id: Optional[UUID4] = Field(default=None, title='Uom', table=True, model='uom')
     quant_src_id: Optional[UUID4] = Field(default=None, title='Quant source', table=True, model='quant')
     quant_dest_id: Optional[UUID4] = Field(default=None, title='Quant dest', table=True, model='quant')
+
     class Config:
         extra = 'allow'
         from_attributes = True
@@ -51,7 +52,7 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
     move_id: Optional[UUID4] = Field(default=None, model='move', title='Parent Move')
-    status: MoveStatus
+    status: MoveStatus = Field(title='Status', table=True)
 
 
 
@@ -71,3 +72,7 @@ class MoveFilter(BaseFilter):
 class MoveListSchema(GenericListSchema):
     data: Optional[List[MoveScheme]]
 
+class MoveConfirmScheme(BaseModel):
+    id: UUID4
+    class Config:
+        extra = 'allow'

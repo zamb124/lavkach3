@@ -199,3 +199,25 @@ async def modal(request: Request, schema: ModalSchema):
     else:
         model_method = getattr(cls, f'get_{schema.method}')
         return await model_method(model_id=schema.id, target_id=schema.target_id, backdrop=schema.backdrop)
+
+
+class ActionSchema(BaseModel):
+    prefix: str
+    model: str
+    action: str
+    id: UUID4
+
+
+    class Config:
+        extra = 'allow'
+
+@router.post("/action", response_class=HTMLResponse)
+async def action(request: Request, schema: ActionSchema):
+    """
+     Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
+    """
+    cls = ClassView(request, schema.model)
+    func = cls.actions.get(schema.action)
+    build_func = func['func']
+    res = await build_func(payload=schema.model_dump_json())
+    return cls.send_message(res['detail'])

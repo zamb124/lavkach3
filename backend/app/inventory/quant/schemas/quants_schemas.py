@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import LocationClass
@@ -23,7 +23,7 @@ class QuantBaseScheme(BaseModel):
     partner_id: Optional[UUID4] = None
     quantity: float
     reserved_quantity: Optional[float]
-    reserved_quantity: Optional[float]
+    incoming_quantity: Optional[float]
     expiration_datetime: Optional[datetime] = None
     uom_id: UUID4
     move_ids: Optional[list[UUID4]] = None
@@ -40,6 +40,7 @@ class QuantUpdateScheme(QuantBaseScheme):
     reserved_quantity: Optional[float] = None
     uom_id: Optional[UUID4] = None
 
+
 class QuantCreateScheme(QuantBaseScheme):
     ...
 
@@ -48,6 +49,11 @@ class QuantScheme(QuantCreateScheme, TimeStampScheme):
     company_id: UUID4
     lsn: int
     id: UUID4
+
+    @computed_field
+    @property
+    def title(self) -> str:
+        return f'{self.quantity} | {self.reserved_quantity} | {self.incoming_quantity}'
 
     class Config:
         from_attributes = True

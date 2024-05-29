@@ -7,17 +7,16 @@ from enum import Enum
 from inspect import isclass
 from types import UnionType
 from typing import Optional, Any, get_args, get_origin, Annotated, Union
-from fastapi_filter.contrib.sqlalchemy import Filter
+
 from fastapi import HTTPException
+from fastapi_filter.contrib.sqlalchemy import Filter
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2_fragments import render_block, render_block_async
 from pydantic import BaseModel
-
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
 from core.env import Model
-from core.schemas import BaseFilter
 from core.utils.timeit import timed
 
 
@@ -158,6 +157,7 @@ class Line(BaseModel):
     model: Any
     prefix: str
     schema: Any
+    actions: dict
     fields: list[Field]
     id: Optional[uuid.UUID] = None
     lsn: Optional[int] = None
@@ -206,6 +206,10 @@ class Line(BaseModel):
     def as_button_delete(self, target_id: str|None = None, backdrop: str|None = None):
         backdrop = self.get_backdrop_method(backdrop)
         return self.render(block_name='button_delete', target_id=target_id, backdrop=backdrop)
+
+    def as_button_actions(self, target_id: str|None = None, backdrop: str|None = None):
+        backdrop = self.get_backdrop_method(backdrop)
+        return self.render(block_name='button_actions', target_id=target_id, backdrop=backdrop)
 
     def as_form(self):
         return self.render(block_name='as_form')
@@ -272,6 +276,18 @@ class ViewTable(ViewGet):
 
 
 
+def get_model_actions(model_name, adapter):
+    actions = {}
+    for i in dir(adapter):
+        if i.startswith(f'action_{model_name}'):
+            func = getattr(adapter, i),
+            actions.update({
+                i: {
+                    'func': getattr(adapter, i),
+                    'doc': func.__doc__
+                }
+            })
+    return actions
 
 class ClassView:
     """
@@ -280,6 +296,7 @@ class ClassView:
     request: Request
     model: Model
     params: Optional[QueryParams] | dict | None
+    actions: dict | None
     table: Optional[ViewTable] = None
     create: Optional[ViewCreate] = None
     update: Optional[ViewUpdate] = None
@@ -308,6 +325,7 @@ class ClassView:
         else:
             self.model = request.scope['env'][model]
         assert self.model, 'Model is not defined'
+        self.actions = get_model_actions(model, self.model.adapter)
         self.env = request.scope['env']
         self.prefix = prefix or _get_prefix()
         self.exclude = exclude or []
@@ -329,8 +347,6 @@ class ClassView:
         """
         Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
         """
-        if field_name == 'company_id':
-            a=1
         fielinfo = schema.model_fields[field_name]
         prefix = kwargs.get('prefix') or self.prefix
         res = ''
@@ -368,9 +384,9 @@ class ClassView:
                 model = self.model
             elif model_name != self.model.name:
                 model = self.env[model_name]
-        if not model:
-            a=1
         assert model, f'Model for field {field_name} is not defined'
+        if field_name == 'quant_src_id':
+            a=1
         return Field(**{
             'field_name': field_name,
             'type': res,
@@ -440,7 +456,8 @@ class ClassView:
             company_id=company_id,
             prefix=prefix,
             fields=fields,
-            id=id
+            id=id,
+            actions=self.actions
         )
 
     @timed
