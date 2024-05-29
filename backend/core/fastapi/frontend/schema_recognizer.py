@@ -180,6 +180,12 @@ class Line(BaseModel):
             raise
         return rendered_html
 
+    def get_field(self, field_name: str) -> Field | None:
+        for field in self.fields:
+            if field.field_name == field_name:
+                return field
+        return None
+
     def get_backdrop_method(self, backdrop):
         if backdrop:
             return getattr(self, f'as_button_{backdrop}')()

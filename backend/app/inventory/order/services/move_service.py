@@ -60,20 +60,22 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return move
 
     @permit('move_create')
-    async def create(self, obj: CreateSchemaType, parent: Order | Move = None, commit=True) -> ModelType:
+    async def create(self, obj: CreateSchemaType, parent: Order | Move | None = None, commit=True) -> ModelType:
         """
         Входом для создания Мува может быть
          - Order - когда человек или система целенаправлено создают некий Ордер ( Ордер на примеку или Ордер на перемещение)
          - OrderType - когда Выбирается некий тип(правила) применяемые к определенному обьекту, Товарру/Упаковке
          - Move - Когда идет двуэтапное движение, тогда правила беруться из Родительского Мува
-         - None - Тогда система подберет автоматически OrderType согласно стратегии размещения
+         - None - Тогда система подберет автоматически OrderType согласно подходящем
 
          Стратегия такова
          Если указана локация в move, то проверяется допустимость этой локации согласно правилам OrderType
          Если указан Quant, то сразу идем в Quant и фильтруем только его
          Если локация не указана, то поиск доступных квантов будет происходить в допустимых в OrderType
         """
-        location_env = self.env['location']
+        location_service = self.env['location'].service
+        order_type_service = self.env['order_type'].service
+        quant_service = self.env['quant'].service
         if obj.type == MoveType.PRODUCT:
 
             """ ПОДБОР ИСХОДЯЩЕГО КВАНТА/ЛОКАЦИИ"""
@@ -82,16 +84,18 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             quant_dest_entity: Quant | None = None
 
             assert obj.product_id, 'Product is required if Move Type is  Product'
-            if obj.order_type_id:
-                order_type_entity = await self.env['order_type'].service.get(obj.order_type_id)
+            if not obj.order_type_id:
+                order_type_entity = order_type_service.get_by_attrs(**obj.model_dump()) #TODO: его надо реализовать
+            elif obj.order_type_id:
+                order_type_entity = await order_type_service.get(obj.order_type_id)
             elif isinstance(parent, Order):
                 order_type_entity = parent.order_type_rel
             elif isinstance(parent, Move):
-                order_type_entity = await self.env['order_type'].service.get(parent.order_type_id)
+                order_type_entity = await order_type_service.get(parent.order_type_id)
             elif isinstance(parent, OrderType):
                 order_type_entity = parent
             """Проверяем, что мув может быть создан согласно праавилам в Order type """
-            quant_service = self.env['quant'].service
+
 
             location_class_src_ids = list(
                 set(order_type_entity.allowed_location_class_src_ids) -
@@ -119,6 +123,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 lot_ids=[obj.lot_id] if obj.lot_id else None,
                 partner_id=obj.partner_id if obj.partner_id else None
             )
+            # TODO: здесь нужно вставить метод FEFO, FIFO, LIFO, LEFO
             if not available_src_quants:
                 """Поиск локаций, которые могут быть negative"""
                 location_src_search_params = {
@@ -128,9 +133,9 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                     "is_active": True,
                     "is_can_negative": True
                 }
-                locations_src = await location_env.service.list(_filter=location_src_search_params)
+                locations_src = await location_service.list(_filter=location_src_search_params)
                 for loc_src in locations_src:
-                    quant_src_entity = await self.env['quant'].service.create(obj={
+                    quant_src_entity = await quant_service.create(obj={
                         "product_id": obj.product_id,
                         "store_id": obj.store_id,
                         "location_id": loc_src.id,
@@ -158,12 +163,14 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                             src_quant.reserved_quantity += remainder
                             remainder = 0.0
                             quant_src_entity = src_quant
-                            self.session.add(src_quant)
+                            self.session.add(quant_src_entity)
                             break
                         elif remainder >= src_quant.available_quantity:
-                            remainder -= src_quant.quantity
+                            remainder -= src_quant.available_quantity
                             src_quant.quantity = 0.0
-                            self.session.add(src_quant)
+                            quant_src_entity = src_quant
+                            self.session.add(quant_src_entity)
+                            break
                     else:
                         pass#TODO: единицы измерения
                 if remainder:
@@ -172,7 +179,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                         "снова идем по квантам и берем то, у которого локация позволяет сделать отрицательный остсток"
                         for src_quant in available_src_quants:
                             if obj.uom_id == src_quant.uom_id:
-                                q_location = await self.env['location'].service.get(src_quant.location_id)
+                                q_location = await location_service.get(src_quant.location_id)
                                 if q_location.is_can_negative:
                                     src_quant.reserved_quantity += remainder
                                     remainder = 0.0
@@ -220,12 +227,14 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 product_id=obj.product_id,
                 store_id=obj.store_id,
                 id=obj.quant_dest_id,
+                exclude_id=quant_src_entity.id, # Исключаем из возможного поиска квант источника, ибо нехер
                 location_class_ids=location_class_dest_ids,
                 location_ids=location_dest_ids,
                 location_type_ids=location_type_dest_ids,
                 lot_ids=[obj.lot_id] if obj.lot_id else None,
                 partner_id=obj.partner_id if obj.partner_id else None
             )
+            # TODO: здесь нужно вставить метод Putaway
             if not available_dest_quants:
                 """Поиск локаций, которые могут быть negative"""
                 location_dest_search_params = {
@@ -234,9 +243,9 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                     "id__in": location_dest_ids,
                     "is_active": True,
                 }
-                locations_dest = await location_env.service.list(_filter=location_dest_search_params)
+                locations_dest = await location_service.list(_filter=location_dest_search_params)
                 for loc_dest in locations_dest:
-                    quant_dest_entity = await self.env['quant'].service.create(obj={
+                    quant_dest_entity = await quant_service.create(obj={
                         "product_id": obj.product_id,
                         "store_id": obj.store_id,
                         "location_id": loc_dest.id,

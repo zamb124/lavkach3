@@ -40,6 +40,7 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
             product_id:                         uuid.UUID,
             store_id:                           uuid.UUID,
             id:                                 uuid.UUID = None,
+            exclude_id:                         uuid.UUID = None,
             location_class_ids:                 [uuid.UUID] = None,
             location_ids:                       [uuid.UUID] = None,
             location_type_ids:                  [uuid.UUID] = None,
@@ -55,6 +56,8 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
         else:
             if product_id:
                 query = query.where(self.model.product_id == product_id)
+            if exclude_id:
+                query = query.where(self.model.id != exclude_id)
             if store_id:
                 query = query.where(self.model.store_id == store_id)
             if location_class_ids:
