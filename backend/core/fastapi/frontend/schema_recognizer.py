@@ -376,6 +376,7 @@ class ClassView:
                 model = self.env[model_name]
                 submodel = ClassView(request=self.request, model=model.name)
                 line = submodel._get_line(schema=c, model=model, prefix=prefix)
+                schema = c
             else:
                 res += c.__name__.lower()
 
@@ -666,7 +667,7 @@ class ClassView:
                 elif col['type'] == 'id':
                     if not col['val']:
                         col['val'] = []
-                elif col['type'].endswith('list_id'):
+                elif col['type'].endswith('list_rel'):
                     if val_data := col['val']:
                         line_prefix = f'{line_dict["prefix"]}{col["field_name"]}'
                         submodel = ClassView(request=self.request, model=col['model'])
