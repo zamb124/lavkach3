@@ -203,7 +203,8 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 await self.session.commit()
                 await self.session.refresh(entity)
                 for _rel_method, _rel_dump in relcations_to_create:
-                    setattr(_rel_dump, 'order_id', entity.id)
+                    await self.session.refresh(entity)
+                    setattr(_rel_dump, f'{self.model.__tablename__}_id', entity.id)
                     await _rel_method(obj=_rel_dump, commit=True, parent=entity)
                 await self.session.refresh(entity)
             except IntegrityError as e:

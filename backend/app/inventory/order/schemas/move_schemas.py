@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import LocationClass
@@ -56,6 +56,11 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
     move_id: Optional[UUID4] = Field(default=None, model='move', title='Parent Move')
     status: MoveStatus = Field(title='Status', table=True)
     suggest_list_rel: Optional[list[SuggestScheme]] = Field(default=[], title='Suggests', form=True)
+
+    @computed_field
+    @property
+    def title(self) -> str:
+        return f'[{self.type.name}] - {self.quantity} - {self.status.name}'
 
 
 class MoveFilter(BaseFilter):
