@@ -19,7 +19,7 @@ class LocationType(Base, AllMixin, LocationMixin):
     __tablename__ = "location_type"
     lsn_seq = Sequence(f'location_type_lsn_seq')
     title: Mapped[str] = mapped_column(index=True)
-    store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
+    store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Разрешенные типы упаковок
     exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Исключение типы упаковок
     is_homogeneity: Mapped[Optional[bool]] = mapped_column(default=False, index=True)  # Запрет на 1KU 2х разных партий
@@ -38,7 +38,7 @@ class Location(Base, AllMixin, LocationMixin):
     __tablename__ = "location"
     lsn_seq = Sequence(f'location_lsn_seq')
     title: Mapped[str] = mapped_column(index=True)
-    store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
+    store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     location_class: Mapped[LocationClass] = mapped_column(index=True)
     location_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('location_type.id'), index=True)
     location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id"), index=True)

@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship, mapped_column, Mapped
 from app.inventory.location.enums import LocationClass, PutawayStrategy
 from app.inventory.location.models import Location
 from app.inventory.order.enums.order_enum import MoveStatus, OrderClass, BackOrderAction, ReservationMethod, \
-    OrderStatus, MoveType, SuggestType
+    OrderStatus, MoveType, SuggestType, SuggestStatus
 from app.inventory.quant.models import Lot, Quant
 from core.db import Base
 from core.db.mixins import AllMixin, CreatedEdited
@@ -151,7 +151,7 @@ class Move(Base, AllMixin, CreatedEdited):
 
 
 
-class Suggest(Base, AllMixin):
+class Suggest(Base, AllMixin, CreatedEdited):
     """
     Suggest Саджест, это набор минимальных д ействий для  [[Move]] выполнив который Move будет выполнен, например
     """
@@ -162,6 +162,7 @@ class Suggest(Base, AllMixin):
     type: Mapped[SuggestType]
     value: Mapped[Optional[str]]    # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
     user_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
+    status: Mapped[SuggestStatus] = mapped_column(default=SuggestStatus.WAITING, index=True)
 
 class MoveLog(Base, AllMixin):
     """

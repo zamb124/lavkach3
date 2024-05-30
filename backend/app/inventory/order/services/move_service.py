@@ -82,7 +82,6 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "user_id": self.user.user_id
             }, commit=False)
             # Итого простой кейс, отсканировал локацию-источник, отсканировал товар, отсканировал локацию-назначения
-            a=1
 
     @permit('move_user_assign')
     async def user_assign(self, move_id: uuid.UUID, user_id: uuid.UUID):
@@ -341,6 +340,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         await self.create_suggests(move)
     @permit('move_create')
     async def create(self, obj: CreateSchemaType, parent: Order | Move | None = None, commit=True) -> ModelType:
+        obj.created_by = self.user.user_id
+        obj.edited_by = self.user.user_id
         return await super(MoveService, self).create(obj)
 
     @permit('move_delete')
