@@ -231,21 +231,19 @@
 
 {% block javascript %}
     <!-- JAVASCRIPT -->
-    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/ws.js"></script>
+
+    <script src="{{ url_for('static' ,path='libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static' ,path='libs/simplebar/dist/simplebar.min.js') }}"></script>
+    <script src="{{ url_for('static' ,path='libs/node-waves/dist/waves.min.js') }}"></script>
+    <script src="{{ url_for('static' ,path='libs/feather-icons/dist/feather.min.js') }}"></script>
+    <script src="{{ url_for('static' ,path='js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
+    <script src="{{ url_for('static' ,path='js/plugins.js') }}"></script>
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    <script src="{{ url_for('static' ,path='js/app.js') }}"></script>
+
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
-    {#    <script>#}
-    {#        const links = document.querySelectorAll('a[class="nav-link"]')#}
-    {##}
-    {#        links.forEach(link => {#}
-    {#            link.addEventListener('click', function () {#}
-    {#                links.forEach(link => {#}
-    {#                    link.classList.remove('active')#}
-    {#                })#}
-    {#                this.classList.add('active')#}
-    {#            })#}
-    {#        })#}
-    {#    </script>#}
     <script>
         function getCookieValue(name) {
             const nameString = name + "="
@@ -467,27 +465,28 @@
                 body.style.removeProperty('overflow');
             })
         }
+
+        var body_init = null
+        htmx.on('htmx:xhr:loadstart', (e) => {
+            if (!body_init) {
+
+                body_init = 1
+            }
+        })
     </script>
-
-
-    <script src="{{ url_for('static' ,path='libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ url_for('static' ,path='libs/simplebar/dist/simplebar.min.js') }}"></script>
-    <script src="{{ url_for('static' ,path='libs/node-waves/dist/waves.min.js') }}"></script>
-    <script src="{{ url_for('static' ,path='libs/feather-icons/dist/feather.min.js') }}"></script>
-    <script src="{{ url_for('static' ,path='js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
-    <script src="{{ url_for('static' ,path='js/plugins.js') }}"></script>
-    <script src="{{ url_for('static' ,path='js/app.js') }}"></script>
-    <script src="https://cdn.lordicon.com/lordicon.js"></script>
-    {% block extra_js %}
-        <script>
-            main()
-        </script>
-    {% endblock extra_js %}
-
+    <script>
+        window.doN = true;
+    </script>
     <!-- App js -->
 {% endblock javascript %}
 
 </body>
+<script>
+    //Не разобрался почему так, но без этого не работает
+    const timerId = setTimeout(() => {
+        main()
+    }, 1000)
+</script>
 
 
 </html>

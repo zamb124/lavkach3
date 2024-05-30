@@ -39,8 +39,6 @@ class SuggestScheme(SuggestCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
 
-    class Config:
-        from_attributes = True
 
 
 class SuggestFilter(BaseFilter):

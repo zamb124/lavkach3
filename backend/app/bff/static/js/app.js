@@ -1,4 +1,5 @@
-function main () {
+function main() {
+    console.log('MAIN INIT')
     var d = document.querySelector(".navbar-menu").innerHTML, M = 7, t = "en", a = localStorage.getItem("language");
 
     function o() {
@@ -499,6 +500,8 @@ function main () {
     }), o(), s(), p(), window.addEventListener("resize", function () {
         q && clearTimeout(q), q = setTimeout(W, 2e3)
     })
+const body = document.querySelector("body");
+    htmx.process(body)
 };
 
 var mybutton = document.getElementById("back-to-top");
@@ -514,4 +517,4 @@ function topFunction() {
 mybutton && (window.onscroll = function () {
     scrollFunction()
 });
-main()
+
