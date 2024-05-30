@@ -151,7 +151,7 @@ class Move(Base, AllMixin, CreatedEdited):
 
 
 
-class Suggest(Base, AllMixin, CreatedEdited):
+class Suggest(Base, AllMixin):
     """
     Suggest Саджест, это набор минимальных д ействий для  [[Move]] выполнив который Move будет выполнен, например
     """

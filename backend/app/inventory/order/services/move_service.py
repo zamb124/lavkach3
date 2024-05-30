@@ -61,7 +61,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                     "priority": 1,
                     "type": SuggestType.IN_LOCATION,
                     "value": f'{location_src.id}',
-                    "user_id": self.user.user_id
+                   # "user_id": self.user.user_id
                 }, commit=False)
             """Ввод Партии""" #TODO:  пока хз как праильное
             """Далее саджест на идентификацию товара"""
@@ -70,7 +70,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "priority": 2,
                 "type": SuggestType.IN_PRODUCT,
                 "value": f'{move.quantity}',
-                "user_id": self.user.user_id
+               # "user_id": self.user.user_id
             }, commit=False)
             """Далее саджест на ввод срока годности"""  #TODO:  пока хз как праильное
             """Далее саджест идентификации локации назначения"""
@@ -79,7 +79,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "priority": 3,
                 "type": SuggestType.IN_LOCATION,
                 "value":f'{location_dest.id}',
-                "user_id": self.user.user_id
+               # "user_id": self.user.user_id
             }, commit=False)
             # Итого простой кейс, отсканировал локацию-источник, отсканировал товар, отсканировал локацию-назначения
 

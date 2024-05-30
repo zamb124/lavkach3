@@ -18,9 +18,9 @@ from sqlalchemy_utils.types import PasswordType
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'
-down_revision = 'f25a26c3c221'
+down_revision = '614e1673cb90'
 branch_labels = None
-depends_on = 'f25a26c3c221'
+depends_on = '614e1673cb90'
 
 
 def upgrade():
@@ -656,6 +656,7 @@ def upgrade():
             'created_at': datetime.now(),
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
+            'is_can_negative': True,
             'location_type_id': location_type_partner_company_1,
             'location_class': 'partner',
             "title": f"LOCATION_PARTNER_COMPANY 1",
@@ -667,6 +668,7 @@ def upgrade():
             'created_at': datetime.now(),
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
+            "is_can_negative": False,
             'location_type_id': location_type_resource_company_1,
             'location_class': 'resource',
             "title": f"LOCATION_RESOURCE_COMPANY 1",
@@ -678,6 +680,7 @@ def upgrade():
             'created_at': datetime.now(),
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
+            "is_can_negative": False,
             'location_type_id': location_type_zone_company_1,
             'location_class': 'zone',
             "title": f"LOCATION_ZONE_COMPANY 1",
@@ -692,6 +695,7 @@ def upgrade():
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_lost_company_1,
             'location_class': 'lost',
+            'is_can_negative': True,
             "title": f"LOCATION_LOST_COMPANY 1",
         },
         {
@@ -703,6 +707,7 @@ def upgrade():
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_inventory_company_1,
             'location_class': 'inventory',
+            'is_can_negative': True,
             "title": f"LOCATION_INVENTORY_COMPANY 1",
         },
         {
@@ -714,6 +719,7 @@ def upgrade():
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_scrap_company_1,
             'location_class': 'scrap',
+            "is_can_negative": False,
             "title": f"LOCATION_SCRAP_COMPANY 1",
         },
         {
@@ -725,6 +731,7 @@ def upgrade():
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_scrapped_company_1,
             'location_class': 'scrapped',
+            "is_can_negative": False,
             "title": f"LOCATION_SCRAPED_COMPANY 1",
         },
         {
@@ -736,6 +743,7 @@ def upgrade():
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_buffer_company_1,
             'location_class': 'buffer',
+            "is_can_negative": False,
             "title": f"LOCATION_BUFFER_COMPANY 1",
         },
         {
@@ -744,8 +752,10 @@ def upgrade():
             "company_id": company_2_id,
             'created_at': datetime.now(),
             'updated_at': datetime.now(),
+            'store_id': store_1_company_2_id,
             'location_type_id': location_type_partner_company_2,
             'location_class': 'partner',
+            'is_can_negative': True,
             "title": f"LOCATION_PARTNER_COMPANY 2",
         },
         {
@@ -757,6 +767,7 @@ def upgrade():
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_resource_company_2,
             'location_class': 'resource',
+            "is_can_negative": False,
             "title": f"LOCATION_RESOURCE_COMPANY 2",
         },
         {
@@ -768,6 +779,7 @@ def upgrade():
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_zone_company_2,
             'location_class': 'zone',
+            "is_can_negative": False,
             "title": f"LOCATION_ZONE_COMPANY 2",
         },
 
@@ -780,6 +792,7 @@ def upgrade():
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_lost_company_2,
             'location_class': 'lost',
+            'is_can_negative': True,
             "title": f"LOCATION_LOST_COMPANY 2",
         },
         {
@@ -791,6 +804,7 @@ def upgrade():
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_inventory_company_2,
             'location_class': 'inventory',
+            "is_can_negative": False,
             "title": f"LOCATION_INVENTORY_COMPANY 2",
         },
         {
@@ -802,6 +816,7 @@ def upgrade():
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_scrap_company_2,
             'location_class': 'scrap',
+            "is_can_negative": False,
             "title": f"LOCATION_SCRAP_COMPANY 2",
         },
         {
@@ -813,6 +828,7 @@ def upgrade():
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_scrapped_company_2,
             'location_class': 'scrapped',
+            "is_can_negative": False,
             "title": f"LOCATION_SCRAPED_COMPANY 2",
         },
         {
@@ -824,6 +840,7 @@ def upgrade():
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_buffer_company_2,
             'location_class': 'buffer',
+            "is_can_negative": False,
             "title": f"LOCATION_BUFFER_COMPANY 2",
         },
     ])
@@ -838,6 +855,7 @@ def upgrade():
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_place_company_1,
             'location_class': 'place',
+            "is_can_negative": False,
             "title": f"LOCATION_PLACE_COMPANY 1",
         },
 
@@ -851,6 +869,7 @@ def upgrade():
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_package_company_1,
             'location_class': 'package',
+            "is_can_negative": False,
             "title": f"LOCATION_PACKAGE_COMPANY 1",
         },
         {
@@ -863,6 +882,7 @@ def upgrade():
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_place_company_2,
             'location_class': 'place',
+            "is_can_negative": False,
             "title": f"LOCATION_PLACE_COMPANY 2",
         },
         {
@@ -875,6 +895,7 @@ def upgrade():
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_package_company_2,
             'location_class': 'package',
+            "is_can_negative": False,
             "title": f"LOCATION_PACKAGE_COMPANY 2",
         },
     ])
