@@ -466,6 +466,9 @@
             })
         }
 
+        htmx.on('htmx:afterSwap', (e) => {
+            //trans()
+        })
         var body_init = null
         htmx.on('htmx:xhr:loadstart', (e) => {
             if (!body_init) {

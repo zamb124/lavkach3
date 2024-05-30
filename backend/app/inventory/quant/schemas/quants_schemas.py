@@ -53,7 +53,7 @@ class QuantScheme(QuantCreateScheme, TimeStampScheme):
     @computed_field
     @property
     def title(self) -> str:
-        return f'{self.quantity} | {self.reserved_quantity} | {self.incoming_quantity}'
+        return f'Q-{self.quantity} | R-{self.reserved_quantity} | I-{self.incoming_quantity}'
 
     class Config:
         from_attributes = True
