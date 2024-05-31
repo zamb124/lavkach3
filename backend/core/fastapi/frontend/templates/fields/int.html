@@ -2,7 +2,7 @@
     <input
             type="number"
             class="int form-control"
-            name="{{ field.prefix~field.field_name }}"
+            name="{{ field.prefix~'--'~field.field_name }}"
             placeholder="Enter {{ field.title }}"
             {% if field.is_required %}required {% endif %}
             value="{{ field.val }}"

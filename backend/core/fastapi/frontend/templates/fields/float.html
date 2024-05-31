@@ -2,7 +2,7 @@
     <input
             type="number"
             class="float form-control"
-            name="{{ field.prefix~field.field_name }}"
+            name="{{ field.prefix~'--'~field.field_name }}"
             step="any"
             {% if field.required %}required {% endif %}
             placeholder="Enter {{ field.title }}"

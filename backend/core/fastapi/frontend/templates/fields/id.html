@@ -2,7 +2,7 @@
         <input
                 class="id form-control" hidden
                 {% if field.required %} required {% endif %}
-                name="{{ field.prefix ~ field.field_name }}"
+                name="{{ field.prefix ~'--'~ field.field_name }}"
                 placeholder="Enter {{ field.title }}"
                 value="{{ field.val if field.val else "" }}"
         >
@@ -11,7 +11,7 @@
     <input
                 class="form-control" hidden
                 {% if field.required %} required {% endif %}
-                name="{{ field.prefix ~ field.field_name }}"
+                name="{{ field.prefix ~'--'~ field.field_name }}"
                 placeholder="Enter {{ field.title }}"
                 value="{{ field.val if field.val else "" }}"
         >

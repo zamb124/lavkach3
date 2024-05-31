@@ -1,8 +1,8 @@
 {% block as_form %}
     <select class="list-uuid form-control is-valid"
-            id="{{ field.prefix }}{{ field.field_name }}"
+            id="{{ field.prefix ~'--'~ field.field_name }}"
             {% if field.required %} required {% endif %}
-            name="{{ field.prefix }}{{ field.field_name }}"
+            name="{{ field.prefix ~'--'~ field.field_name }}"
             data-choices multiple
     >   {% if field.val %}
         {% for val in field.val %}
@@ -12,7 +12,7 @@
     </select>
     <script>
         (async function () {
-            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+            let element = document.getElementById("{{field.prefix ~'--'~ field.field_name }}");
             let choices = new Choices(element, {
                 placeholder: true,
                 placeholderValue: "Enter {{ field.title }}",
@@ -92,11 +92,11 @@
 {% endblock %}
 
 {% block as_view %}
-        <div class="text-start" id="{{ field.prefix }}{{ field.field_name }}">
+        <div class="text-start" id="{{ field.prefix ~'--'~ field.field_name }}">
         </div>
     <script>
         (async function () {
-            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+            let element = document.getElementById("{{field.prefix ~'--'~ field.field_name }}");
 
             async function getValues() {
                 var id__in = {% if field.val %}"{{ ','.join(field.val) }}"{% else %}""{% endif %}

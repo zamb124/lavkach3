@@ -1,11 +1,11 @@
 {% block as_form %}
-    <input name="{{ field.prefix~field.field_name }}" id="{{ field.prefix~field.field_name }}"
+    <input name="{{ field.prefix ~'--'~ field.field_name }}" id="{{ field.prefix ~'--'~ field.field_name }}"
             class="list-str form-control" data-choices data-choices-limit="Required Limit" data-choices-removeItem
            value="{% if field.val %}{{ ','.join(field.val) }}{% endif %}"
     />
     <script>
     (async function () {
-            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+            let element = document.getElementById("{{field.prefix ~'--'~ field.field_name }}");
             let choices = new Choices(element, {
                 placeholderValue: "Enter {{ field.title }}",
                 multiple: true,
@@ -15,13 +15,13 @@
     </script>
 {% endblock %}
 {% block as_view %}
-    <input name="{{ field.prefix~field.field_name }}" id="{{ field.prefix~field.field_name }}"
+    <input name="{{ field.prefix~field.field_name }}" id="{{ field.prefix~'--'~field.field_name }}"
             class="list_str form-control" data-choices data-choices-text-disabled-true
            value="{% if field.val %}{{ ','.join(field.val) }}{% endif %}"
     />
     <script>
     (async function () {
-            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+            let element = document.getElementById("{{field.prefix ~'--'~ field.field_name }}");
             let choices = new Choices(element);
             choices.disable()
         })();

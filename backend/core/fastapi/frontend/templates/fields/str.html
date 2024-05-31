@@ -2,7 +2,7 @@
         <input
                 class="form-control"
                 {% if field.required %} required {% endif %}
-                name="{{ field.prefix ~ field.field_name }}"
+                name="{{ field.prefix ~'--'~ field.field_name }}"
                 placeholder="Enter {{ field.title }}"
                 value="{{ field.val if field.val else "" }}"
         >

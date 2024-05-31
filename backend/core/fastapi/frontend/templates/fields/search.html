@@ -1,7 +1,7 @@
 {% block as_form %}
     <div class="search-box">
         <input type="search"
-               name="{{ field.prefix }}search"
+               name="{{ field.prefix ~'--'~ 'search'}}"
                id="search"
                class="form-control search"
                placeholder="{{ field.title }}"

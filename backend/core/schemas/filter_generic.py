@@ -58,10 +58,17 @@ class BaseFilter(Filter):
         dump = self.model_dump(mode='json')
         for field in self.model_fields_set:
             f = dump.get(field)
+            model_field = self.model_fields.get(field)
+            if model_field:
+                if model_field.alias:
+                    field = model_field.alias
             if isinstance(f, str):
                 params.update({field: f})
             elif isinstance(f, Iterable):
-                params.update({field: ','.join(f)})
+                try:
+                    params.update({field: ','.join(f)})
+                except Exception as ex:
+                    a=1
             else:
                 params.update({field: f})
         return params

@@ -1,6 +1,6 @@
 {% block as_form %}
-    <select id="{{ field.prefix~field.field_name }}"
-            name="{{ field.prefix~field.field_name }}"
+    <select id="{{ field.prefix~'--'~field.field_name }}"
+            name="{{ field.prefix~'--'~field.field_name }}"
             {% if field.required %} required {% endif %}
             class="list_enum form-control"
             data-choices data-choices-removeItem
@@ -12,7 +12,7 @@
     </select>
     <script>
         (async function () {
-            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+            let element = document.getElementById("{{field.prefix ~'--'~ field.field_name }}");
             let choices = new Choices(element, {
                 placeholderValue: "Enter {{ field.title }}",
                 multiple: true,
@@ -32,8 +32,8 @@
     </script>
 {% endblock %}
 {% block as_view %}
-    <select id="{{ field.prefix~field.field_name }}"
-            name="{{ field.prefix~field.field_name }}"
+    <select id="{{ field.prefix ~'--'~ field.field_name }}"
+            name="{{ field.prefix ~'--'~ field.field_name }}"
             class="form-control"
             data-choices
             multiple
@@ -44,7 +44,7 @@
     </select>
     <script>
         (async function () {
-            let element = document.getElementById("{{field.prefix}}{{ field.field_name }}");
+            let element = document.getElementById("{{field.prefix ~'--'~ field.field_name }}");
             let choices = new Choices(element, {
                 multiple: true,
             });

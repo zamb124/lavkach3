@@ -165,6 +165,7 @@ class Line(BaseModel):
     company_id: Optional[uuid.UUID] = None
     display_title: Optional[str] = None
     selected: Optional[bool] = False
+    is_inline: bool = False
 
     def render(self, block_name: str, target_id: str | None = None, backdrop: str | None = None):
         try:
@@ -307,6 +308,7 @@ class ClassView:
     join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
     sort: Optional[dict] = {}
     prefix: str
+    is_inline: bool = False
 
     @timed
     def __init__(self,
@@ -317,7 +319,8 @@ class ClassView:
                  exclude: list = [],
                  join_related: bool = True,
                  join_fields: list | None = None,
-                 sort: list | None = None
+                 sort: list | None = None,
+                 is_inline: bool = False
                  ):
         self.request = request
         if isinstance(model, Model):
@@ -329,6 +332,7 @@ class ClassView:
         self.env = request.scope['env']
         self.prefix = prefix or _get_prefix()
         self.exclude = exclude or []
+        self.is_inline = is_inline
         if params:
             self.params = params
         else:
@@ -458,7 +462,8 @@ class ClassView:
             prefix=prefix,
             fields=fields,
             id=id,
-            actions=self.actions
+            actions=self.actions,
+            is_inline=self.is_inline
         )
 
     @timed
@@ -466,7 +471,7 @@ class ClassView:
         """
             Метод отдает фильтр , те столбцы с типами для HTMX шаблонов
         """
-        line = self._get_line(schema=self.model.schemas.filter, prefix=f'{self.prefix}--0--')
+        line = self._get_line(schema=self.model.schemas.filter, prefix=f'{self.prefix}--F')
         self.filter = ViewFilter(model=self.model, line=line, prefix=self.prefix)
         return render_block(
             environment=environment, template_name=f'views/filter.html',
@@ -491,7 +496,7 @@ class ClassView:
             Метод отдает создать схему , те столбцы с типами для HTMX шаблонов
         """
         prefix = self.prefix
-        line = self._get_line(schema=self.model.schemas.create, model_id=model_id, prefix=f'{self.prefix}--0--')
+        line = self._get_line(schema=self.model.schemas.create, model_id=model_id, prefix=f'{self.prefix}--H')
         self.create = ViewCreate(line=line, id=model_id, prefix=prefix, model=self.model)
         return render_block(
             environment=environment,
@@ -644,7 +649,7 @@ class ClassView:
         prefix = kwargs.get('prefix') or self.prefix
         type = kwargs.get('type')
         cursor = 0
-        line = self._get_line(schema=schema, prefix=f'{prefix}--0--', type=type)
+        line = self._get_line(schema=schema, prefix=f'{prefix}--H', type=type)
         if not data:
             async with model.adapter as a:
                 resp_data = await a.list(params=params)
@@ -657,7 +662,7 @@ class ClassView:
         htmx_line_temp = line.model_dump()
         for row_number, row in enumerate(data):
             line_dict = htmx_line_temp.copy()
-            line_dict['prefix'] = prefix + f'--{row_number}--'
+            line_dict['prefix'] = prefix + f'--{row_number}'
             for col in line_dict['fields']:
                 col['prefix'] = line_dict['prefix']
                 col['val'] = row[col['field_name']]
@@ -669,8 +674,8 @@ class ClassView:
                         col['val'] = []
                 elif col['type'].endswith('list_rel'):
                     if val_data := col['val']:
-                        line_prefix = f'{line_dict["prefix"]}{col["field_name"]}'
-                        submodel = ClassView(request=self.request, model=col['model'])
+                        line_prefix = f'{line_dict["prefix"]}--{col["field_name"]}'
+                        submodel = ClassView(request=self.request, model=col['model'], is_inline=True)
                         col['line'], col['lines'], _ = await submodel._get_data(
                             schema=col['schema'], data=val_data, prefix=line_prefix,
                             model=col['model'], join_related=False, type='inline'
@@ -685,8 +690,9 @@ class ClassView:
                 display_title=row.get('title'),
                 company_id=row.get('company_id'),
                 fields=line_dict['fields'],
-                prefix=f"{prefix}--{row_number}",
-                idx=row_number
+                prefix=f"{prefix}--{row['lsn']}",
+                idx=row_number,
+                is_inline=self.is_inline
             ))
         logging.info(f"_GET_DATA LINES SERIALIZE: {datetime.datetime.now() - time_start}")
         ### Если необходимо сджойнить

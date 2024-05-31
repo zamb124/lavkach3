@@ -90,13 +90,13 @@
 {% block button_actions %}
     <div class="dropdown">
 
-        <button class="btn btn-soft-info" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn btn-soft-info" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="{{ "actions-" ~ line.prefix }}">
             <i class="ri-more-fill align-middle h4"></i>
         </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-
-            <li>
+        <ul class="dropdown-menu" aria-labelledby="{{ "actions-" ~'--'~ line.prefix }}">
+            <li class="dropdown-item">
                 {% for action_name, action_vals in line.actions.items() %}
+
                     <a
                             data-key="t-{{ action_name }}"
                             hx-include="#{{ line.prefix }}"

@@ -3,8 +3,8 @@
                 class="bool form-check-input"
                 type="checkbox"
                 role="switch"
-                id="{{ field.prefix }}{{ field.field_name }}"
-                name="{{ field.prefix }}{{ field.field_name }}"
+                id="{{ field.prefix ~'--'~ field.field_name }}"
+                name="{{ field.prefix ~'--'~ field.field_name }}"
                 {% if field.val == True %} checked {% endif %}
         >
 {% endblock %}
@@ -14,8 +14,8 @@
                 type="checkbox"
                 role="switch"
                 disabled
-                id="{{ field.prefix }}{{ field.field_name }}"
-                name="{{ field.prefix }}{{ field.field_name }}"
+                id="{{ field.prefix ~'--'~ field.field_name }}"
+                name="{{ field.prefix ~'--'~ field.field_name }}"
                 {% if field.val == True %} checked {% endif %}
         >
 {% endblock %}

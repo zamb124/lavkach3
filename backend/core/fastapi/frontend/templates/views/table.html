@@ -1,13 +1,13 @@
 {% block widget %}
-    <div id="{{ 'table_' ~ cls.prefix }}"
+    <div id="{{ 'table_' ~'--'~ cls.prefix }}"
          hx-post="/base/table"
          hx-ext="json-enc"
          hx-vals='{
         "model": "{{ cls.model.name }}",
         "prefix": "{{ cls.prefix }}"
      }'
-         hx-trigger="change from:{{ '#filter_' ~ cls.prefix }} delay:500ms, load, update delay:500ms"
-         hx-include="{{ '#filter_' ~ cls.prefix }}"
+         hx-trigger="change from:{{ '#filter_' ~'--'~ cls.prefix }} delay:500ms, load, update delay:500ms"
+         hx-include="{{ '#filter_' ~'--'~ cls.prefix }}"
     >
         <div class="card htmx-indicator ">
             <table class="table ">
@@ -37,13 +37,13 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive " style="width: auto; min-height: 400px" data-show-columns="true">
-                <table class="table table-hover table-striped" id="{{ 'table_' ~ view.prefix }}" style="vertical-align: middle;"
+                <table class="table table-hover table-striped" id="{{ 'table-' ~'--'~ view.prefix }}" style="vertical-align: middle;"
                 >
                     <thead class="text-muted table-light">
                     <tr class="text-uppercase fs-13" style="text-align: center">
                         <th scope="col" >
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="{{ view.prefix ~ '--checkAll' }}"
+                                <input class="form-check-input" type="checkbox" id="{{ view.prefix ~'--'~ 'checkAll' }}"
                                        value="option">
                             </div>
                         </th>
@@ -55,9 +55,24 @@
                         <th style="min-width: 14rem">Active</th>
                     </tr>
                     </thead>
-                    <div class="rows">
+                    <tbody id="{{ 'tbody-table' ~'--'~ view.prefix }}">
                         {% for line in view.lines %}
-                            <tr id="{{ line.prefix }}" class="mb-0 fw-semibold text-muted">
+                            <tr id="{{ line.prefix }}"
+                                class="mb-0 fw-semibold text-muted"
+                                      {% if loop.last and not line.is_inline %}
+                                            hx-include="{{ '#filter_' ~'--'~ view.prefix }}"
+                                            hx-post="/base/table"
+                                            hx-ext="json-enc"
+                                            hx-trigger="revealed" hx-swap="afterend" hx-select="#{{ 'tbody-table' ~'--'~ view.prefix }}>tr"
+                                            hx-target="#{{ line.prefix }}"
+                                            hx-vals='{
+                                                "model": "{{ view.model.name }}",
+                                                "{{ view.line.prefix ~'--'~ 'cursor'}}": "{{ line.lsn }}",
+                                                "prefix": "{{ view.prefix }}"
+                                            }'
+                                        {% endif %}
+
+                            >
                                 <th scope="row">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="{{ line.prefix ~ '--check' }}" value="">
@@ -82,23 +97,12 @@
                                         </li>
                                     </ul>
                                 </td>
+
                             </tr>
-                            {% if loop.last %}
-                                <div
-                                        hx-include="{{ '#filter_' ~ view.prefix }}"
-                                        hx-post="/base/table"
-                                        hx-ext="json-enc"
-                                        hx-trigger="revealed" hx-swap="afterend" hx-select="#rows"
-                                        hx-vals='{
-                                        "model": "{{ view.model.name }}",
-                                        "{{ view.line.prefix }}--cursor": "{{ line.lsn }}",
-                                        "prefix": "{{ view.prefix }}"
-                                     }'
-                                ></div>
-                            {% endif %}
+
                         {% endfor %}
 
-                    </div>
+                    </tbody>
                 </table>
                 <!------Таблица----->
             </div>
@@ -136,7 +140,6 @@
                                 {% for field in line.fields %}
                                     <td>{{ field.as_form()|safe }}</td>
                                 {% endfor %}
-
                             </tr>
 
                         {% endfor %}
@@ -154,7 +157,7 @@
                                hx-post="/base/table/line"
                                hx-vals='{
                                 "model": "{{ view.model.name }}",
-                                "prefix": "{{ view.prefix }}{{ view.field_name }}"
+                                "prefix": "{{ view.prefix ~'--'~ view.field_name }}"
                                 }'
                                class="btn btn-soft-secondary fw-medium">
                                 <i class="ri-add-fill me-1 align-bottom"></i> Add Item

@@ -1,7 +1,7 @@
 {% block as_form %}
         <select class="uuid form-control is-valid"
-                id="{{ field.prefix ~ field.field_name }}"
-                name="{{ field.prefix ~ field.field_name }}"
+                id="{{ field.prefix ~'--'~ field.field_name }}"
+                name="{{ field.prefix ~'--'~ field.field_name }}"
                 {% if field.required %} required {% endif %}
                 data-choices
         >
@@ -11,7 +11,7 @@
         </select>
     <script>
         (async function () {
-            let element = document.getElementById("{{field.prefix ~ field.field_name }}");
+            let element = document.getElementById("{{field.prefix ~'--'~ field.field_name }}");
             let choices = new Choices(element, {
                 placeholderValue: "Enter {{ field.title }}",
                 removeItemButton: true,
@@ -118,7 +118,7 @@
 {% endblock %}
 {% block as_view %}
     {% if field.val %}
-        <div id="{{ field.prefix~field.field_name }}"
+        <div id="{{ field.prefix~'--'~field.field_name }}"
              hx-trigger="load"
              hx-ext="json-enc"
              hx-post="/base/model_id"

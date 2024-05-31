@@ -1,6 +1,6 @@
 {% block as_form %}
     <input class="datetime form-control" type="text"
-           name="{{ field.prefix }}{{ field.field_name }}"
+           name="{{ field.prefix ~'--'~ field.field_name }}"
             {% if field.required %} aria-required="true" {% endif %}
            onfocus="(this.type='date')"
            placeholder="{{ field.title }}" id="{{ field.field_name }}"

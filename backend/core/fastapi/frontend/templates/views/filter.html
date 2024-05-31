@@ -1,5 +1,5 @@
 {% block widget %}
-<div id="{{ 'filter_' ~ cls.prefix }}"
+<div id="{{ 'filter_' ~'--'~ cls.prefix }}"
       hx-ext="json-enc"
       hx-post="/base/filter"
       hx-trigger="load"

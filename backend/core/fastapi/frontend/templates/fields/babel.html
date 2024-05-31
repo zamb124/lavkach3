@@ -1,5 +1,5 @@
 {% block as_form %}
-    <div    id="{{ field.prefix ~ field.field_name }}"
+    <div    id="{{ field.prefix ~'--'~ field.field_name }}"
             class="babel row"
             hx-ext="json-enc"
             hx-post="/bff/select"

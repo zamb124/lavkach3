@@ -43,7 +43,7 @@ class SuggestScheme(SuggestCreateScheme, TimeStampScheme):
 
 class SuggestFilter(BaseFilter):
     move_id__in: Optional[List[UUID4]] = Field(default=None, title='Move')
-    order_by: Optional[List[str]] = Field(default=["priority", ], title='Order by', filter=False)
+
     class Config:
         populate_by_name = True
 
