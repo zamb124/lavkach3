@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 from pydantic.types import UUID4
 
 from core.schemas import BaseFilter
@@ -39,6 +39,10 @@ class SuggestScheme(SuggestCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
 
+    @computed_field
+    @property
+    def title(self) -> str:
+        return f'[{self.type.name}] - {self.priority}'
 
 
 class SuggestFilter(BaseFilter):

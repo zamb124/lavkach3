@@ -92,9 +92,14 @@ class Field(BaseModel):
     description: str
     schema: Any
     filter: Optional[dict] = None
+    is_inline: bool = False
 
     def render(self, block_name: str, type: str = ''):
         type = type or self.type
+        if type == 'list_rel' and self.is_inline:
+            block_name = 'inline_as_view'
+        if self.field_name == 'suggest_list_rel':
+            a=1
         try:
             rendered_html = render_block(
                 environment=environment,
@@ -405,7 +410,8 @@ class ClassView:
             'description': fielinfo.description or field_name,
             'prefix': prefix,
             'line': line,
-            'schema': schema
+            'schema': schema,
+            'is_inline': self.is_inline
         })
 
     @timed

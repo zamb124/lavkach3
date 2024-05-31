@@ -59,18 +59,8 @@
                         {% for line in view.lines %}
                             <tr id="{{ line.prefix }}"
                                 class="mb-0 fw-semibold text-muted"
-                                      {% if loop.last and not line.is_inline %}
-                                            hx-include="{{ '#filter_' ~'--'~ view.prefix }}"
-                                            hx-post="/base/table"
-                                            hx-ext="json-enc"
-                                            hx-trigger="revealed" hx-swap="afterend" hx-select="#{{ 'tbody-table' ~'--'~ view.prefix }}>tr"
-                                            hx-target="#{{ line.prefix }}"
-                                            hx-vals='{
-                                                "model": "{{ view.model.name }}",
-                                                "{{ view.line.prefix ~'--'~ 'cursor'}}": "{{ line.lsn }}",
-                                                "prefix": "{{ view.prefix }}"
-                                            }'
-                                        {% endif %}
+
+
 
                             >
                                 <th scope="row">
@@ -82,6 +72,21 @@
                                     <td class="text-center">{{ field.as_view()|safe }}</td>
                                 {% endfor %}
                                 <td class="text-center">
+                                    <div
+                                        {% if loop.last and not line.is_inline %}
+                                            hx-include="{{ '#filter_' ~'--'~ view.prefix }}"
+                                            hx-post="/base/table"
+                                            hx-ext="json-enc"
+                                            hx-trigger="revealed" hx-swap="afterend" hx-select="#{{ 'tbody-table' ~'--'~ view.prefix }}>tr"
+                                            hx-target="#{{ line.prefix }}"
+                                            hx-vals='{
+                                                "model": "{{ view.model.name }}",
+                                                "{{ view.line.prefix ~'--'~ 'cursor'}}": "{{ line.lsn }}",
+                                                "prefix": "{{ view.prefix }}"
+                                            }'
+
+                                        {% endif %}>
+                                    </div>
                                     <ul class="list-inline text-center">
                                         <li class="list-inline-item view-btn" title="View">
                                             {{ line.as_button_view()|safe }}
@@ -96,6 +101,7 @@
                                             {{ line.as_button_actions(line.id)|safe }}
                                         </li>
                                     </ul>
+
                                 </td>
 
                             </tr>

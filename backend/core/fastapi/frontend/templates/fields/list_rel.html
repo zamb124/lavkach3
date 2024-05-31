@@ -5,3 +5,40 @@
 {% block as_form %}
     {{ field.as_table_form()|safe }}
 {% endblock %}
+
+{% block inline_as_form %}
+    <input name="{{ field.prefix ~'--'~ field.field_name }}" id="{{ field.prefix ~'--'~ field.field_name }}"
+            class="list-str form-control" data-choices data-choices-limit="Required Limit" data-choices-removeItem
+           value="{% if field.val %}{{ ','.join(field.val) }}{% endif %}"
+    />
+    <script>
+    (async function () {
+            let element = document.getElementById("{{field.prefix ~'--'~ field.field_name }}");
+            let choices = new Choices(element, {
+                placeholderValue: "Enter {{ field.title }}",
+                multiple: true,
+                removeItemButton: true
+            });
+        })();
+    </script>
+{% endblock %}
+{% block inline_as_view %}
+    <input name="{{ field.prefix~field.field_name }}" id="{{ field.prefix~'--'~field.field_name }}"
+            class="list_str form-control" data-choices data-choices-text-disabled-true
+           value="
+           {% for val in field.val %}
+            {{ val.title or val.id }}
+            {% if not loop.last %}
+            ,
+            {% endif %}
+           {% endfor %}
+            "
+    />
+    <script>
+    (async function () {
+            let element = document.getElementById("{{field.prefix ~'--'~ field.field_name }}");
+            let choices = new Choices(element);
+            choices.disable()
+        })();
+    </script>
+{% endblock %}
