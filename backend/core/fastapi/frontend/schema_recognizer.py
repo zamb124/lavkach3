@@ -98,8 +98,6 @@ class Field(BaseModel):
         type = type or self.type
         if type == 'list_rel' and self.is_inline:
             block_name = 'inline_as_view'
-        if self.field_name == 'suggest_list_rel':
-            a=1
         try:
             rendered_html = render_block(
                 environment=environment,
@@ -282,7 +280,13 @@ class ViewTable(ViewGet):
 
 
 
-def get_model_actions(model_name, adapter):
+def get_model_actions(model:str | Model, adapter):
+    if isinstance(model, str):
+        model_name = model
+    elif isinstance(model, Model):
+        model_name = model.name
+    else:
+        raise HTMXException(status_code=500, detail='Model is not defined')
     actions = {}
     for i in dir(adapter):
         if i.startswith(f'action_{model_name}'):
@@ -429,6 +433,13 @@ class ClassView:
                 if v.json_schema_extra:
                     if v.json_schema_extra.get('filter') is False:
                         exclude.append(f)
+        if self.is_inline:
+            for f, v in schema.model_fields.items():
+                if v.json_schema_extra:
+                    if v.json_schema_extra.get('inline') is False:
+                        exclude.append(f)
+                    else:
+                        exclude_add.append(f)
         if type == 'table':
             for f, v in schema.model_fields.items():
                 if v.json_schema_extra:
