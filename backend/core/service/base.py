@@ -239,6 +239,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                         rel = rel_service(self.request)
                         if _obj.id:
                             rel_entity = await rel.update(id=_obj.id, obj=_obj, commit=False)
+                            await self.session.refresh(rel_entity)
                         else:
                             _dump = _obj.model_dump()
                             _dump[f'{self.model.__tablename__}_id'] = id
@@ -267,6 +268,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         else:
             await self.session.flush([entity])
+        self.session.expire_all()
         return entity
 
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:

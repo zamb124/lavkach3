@@ -263,11 +263,11 @@ class ViewTable(ViewGet):
     id: Optional[uuid.UUID] | None = None
 
     @timed
-    def render(self):
+    def render(self, type: str = 'table'):
         try:
             rendered_html = render_block(
                 environment=environment,
-                template_name=f'view/table.html',
+                template_name=f'view/{type}.html',
                 block_name='as_view',
                 view=self
             )
@@ -276,7 +276,9 @@ class ViewTable(ViewGet):
         return rendered_html
 
     def as_table(self):
-        return self.render()
+        return self.render('table')
+    def as__kanban(self):
+        return self.render('kanban')
 
 
 
@@ -433,13 +435,6 @@ class ClassView:
                 if v.json_schema_extra:
                     if v.json_schema_extra.get('filter') is False:
                         exclude.append(f)
-        if self.is_inline:
-            for f, v in schema.model_fields.items():
-                if v.json_schema_extra:
-                    if v.json_schema_extra.get('inline') is False:
-                        exclude.append(f)
-                    else:
-                        exclude_add.append(f)
         if type == 'table':
             for f, v in schema.model_fields.items():
                 if v.json_schema_extra:
@@ -618,8 +613,9 @@ class ClassView:
         )
 
     @timed
-    async def get_table(self, params: QueryParams | dict | None = None, join_related: bool = True, join_field: list | None = None,
-                        widget: str = 'as_view', **kwargs) -> str:
+    async def _get_table(self, params: QueryParams | dict | None = None, join_related: bool = True,
+                        join_field: list | None = None,
+                        widget: str = 'as_view', **kwargs) -> ViewTable:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
@@ -636,6 +632,15 @@ class ClassView:
             cursor=cursor, line=line
         )
         self._sort_columns()
+        return self.table
+
+    @timed
+    async def get_table(self, params: QueryParams | dict | None = None, join_related: bool = True, join_field: list | None = None,
+                        widget: str = 'as_view', **kwargs) -> str:
+        """
+            Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
+        """
+        self._get_table(params=params, join_related=join_related, join_field=join_field, widget=widget, **kwargs)
         return render_block(
             environment=environment, template_name=f'views/table.html',
             block_name=widget, view=self.table

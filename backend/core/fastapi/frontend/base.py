@@ -139,7 +139,7 @@ async def line(request: Request, schema: TableSchema):
         qp = clean_filter(form_data, form_data['prefix'])
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}
-    cls = ClassView(request, params=qp, model=schema.model, prefix=f'{schema.prefix}--{new_id}--')
+    cls = ClassView(request, params=qp, model=schema.model, prefix=f'{schema.prefix}--{new_id}', is_inline=True)
     return await cls.get_create_line(type='table')
 
 
