@@ -11,7 +11,7 @@
        hx-target="#modal"
        hx-ext="json-enc"
        hx-post="/base/modal"
-       hx-vars='{
+       hx-vals='{
 "model": "{{ line.model.name }}",
 "method": "get",
 "id": "{{ line.id }}",
@@ -34,7 +34,7 @@
             hx-target="#modal"
             hx-ext="json-enc"
             hx-post="/base/modal"
-            hx-vars='{
+            hx-vals='{
 "model": "{{ line.model.name }}",
 "method": "update",
 "id": "{{ line.id }}",
@@ -56,7 +56,7 @@
        hx-target="#modal"
        hx-ext="json-enc"
        hx-post="/base/modal"
-       hx-vars='{
+       hx-vals='{
 "model": "{{ line.model.name }}",
 "method": "create",
 {% if line.id %}"id": "{{ line.id }}", {% endif %}
@@ -78,7 +78,7 @@
        hx-target="#modal"
        hx-ext="json-enc"
        hx-post="/base/modal"
-       hx-vars='{
+       hx-vals='{
 "model": "{{ line.model.name }}",
 "method": "delete",
 "id": "{{ line.id }}",
@@ -107,7 +107,7 @@
                             hx-trigger="click"
                             hx-ext="json-enc"
                             hx-post="/base/action"
-                            hx-vars='{
+                            hx-vals='{
                                 "model": "{{ line.model.name }}",
                                 "action": "{{ action_name }}",
                                 "id": "{{ line.id }}",
@@ -157,7 +157,7 @@
        hx-target="#modal"
        hx-ext="json-enc"
        hx-post="/base/modal?backdrop=true"
-       hx-vars="{{ backdrop[1] if backdrop|length > 1 }}"
+       hx-vals="{{ backdrop[1] if backdrop|length > 1 }}"
        class="btn btn-soft-warning">
         <i class="ri-arrow-go-back-fill h4"></i>
     </a>

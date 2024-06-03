@@ -9,7 +9,7 @@
             hx-target="#modal"
             hx-ext="json-enc"
             hx-post="/base/modal"
-            hx-vars='{
+            hx-vals='{
 "model": "{{ line.model.name }}",
 "method": "create",
 {% if line.id %}"id": "{{ line.id }}", {% endif %}

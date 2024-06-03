@@ -20,8 +20,8 @@ class ProductBaseScheme(BaseModel):
     description: Optional[str] = Field(default=None, title='Description', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External #', table=True, form=True)
     product_type: ProductType = Field(default=ProductType.STORABLE, title='Type', table=True, form=True)
-    uom_id: UUID4 = Field(title='Uom', table=True, form=True)
-    product_category_id: UUID4 = Field(title='Product Category', table=True, form=True)
+    uom_id: UUID4 = Field(title='Uom', model='uom')
+    product_category_id: UUID4 = Field(title='Product Category', table=True, form=True, model='product_category')
     barcode_list: list[str] = Field(default=None, title='Barcodes', table=True, form=True)
 
     class Config:
@@ -53,8 +53,8 @@ class ProductCreateScheme(ProductBaseScheme):
 class ProductScheme(ProductCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
-    uom_rel: UomScheme
-    company_id: UUID4
+    uom_rel: UomScheme = Field(title='Uom')
+    company_id: UUID4 = Field(title='Company ID', model='company')
 
 
 
