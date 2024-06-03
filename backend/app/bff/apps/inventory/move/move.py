@@ -19,3 +19,15 @@ async def move(request: Request):
     cls = ClassView(request, 'move')
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template, context={'cls': cls})
+
+
+
+@move_router.get("/kanban", response_class=HTMLResponse)
+async def move(request: Request):
+    """
+        kanban custom view
+    """
+    cls = ClassView(request, 'move')
+    view = await cls._get_table()
+    template = f'inventory/move/move_list{"" if request.scope["htmx"].hx_request else "-full"}.html'
+    return templates.TemplateResponse(request, template, context={'view': view})

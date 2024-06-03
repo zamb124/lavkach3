@@ -7,19 +7,23 @@
                     <div class="col-6">
                         <h5 class="modal-title">Edit {{ view.model.name|capitalize }}
                             <span>
-                            {{ view.line.as_button_view(backdrop='update')|safe }}
+                            {{ view.line.as_button_view(backdrop)|safe }}
                         </span>
                             <span>
-                            {{ view.line.as_button_create(backdrop='update')|safe }}
+                            {{ view.line.as_button_create(backdrop)|safe }}
                         </span>
                             <span>
-                            {{ view.line.as_button_delete(backdrop='update')|safe }}
+                            {{ view.line.as_button_delete(backdrop)|safe }}
                         </span>
+
                         </h5>
                     </div>
+
                     <div class="bx-pull-right">
-                        {% if backdrop %}
-                            {{ backdrop()|safe }}
+                        {% if backdrop|length > 1 %}
+                            <span>
+                                {{ view.line.as_button_backdrop(backdrop)|safe }}
+                            </span>
                         {% endif %}
                         <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -91,17 +95,23 @@
                     <div class="col-6">
                         <h5 class="modal-title">Create {{ view.model.name|capitalize }}
                             <span>
-                            {{ view.line.as_button_view()|safe }}
+                            {{ view.line.as_button_view(backdrop)|safe }}
                         </span>
                             <span>
-                            {{ view.line.as_button_update()|safe }}
+                            {{ view.line.as_button_update(backdrop)|safe }}
                         </span>
                             <span>
-                            {{ view.line.as_button_delete()|safe }}
+                            {{ view.line.as_button_delete(backdrop)|safe }}
                         </span>
+
                         </h5>
                     </div>
                     <div class="bx-pull-right">
+                        {% if backdrop|length > 1 %}
+                            <span>
+                                {{ view.line.as_button_backdrop(backdrop)|safe }}
+                            </span>
+                        {% endif %}
                         <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                 </div>
@@ -171,17 +181,23 @@
             <div class="col-6">
                 <h5 class="modal-title">View {{ view.model.name|capitalize }}
                     <span>
-                            {{ view.line.as_button_update(backdrop='view')|safe }}
+                            {{ view.line.as_button_update(backdrop)|safe }}
                         </span>
                     <span>
-                            {{ view.line.as_button_create(backdrop='view')|safe }}
+                            {{ view.line.as_button_create(backdrop)|safe }}
                         </span>
                     <span>
-                            {{ view.line.as_button_delete(backdrop='view')|safe }}
+                            {{ view.line.as_button_delete(backdrop)|safe }}
                         </span>
+
                 </h5>
             </div>
             <div class="bx-pull-right">
+                {% if backdrop|length > 1 %}
+                    <span>
+                                {{ view.line.as_button_backdrop(backdrop)|safe }}
+                            </span>
+                {% endif %}
                 <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
         </div>
@@ -247,6 +263,11 @@
                             trigger="loop"
                             style="width:150px;height:150px">
                     </lord-icon>
+                    {% if backdrop|length > 1 %}
+                        <span>
+                                {{ view.line.as_button_backdrop(backdrop)|safe }}
+                            </span>
+                    {% endif %}
                     <div class="mt-4">
                         <h4 class="mb-3" style="padding-bottom: 0">Are you sure you want to
                             delete {{ view.model.name|capitalize }} -> {{ view.line.display_title }}</h4>

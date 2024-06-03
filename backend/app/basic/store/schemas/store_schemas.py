@@ -41,7 +41,7 @@ class StoreCreateScheme(StoreBaseScheme):
 
 
 class StoreScheme(StoreCreateScheme, TimeStampScheme):
-    company_id: UUID
+    company_id: UUID = Field(title='Company ID', model='company')
     lsn: int
     id: UUID
     company_rel: Optional[CompanyScheme] = Field(table=True, form=True, title='Company')

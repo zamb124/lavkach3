@@ -8,11 +8,12 @@
            hx-target="#modal"
            hx-ext="json-enc"
            hx-post="/base/modal"
-           hx-vals='{
+           hx-vars='{
 "model": "{{ field.model.name }}",
 "method": "get",
 "id": "{{ field.val.id }}",
-"prefix": "{{ field.prefix }}"
+"prefix": "{{ field.prefix }}",
+"backdrop": {{ backdrop }}
 }'
 >{{ field.val.title or field.val.nickname }}
         </a></h6></div>

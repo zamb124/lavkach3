@@ -35,7 +35,7 @@ class SuggestCreateScheme(SuggestBaseScheme):
 
 
 class SuggestScheme(SuggestCreateScheme, TimeStampScheme):
-    company_id: UUID4
+    company_id: UUID4 = Field(title='Company ID', model='company')
     lsn: int
     id: UUID4
 

@@ -1,3 +1,4 @@
+import json
 import uuid
 from typing import Optional, Any
 
@@ -147,6 +148,7 @@ class ModelSchema(BaseModel):
     model: str
     prefix: str
     id: UUID4
+    backdrop: list|None = []
 
     @field_validator('id')
     @classmethod
@@ -169,12 +171,13 @@ class ModalSchema(BaseModel):
     prefix: str
     model: str
     method: str
-    backdrop: Optional[str] = None
+    backdrop: list = []
     id: Optional[UUID4] = None
-    target_id: str = None
+    target_id: Optional[str|None] = None
 
     class Config:
         extra = 'allow'
+
 
 
 @router.post("/modal", response_class=HTMLResponse)
@@ -183,6 +186,11 @@ async def modal(request: Request, schema: ModalSchema):
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
     cls = ClassView(request, schema.model)
+    is_backdrop = request.query_params.get('backdrop')
+    if is_backdrop and len(schema.backdrop):
+        schema.backdrop.pop(0)
+    else:
+        schema.backdrop.insert(0, schema.model_dump_json())
     if data := schema.model_extra:
         _json = {}
         data = clean_filter(data, schema.prefix)

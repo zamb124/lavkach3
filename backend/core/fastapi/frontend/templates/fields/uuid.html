@@ -120,13 +120,16 @@
     {% if field.val %}
         <div id="{{ field.prefix~'--'~field.field_name }}"
              hx-trigger="load"
+             hx-include="none"
+             hx-params="model,method,id,prefix"
              hx-ext="json-enc"
              hx-post="/base/model_id"
              hx-vals='{
-            "model": "{{ field.model.name }}",
-            "method": "get",
-            "id": "{{ field.val }}",
-            "prefix": "{{ field.prefix }}"
+"model": "{{ field.model.name }}",
+"method": "get",
+"id": "{{ field.val }}",
+"prefix": "{{ field.prefix }}"
+
             }'
         ></div>
     {% endif %}

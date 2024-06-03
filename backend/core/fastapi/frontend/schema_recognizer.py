@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import enum
 import logging
@@ -94,7 +95,7 @@ class Field(BaseModel):
     filter: Optional[dict] = None
     is_inline: bool = False
 
-    def render(self, block_name: str, type: str = ''):
+    def render(self, block_name: str, type: str = '', backdrop: list = []):
         type = type or self.type
         if type == 'list_rel' and self.is_inline:
             block_name = 'inline_as_view'
@@ -103,7 +104,8 @@ class Field(BaseModel):
                 environment=environment,
                 template_name=f'fields/{type}.html',
                 block_name=block_name,
-                field=self
+                field=self,
+                backdrop=backdrop
             )
         except Exception as ex:
             print(ex)
@@ -116,8 +118,8 @@ class Field(BaseModel):
     def as_filter(self):
         return self.render(block_name='as_form')
 
-    def as_view(self):
-        return self.render(block_name='as_view')
+    def as_view(self, backdrop: list = []):
+        return self.render(block_name='as_view', backdrop=backdrop)
 
     def as_table_header(self):
         return self.render(block_name='as_table_header', type='str')
@@ -169,8 +171,13 @@ class Line(BaseModel):
     display_title: Optional[str] = None
     selected: Optional[bool] = False
     is_inline: bool = False
+    field_map: dict = {}
 
-    def render(self, block_name: str, target_id: str | None = None, backdrop: str | None = None):
+    def __getitem__(self, item:str):
+        idx = self.field_map[item]
+        return self.fields[idx]
+
+    def render(self, block_name: str, target_id: str | None = None, backdrop: list  = []):
         try:
             rendered_html = render_block(
                 environment=environment,
@@ -190,29 +197,23 @@ class Line(BaseModel):
                 return field
         return None
 
-    def get_backdrop_method(self, backdrop):
-        if backdrop:
-            return getattr(self, f'as_button_{backdrop}')()
-        return None
 
-    def as_button_view(self, backdrop: str|None = None):
-        backdrop = self.get_backdrop_method(backdrop)
+    def as_button_view(self, backdrop: list = []):
         return self.render('button_view', backdrop=backdrop)
 
-    def as_button_update(self, backdrop: str|None = None):
-        backdrop = self.get_backdrop_method(backdrop)
+    def as_button_backdrop(self, backdrop: list = []):
+        return self.render('button_backdrop', backdrop=backdrop)
+
+    def as_button_update(self, backdrop: list = []):
         return self.render('button_update', backdrop=backdrop)
 
-    def as_button_create(self, backdrop: str|None = None):
-        backdrop = self.get_backdrop_method(backdrop)
+    def as_button_create(self, backdrop: list = []):
         return self.render('button_create', backdrop=backdrop)
 
-    def as_button_delete(self, target_id: str|None = None, backdrop: str|None = None):
-        backdrop = self.get_backdrop_method(backdrop)
+    def as_button_delete(self, target_id: str|None = None, backdrop: list = []):
         return self.render(block_name='button_delete', target_id=target_id, backdrop=backdrop)
 
-    def as_button_actions(self, target_id: str|None = None, backdrop: str|None = None):
-        backdrop = self.get_backdrop_method(backdrop)
+    def as_button_actions(self, target_id: str|None = None, backdrop: list = []):
         return self.render(block_name='button_actions', target_id=target_id, backdrop=backdrop)
 
     def as_form(self):
@@ -417,11 +418,11 @@ class ClassView:
             'prefix': prefix,
             'line': line,
             'schema': schema,
-            'is_inline': self.is_inline
+            'is_inline': self.is_inline,
         })
 
     @timed
-    def _get_schema_fields(self, schema: BaseModel, **kwargs) -> list[Field]:
+    def _get_schema_fields(self, schema: BaseModel, **kwargs):
         """
             base, filte, update, create
             Отдает ту модель, которая нужна или базовую
@@ -429,6 +430,7 @@ class ClassView:
         fields = []
         exclude = kwargs.get('exclude') or self.exclude or []
         exclude_add = []
+        field_map = {}
         type = kwargs.get('type')
         if issubclass(schema, Filter):
             for f, v in schema.model_fields.items():
@@ -443,13 +445,16 @@ class ClassView:
                 else:
                     exclude_add.append(f)
             exclude = set(exclude_add) | set(exclude)
+        n = 0
         for k, v in schema.model_fields.items():
             if k in exclude:
                 continue
-            fields.append(
-                self._get_field(field_name=k, schema=schema, **kwargs)
-            )
-        return sorted(fields, key=lambda x: x.sort_idx)
+            f = self._get_field(field_name=k, schema=schema, **kwargs)
+            field_map.update({k: n})
+            fields.append(f)
+            n += 1
+
+        return sorted(fields, key=lambda x: x.sort_idx), field_map
 
 
     @timed
@@ -461,8 +466,9 @@ class ClassView:
         display_title = kwargs.get('display_title')
         company_id = kwargs.get('company_id')
         fields = kwargs.get('fields')
+        field_map = kwargs.get('field_map') or {}
         if not fields:
-            fields = self._get_schema_fields(schema=schema, prefix=prefix, exclude=kwargs.get('exclude'),
+            fields, field_map = self._get_schema_fields(schema=schema, prefix=prefix, exclude=kwargs.get('exclude'),
                                              type=kwargs.get('type'))
         return Line(
             schema=schema,
@@ -475,7 +481,8 @@ class ClassView:
             fields=fields,
             id=id,
             actions=self.actions,
-            is_inline=self.is_inline
+            is_inline=self.is_inline,
+            field_map=field_map,
         )
 
     @timed
@@ -513,7 +520,7 @@ class ClassView:
         return render_block(
             environment=environment,
             template_name=f'views/modal.html',
-            block_name='create', view=self.create
+            block_name='create', view=self.create, backdrop=kwargs.get('backdrop')
         )
 
     async def get_update(self, model_id: uuid.UUID, **kwargs) -> str:
@@ -640,7 +647,7 @@ class ClassView:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
-        self._get_table(params=params, join_related=join_related, join_field=join_field, widget=widget, **kwargs)
+        await self._get_table(params=params, join_related=join_related, join_field=join_field, widget=widget, **kwargs)
         return render_block(
             environment=environment, template_name=f'views/table.html',
             block_name=widget, view=self.table
@@ -714,7 +721,9 @@ class ClassView:
                 fields=line_dict['fields'],
                 prefix=f"{prefix}--{row['lsn']}",
                 idx=row_number,
-                is_inline=self.is_inline
+                is_inline=self.is_inline,
+                field_map=line_dict['field_map']
+
             ))
         logging.info(f"_GET_DATA LINES SERIALIZE: {datetime.datetime.now() - time_start}")
         ### Если необходимо сджойнить
@@ -739,7 +748,7 @@ class ClassView:
                     miss_value_str = ','.join([i for i in _vals if i])
                 if miss_value_str:
                     qp = {'id__in': miss_value_str}
-                    _corutine_data = _fields[0].model.adapter.list(params=qp)
+                    _corutine_data = asyncio.create_task(_fields[0].model.adapter.list(params=qp))
                     # _join_lines = {i['id']: i for i in _data['data']}
                 to_serialize.append((_vals, _fields, _corutine_data))
             logging.info(f"_GET_DATA GET CORUTINE CREATED: {datetime.datetime.now() - time_start}")

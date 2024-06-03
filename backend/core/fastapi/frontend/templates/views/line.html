@@ -6,7 +6,7 @@
         hideModals()
     </script>
     <a href="#"
-       hx-params="model,method,id,prefix"
+       hx-params="model,method,id,prefix,backdrop"
        hx-trigger="click"
        hx-target="#modal"
        hx-ext="json-enc"
@@ -15,7 +15,8 @@
 "model": "{{ line.model.name }}",
 "method": "get",
 "id": "{{ line.id }}",
-"prefix": "{{ line.prefix }}"
+"prefix": "{{ line.prefix }}",
+"backdrop": {{ backdrop }}
 }'
        class="btn btn-soft-success">
         <i class="ri-file-fill h4"></i>
@@ -28,7 +29,7 @@
     </script>
     <button
             href="#"
-            hx-params="model,method,id,prefix"
+            hx-params="model,method,id,prefix,backdrop"
             hx-trigger="click"
             hx-target="#modal"
             hx-ext="json-enc"
@@ -37,7 +38,8 @@
 "model": "{{ line.model.name }}",
 "method": "update",
 "id": "{{ line.id }}",
-"prefix": "{{ line.prefix }}"
+"prefix": "{{ line.prefix }}",
+"backdrop": {{ backdrop }}
 }'
             class="btn btn-soft-primary">
         <i class="ri-file-edit-fill h4 "></i>
@@ -49,7 +51,7 @@
         hideModals()
     </script>
     <a href="#"
-       hx-params="model,method,prefix"
+       hx-params="model,method,prefix,backdrop"
        hx-trigger="click"
        hx-target="#modal"
        hx-ext="json-enc"
@@ -58,7 +60,8 @@
 "model": "{{ line.model.name }}",
 "method": "create",
 {% if line.id %}"id": "{{ line.id }}", {% endif %}
-"prefix": "{{ line.prefix }}"
+"prefix": "{{ line.prefix }}",
+"backdrop": {{ backdrop }}
 }'
        class="btn btn-soft-secondary">
         <i class="ri-file-add-fill h4"></i>
@@ -70,7 +73,7 @@
         hideModals()
     </script>
     <a href="#"
-       hx-params="model,method,id,prefix,target_id"
+       hx-params="model,method,id,prefix,target_id,backdrop"
        hx-trigger="click"
        hx-target="#modal"
        hx-ext="json-enc"
@@ -80,7 +83,8 @@
 "method": "delete",
 "id": "{{ line.id }}",
 "prefix": "{{ line.prefix }}",
-"target_id": "{{ target_id }}"
+"target_id": "{{ target_id }}",
+"backdrop": {{ backdrop }}
 }'
        class="btn btn-soft-danger">
         <i class="ri-file-reduce-fill h4"></i>
@@ -143,3 +147,18 @@
     </tr>
 {% endblock %}
 
+{% block button_backdrop %}
+    <script>
+        hideModals()
+    </script>
+    <a href="#"
+       hx-params="model,method,id,prefix,target_id,backdrop"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal?backdrop=true"
+       hx-vars="{{ backdrop[1] if backdrop|length > 1 }}"
+       class="btn btn-soft-warning">
+        <i class="ri-arrow-go-back-fill h4"></i>
+    </a>
+{% endblock %}
