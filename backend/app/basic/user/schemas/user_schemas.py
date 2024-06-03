@@ -63,7 +63,7 @@ class UserCreateScheme(UserBaseScheme):
 class UserScheme(UserBaseScheme, TimeStampScheme):
     id: UUID4
     lsn: int
-    company_id: Optional[UUID4]
+    company_id: Optional[UUID4] = Field(title='Company Id', model='company')
     company_rel: Optional['CompanyScheme']
     store_rel: Optional['StoreScheme']
 

@@ -17,6 +17,7 @@
                 multiple: true,
                 removeItemButton: true
             });
+            {% if not field.is_filter %}
             function check_valid() {
                 if (element.required) {
                     choices.containerInner.element.classList.add('is-invalid');
@@ -26,6 +27,8 @@
                     choices.containerInner.element.classList.add('is-valid');
                 }
             }
+            check_valid()
+            {% endif %}
             function init(){
                 choices.setChoices(async () => {
                     try {
@@ -43,9 +46,6 @@
                 });
             }
             init()
-            if (!element.id.includes('__')){
-                check_valid()
-            }
         })();
     </script>
 {% endblock %}

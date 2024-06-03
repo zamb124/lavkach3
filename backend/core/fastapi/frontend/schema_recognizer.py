@@ -18,6 +18,7 @@ from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
 from core.env import Model
+from core.schemas import BaseFilter
 from core.utils.timeit import timed
 
 
@@ -153,7 +154,16 @@ class Field(BaseModel):
             block_name='as_form',
             view=self
         )
+    @property
+    def is_filter(self):
+        if issubclass(self.schema, BaseFilter):
+            return True
 
+class SchemaType(str, Enum):
+    filter = 'filter'
+    create  = 'create'
+    update  = 'update'
+    get     = 'get'
 
 class Line(BaseModel):
     """"
@@ -463,6 +473,7 @@ class ClassView:
         id = kwargs.get('model_id')
         lsn = kwargs.get('lsn')
         vars = kwargs.get('vars')
+        schema_type = kwargs.get('schema_type')
         display_title = kwargs.get('display_title')
         company_id = kwargs.get('company_id')
         fields = kwargs.get('fields')
@@ -483,6 +494,7 @@ class ClassView:
             actions=self.actions,
             is_inline=self.is_inline,
             field_map=field_map,
+            schema_type=schema_type
         )
 
     @timed
@@ -626,7 +638,7 @@ class ClassView:
         """
             Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
         """
-        # line = self._get_line(schema=self.schemas.base, prefix=f'{self.prefix}--0--', type='table')
+
         line, lines, cursor = await self._get_data(
             schema=self.model.schemas.get,
             params=params,

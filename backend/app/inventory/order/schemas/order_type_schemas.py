@@ -98,7 +98,7 @@ class OrderTypeCreateScheme(OrderTypeBaseScheme):
 
 class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
     vars: Optional[dict] = None
-    company_id: UUID4
+    company_id: UUID4 = Field(model='company', title='Company')
     lsn: int
     id: UUID4
     created_by: UUID4 = Field(model='user')

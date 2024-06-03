@@ -18,7 +18,7 @@
                 placeholderValue: "Enter {{ field.title }}",
                 removeItemButton: true
             });
-
+            {% if not field.is_filter %}
             function check_valid() {
                 if (element.required) {
                     choices.containerInner.element.classList.add('is-invalid');
@@ -30,6 +30,7 @@
             }
 
             check_valid()
+            {% endif %}
 
             async function getValues() {
                 var id__in = ''
