@@ -133,7 +133,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         if isinstance(move, uuid.UUID):
             move = await self.get(move)
         if move.status != MoveStatus.CREATED:
-            raise HTTPException(status_code=406, detail=f"Move is not in CREATED status")
+            raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
         location_service = self.env['location'].service
         order_type_service = self.env['order_type'].service
         quant_service = self.env['quant'].service
