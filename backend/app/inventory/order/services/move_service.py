@@ -69,6 +69,14 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "move_id": move.id,
                 "priority": 2,
                 "type": SuggestType.IN_PRODUCT,
+                "value": f'{move.product_id}',
+               # "user_id": self.user.user_id
+            }, commit=False)
+            """Далее саджест ввода количества"""
+            await suggest_service.create(obj={
+                "move_id": move.id,
+                "priority": 3,
+                "type": SuggestType.IN_QUANTITY,
                 "value": f'{move.quantity}',
                # "user_id": self.user.user_id
             }, commit=False)
@@ -76,7 +84,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             """Далее саджест идентификации локации назначения"""
             await suggest_service.create(obj={
                 "move_id": move.id,
-                "priority": 3,
+                "priority": 4,
                 "type": SuggestType.IN_LOCATION,
                 "value":f'{location_dest.id}',
                # "user_id": self.user.user_id

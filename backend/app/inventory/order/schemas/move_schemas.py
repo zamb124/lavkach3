@@ -8,6 +8,7 @@ from pydantic.types import UUID4
 from app.inventory.location.enums import LocationClass
 from typing import TYPE_CHECKING
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import ActionBaseSchame
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import Move, MoveType
@@ -80,7 +81,7 @@ class MoveFilter(BaseFilter):
 class MoveListSchema(GenericListSchema):
     data: Optional[List[MoveScheme]]
 
-class MoveConfirmScheme(BaseModel):
-    id: UUID4
+class MoveConfirmScheme(ActionBaseSchame):
+
     class Config:
         extra = 'allow'

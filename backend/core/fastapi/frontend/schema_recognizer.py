@@ -83,6 +83,7 @@ class Field(BaseModel):
     type: str
     model: Any
     required: Optional[bool]
+    hidden: Optional[bool] = False
     title: Optional[str]
     enums: Optional[list] = []
     widget: Optional[dict]
@@ -264,6 +265,13 @@ class ViewGet(ViewCreate):
     """
     id: uuid.UUID | None
 
+class ViewAction(ViewCreate):
+    """"
+        Cоздание
+    """
+    ids: list[uuid.UUID]
+    action: str
+
 
 class ViewTable(ViewGet):
     """
@@ -294,6 +302,7 @@ class ViewTable(ViewGet):
 
 
 def get_model_actions(model:str | Model, adapter):
+    from inspect import signature
     if isinstance(model, str):
         model_name = model
     elif isinstance(model, Model):
@@ -304,10 +313,12 @@ def get_model_actions(model:str | Model, adapter):
     for i in dir(adapter):
         if i.startswith(f'action_{model_name}'):
             func = getattr(adapter, i),
+            schema = signature(func[0]).parameters.get('schema')
             actions.update({
                 i: {
                     'func': getattr(adapter, i),
-                    'doc': func.__doc__
+                    'doc': func.__doc__,
+                    'schema': schema.annotation if schema else None
                 }
             })
     return actions
@@ -375,6 +386,8 @@ class ClassView:
         """
         fielinfo = schema.model_fields[field_name]
         prefix = kwargs.get('prefix') or self.prefix
+        if 'suggest_list_rel--2' in prefix:
+            a=1
         res = ''
         enums = []
         line = None
@@ -405,7 +418,8 @@ class ClassView:
                 schema = c
             else:
                 res += c.__name__.lower()
-
+        if field_name == 'vars':
+            a=1
         if not model and model_name:
             if model_name == self.model.name:
                 model = self.model
@@ -419,11 +433,12 @@ class ClassView:
             'type': res,
             'model': model,
             'required': fielinfo.is_required(),
+            'hidden': fielinfo.json_schema_extra.get('hidden', False) if fielinfo.json_schema_extra else False,
             'title': fielinfo.title or model.name,
             'enums': enums,
             'widget': fielinfo.json_schema_extra or {},
-            'filter': fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {},   # type: ignore
-            'sort_idx': self.sort.get(field_name, 999),  # type: ignore
+            'filter': fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {},
+            'sort_idx': self.sort.get(field_name, 999),
             'description': fielinfo.description or field_name,
             'prefix': prefix,
             'line': line,
@@ -473,14 +488,17 @@ class ClassView:
         id = kwargs.get('model_id')
         lsn = kwargs.get('lsn')
         vars = kwargs.get('vars')
-        schema_type = kwargs.get('schema_type')
         display_title = kwargs.get('display_title')
         company_id = kwargs.get('company_id')
         fields = kwargs.get('fields')
         field_map = kwargs.get('field_map') or {}
         if not fields:
-            fields, field_map = self._get_schema_fields(schema=schema, prefix=prefix, exclude=kwargs.get('exclude'),
-                                             type=kwargs.get('type'))
+            fields, field_map = self._get_schema_fields(
+                schema=schema,
+                prefix=prefix,
+                exclude=kwargs.get('exclude'),
+                type=kwargs.get('type')
+            )
         return Line(
             schema=schema,
             model=self.model,
@@ -494,7 +512,6 @@ class ClassView:
             actions=self.actions,
             is_inline=self.is_inline,
             field_map=field_map,
-            schema_type=schema_type
         )
 
     @timed
@@ -553,6 +570,27 @@ class ClassView:
             environment=environment,
             template_name=f'views/modal.html',
             block_name='update', view=self.update, backdrop=kwargs.get('backdrop')
+        )
+    async def get_action(self,action:str, ids:list, schema: BaseModel, **kwargs) -> str:
+        """
+            Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
+        """
+        kwargs.update({'type': 'update'})
+        prefix = self.prefix
+
+        data = {k: ids if k == 'ids' else None for k,v in schema.model_fields.items()}
+        line, lines, _ = await self._get_data(
+            params={},
+            data=[data],
+            schema=schema,
+            prefix='action--0',
+            join_related=False,
+        )
+        view = ViewAction(ids=ids, line=lines[0], prefix='action--0', model=self.model, action=action)
+        return render_block(
+            environment=environment,
+            template_name=f'views/action.html',
+            block_name='action', view=view
         )
 
     async def get_get(self, model_id: uuid.UUID, **kwargs) -> str:
@@ -703,7 +741,7 @@ class ClassView:
         htmx_line_temp = line.model_dump()
         for row_number, row in enumerate(data):
             line_dict = htmx_line_temp.copy()
-            line_dict['prefix'] = prefix + f'--{row_number}'
+            line_dict['prefix'] = prefix + (f'--{row.get("lsn")}' if row.get('lsn') else '')
             for col in line_dict['fields']:
                 col['prefix'] = line_dict['prefix']
                 col['val'] = row[col['field_name']]
@@ -725,13 +763,13 @@ class ClassView:
             lines.append(self._get_line(
                 schema=line_dict['schema'],
                 model=model,
-                model_id=row['id'],
-                lsn=row['lsn'],
+                model_id=row.get('id'),
+                lsn=row.get('lsn'),
                 vars=row.get('vars'),
                 display_title=row.get('title'),
                 company_id=row.get('company_id'),
                 fields=line_dict['fields'],
-                prefix=f"{prefix}--{row['lsn']}",
+                prefix=f"{prefix}--{row.get('lsn')}",
                 idx=row_number,
                 is_inline=self.is_inline,
                 field_map=line_dict['field_map']

@@ -54,4 +54,4 @@ async def move_delete(request: Request, move_id: uuid.UUID):
 
 @move_router.post("/confirm")
 async def action_move_confirm(request: Request, schema: MoveConfirmScheme):
-    return await MoveService(request).confirm(moves=[schema.id, ], user_id=request.user.user_id)
+    return await MoveService(request).confirm(moves=schema.ids, user_id=request.user.user_id)

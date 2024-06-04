@@ -1,7 +1,10 @@
 import json
 from uuid import UUID
 
+from pydantic import BaseModel
+
 from app.inventory.inventory_config import config
+from app.inventory.order.schemas import SuggestConfirmScheme
 from core.fastapi.adapters import BaseAdapter
 
 
@@ -28,5 +31,11 @@ class InventoryAdapter(BaseAdapter):
         if isinstance(payload, str):
             payload = json.loads(payload)
         responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()
+
+
+    async def action_suggest_confirm(self, schema: SuggestConfirmScheme):
+        path = f'/api/inventory/suggest/confirm'
+        responce = await self.client.post(self.host + path, json=schema.model_dump_json(), params={})
         return responce.json()
 

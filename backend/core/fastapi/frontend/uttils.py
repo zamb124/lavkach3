@@ -39,6 +39,7 @@ def clean_filter(qp: QueryParams | dict, _filter: str) -> list:
                         else:
                             models[model][line_number][field_name][_line_number].update({_field_name: qp[k]})
 
+
             keys_to_pop.append(k)
     models_cleaned = []
     for k, v in models.items():

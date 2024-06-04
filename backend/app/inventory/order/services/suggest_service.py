@@ -1,14 +1,17 @@
 import datetime
 import uuid
-from typing import Any, Optional
+from typing import Any, Optional, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.exceptions import HTTPException
 
+from app.inventory.order.enums.exceptions_suggest_enums import SuggestErrors
+from app.inventory.order.enums.order_enum import SuggestStatus, SuggestType
 from app.inventory.order.models.order_models import Suggest
 from app.inventory.order.schemas.suggest_schemas import SuggestCreateScheme, SuggestUpdateScheme, SuggestFilter
+from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-
 
 
 class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateScheme, SuggestFilter]):
@@ -20,7 +23,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
         return await super(SuggestService, self).update(id, obj, commit=commit)
 
     @permit('suggest_list')
-    async def list(self, _filter: FilterSchemaType, size: int):
+    async def list(self, _filter: FilterSchemaType | dict, size: int):
         return await super(SuggestService, self).list(_filter, size)
 
     @permit('suggest_create')
@@ -31,9 +34,32 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
     async def delete(self, id: Any) -> None:
         return await super(SuggestService, self).delete(id)
 
-    @permit('order_view')
-    async def suggest_confirm(self, id: Any) -> Optional[ModelType]:
-        suggest = await self.get(id)
-        suggest.status = 'confirmed'
-        suggest.confirm_datetime = datetime.datetime.now()
-        return suggest
+    @permit('suggest_confirm')
+    async def suggest_confirm(self, suggest_ids: List[uuid.UUID], value, commit=True) -> Optional[ModelType]:
+        suggest_entities = await self.list({'id__in': suggest_ids}, 999)
+        for suggest_entity in suggest_entities:
+            if suggest_entity.status == SuggestStatus.DONE:
+                raise ModuleException(
+                    status_code=406,
+                    enum=SuggestErrors.SUGGEST_ALREADY_DONE,
+                )
+            if suggest_entity.type == SuggestType.IN_QUANTITY:
+                val_in_cleaned = float(value)
+                val_s_cleaned = float(suggest_entity.value)
+                if val_in_cleaned == val_s_cleaned:
+                    suggest_entity.status = SuggestStatus.DONE
+            if suggest_entity.type == SuggestType.IN_PRODUCT:
+                product_obj = await self.env['product'].adapter.product_by_barcode(value)
+                if product_obj:
+                    suggest_entity.status = SuggestStatus.DONE
+
+        if commit:
+            try:
+                await self.session.commit()
+                [await self.session.refresh(i) for i in suggest_entities]
+            except Exception as e:
+                await self.session.rollback()
+                raise HTTPException(status_code=500, detail=f"Some Error entity {str(e)}")
+        else:
+            await self.session.flush(suggest_entities)
+        return suggest_entities

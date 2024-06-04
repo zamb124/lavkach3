@@ -1,6 +1,6 @@
 from typing import Optional, Any, List
 
-from pydantic import BaseModel, Json, validator
+from pydantic import BaseModel, Json, validator, UUID4, Field
 
 from core.schemas.list_schema import GenericListSchema
 
@@ -46,3 +46,12 @@ class PhoneSchema(BaseModel):
     national: str
     national_number: int
 
+
+class ActionBaseSchame(BaseModel):
+    id: Optional[UUID4] = Field(default=None,title='Id', hidden=True)
+    ids: Optional[list[UUID4]] = Field(default=[], title='Ids', hidden=True)
+    lsn: Optional[int] = Field(default=0, title='Lsn', hidden=True)
+    vars: Optional[dict] = Field(default={}, title='Vars', hidden=True)
+
+    class Config:
+        extra = 'allow'

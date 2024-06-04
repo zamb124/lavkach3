@@ -77,8 +77,8 @@ def permit(*arg):
                 if not res:
                     parents = []
                     for r in roles:
-                        if r.parents:
-                            parents += r.parents
+                        if r.role_ids:
+                            parents += r.role_ids
                     while parents:
                         query = select(role).where(
                             role.id.in_(parents)

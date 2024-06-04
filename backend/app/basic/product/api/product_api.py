@@ -50,3 +50,7 @@ async def product_update(request: Request, product_id: uuid.UUID, schema: Produc
 @product_router.delete("/{product_id}")
 async def product_delete(request: Request, product_id: uuid.UUID):
     await ProductService(request).delete(id=product_id)
+
+@product_router.get("/barcode/{barcode}", response_model=ProductScheme)
+async def product_by_barcode(request: Request, barcode: str):
+    return await ProductService(request).product_by_barcode(barcode=barcode)

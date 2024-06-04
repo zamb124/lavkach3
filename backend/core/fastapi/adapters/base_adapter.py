@@ -7,7 +7,7 @@ import redis.exceptions
 from fastapi import HTTPException
 from starlette.datastructures import QueryParams
 from starlette.requests import Request, HTTPConnection
-
+import json as _json
 from core.helpers.cache import Cache, CacheStrategy
 from core.utils.timeit import timed
 
@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 class Client(httpx.AsyncClient):
     @timed
     async def request(self, method: str, url: str, json=None, params=None, timeout=None):
+        if isinstance(json, str):
+            json = _json.loads(json)
         query_param_cleaned = {}
         if params:
             for name, val in params.items():

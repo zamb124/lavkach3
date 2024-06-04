@@ -190,7 +190,7 @@ async def modal(request: Request, schema: ModalSchema):
     if is_backdrop and len(schema.backdrop):
         schema.backdrop.pop(0)
     else:
-        schema.backdrop.insert(0, schema.model_dump_json())
+        schema.backdrop.insert(0, schema.model_dump)
     if data := schema.model_extra:
         _json = {}
         data = clean_filter(data, schema.prefix)
@@ -213,7 +213,10 @@ class ActionSchema(BaseModel):
     prefix: str
     model: str
     action: str
-    id: UUID4
+    method: str
+    ids: Optional[list[UUID4]] = []
+    schema: Any = None
+    commit: Optional[bool] = False
 
 
     class Config:
@@ -227,5 +230,18 @@ async def action(request: Request, schema: ActionSchema):
     cls = ClassView(request, schema.model, prefix=schema.prefix)
     func = cls.actions.get(schema.action)
     build_func = func['func']
-    res = await build_func(payload=schema.model_dump_json())
-    return cls.send_message(res['detail'])
+    result = []
+    if schema.method == 'commit':
+        res = await build_func(payload=schema.model_dump_json())
+        return cls.send_message(res['detail'])
+    elif schema.method == 'get_action':
+        return await cls.get_action(action=schema.action, ids=schema.ids, schema=func['schema'])
+    elif schema.method == 'action_commit':
+        if data := schema.model_extra:
+            _json = {}
+            data = clean_filter(data, schema.prefix)
+            for line in data:
+                obj = func['schema'](**line)
+                res = await build_func(obj)
+                result += res
+    return result

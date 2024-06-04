@@ -59,3 +59,8 @@ class BasicAdapter(BaseAdapter):
             'message': message,
             'items': items
         }
+
+    async def product_by_barcode(self, barcode):
+        path = f'/api/basic/product/barcode/{barcode}'
+        responce = await self.client.get(self.host + path, params=None)
+        return self.env['product'].schemas.get(**responce.json())

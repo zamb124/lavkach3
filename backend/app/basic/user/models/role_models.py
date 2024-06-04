@@ -18,5 +18,5 @@ class Role(Base, AllMixin):
     lsn_seq = Sequence(f'role_lsn_seq')
     title: Mapped[str] = mapped_column(index=True)
     role_ids: Mapped[Optional[ids]] = mapped_column(index=True)
-    permission_allow_list: Mapped[Optional[ids]] = mapped_column(ARRAY(String), index=True)
-    permission_deny_list: Mapped[Optional[ids]] = mapped_column(ARRAY(String), index=False)
+    permission_allow_list: Mapped[Optional[list[str]]] = mapped_column(ARRAY(String), index=True)
+    permission_deny_list: Mapped[Optional[list[str]]] = mapped_column(ARRAY(String), index=False)

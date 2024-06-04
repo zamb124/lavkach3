@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, computed_field
 from pydantic.types import UUID4
 
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import ActionBaseSchame
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import Suggest, SuggestType
@@ -60,4 +61,8 @@ class SuggestFilter(BaseFilter):
 
 class SuggestListSchema(GenericListSchema):
     data: Optional[List[SuggestScheme]]
+
+
+class SuggestConfirmScheme(ActionBaseSchame):
+    value: str = Field(title='Value')
 

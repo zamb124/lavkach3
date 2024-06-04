@@ -2,8 +2,8 @@ import uuid
 from enum import Enum
 from typing import Optional
 from typing import TYPE_CHECKING
-
-from sqlalchemy import Sequence, Uuid, ForeignKey, UniqueConstraint, String, ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy import Sequence, Uuid, ForeignKey, UniqueConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship
 
@@ -41,4 +41,4 @@ class Product(Base, AllMixin):
     uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("uom.id"), index=True)
     uom_rel: Mapped['Uom'] = relationship(lazy='selectin')
     product_category_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("product_category.id"), index=True)
-    barcode_list: Mapped[ids] = mapped_column(ARRAY(String), index=True, server_default='{}')
+    barcode_list: Mapped[list[str]] = mapped_column(ARRAY(String), index=True, server_default='{}')
