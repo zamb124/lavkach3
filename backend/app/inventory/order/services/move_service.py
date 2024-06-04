@@ -8,10 +8,12 @@ from starlette.exceptions import HTTPException
 
 from app.inventory.location import Location
 from app.inventory.location.enums import VirtualLocationClass
+from app.inventory.order.enums.exceptions_move_enums import MoveErrors
 from app.inventory.order.models.order_models import Move, MoveType, Order, OrderType, OrderClass, MoveStatus, \
     SuggestType
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
+from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
@@ -252,7 +254,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                         logger.warning(f'The number in the move has been reduced')
                         move.quantity -= remainder
             if not quant_src_entity:
-                raise HTTPException(status_code=406, detail=f"It was not possible to create and find a Stock Source, perhaps the parameters were set incorrectly")
+                raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
 
             move.quant_src_id =      quant_src_entity.id
             move.location_src_id =   quant_src_entity.location_id
@@ -326,13 +328,13 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 self.session.add(quant_dest_entity)
                 break
             if not quant_dest_entity:
-                raise HTTPException(status_code=406, detail=f"It was not possible to create and find a Stock Dest, perhaps the parameters were set incorrectly")
+                raise ModuleException(status_code=406, enum=MoveErrors.DEST_QUANT_ERROR)
 
             move.quant_dest_id =      quant_dest_entity.id
             move.location_dest_id =   quant_dest_entity.location_id
             move.status = MoveStatus.CONFIRMED
             if quant_src_entity == quant_dest_entity:
-                raise HTTPException(status_code=406, detail=f"Source Quant and Destination Quant cannot be the same")
+                raise ModuleException(status_code=406, enum=MoveErrors.EQUAL_QUANT_ERROR)
 
             self.session.add(move)
             if not quant_src_entity.move_ids:
@@ -357,7 +359,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         if isinstance(id, uuid.UUID):
             move = await self.get(id)
             if move.status != MoveStatus.CREATED:
-                raise HTTPException(status_code=406, detail=f"Move is not in CREATED status")
+                raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
         return await super(MoveService, self).delete(id)
 
 
