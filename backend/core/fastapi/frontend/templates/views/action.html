@@ -5,7 +5,7 @@
                 <div class="modal-header">
 
                     <div class="bx-pull-right">
-                        <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button class="btn-close" onclick="hideModals()" aria-label="Close"></button>
                     </div>
                 </div>
                 <form class="was-validated"
@@ -49,7 +49,7 @@
                                     {% endfor %}
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                        <button type="button" class="btn btn-secondary" onclick="hideModals()" >Close
                                         </button>
                                         <button id="{{ 'submit_'~view.prefix }}" type="submit" class="btn btn-success">
                                             Save

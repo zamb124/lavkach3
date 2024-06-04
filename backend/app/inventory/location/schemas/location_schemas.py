@@ -51,7 +51,7 @@ class LocationScheme(LocationCreateScheme, TimeStampScheme):
 
 
 class LocationFilter(BaseFilter):
-    title__in: Optional[str] = Field(default=None, title='Title')
+    title: Optional[str] = Field(default=None, title='Title')
     store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', model='store')
     location_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Location Type', model='location_type')
     location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Class')

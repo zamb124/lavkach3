@@ -244,4 +244,4 @@ async def action(request: Request, schema: ActionSchema):
                 obj = func['schema'](**line)
                 res = await build_func(obj)
                 result += res
-    return result
+    return cls.send_message('Action Done')

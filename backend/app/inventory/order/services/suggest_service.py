@@ -43,16 +43,24 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                     status_code=406,
                     enum=SuggestErrors.SUGGEST_ALREADY_DONE,
                 )
-            if suggest_entity.type == SuggestType.IN_QUANTITY:
+            elif suggest_entity.type == SuggestType.IN_QUANTITY:
                 val_in_cleaned = float(value)
                 val_s_cleaned = float(suggest_entity.value)
                 if val_in_cleaned == val_s_cleaned:
                     suggest_entity.status = SuggestStatus.DONE
-            if suggest_entity.type == SuggestType.IN_PRODUCT:
+            elif suggest_entity.type == SuggestType.IN_PRODUCT:
                 product_obj = await self.env['product'].adapter.product_by_barcode(value)
                 if product_obj:
                     suggest_entity.status = SuggestStatus.DONE
-
+            elif suggest_entity.type == SuggestType.IN_LOCATION:
+                location_entity = await self.env['location'].service.list(_filter={'id__in': [value]})
+                if location_entity:
+                    suggest_entity.status = SuggestStatus.DONE
+            else:
+                raise ModuleException(
+                    status_code=500,
+                    enum=SuggestErrors.SUGGEST_TYPE_NOT_FOUND,
+                )
         if commit:
             try:
                 await self.session.commit()
