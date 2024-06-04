@@ -234,6 +234,7 @@ class Line(BaseModel):
         return self.render(block_name='as_create')
 
 
+
 class ViewCreate(BaseModel):
     """"
         Описание строчки

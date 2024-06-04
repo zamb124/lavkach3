@@ -61,6 +61,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                     status_code=500,
                     enum=SuggestErrors.SUGGEST_TYPE_NOT_FOUND,
                 )
+            suggest_entity.user_id = self.user.user_id
         if commit:
             try:
                 await self.session.commit()

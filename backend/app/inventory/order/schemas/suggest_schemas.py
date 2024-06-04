@@ -65,4 +65,5 @@ class SuggestListSchema(GenericListSchema):
 
 class SuggestConfirmScheme(ActionBaseSchame):
     value: str = Field(title='Value')
+    hren: Optional[str] = Field(default='', title='Hren')
 
