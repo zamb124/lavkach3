@@ -163,6 +163,6 @@ def create_app() -> FastAPI:
 
 app = create_app()
 path = os.path.dirname(os.path.abspath(__file__))
-print(dir)
+print(path)
 add_timing_middleware(app, record=logger.info, prefix="bff", exclude="untimed")
 app.mount(f"/static", StaticFiles(directory=f"{path}/static"), name="static")
