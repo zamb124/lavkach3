@@ -26,11 +26,11 @@ def my_import(name):
 class Config(CoreConfig):
     services: dict = {
         'basic': {
-            'DOMAIN': os.environ.get("BASIC_DOMAIN") or '127.0.0.1',
+            'DOMAIN': f'http://{os.environ.get("BASIC_DOMAIN")}' or '127.0.0.1',
             'PORT': '8001',
         },
         'inventory': {
-            'DOMAIN': os.environ.get("INVENTORY_DOMAIN") or '127.0.0.1',
+            'DOMAIN': f'http://{os.environ.get("INVENTORY_DOMAIN")}' or '127.0.0.1',
             'PORT': '8002',
         }
     }
