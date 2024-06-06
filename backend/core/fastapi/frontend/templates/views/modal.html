@@ -217,7 +217,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        {% for field in view.line.fields if not field.field_name in ( 'vars', 'id', 'lsn') if field.type in ['list_uuid', 'list_rel'] %}
+                        {% for field in view.line.fields if not field.field_name in ( 'vars', 'id', 'lsn') if field.type in ['list_rel'] %}
                             <div class="row">
                                 <p style="margin-bottom: 0; margin-top: 1rem"
                                    class="sort text-uppercase text-muted text-start "

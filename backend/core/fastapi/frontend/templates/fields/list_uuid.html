@@ -2,6 +2,7 @@
     <select class="list-uuid form-control is-valid"
             id="{{ field.prefix ~'--'~ field.field_name }}"
             {% if field.required %} required {% endif %}
+            {% if field.readonly %}disabled{% endif %}
             name="{{ field.prefix ~'--'~ field.field_name }}"
             data-choices multiple
     >   {% if field.val %}
@@ -93,7 +94,7 @@
 {% endblock %}
 
 {% block as_view %}
-        <div class="text-start form-control" id="{{ field.prefix ~'--'~ field.field_name }}">
+        <div class="text-start form-control" style="background-color: var(--vz-tertiary-bg);" id="{{ field.prefix ~'--'~ field.field_name }}">
         </div>
     <script>
         (async function () {
