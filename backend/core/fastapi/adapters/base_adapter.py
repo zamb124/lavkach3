@@ -34,6 +34,7 @@ class Client(httpx.AsyncClient):
         except Exception as ex:
             logger.error(f'URL: {url}\n JSON: {json}\n PARAMS: {str(qp)}')
             logger.error(str(ex))
+            raise HTTPException(500, detail=str(ex))
         if responce.status_code != 200:
             raise HTTPException(responce.status_code, detail=responce.json().get('detail'))
         return responce
