@@ -1,4 +1,5 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from typing import List
@@ -145,7 +146,7 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     app_ = FastAPI(
-        lifespan=lifespan,
+        #lifespan=lifespan,
         title="Hide",
         description="Hide API",
         version="1.0.0",
@@ -161,6 +162,7 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
+dir = os.path.abspath(os.curdir)
+print(dir)
 add_timing_middleware(app, record=logger.info, prefix="bff", exclude="untimed")
-app.mount("/static", StaticFiles(directory="app/bff/static"), name="static")
+app.mount(f"{dir}/static", StaticFiles(directory="app/bff/static"), name="static")
