@@ -392,8 +392,6 @@ class ClassView:
         """
         fielinfo = schema.model_fields[field_name]
         prefix = kwargs.get('prefix') or self.prefix
-        if 'suggest_list_rel--2' in prefix:
-            a=1
         res = ''
         enums = []
         line = None
@@ -424,16 +422,12 @@ class ClassView:
                 schema = c
             else:
                 res += c.__name__.lower()
-        if field_name == 'vars':
-            a=1
         if not model and model_name:
             if model_name == self.model.name:
                 model = self.model
             elif model_name != self.model.name:
                 model = self.env[model_name]
-        assert model, f'Model for field {field_name} is not defined'
-        if field_name == 'quant_src_id':
-            a=1
+            assert model, f'Model for field {field_name} is not defined'
         return Field(**{
             'field_name': field_name,
             'type': res,

@@ -12,9 +12,9 @@ from core.schemas.timestamps import TimeStampScheme
 
 class ProductCategoryBaseScheme(BaseModel):
     vars: Optional[dict] = None
-    title: str
-    external_number: Optional[str] = None
-    product_category_ids: Optional[list[UUID4]] = Field(default=[], model='product_category')
+    title: str = Field(title='Title')
+    external_number: Optional[str] = Field(default=None, title='External ID')
+    product_category_ids: Optional[list[UUID4]] = Field(default=[], title="Child categories", model='product_category')
 
     class Config:
         extra = 'allow'
@@ -24,17 +24,17 @@ class ProductCategoryBaseScheme(BaseModel):
 
 
 class ProductCategoryUpdateScheme(ProductCategoryBaseScheme):
-    title: Optional[str] = None
+    ...
 
 
 class ProductCategoryCreateScheme(ProductCategoryBaseScheme):
-    company_id: UUID4
+    ...
 
 
 class ProductCategoryScheme(ProductCategoryCreateScheme, TimeStampScheme):
-    lsn: int
-    id: UUID4
-    company_id: UUID4
+    lsn: int = Field(table=False)
+    id: UUID4 = Field(table=False)
+    company_id: UUID4 = Field(title='Company', model='company')
 
 
 class ProductCategoryFilter(BaseFilter):

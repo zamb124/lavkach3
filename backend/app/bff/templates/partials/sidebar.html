@@ -131,7 +131,13 @@
                                     </div>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/inventory/quant" class="nav-link" data-key="t-stocks"> Stocks </a>
+                                    <a
+                                                    href="/inventory/quant"
+                                                    hx-target="#htmx_content"
+                                                    hx-push-url="true"
+                                                    class="nav-link"
+                                                    data-key="t-stocks"> Stocks
+                                                </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#sidebarInventoryProducts" class="nav-link" data-bs-toggle="collapse" role="button"
