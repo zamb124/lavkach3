@@ -13,9 +13,9 @@ load_dotenv()
 
 
 class Config(CoreConfig):
-    APP_HOST: str = os.environ.get("APP_HOST") or '127.0.0.1'
-    APP_PORT: int = os.environ.get("APP_PORT") or '8001'
-    APP_PROTOCOL: str = os.environ.get('APP_PROTOCOL') or 'http'
+    APP_HOST: str = os.environ.get("BASIC_HOST") or '127.0.0.1'
+    APP_PORT: int = os.environ.get("BASIC_PORT") or '8001'
+    APP_PROTOCOL: str = os.environ.get('BASIC_PROTOCOL') or 'http'
 
 
 class DevelopmentConfig(Config):
