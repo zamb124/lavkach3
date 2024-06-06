@@ -13,7 +13,9 @@
 {% endblock %}
 {% block as_view %}
     {% if field.color_map %}
-    <span class="form-control badge bg-danger-subtle text-{{  field.color.value|safe  }} p-3">{{ field.val.english_name or field.val.name or field.val}}</span>
+        <div class="d-flex flex-wrap gap-2">
+                                            <span class="text-uppercase badge bg-{{  field.color.value|safe  }} p-3" style="border-radius: 15px"><b>{{ field.val.english_name or field.val.name or field.val}}</b></span>
+                                        </div>
         {% else %}
          <input  type="text"
                     class="form-control"

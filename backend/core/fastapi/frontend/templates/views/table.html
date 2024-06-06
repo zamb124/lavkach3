@@ -36,7 +36,7 @@
 {% block as_view %}
     <div class="card">
         <div class="card-body">
-            <div class="table-responsive " style="width: auto; min-height: 400px" data-show-columns="true">
+            <div class="table-responsive " style="width: auto; min-height: 400px; white-space: nowrap;" data-show-columns="true">
                 <table class="table table-hover table-striped" id="{{ 'table-' ~'--'~ view.prefix }}" style="vertical-align: middle;"
                 >
                     <thead class="text-muted table-light">
@@ -69,7 +69,7 @@
                                     </div>
                                 </th>
                                 {% for field in line.fields %}
-                                    <td class="text-center">{{ field.as_view()|safe }}</td>
+                                    <td class="text-center" style="padding-left: 2px; padding-right: 2px;">{{ field.as_view()|safe }}</td>
                                 {% endfor %}
                                 <td class="text-center">
                                     <div
