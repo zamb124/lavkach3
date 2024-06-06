@@ -43,10 +43,10 @@ async def render(obj: BaseModel, block_name: str, path: str = '') -> object:
 class HTMXException(HTTPException):
     ...
 
-dir = os.path.abspath(os.curdir)
+path = os.path.dirname(os.path.abspath(__file__))
 
 environment = Environment(
-    loader=FileSystemLoader(f"{dir}/templates/"),
+    loader=FileSystemLoader(f"{path}/templates/"),
     autoescape=select_autoescape(("html", "jinja2"))
 )
 
