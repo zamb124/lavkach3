@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import enum
 import logging
+import os
 import uuid
 from collections import defaultdict
 from enum import Enum
@@ -42,9 +43,10 @@ async def render(obj: BaseModel, block_name: str, path: str = '') -> object:
 class HTMXException(HTTPException):
     ...
 
+dir = os.path.abspath(os.curdir)
 
 environment = Environment(
-    loader=FileSystemLoader("core/fastapi/frontend/templates/"),
+    loader=FileSystemLoader(f"{dir}/templates/"),
     autoescape=select_autoescape(("html", "jinja2"))
 )
 
