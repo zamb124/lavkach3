@@ -29,7 +29,6 @@ class Client(httpx.AsyncClient):
                 if val:
                     query_param_cleaned.update({name: val})
         qp = QueryParams(query_param_cleaned)
-        logger.error()
         try:
             responce = await super().request(method=method, url=url, json=json, params=qp, timeout=timeout)
         except Exception as ex:
