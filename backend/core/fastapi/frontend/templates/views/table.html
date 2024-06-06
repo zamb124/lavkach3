@@ -59,9 +59,6 @@
                         {% for line in view.lines %}
                             <tr id="{{ line.prefix }}"
                                 class="mb-0 fw-semibold text-muted"
-
-
-
                             >
                                 <th scope="row">
                                     <div class="form-check">
@@ -71,7 +68,7 @@
                                 {% for field in line.fields %}
                                     <td class="text-center" style="padding-left: 2px; padding-right: 2px;">{{ field.as_view()|safe }}</td>
                                 {% endfor %}
-                                <td class="text-center">
+                                <td class="text-center" style="padding-bottom: 0px;">
                                     <div
                                         {% if loop.last and not line.is_inline %}
                                             hx-include="{{ '#filter_' ~'--'~ view.prefix }}"
@@ -84,11 +81,10 @@
                                                 "{{ view.line.prefix ~'--'~ 'cursor'}}": "{{ line.lsn }}",
                                                 "prefix": "{{ view.prefix }}"
                                             }'
-
                                         {% endif %}>
                                     </div>
                                 <div>
-                                    <ul class="list-inline text-center">
+                                    <ul class="list-inline text-center position-relative">
                                         <li class="list-inline-item view-btn" title="View">
                                             {{ line.as_button_view()|safe }}
                                         </li>

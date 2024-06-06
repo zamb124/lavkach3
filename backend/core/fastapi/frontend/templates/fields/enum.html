@@ -14,7 +14,7 @@
 {% block as_view %}
     {% if field.color_map %}
         <div class="d-flex flex-wrap gap-2">
-                                            <span class="text-uppercase badge bg-{{  field.color.value|safe  }} p-3" style="border-radius: 15px"><b>{{ field.val.english_name or field.val.name or field.val}}</b></span>
+                                            <span class="text-uppercase badge border border-{{  field.color.value|safe  }} text-{{  field.color.value|safe  }} p-3" style="border-radius: 15px"><b>{{ field.val.english_name or field.val.name or field.val}}</b></span>
                                         </div>
         {% else %}
          <input  type="text"
