@@ -145,7 +145,7 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     app_ = FastAPI(
-        #lifespan=lifespan,
+        lifespan=lifespan,
         title="Hide",
         description="Hide API",
         version="1.0.0",

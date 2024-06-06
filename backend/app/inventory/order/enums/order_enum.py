@@ -1,5 +1,6 @@
 from enum import Enum
 
+from core.fastapi.frontend.enums import TextColorEnum
 from . import BaseEnum
 
 
@@ -15,6 +16,16 @@ class MoveStatus(str, Enum):
     DONE:       str = 'done'
     CANCELED:   str = 'canceled'
 
+
+move_color_map = {
+    MoveStatus.CREATED:     TextColorEnum.LIGHT,
+    MoveStatus.CONFIRMED:   TextColorEnum.DARK,
+    MoveStatus.WAITING:     TextColorEnum.WARNING,
+    MoveStatus.ASSIGNED:    TextColorEnum.INFO,
+    MoveStatus.PROCESSING:  TextColorEnum.SECONDARY,
+    MoveStatus.DONE:        TextColorEnum.SUCCESS,
+    MoveStatus.CANCELED:    TextColorEnum.DANGER,
+}
 
 class MoveType(str, Enum):
     """

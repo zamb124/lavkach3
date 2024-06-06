@@ -23,7 +23,7 @@ class OrderBaseScheme(BaseModel):
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
     order_type_id: UUID = Field(title='Order type', model='order_type')
     store_id: UUID = Field(title='Store', table=True, form=True, model='store')
-    partner_id: Optional[UUID] = Field(default=None, title='Partner', table=True, form=True, model='partner')
+    partner_id: Optional[UUID] = Field(default=None, title='Partner', table=True, form=True, model='partner', readonly=True)
     lot_id: Optional[UUID] = Field(default=None, title='Lot', model='lot')
     origin_type: Optional[str] = Field(default=None, title='Original Type', form=True)
     origin_number: Optional[str] = Field(default=None, title='Original', table=True, form=True)

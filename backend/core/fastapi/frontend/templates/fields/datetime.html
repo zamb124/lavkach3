@@ -7,7 +7,15 @@
            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
 {% endblock %}
 {% block as_view %}
-{{field.val.strftime('%Y-%m-%d') if field.val else ''}}
+    <input  type="text"
+                    class="form-control"
+                    {% if field.required %} required {% endif %}
+                    disabled
+                    name="{{ field.prefix ~'--'~ field.field_name }}"
+                    placeholder=""
+                    value="{{field.val.strftime('%Y-%m-%d') if field.val else ''}}"
+            >
+
 {% endblock %}
 {% block as_table %}
 {{ field.val.strftime('%Y-%m-%d') if field.val else '' }}<small class="text-muted"> {{ field.val.strftime('%H-%M') if field.val else '' }}</small>

@@ -13,8 +13,9 @@ from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from app.inventory.order.models import Move, MoveType
 from app.inventory.order.enums.order_enum import MoveStatus, OrderClass, BackOrderAction, ReservationMethod, \
-    OrderStatus, MoveType, SuggestType
+    OrderStatus, MoveType, SuggestType, move_color_map
 from app.inventory.order.schemas.suggest_schemas import SuggestScheme
+
 
 
 
@@ -34,6 +35,7 @@ class MoveBaseScheme(BaseModel):
     uom_id: Optional[UUID4] = Field(default=None, title='Uom', table=True, model='uom')
     quant_src_id: Optional[UUID4] = Field(default=None, title='Quant source', table=True, model='quant')
     quant_dest_id: Optional[UUID4] = Field(default=None, title='Quant dest', table=True, model='quant')
+    status: MoveStatus = Field(title='Status', table=True, color_map=move_color_map)
 
     class Config:
         extra = 'allow'
@@ -56,7 +58,6 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
     move_id: Optional[UUID4] = Field(default=None, model='move', title='Parent Move')
-    status: MoveStatus = Field(title='Status', table=True)
     suggest_list_rel: Optional[list[SuggestScheme]] = Field(default=[], title='Suggests', form=True)
 
     @computed_field

@@ -2,6 +2,7 @@
     <select
             name="{{ field.prefix ~'--'~ field.field_name }}"
             class="enum form-select mb-3 form-control"
+            {% if field.readonly %}disabled{% endif %}
             aria-label="Default select example"
             style="padding-right: 1rem; padding-left: 1rem"
     >
@@ -11,5 +12,17 @@
     </select>
 {% endblock %}
 {% block as_view %}
-        {{ field.val.english_name or field.val.name or field.val}}
+    {% if field.color_map %}
+    <span class="form-control badge bg-danger-subtle text-{{  field.color.value|safe  }} p-3">{{ field.val.english_name or field.val.name or field.val}}</span>
+        {% else %}
+         <input  type="text"
+                    class="form-control"
+                    {% if field.required %} required {% endif %}
+                    disabled
+                    name="{{ field.prefix ~'--'~ field.field_name }}"
+                    placeholder="Enter {{ field.title }}"
+                    value="{{ field.val if field.val else "" }}"
+            >
+    {% endif %}
+
 {% endblock %}

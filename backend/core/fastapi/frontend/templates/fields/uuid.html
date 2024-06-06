@@ -1,6 +1,7 @@
 {% block as_form %}
         <select class="uuid form-control is-valid"
                 id="{{ field.prefix ~'--'~ field.field_name }}"
+                {% if field.readonly %}disabled{% endif %}
                 name="{{ field.prefix ~'--'~ field.field_name }}"
                 {% if field.required %} required {% endif %}
                 data-choices
@@ -118,7 +119,8 @@
 {% endblock %}
 {% block as_view %}
     {% if field.val %}
-        <div id="{{ field.prefix~'--'~field.field_name }}"
+        <div id="{{ field.prefix~'--'~field.field_name }}" class="uuid form-control"
+             style="background-color: var(--vz-tertiary-bg);"
              hx-trigger="load"
              hx-include="none"
              hx-params="model,method,id,prefix"
@@ -131,5 +133,14 @@
 "prefix": "{{ field.prefix }}"
             }'
         ></div>
+        {% else %}
+        <input  type="text"
+                    class="form-control"
+                    {% if field.required %} required {% endif %}
+                    disabled
+                    name="{{ field.prefix ~'--'~ field.field_name }}"
+                    placeholder=""
+                    value=""
+            >
     {% endif %}
 {% endblock %}

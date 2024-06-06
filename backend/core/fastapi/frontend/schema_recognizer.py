@@ -85,7 +85,7 @@ class Field(BaseModel):
     required: Optional[bool]
     hidden: Optional[bool] = False
     title: Optional[str]
-    enums: Optional[list] = []
+    enums: Optional[Any] = None
     widget: Optional[dict]
     val: Any = None
     sort_idx: int = 0
@@ -96,6 +96,9 @@ class Field(BaseModel):
     schema: Any
     filter: Optional[dict] = None
     is_inline: bool = False
+    readonly: bool = False
+    color_map: Optional[dict] = {}
+    color: Optional[Any] = None
 
     def render(self, block_name: str, type: str = '', backdrop: list = []):
         type = type or self.type
@@ -438,6 +441,8 @@ class ClassView:
             'title': fielinfo.title or model.name,
             'enums': enums,
             'widget': fielinfo.json_schema_extra or {},
+            'color_map': fielinfo.json_schema_extra.get('color_map', {}) if fielinfo.json_schema_extra else {},
+            'readonly': fielinfo.json_schema_extra.get('readonly', False) if fielinfo.json_schema_extra else False,
             'filter': fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {},
             'sort_idx': self.sort.get(field_name, 999),
             'description': fielinfo.description or field_name,
@@ -752,6 +757,9 @@ class ClassView:
                 elif col['type'] == 'id':
                     if not col['val']:
                         col['val'] = []
+                elif col['type'] == 'enum' and col['color_map'] and col['val']:
+                     color_enum = col['enums'](col['val'])
+                     col['color'] = col['color_map'].get(color_enum)
                 elif col['type'].endswith('list_rel'):
                     if val_data := col['val']:
                         line_prefix = f'{line_dict["prefix"]}--{col["field_name"]}'
@@ -773,8 +781,7 @@ class ClassView:
                 prefix=f"{prefix}--{row.get('lsn')}",
                 idx=row_number,
                 is_inline=self.is_inline,
-                field_map=line_dict['field_map']
-
+                field_map=line_dict['field_map'],
             ))
         logging.info(f"_GET_DATA LINES SERIALIZE: {datetime.datetime.now() - time_start}")
         ### Если необходимо сджойнить
