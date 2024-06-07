@@ -12,7 +12,7 @@ templates = Jinja2Templates(directory="app/bff/templates/")
 templates.env.globals['datetime'] = datetime
 templates.env.globals['uuid'] = uuid4
 templates.env.globals['now'] = datetime.date(datetime.now()).isoformat()
-templates.env.globals['ws'] = f"ws://{config.services['basic']['DOMAIN']}:{config.services['basic']['PORT']}/api/basic/ws/bus"
+templates.env.globals['ws'] = f"ws://{config.services['bus']['DOMAIN']}:{config.services['bus']['PORT']}/api/bus/ws/bus"
 
 
 async def internal_error(request: Request, exc: HTTPException):

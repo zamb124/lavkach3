@@ -25,6 +25,10 @@ def my_import(name):
 
 class Config(CoreConfig):
     services: dict = {
+        'bus': {
+            'DOMAIN': f'{os.environ.get("BUS_DOMAIN")}' or '127.0.0.1',
+            'PORT': '8099',
+        },
         'basic': {
             'DOMAIN': f'http://{os.environ.get("BASIC_DOMAIN")}' or '127.0.0.1',
             'PORT': '8001',

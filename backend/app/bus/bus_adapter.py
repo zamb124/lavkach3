@@ -1,7 +1,12 @@
 from core.fastapi.adapters import BaseAdapter
+from app.basic.basic_config import config
 
 class BasicAdapter(BaseAdapter):
-    module = 'basic'
+    module = 'bus'
+    protocol = config.APP_PROTOCOL
+    port = config.APP_PORT
+    host = config.APP_HOST
+
 
 
     async def refresh_token(self, refresh_schema):
@@ -10,7 +15,7 @@ class BasicAdapter(BaseAdapter):
             'token': refresh_schema.token,
             'refresh_token': refresh_schema.refresh_token
         }
-        responce = await self.client.post(self.domain + path, json=body, params=None)
+        responce = await self.client.post(self.host + path, json=body, params=None)
         return responce.json()
 
     async def user_company_change(self, user_id, company_id):
@@ -19,7 +24,7 @@ class BasicAdapter(BaseAdapter):
             'user_id': user_id,
             'company_id': company_id
         }
-        responce = await self.client.post(self.domain + path, json=body, params=None)
+        responce = await self.client.post(self.host + path, json=body, params=None)
         return responce.json()
 
     async def login(self, username, password):
@@ -28,7 +33,7 @@ class BasicAdapter(BaseAdapter):
             'email': username,
             'password': password
         }
-        responce = await self.client.post(self.domain + path, json=body, params=None)
+        responce = await self.client.post(self.host + path, json=body, params=None)
         return responce.json()
 
     async def dropdown_ids(self, model: str, id: str, itemlink: str, is_named=False, message=None):
@@ -54,3 +59,8 @@ class BasicAdapter(BaseAdapter):
             'message': message,
             'items': items
         }
+
+    async def product_by_barcode(self, barcode):
+        path = f'/api/basic/product/barcode/{barcode}'
+        responce = await self.client.get(self.host + path, params=None)
+        return self.env['product'].schemas.get(**responce.json())

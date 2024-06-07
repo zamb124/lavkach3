@@ -49,7 +49,8 @@ class MoveUpdateScheme(MoveBaseScheme):
 
 
 class MoveCreateScheme(MoveBaseScheme):
-    order_type_id: Optional[UUID4] = Field(title='Order type', model='order_type')
+    ...
+    #order_type_id: Optional[UUID4] = Field(title='Order type', model='order_type')
 
 
 
