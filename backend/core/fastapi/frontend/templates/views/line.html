@@ -99,10 +99,11 @@
             <i class="ri-more-fill align-middle h4"></i>
         </button>
         <ul class="dropdown-menu" aria-labelledby="{{ "actions-" ~'--'~ line.prefix }}">
+        {% for action_name, action_vals in line.actions.items() %}
             <li class="dropdown-item">
-                {% for action_name, action_vals in line.actions.items() %}
                         <a
-                                data-key="t-{{ action_name }}"
+                                data-bs-toggle="{{ action_vals.doc }}"
+                                data-key="{{ action_vals.tkey }}"
                                 hx-trigger="click"
                                 hx-ext="json-enc"
                                 hx-target="#modal"
@@ -117,8 +118,9 @@
                                 class="dropdown-item remove-item-btn">
                             <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> {{ action_name }}
                         </a>
+            </li>
                 {% endfor %}
-    </li>
+
     </ul>
     </div>
 {% endblock %}

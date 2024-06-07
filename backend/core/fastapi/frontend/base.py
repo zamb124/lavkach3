@@ -228,11 +228,10 @@ async def action(request: Request, schema: ActionSchema):
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
     cls = ClassView(request, schema.model, prefix=schema.prefix)
-    func = cls.actions.get(schema.action)
-    build_func = func['func']
+    func = getattr(cls.model.adapter, schema.action)
     result = []
     if schema.method == 'commit':
-        res = await build_func(payload=schema.model_dump_json())
+        res = await func(payload=schema.model_dump_json())
         return cls.send_message(res['detail'])
     elif schema.method == 'get_action':
         return await cls.get_action(action=schema.action, ids=schema.ids, schema=func['schema'])
@@ -242,6 +241,6 @@ async def action(request: Request, schema: ActionSchema):
             data = clean_filter(data, schema.prefix)
             for line in data:
                 obj = func['schema'](**line)
-                res = await build_func(obj)
+                res = await func(obj)
                 result += res
     return cls.send_message('Action Done')

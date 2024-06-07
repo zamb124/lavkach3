@@ -8,6 +8,8 @@ from fastapi import HTTPException
 from starlette.datastructures import QueryParams
 from starlette.requests import Request, HTTPConnection
 import json as _json
+
+from core.fastapi.adapters.action_decorator import actions
 from core.helpers.cache import Cache, CacheStrategy
 from core.utils.timeit import timed
 
@@ -84,6 +86,8 @@ class BaseAdapter:
     host: str
     port: str
 
+
+
     def __init__(self, conn: HTTPConnection, domain: 'Domain', model: 'Model', env: 'Env'):
         self.model = model
         self.domain = domain
@@ -92,6 +96,9 @@ class BaseAdapter:
         self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token') or ''}
         # if self.headers.get('Authorization'):
         self.client = Client(headers=self.headers)
+
+    def get_actions(self):
+        return actions.get(self.model.name, {})
 
     async def __aenter__(self):
         self.client = Client(headers=self.headers)
@@ -177,3 +184,4 @@ class BaseAdapter:
         path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
         responce = await self.client.delete(self.host + path, params=params)
         return await common_exception_handler(responce)
+

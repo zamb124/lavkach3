@@ -314,28 +314,6 @@ class ViewTable(ViewGet):
 
 
 
-def get_model_actions(model:str | Model, adapter):
-    from inspect import signature
-    if isinstance(model, str):
-        model_name = model
-    elif isinstance(model, Model):
-        model_name = model.name
-    else:
-        raise HTMXException(status_code=500, detail='Model is not defined')
-    actions = {}
-    for i in dir(adapter):
-        if i.startswith(f'action_{model_name}'):
-            func = getattr(adapter, i),
-            schema = signature(func[0]).parameters.get('schema')
-            actions.update({
-                i: {
-                    'func': getattr(adapter, i),
-                    'doc': func.__doc__,
-                    'schema': schema.annotation if schema else None
-                }
-            })
-    return actions
-
 class ClassView:
     """
         Класс управление собирания таблиц, форм, строчек и тд связанных с HTMX
@@ -343,7 +321,6 @@ class ClassView:
     request: Request
     model: Model
     params: Optional[QueryParams] | dict | None
-    actions: dict | None
     table: Optional[ViewTable] = None
     create: Optional[ViewCreate] = None
     update: Optional[ViewUpdate] = None
@@ -374,7 +351,7 @@ class ClassView:
         else:
             self.model = request.scope['env'][model]
         assert self.model, 'Model is not defined'
-        self.actions = get_model_actions(model, self.model.adapter)
+        self.actions = self.model.adapter.get_actions()
         self.env = request.scope['env']
         self.prefix = prefix or _get_prefix()
         self.exclude = exclude or []

@@ -8,6 +8,7 @@ from starlette.requests import HTTPConnection, Request
 
 from app.basic import __domain__ as basic_domain
 from app.inventory import __domain__ as inventory_domain
+from core.fastapi.adapters.action_decorator import actions
 
 from core.helpers.cache import CacheStrategy
 from pydantic import BaseModel
@@ -40,6 +41,7 @@ class Model:
     model: Any
     sort: list = []
     cache_strategy: 'CacheStrategy' = CacheStrategy.NONE
+    actions: dict = {}
 
 
     def __init__(self , name, _adapter,_service, domain, schemas, model, sort=[], cache_strategy=CacheStrategy.NONE):
@@ -51,6 +53,7 @@ class Model:
         self.model = model
         self.sort = sort
         self.cache_strategy = cache_strategy
+        self.actions = actions.get(name, {})
     def __copy__(self):
         return self
     @property
