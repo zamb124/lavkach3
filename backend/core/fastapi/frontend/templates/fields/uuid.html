@@ -1,6 +1,6 @@
 {% block as_form %}
         <select class="uuid form-control is-valid"
-                id="{{ field.prefix ~'--'~ field.field_name }}"
+                id="{{ field.identificator }}"
                 {% if field.readonly %}disabled{% endif %}
                 name="{{ field.prefix ~'--'~ field.field_name }}"
                 {% if field.required %} required {% endif %}
@@ -12,7 +12,7 @@
         </select>
     <script>
         (async function () {
-            let element = document.getElementById("{{field.prefix ~'--'~ field.field_name }}");
+            let element = document.getElementById("{{ field.prefix ~'--'~ field.field_name }}");
             let choices = new Choices(element, {
                 placeholderValue: "Enter {{ field.title }}",
                 removeItemButton: true,
@@ -127,10 +127,10 @@
              hx-ext="json-enc"
              hx-post="/base/model_id"
              hx-vals='{
-"model": "{{ field.model.name }}",
-"method": "get",
-"id": "{{ field.val }}",
-"prefix": "{{ field.prefix }}"
+                "model": "{{ field.model.name }}",
+                "method": "get",
+                "id": "{{ field.val }}",
+                "prefix": "{{ field.prefix }}"
             }'
         >
         <span class="placeholder col-6"></span>

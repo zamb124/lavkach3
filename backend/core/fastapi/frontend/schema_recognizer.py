@@ -24,10 +24,12 @@ from core.utils.timeit import timed
 
 
 def _get_prefix():
+    """Генерирует уникальный идетификатор для модельки"""
     return f'A{uuid.uuid4().hex[:10]}'
 
 
 async def render(obj: BaseModel, block_name: str, path: str = '') -> object:
+    """Рендерит шаблон"""
     try:
         rendered_html = await render_block_async(
             environment=environment,
@@ -50,12 +52,7 @@ environment = Environment(
     autoescape=select_autoescape(("html", "jinja2"))
 )
 
-
-def list_from_str(v: Any) -> list:
-    try:
-        return list(set(eval(v)))
-    except Exception as ex:
-        return []
+# Классы исключения для подбора типов
 passed_classes = [
     Annotated,
     Union,
@@ -64,7 +61,7 @@ passed_classes = [
 
 def get_types(annotation, _class=[]):
     """
-        Рекурсивно берем типы в типах
+        Рекурсивно берем типы из анотации типа
     """
     if isclass(annotation):
         _class.append(annotation)
@@ -101,6 +98,13 @@ class Field(BaseModel):
     readonly: bool = False
     color_map: Optional[dict] = {}
     color: Optional[Any] = None
+
+    @property
+    def identificator(self):
+        """
+            Отдает уникальный идентификатор для поля
+        """
+        return f'{self.prefix}--{self.field_name}'
 
     def render(self, block_name: str, type: str = '', backdrop: list = []):
         type = type or self.type
@@ -189,6 +193,9 @@ class Line(BaseModel):
     is_inline: bool = False
     field_map: dict = {}
 
+    @property
+    def identificator(self):
+        return f'{self.prefix}--{self.lsn}'
     def __getitem__(self, item:str):
         idx = self.field_map[item]
         return self.fields[idx]

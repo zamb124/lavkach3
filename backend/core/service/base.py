@@ -268,7 +268,6 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         else:
             await self.session.flush([entity])
-        self.session.expire_all()
         return entity
 
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:

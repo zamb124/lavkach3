@@ -45,7 +45,8 @@ async def store_get(request: Request, store_id: uuid.UUID) -> typing.Union[None,
 
 @store_router.put("/{store_id}", response_model=StoreScheme)
 async def store_update(request: Request, store_id: uuid.UUID, schema: StoreUpdateScheme):
-    return await StoreService(request).update(id=store_id, obj=schema)
+    store_entity = await StoreService(request).update(id=store_id, obj=schema)
+    return store_entity
 
 
 @store_router.delete("/{store_id}")
