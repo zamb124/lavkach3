@@ -31,7 +31,7 @@ class BaseFilter(Filter):
     updated_at__lt: Optional[datetime] = Field(default=None, title='Updated at to', hidden=True)
     # company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None, title='Company')
     order_by: Optional[List[str]] = Field(default=["lsn", ], title='Order by', filter=False)
-
+   ##
     @model_validator(mode='before')
     def check(cls, value):
         """
