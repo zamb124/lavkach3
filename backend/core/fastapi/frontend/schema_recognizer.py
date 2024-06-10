@@ -20,6 +20,7 @@ from starlette.requests import Request
 
 from core.env import Model
 from core.schemas import BaseFilter
+from core.schemas.filter_generic import DatetimeRange
 from core.utils.timeit import timed
 
 
@@ -71,7 +72,10 @@ def get_types(annotation, _class=[]):
         annotate = get_args(annotation)
         if origin and origin not in passed_classes:
             _class.append(origin)
-        get_types(annotate[0], _class)
+        try:
+            get_types(annotate[0], _class)
+        except Exception as ex:
+            _class.append(annotation)
     return _class
 
 class Field(BaseModel):
@@ -375,6 +379,8 @@ class ClassView:
         Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
         """
         fielinfo = schema.model_fields[field_name]
+        if 'range' in field_name:
+            a=1
         prefix = kwargs.get('prefix') or self.prefix
         res = ''
         enums = []

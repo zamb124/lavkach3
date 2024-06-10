@@ -9,5 +9,5 @@ redis = aioredis.StrictRedis(
     ssl=config.REDIS_SSL,
     ssl_ca_certs=config.REDIS_CERT_PATH,
     ssl_cert_reqs=None,
-    socket_timeout=1
+    socket_timeout=2
 )

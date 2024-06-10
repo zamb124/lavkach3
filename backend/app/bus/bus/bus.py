@@ -42,3 +42,10 @@ async def websocket_endpoint(websocket: WebSocket, user: Annotated[str, Depends(
             )
     except WebSocketDisconnect:
         await ws_manager.disconnect(user.user_id)
+
+
+bus_rest_router = APIRouter()
+
+@bus_rest_router.post("/message")
+async def company_create(request: Request, schema: CompanyCreateScheme):
+    return await CompanyService(request).create(obj=schema)

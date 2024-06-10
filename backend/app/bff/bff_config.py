@@ -38,6 +38,7 @@ class Config(CoreConfig):
             'PORT': '8002',
         }
     }
+    css_engine:str = '1tailwind'
 
 
 class DevelopmentConfig(Config):

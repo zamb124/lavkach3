@@ -22,6 +22,8 @@ index_router = APIRouter(
 
 @index_router.get("/", response_class=HTMLResponse)
 async def root_page(request: Request):
+    if config.css_engine == 'tailwind':
+        return templates.TemplateResponse(request, 'index.html', context={})
     return templates.TemplateResponse(request, 'index-full.html', context={})
 
 

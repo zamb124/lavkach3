@@ -7,7 +7,12 @@ from starlette.templating import Jinja2Templates
 
 from app.bff.bff_config import config
 
-templates = Jinja2Templates(directory="app/bff/templates/")
+if config.css_engine =='tailwind':
+    template_path = "app/bff/tailwind/templates"
+else:
+    template_path = "app/bff/templates/"
+
+templates = Jinja2Templates(directory=template_path)
 
 templates.env.globals['datetime'] = datetime
 templates.env.globals['uuid'] = uuid4

@@ -27,6 +27,7 @@ from core.fastapi.middlewares import (
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
 from core.utils.timeit import add_timing_middleware
+from app.bff.bff_config import config as cf
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -165,4 +166,7 @@ app = create_app()
 path = os.path.dirname(os.path.abspath(__file__))
 print(path)
 add_timing_middleware(app, record=logger.info, prefix="bff", exclude="untimed")
-app.mount(f"/static", StaticFiles(directory=f"{path}/static"), name="static")
+if cf.css_engine == 'tailwind':
+    app.mount(f"/static", StaticFiles(directory=f"{path}/tailwind/static"), name="static")
+else:
+    app.mount(f"/static", StaticFiles(directory=f"{path}/static"), name="static")

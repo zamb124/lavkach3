@@ -15,7 +15,6 @@
                     {% if field.required %} required {% endif %}
                     disabled
                     name="{{ field.prefix ~'--'~ field.field_name }}"
-                    placeholder="Enter {{ field.title }}"
                     value="{{ field.val if field.val else "" }}"
             >
 {% endblock %}
