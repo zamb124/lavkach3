@@ -198,6 +198,7 @@ class Field(BaseModel, FieldFields):
     val: Any = None
     sort_idx: int = 0
     line: Optional['Line'] = None
+    new: Optional['Line'] = None
     lines: Optional['Lines'] = None
     color_map: Optional[dict] = {}
     color: Optional[Any] = None
@@ -342,6 +343,8 @@ class Line(BaseModel):
         if type:
             new_line.type = type
         new_line._change_assign_line()
+        if type == LineType.NEW:
+            new_line.id = uuid.uuid4()
         return new_line
 
     def render(self, block_name: str, method: MethodType = MethodType.GET, last=False) -> str:
@@ -573,7 +576,6 @@ class ClassView(AsyncObj, FieldFields):
             view=self
         )
         self.new = self.line.line_copy(type=LineType.NEW)
-        self.new.id = uuid.uuid4()
         self.filter = await self._get_line(
             schema=self.model.schemas.filter,
             type=LineType.FILTER
@@ -899,8 +901,7 @@ class ClassView(AsyncObj, FieldFields):
                     color_enum = col.enums(col.val)
                     col.color = col.color_map.get(color_enum)
                 elif col.type.endswith('list_rel'):
-                    submodel = await ClassView(request=self.request, model=col.model_name, key=col.key,
-                                               force_init=False)
+                    submodel = await ClassView(request=self.request,model=col.model_name, key=col.key, force_init=False)
                     if col.val:
                         sub_lines, _ = await submodel._get_data(data=col.val, join_related=False)
                         col.lines = Lines(lines=sub_lines)

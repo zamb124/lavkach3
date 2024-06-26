@@ -80,7 +80,7 @@
                                hx-post="/base/table/line/add"
                                hx-vals='{
                                 "model": "{{ cls.model_name or cls.model.name }}",
-                                "key": "{{ cls.key}}",
+                                "key": {% if method == 'update' %}"{{ cls.line.class_key }}"{% else %}"{{ cls.key }}"{% endif %},
                                 "method": "{{ method.value or "get" }}"
                                 }'
                                class="btn btn-soft-secondary fw-medium">
