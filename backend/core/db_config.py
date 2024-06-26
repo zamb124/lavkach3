@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
 class Config(BaseSettings):
+    BROKER_PATH: str = 'false'
     ENV: str = os.environ.get("ENV") or 'local'
     DEBUG: bool = os.environ.get("DEBUG") or True
     APP_HOST: str = os.environ.get("APP_HOST") or 'localhost'
@@ -47,7 +48,10 @@ class Config(BaseSettings):
     AWS_ENDPOINT_URL: str = os.environ.get("AWS_ENDPOINT_URL") or 'https://storage.yandexcloud.net'
     SUPERUSER_EMAIL: str = os.environ.get('SUPERUSER_EMAIL') or ''
     SUPERUSER_PASSWORD: str = os.environ.get('SUPERUSER_PASSWORD') or ''
-
+    BASIC_HOST: str = os.environ.get('BASIC_HOST') or '127.0.0.1'
+    BASIC_PORT: str = os.environ.get('BASIC_PORT') or '8001'
+    BUS_HOST: str = os.environ.get('BUS_HOST') or '127.0.0.1'
+    BUS_PORT: str = os.environ.get('BUS_PORT') or '8099'
 class DevelopmentConfig(Config):
     ...
 

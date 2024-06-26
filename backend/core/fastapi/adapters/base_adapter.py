@@ -42,20 +42,20 @@ class Client(httpx.AsyncClient):
         return responce
 
     @timed
-    async def get(self, url, *, params):
+    async def get(self, url, *, params, kwargs=None):
         logger.info('Adapter %s %s', url, params)
         responce = await self.request('GET', url=url, params=params)
         return responce
 
-    async def post(self, url, json, *, params):
+    async def post(self, url, json, *, params, kwargs=None):
         responce = await self.request('POST', url=url, json=json, params=params)
         return responce
 
-    async def put(self, url, json, *, params):
+    async def put(self, url, json, *, params, kwargs=None):
         responce = await self.request('PUT', url=url, json=json, params=params)
         return responce
 
-    async def delete(self, url, *, params):
+    async def delete(self, url, *, params, kwargs=None):
         responce = await self.request('DELETE', url=url, params=params)
         return responce
 
@@ -85,8 +85,6 @@ class BaseAdapter:
     protocol: str
     host: str
     port: str
-
-
 
     def __init__(self, conn: HTTPConnection, domain: 'Domain', model: 'Model', env: 'Env'):
         self.model = model
@@ -144,8 +142,7 @@ class BaseAdapter:
                         missed.append(cou['id'])
         return is_cached, cached_data, missed
 
-
-    async def list(self, model: str | None = None, params = {}, **kwargs):
+    async def list(self, model: str | None = None, params={}, **kwargs):
 
         filter = self.model.schemas.filter(**params)
         params = filter.as_params()
@@ -184,4 +181,3 @@ class BaseAdapter:
         path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
         responce = await self.client.delete(self.host + path, params=params)
         return await common_exception_handler(responce)
-

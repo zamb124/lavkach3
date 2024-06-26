@@ -10,6 +10,6 @@ store_router = APIRouter()
 
 @store_router.get("", response_class=HTMLResponse)
 async def store(request: Request):
-    cls = ClassView(request, 'store')
+    cls = await ClassView(request, 'store')
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template,  context={'cls': cls})

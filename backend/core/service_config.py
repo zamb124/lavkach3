@@ -14,6 +14,9 @@ class Config(BaseSettings):
     APP_HOST: str = os.environ.get("APP_HOST") or 'localhost'
     APP_PORT: int = os.environ.get("APP_PORT") or '8000'
     APP_PROTOCOL: str = os.environ.get('APP_PROTOCOL') or 'http'
+    BUS_HOST: str = os.environ.get('BUS_HOST') or '127.0.0.1'
+    BUS_PORT: str = os.environ.get('BUS_PORT') or '8099'
+    INTERCO_TOKEN: str = os.environ.get('INTERCO_TOKEN') or 'netu'
 
 
 class DevelopmentConfig(Config):

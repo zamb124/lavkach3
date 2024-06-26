@@ -14,4 +14,4 @@ class Bus(Base, AllMixin):
     lsn_seq = Sequence(f'bus_lsn_seq')
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     cache_tag: Mapped[CacheTag]
-    title: Mapped[str]
+    message: Mapped[str]

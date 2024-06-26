@@ -28,6 +28,11 @@ class ConnectionManager:
                 'message_type': message_type,
                 'message': message
             })
+    async def send_tagged_message(self,websocket, tag: CacheTag, message:str):
+            await websocket.send_json({
+                'tag': tag.name,
+                'message': message
+            })
 
     async def broadcast(self, message: str):
         for connection in self.active_connections.values():

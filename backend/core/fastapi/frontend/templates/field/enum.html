@@ -1,0 +1,34 @@
+{% block as_form %}
+    <select
+            name="{{ field.key }}"
+            class="enum form-control"
+            {% if field.update.readonly %} disabled {% endif %}
+            aria-label="Default select example"
+            style="padding-right: 1rem; padding-left: 1rem"
+    >
+        {% for s in field.enums %}
+            {% if s.value == field.val %}
+                <option value="{{ s.value }}" selected> {{ s.name }} </option>
+            {% else %}
+                <option value="{{ s.value }}"> {{ s.name }} </option>
+            {% endif %}
+        {% endfor %}
+    </select>
+{% endblock %}
+{% block as_view %}
+    {% if field.color_map %}
+        <div class="d-flex flex-wrap gap-2">
+                                            <span class="text-uppercase badge border border-{{  field.color.value|safe  }} text-{{  field.color.value|safe  }} p-3" style="border-radius: 15px"><b>{{ field.val.english_name or field.val.name or field.val}}</b></span>
+                                        </div>
+        {% else %}
+         <input  type="text"
+                    class="form-control"
+                    {% if field.get.required %} required {% endif %}
+                    disabled
+                    name="{{ field.key }}"
+                    placeholder="Enter {{ field.title }}"
+                    value="{{ field.val if field.val else "" }}"
+            >
+    {% endif %}
+
+{% endblock %}

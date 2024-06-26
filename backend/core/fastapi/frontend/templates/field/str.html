@@ -1,0 +1,28 @@
+{% block as_form %}
+        <input
+                class="form-control"
+                {% if field.update.required %} required {% endif %}
+                {% if field.update.readonly %}disabled{% endif %}
+                name="{{ field.key }}"
+                placeholder="Enter {{ field.update.title }}"
+                value="{{ field.val if field.val else "" }}"
+
+        >
+{% endblock %}
+{% block as_view %}
+            <input  type="text"
+                    class="form-control"
+                    {% if field.get.required %} required {% endif %}
+                    disabled
+                    name="{{ field.key }}"
+                    value="{{ field.val if field.val else "" }}"
+            >
+{% endblock %}
+
+{% block as_table_header %}
+    {{ field.title }}
+{% endblock %}
+
+{% block as_table %}
+    {{ field.val if field.val else '' }}
+{% endblock %}

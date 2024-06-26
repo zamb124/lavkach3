@@ -22,7 +22,7 @@ from app.inventory.order.schemas.suggest_schemas import SuggestScheme
 class MoveBaseScheme(BaseModel):
     type: MoveType = Field(title='Move Type', table=True)
     order_id: Optional[UUID4] = Field(default=None, title='Order ID', model='order')
-    order_type_id: UUID4 = Field(title='Order type', model='order_type')
+    order_type_id: UUID4 = Field(title='Order type', model='order_type', table=True)
     store_id: UUID4 = Field(title='Store', table=True, form=True, model='store')
     partner_id: Optional[UUID4] = Field(default=None, title='Partner ID', model='partner')
     location_src_id: Optional[UUID4] = Field(default=None, title='Location src', model='location', table=True, filter={'location_class__not_in': LocationClass.PACKAGE.value})

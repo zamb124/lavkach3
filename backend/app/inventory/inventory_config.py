@@ -13,6 +13,7 @@ load_dotenv()
 
 
 class Config(CoreConfig):
+    BROKER_PATH: str = 'app.inventory.inventory_server:app'
     APP_HOST: str = os.environ.get("INVENTORY_HOST") or os.environ.get("APP_HOST") or '127.0.0.1'
     APP_PORT: int = os.environ.get("INVENTORY_PORT") or os.environ.get("APP_PORT") or '8002'
     APP_PROTOCOL: str = os.environ.get('INVENTORY_PROTOCOL') or os.environ.get('APP_PROTOCOL') or 'http'

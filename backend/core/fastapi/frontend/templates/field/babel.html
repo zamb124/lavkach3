@@ -1,0 +1,30 @@
+{% block as_form %}
+    <div    id="{{ field.key }}"
+            class="babel row"
+            hx-ext="json-enc"
+            hx-post="/bff/select"
+            hx-vals='{
+                    "model": "{{ field.model_name }}",
+                    "value": "{{ field.val.id if field.val else None }}",
+                    "key": "{{ model.update.key }}",
+                    "name": "{{ field.model_name }}",
+                    "required": "{{ field.required }}"
+                 }'
+            hx-trigger="load"
+    >
+    </div>
+{% endblock %}
+{% block as_view %}
+    <input  type="text"
+                    class="form-control"
+                    {% if field.required %} required {% endif %}
+                    disabled
+                    name="{{ field.key }}"
+                    placeholder="Enter {{ field.title }}"
+                    value="{{ field.val.english_name or field.val.name or field.val}}"
+            >
+
+{% endblock %}
+{% block as_table %}
+{{ field.val if field.val else '' }}
+{% endblock %}

@@ -39,6 +39,7 @@ from app.basic.uom.models import *
 from app.inventory.location.models import *
 from app.inventory.order.models import *
 from app.inventory.product_storage.models import *
+from app.bus.bus.models.bus_models import *
 
 target_metadata = Base.metadata
 

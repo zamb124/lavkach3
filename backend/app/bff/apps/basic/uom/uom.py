@@ -10,7 +10,7 @@ uom_router = APIRouter()
 
 @uom_router.get("", response_class=HTMLResponse)
 async def uom(request: Request):
-    cls = ClassView(request, 'uom')
+    cls = await ClassView(request, 'uom')
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template, context={'cls': cls})
 

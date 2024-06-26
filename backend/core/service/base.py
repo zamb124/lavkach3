@@ -1,11 +1,12 @@
-import uuid
 import logging
+import uuid
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Generic, Optional, Type, TypeVar
 from uuid import uuid4
 
 from fastapi_filter.contrib.sqlalchemy import Filter
+from httpx import AsyncClient as asyncclient
 from pydantic import BaseModel
 from sqlalchemy import select, Row, RowMapping, inspect
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
@@ -14,7 +15,10 @@ from starlette.exceptions import HTTPException
 
 from core.db.session import Base, session
 from core.fastapi.middlewares.authentication import CurrentUser
+from core.helpers.broker import broker
+from core.helpers.cache import CacheTag
 from core.schemas import BaseFilter
+from core.service_config import config
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -111,6 +115,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             create_schema: Type[CreateSchemaType],
             update_schema: Type[UpdateSchemaType],
             db_session: AsyncSession = session,
+            **kwargs
 
     ):
         if isinstance(request, CurrentUser):
@@ -128,6 +133,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
     def sudo(self):
         self.user = CurrentUser(id=uuid4(), is_admin=True)
         return self
+
 
     async def _get(self, id: Any) -> Row | RowMapping:
         query = select(self.model).where(self.model.id == id)
@@ -155,7 +161,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         if not isinstance(_filter, BaseFilter):
             if isinstance(_filter, dict):
                 _filter = self.env[self.model.__tablename__].schemas.filter(**_filter)
-        if self.model.__tablename__ not in ('company', 'user'):
+        if self.model.__tablename__ not in ('company', 'user', 'bus'):
             setattr(_filter, 'company_id__in', [self.user.company_id])
         query_filter = _filter.filter(select(self.model)).limit(size)  # type: ignore
         if getattr(_filter, 'order_by'):
@@ -177,6 +183,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=422, detail=str(ex))
         to_set = []
         exclude_rel = []
+        #exclude_rel = list(obj.model_extra.keys())
         relcations_to_create = []
         for key, value in obj.__dict__.items():
             if is_pydantic(value):
@@ -196,7 +203,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             else:
                 to_set.append((key, value))
         entity = self.model(**obj.model_dump(exclude=exclude_rel))
-        entity.company_id = self.user.company_id
+        entity.company_id = self.user.company_id if not hasattr(obj, 'company_id') else obj.company_id
         self.session.add(entity)
         if commit:
             try:
@@ -239,13 +246,15 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                         rel = rel_service(self.request)
                         if _obj.id:
                             rel_entity = await rel.update(id=_obj.id, obj=_obj, commit=False)
-                            await self.session.refresh(rel_entity)
+                            self.session.add(rel_entity)
                         else:
                             _dump = _obj.model_dump()
                             _dump[f'{self.model.__tablename__}_id'] = id
                             create_obj = rel.create_schema(**_dump)
                             await rel.create(obj=create_obj, parent=entity, commit=False)
                 else:
+                    if key == 'id':
+                        value = id
                     to_set.append((key, value))
         for k, v in to_set:
             setattr(entity, k, v)
@@ -257,7 +266,6 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         if commit:
             try:
                 await self.session.commit()
-                await self.session.refresh(entity)
             except IntegrityError as e:
                 await self.session.rollback()
                 if "duplicate key" in str(e):
@@ -266,12 +274,35 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                     raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
-        else:
-            await self.session.flush([entity])
+            await self.session.flush()
+            return await self.get(id)
         return entity
 
+    async def prepere_bus(self, entity: ModelType):
+        return {
+                'cache_tag': CacheTag.MODEL,
+                'message': f'{self.model.__tablename__}--{entity.lsn}',
+                'company_id': entity.company_id
+        }
+    @broker.task
+    async def update_notify(model: str, data: dict):
+
+        client = asyncclient()
+        responce = await client.post(
+            url=f'http://{config.BUS_HOST}:{config.BUS_PORT}/api/bus/bus',
+            json=data,
+            headers={'Authorization': config.INTERCO_TOKEN}
+        )
+        if responce.status_code == 200:
+            logger.info(f'Message sended to bus.bus')
+        else:
+            logger.warning(responce.text)
+
+
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
-        entity = await self._update(id, obj, commit=True)
+        entity = await self._update(id, obj, commit=commit)
+        message = await self.prepere_bus(entity)
+        task = await self.update_notify.kiq(self.model.__tablename__, message)
         #self.basecache.set(entity)
         return entity
 

@@ -1,0 +1,14 @@
+{% block as_form %}
+    <input
+            class="form-control"
+            name="{{ field.key }}"
+            placeholder="Enter {{ field.title or c }}"
+            value="{{ field.val }}"
+    >
+{% endblock %}
+{% block as_view %}
+        {{ field.val.english_name or field.val.name or field.val}}
+{% endblock %}
+{% block as_table %}
+<td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
+{% endblock %}

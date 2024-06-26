@@ -1,5 +1,6 @@
 import json
 import uuid
+from enum import Enum
 from typing import Optional, Any
 
 from fastapi import APIRouter, Depends
@@ -14,8 +15,27 @@ from core.fastapi.frontend.schema_recognizer import ClassView
 from core.fastapi.frontend.uttils import clean_filter
 
 
+
+
+class Method(str, Enum):
+    GET:    str = 'get'
+    CREATE: str = 'create'
+    UPDATE: str = 'update'
+    DELETE: str = 'update'
+
+
 class ExceptionResponseSchema(BaseModel):
     error: str
+
+
+class BaseSchema(BaseModel):
+    """
+        Обязательные моля всегда чц
+    """
+    model: str
+    key: str
+    method: Method
+
 
 
 router = APIRouter(
@@ -23,9 +43,9 @@ router = APIRouter(
 )
 
 
-class FilterSchema(BaseModel):
+class FilterSchema(BaseSchema):
     model: str
-    prefix: str
+    key: str
 
 
 @router.post("/filter", response_class=HTMLResponse)
@@ -33,13 +53,15 @@ async def _filter(request: Request, filschema: FilterSchema):
     """
      Универсальный запрос, который отдает фильтр обьекта по его модулю и модели
     """
-    cls = ClassView(request, filschema.model, prefix=filschema.prefix)
-    return cls.get_filter()
+    cls = await ClassView(request, filschema.model, key=filschema.key)
+    return cls.as_filter
 
 
-class SearchSchema(BaseModel):
+class SearchSchema(BaseSchema):
     model: str
     search: str = ''
+    method: Optional[Method] = None
+    key: Optional[str] = None
     filter: Optional[Any] = None
 
     @model_validator(mode='before')
@@ -70,14 +92,16 @@ async def search(request: Request, schema: SearchSchema = Depends(SearchSchema))
     return [
         {
             'value': i['id'],
-            'label': i.get('title') or i.get('name') or i.get('english_name')
+            'label': i.get('title') or i.get('name') or i.get('english_name') or i.get('nickname')
         }
         for i in data['data']
     ]
 
 
-class SearchIds(BaseModel):
+class SearchIds(BaseSchema):
     model: str
+    key: Optional[str] = None
+    method: Optional[Method] = None
     id__in: str
 
 
@@ -94,16 +118,16 @@ async def get_by_ids(request: Request, schema: SearchSchema = Depends(SearchIds)
     return [
         {
             'value': i['id'],
-            'label': i.get('title') or i.get('name') or i.get('english_name')
+            'label': i.get('title') or i.get('name') or i.get('english_name') or i.get('nickname')
         }
         for i in data['data']
     ]
 
 
-class TableSchema(BaseModel):
+class TableSchema(BaseSchema):
     model: str
     cursor: Optional[int] = 0
-    prefix: str
+    key: str
 
 
 @router.post("/table", response_class=HTMLResponse)
@@ -114,21 +138,24 @@ async def table(request: Request, schema: TableSchema):
     form_data = await request.json()
 
     qp = request.query_params
-    if form_data.get('prefix'):
-        qp = clean_filter(form_data, form_data['prefix'])
+    if form_data.get('key'):
+        qp = clean_filter(form_data, form_data['key'])
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}
 
-    cls = ClassView(request, params=qp, model=schema.model, prefix=schema.prefix)
-    return await cls.get_table()
+    cls = await ClassView(request, params=qp, model=schema.model, key=schema.key, force_init=True)
+    if request.query_params.get('edit'):
+        return cls.as_table_form
+    else:
+        return cls.as_table
 
 
-class LineSchema(BaseModel):
+class LineSchema(BaseSchema):
     model: str
-    prefix: str
+    key: str
 
 
-@router.post("/table/line", response_class=HTMLResponse)
+@router.post("/table/line/add", response_class=HTMLResponse)
 async def line(request: Request, schema: TableSchema):
     """
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
@@ -136,19 +163,18 @@ async def line(request: Request, schema: TableSchema):
     form_data = await request.json()
     new_id = uuid.uuid4()
     qp = request.query_params
-    if form_data.get('prefix'):
-        qp = clean_filter(form_data, form_data['prefix'])
+    if form_data.get('key'):
+        qp = clean_filter(form_data, form_data['key'])
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}
-    cls = ClassView(request, params=qp, model=schema.model, prefix=f'{schema.prefix}--{new_id}', is_inline=True)
-    return await cls.get_create_line(type='table')
+    cls = await ClassView(request, params=qp, model=schema.model, key=f'{schema.key}--{new_id}')
+    return cls.line.as_tr_add
 
 
-class ModelSchema(BaseModel):
+class ModelSchema(BaseSchema):
     model: str
-    prefix: str
+    key: str
     id: UUID4
-    backdrop: list|None = []
 
     @field_validator('id')
     @classmethod
@@ -162,18 +188,13 @@ async def model_id(request: Request, schema: ModelSchema):
      отдает простой контрол для чтения
     """
     form_data = await request.json()
-    cls = ClassView(request, schema.model)
+    cls = await ClassView(request, schema.model, force_init=False)
     link_view = await cls.get_link_view(model_id=schema.id)
     return link_view
 
 
-class ModalSchema(BaseModel):
-    prefix: str
-    model: str
-    method: str
-    backdrop: list = []
+class ModalSchema(BaseSchema):
     id: Optional[UUID4] = None
-    target_id: Optional[str|None] = None
 
     class Config:
         extra = 'allow'
@@ -185,35 +206,31 @@ async def modal(request: Request, schema: ModalSchema):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    cls = ClassView(request, schema.model)
-    is_backdrop = request.query_params.get('backdrop')
-    if is_backdrop and len(schema.backdrop):
-        schema.backdrop.pop(0)
-    else:
-        schema.backdrop.insert(0, schema.model_dump)
+    cls = await ClassView(request, schema.model, key=schema.key, force_init=False)
     if data := schema.model_extra:
         _json = {}
-        data = clean_filter(data, schema.prefix)
+        data = clean_filter(data, schema.key)
         method_schema = getattr(cls.model.schemas, schema.method)
         if data:
             try:
                 method_schema_obj = method_schema(**data[0])
             except ValidationError as e:
                 raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
-            _json = method_schema_obj.model_dump(mode='json')
-        adapter_method = getattr(cls.model.adapter, schema.method)
+            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
+        adapter_method = getattr(cls.model.adapter, schema.method.value)
         await adapter_method(id=schema.id, model=schema.model, json=_json)
         return cls.send_message(f'{cls.model.name.capitalize()}: is {schema.method.capitalize()}')
     else:
-        model_method = getattr(cls, f'get_{schema.method}')
-        return await model_method(model_id=schema.id, target_id=schema.target_id, backdrop=schema.backdrop)
+        if schema.method == 'create':
+            await cls.init(params={'id__in': schema.id})
+            return getattr(cls.line, f'get_{schema.method.value}')
+        await cls.init(params={'id__in': schema.id})
+        line = cls.lines.lines[0]
+        return getattr(line, f'get_{schema.method.value}')
 
 
-class ActionSchema(BaseModel):
-    prefix: str
-    model: str
+class ActionSchema(BaseSchema):
     action: str
-    method: str
     ids: Optional[list[UUID4]] = []
     schema: Any = None
     commit: Optional[bool] = False
@@ -227,7 +244,7 @@ async def action(request: Request, schema: ActionSchema):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    cls = ClassView(request, schema.model, prefix=schema.prefix)
+    cls = ClassView(request, schema.model, key=schema.key)
     func = getattr(cls.model.adapter, schema.action)
     result = []
     if schema.method == 'commit':
@@ -238,7 +255,7 @@ async def action(request: Request, schema: ActionSchema):
     elif schema.method == 'action_commit':
         if data := schema.model_extra:
             _json = {}
-            data = clean_filter(data, schema.prefix)
+            data = clean_filter(data, schema.key)
             for line in data:
                 obj = func['schema'](**line)
                 res = await func(obj)

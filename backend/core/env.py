@@ -5,11 +5,16 @@ from typing import TYPE_CHECKING, Any
 
 from httpx import AsyncClient
 from starlette.requests import HTTPConnection, Request
+from taskiq import AsyncBroker
 
 from app.basic import __domain__ as basic_domain
 from app.inventory import __domain__ as inventory_domain
+from app.bus import __domain__ as bus_domain
+from core.db_config import config
 from core.fastapi.adapters.action_decorator import actions
+from httpx import AsyncClient as asyncclient, request
 
+from core.fastapi.schemas import CurrentUser
 from core.helpers.cache import CacheStrategy
 from pydantic import BaseModel
 
@@ -100,17 +105,26 @@ class Domain:
     def __getitem__(self, item:str):
         return self.models[item]
 
+
+domains = [
+    Domain(basic_domain),
+    Domain(inventory_domain),
+    Domain(bus_domain)
+]
+
 class Env:
     domains: dict[str: object]
     request: HTTPConnection = None
+    broker: AsyncBroker = None
 
-    def __init__(self, domains: list, conn: HTTPConnection | AsyncClient | Request):
+    def __init__(self, domains: list, conn: HTTPConnection | AsyncClient | Request, broker: AsyncBroker = None):
         _domains = {}
         for d in domains:
             d._env = self
             _domains.update({d.name: d})
         self.request = conn
         self.domains = _domains
+        self.broker = broker
 
     def __getitem__(self, item: str):
         for k, v in self.domains.items():
@@ -118,8 +132,26 @@ class Env:
             if exist_model:
                 return exist_model
 
+    @classmethod
+    async def get_sudo_env(self):
+        """
+            Создает env путем авторизации суперюзера с походом в basic сервис
+        """
+        client = asyncclient()
+        body = {
+            "email": config.SUPERUSER_EMAIL,
+            "password": config.SUPERUSER_PASSWORD
+        }
+        responce = await client.post(
+            url=f'http://{config.BASIC_HOST}:{config.BASIC_PORT}/api/basic/user/login',
+            json=body
+        )
+        data = responce.json()
+        client = asyncclient(headers={'Authorization': data['token']})
+        env = Env(domains, client)
+        user = CurrentUser(id=uuid.uuid4(), is_admin=True)
+        setattr(client, 'user', user)
+        setattr(client, 'scope', {'env': env})
+        return env
 
-domains = [
-    Domain(basic_domain),
-    Domain(inventory_domain)
-]
+

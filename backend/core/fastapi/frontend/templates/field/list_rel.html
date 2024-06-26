@@ -1,0 +1,85 @@
+{% block as_view %}
+    <input
+            name="{{ field.key }}"
+            id="{{ field.key }}"
+            class="list_str form-control" data-choices data-choices-text-disabled-true
+            value="
+               {% for val in field.val %}
+                {{ val.title or val.id }}
+                {% if not loop.last %}
+                ,
+                {% endif %}
+               {% endfor %}
+                "
+    />
+    <script>
+    (async function () {
+            let element = document.getElementById("{{ field.key }}");
+            let choices = new Choices(element);
+            choices.disable()
+        })();
+    </script>
+{% endblock %}
+
+{% block as_form %}
+    <input
+            name="{{ field.key }}"
+            id="{{ field.key }}"
+            class="list-str form-control"
+            data-choices
+            data-choices-limit="Required Limit"
+            data-choices-removeItem
+            value="{% if field.val %}{{ ','.join(field.val) }}{% endif %}"
+    />
+    <script>
+    (async function () {
+            let element = document.getElementById("{{ field.key }}");
+            let choices = new Choices(element, {
+                placeholderValue: "Enter {{ field.update.title or field.field_name }}",
+                multiple: true,
+                removeItemButton: true
+            });
+            function check_valid(event) {
+                if (element.required) {
+                    if (event) {
+                        if (event.type === 'choice') {
+                            if (event.detail.choice.value) {
+                                choices.containerInner.element.classList.remove('is-invalid');
+                                choices.containerInner.element.classList.add('is-valid');
+                            }
+                        } else if (event.type === 'removeItem') {
+                            if (event.detail.value) {
+                                choices.containerInner.element.classList.add('is-invalid');
+                                choices.containerInner.element.classList.remove('is-valid');
+                            }
+                        }
+
+                    } else {
+                        choices.containerInner.element.classList.add('is-invalid');
+                        choices.containerInner.element.classList.remove('is-valid');
+                    }
+                } else if (element.id.includes('__in')) {
+                    choices.containerInner.element.classList.remove('is-invalid');
+                    choices.containerInner.element.classList.remove('is-invalid');
+                } else {
+                    try {
+                        choices.containerInner.element.classList.remove('is-invalid');
+                    } catch (err) {
+
+                    }
+
+                    choices.containerInner.element.classList.add('is-valid');
+                }
+            }
+
+            check_valid()
+        })();
+    </script>
+{% endblock %}
+
+{% block as_table_form %}
+    {{ field.as_table|safe }}
+{% endblock %}
+{% block as_table_view %}
+    {{ field.as_table|safe }}
+{% endblock %}

@@ -24,6 +24,7 @@ def my_import(name):
 
 
 class Config(CoreConfig):
+    BROKER_PATH: str = 'app.bff.bff_server:app'
     services: dict = {
         'bus': {
             'DOMAIN': f'{os.environ.get("BUS_DOMAIN")}' or '127.0.0.1',

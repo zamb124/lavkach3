@@ -29,7 +29,6 @@ def upgrade():
     op.execute("create sequence lot_lsn_seq")
     op.execute("create sequence product_storage_type_lsn_seq")
     op.execute("create sequence quant_lsn_seq")
-    op.execute("create sequence bus_lsn_seq")
     op.execute("create sequence channel_lsn_seq")
     op.execute("create sequence product_lsn_seq")
     op.execute("create sequence product_category_lsn_seq")
@@ -42,6 +41,7 @@ def upgrade():
     op.execute("create sequence user_lsn_seq")
     op.execute("create sequence store_lsn_seq")
     op.execute("create sequence storage_type_lsn_seq")
+    op.execute("create sequence bus_lsn_seq")
 
 def downgrade():
     ${downgrades if downgrades else "pass"}
@@ -56,7 +56,6 @@ def downgrade():
     op.execute("drop sequence product_storage_type_lsn_seq")
     op.execute("drop sequence quant_lsn_seq")
     op.execute("drop sequence channel_lsn_seq")
-    op.execute("drop sequence bus_lsn_seq")
     op.execute("drop sequence product_lsn_seq")
     op.execute("drop sequence product_category_lsn_seq")
     op.execute("drop sequence permission_lsn_seq")
@@ -69,3 +68,4 @@ def downgrade():
     op.execute("drop sequence contractor_lsn_seq")
     op.execute("drop sequence store_lsn_seq")
     op.execute("drop sequence storage_type_lsn_seq")
+    op.execute("drop sequence bus_lsn_seq")

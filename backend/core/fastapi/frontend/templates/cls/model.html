@@ -1,0 +1,21 @@
+{% block button_create %}
+    <script>
+        hideModals()
+    </script>
+    <button
+            class="btn btn-secondary add-btn"
+            hx-include="none"
+            hx-trigger="click"
+            hx-target="#modal"
+            hx-ext="json-enc"
+            hx-post="/base/modal"
+            hx-vals='{
+"model": "{{ line.model_name }}",
+"method": "create",
+{% if line.id %}"id": "{{ line.id }}", {% endif %}
+"key": "{{ line.class_key }}"
+}'>
+        <i class="ri-add-fill me-1 align-bottom"> Add {{ line.model_name|capitalize }}</i>
+    </button>
+
+{% endblock %}

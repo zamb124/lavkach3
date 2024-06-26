@@ -1,0 +1,38 @@
+{% block widget %}
+<div id="{{ 'filter' ~'--'~ cls.key }}"
+      hx-ext="json-enc"
+      hx-post="/base/filter"
+      hx-trigger="load"
+      hx-vals='{
+        "model": "{{ cls.model.name }}",
+        "key": "{{ cls.key }}",
+        "method": "get"
+      }'
+>
+    <!--HTMX CONTENT-->
+</div>
+{% endblock %}
+{% block filter %}
+<div class="card">
+    <div class="card-body">
+        <div class="row g-3">
+            {% for field_name, field in view.filter.fields %}
+                {% if field.field_name != 'order_by' %}
+                    <div class="col-xxl-2 col-sm-4">
+                        {{ field.as_form|safe }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="col">
+                <div>
+                    <button type="button" class="btn btn-primary w-100"
+                            onclick="SearchData();"><i
+                            class="ri-equalizer-fill me-1 align-bottom"></i>
+                    </button>
+                </div>
+            </div>
+            <!--end col-->
+        </div>
+    </div>
+</div>
+{% endblock %}

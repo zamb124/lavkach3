@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from typing import List
 
 from fastapi import FastAPI, Request, Depends
@@ -7,6 +8,8 @@ from fastapi.responses import JSONResponse
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
+from app.bus.bus_tasks import start_processing_messages
+from app.bus.tkq import broker
 from app.bus.bus_router import bus_router
 from core.db_config import config
 from core.env import Env, domains
@@ -63,6 +66,19 @@ def on_auth_error(request: Request, exc: Exception):
         content={"error_code": error_code, "message": message},
     )
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+        Старт сервера
+    """
+    await start_processing_messages()
+    await broker.startup()
+    yield
+    """
+            Выключение сервера
+    """
+    await broker.shutdown()
+
 
 def make_middleware() -> List[Middleware]:
     middleware = [
@@ -90,6 +106,7 @@ def init_cache() -> None:
 
 def create_app() -> FastAPI:
     app_ = FastAPI(
+        lifespan=lifespan,
         title="BUS",
         description="Hide API",
         version="1.0.0",

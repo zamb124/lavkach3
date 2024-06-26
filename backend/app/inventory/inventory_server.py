@@ -1,5 +1,7 @@
+from contextlib import asynccontextmanager
 from typing import List
 
+import taskiq_fastapi
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +10,8 @@ from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.inventory.inventory_router import inventory_router
-from app.inventory.inventory_config import config
+from app.inventory.inventory_config import config as app_config
+from core.helpers.broker import broker
 from core.env import Env, domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
@@ -32,7 +35,7 @@ class EnvMidlleWare:
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
         if scope['type'] in  ("http", "websocket"):
             conn = HTTPConnection(scope)
-            scope['env'] = Env(domains, conn)
+            scope['env'] = Env(domains, conn, broker)
         await self.app(scope, receive, send)
 
 def init_routers(app_: FastAPI) -> None:
@@ -86,9 +89,20 @@ def make_middleware() -> List[Middleware]:
 def init_cache() -> None:
     Cache.init(backend=RedisBackend(), key_maker=CustomKeyMaker())
 
-
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+        Старт сервера
+    """
+    await broker.startup()
+    yield
+    """
+            Выключение сервера
+    """
+    await broker.shutdown()
 def create_app() -> FastAPI:
     app_ = FastAPI(
+        lifespan=lifespan,
         title="Hide",
         description="Hide API",
         version="1.0.0",
@@ -104,3 +118,4 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+taskiq_fastapi.init(broker, app_config.BROKER_PATH)

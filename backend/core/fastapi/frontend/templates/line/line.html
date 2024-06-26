@@ -1,0 +1,172 @@
+{% block as_create %}
+
+{% endblock %}
+{% block button_view %}
+    <script>
+        //hideModals()
+    </script>
+    <a href="#"
+       hx-params="model,method,id,key,backdrop"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vals='{
+"model": "{{ line.model_name }}",
+"method": "get",
+"id": "{{ line.id or ""}}",
+"key": "{{ line.key }}"
+}'
+       class="btn btn-soft-success">
+        <i class="ri-file-fill h4"></i>
+    </a>
+{% endblock %}
+
+{% block button_update %}
+    <script>
+        //hideModals()
+    </script>
+    <button
+            href="#"
+            hx-params="model,method,id,key,backdrop"
+            hx-trigger="click"
+            hx-target="#modal"
+            hx-ext="json-enc"
+            hx-post="/base/modal"
+            hx-vals='{
+"model": "{{ line.model_name }}",
+"method": "update",
+"id": "{{ line.id }}",
+"key": "{{ line.class_key }}"
+}'
+            class="btn btn-soft-primary">
+        <i class="ri-file-edit-fill h4 "></i>
+    </button>
+{% endblock %}
+
+{% block button_create %}
+    <script>
+        //hideModals()
+    </script>
+    <a href="#"
+       hx-params="model,method,key,backdrop"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vals='{
+"model": "{{ line.model_name }}",
+"method": "create",
+{% if line.id %}"id": "{{ line.id }}", {% endif %}
+"key": "{{ line.class_key }}"
+}'
+       class="btn btn-soft-secondary">
+        <i class="ri-file-add-fill h4"></i>
+    </a>
+{% endblock %}
+
+{% block button_delete %}
+    <script>
+        //hideModals()
+    </script>
+    <a href="#"
+       hx-params="model,method,id,key,target_id,backdrop"
+       hx-trigger="click"
+       hx-target="#modal"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vals='{
+"model": "{{ line.model_name }}",
+"method": "delete",
+"id": "{{ line.id or "" }}",
+"key": "{{ line.key }}"
+}'
+       class="btn btn-soft-danger">
+        <i class="ri-file-reduce-fill h4"></i>
+    </a>
+{% endblock %}
+
+{% block button_actions %}
+    <div class="dropdown">
+
+        <button class="btn btn-soft-info" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                id="{{ "actions-" ~ line.key }}">
+            <i class="ri-more-fill align-middle h4"></i>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="{{ "actions-" ~'--'~ line.key }}">
+            {% for action_name, action_vals in line.actions.items() %}
+                <li class="dropdown-item">
+                    <a
+                            data-bs-toggle="{{ action_vals.doc }}"
+                            data-key="{{ action_vals.tkey }}"
+                            hx-trigger="click"
+                            hx-ext="json-enc"
+                            hx-target="#modal"
+                            hx-post="/base/action"
+                            hx-vals='{
+                                "model": "{{ line.model_name }}",
+                                "action": "{{ action_name }}",
+                                "method": "{% if action_vals.schema %}get_action{% else %}commit{% endif %}",
+                                "ids": ["{{ line.id }}"],
+                                "key": "{{ line.key }}"
+                            }'
+                            class="dropdown-item remove-item-btn">
+                        <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> {{ action_name }}
+                    </a>
+                </li>
+            {% endfor %}
+
+        </ul>
+    </div>
+{% endblock %}
+
+{% block as_tr %}
+    {% autoescape false %}
+    <tr id="{{ line.key }}" class="mb-0 fw-semibold text-muted">
+        <th scope="row">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="{{ line.key ~ '--check' }}" value="">
+            </div>
+        </th>
+        {% for field in line.fields|table(method=method)  %}
+            {% if method in ('update', 'create') %}
+                <td class="text-center" style="padding-left: 2px; padding-right: 2px;">{{ field.as_form }}</td>
+            {% else %}
+                <td class="text-center" style="padding-left: 2px; padding-right: 2px;">{{ field.as_view }}</td>
+            {% endif %}
+        {% endfor %}
+        <td class="text-center" style="padding-bottom: 0px;">
+            <div
+                {% if line.is_last  %}
+                    hx-include="{{ '#filter' ~'--'~ line.class_key }}"
+                    hx-post="/base/table"
+                    hx-ext="json-enc"
+                    hx-trigger="revealed" hx-swap="afterend" hx-select="#{{ 'tbody-table' ~'--'~ line.class_key }}>tr"
+                    hx-target="#{{ line.class_key }}"
+                    hx-vals='{
+                            "model": "{{ line.model_name }}",
+                            "{{ line.class_key ~'--'~ 'cursor' }}": "{{ line.lsn }}",
+                            "key": "{{ line.class_key }}"
+                        }'
+                {% endif %}>
+            </div>
+            <div>
+                <ul class="list-inline text-center position-relative">
+                    <li class="list-inline-item view-btn" title="View">
+                        {{ line.button_view }}
+                    </li>
+                    <li class="list-inline-item edit" title="Edit">
+                        {{ line.button_update }}
+                    </li>
+                    <li class="list-inline-item" title="Remove">
+                        {{ line.button_delete }}
+                    </li>
+                    <li class="list-inline-item" title="Actions">
+                        {{ line.button_actions }}
+                    </li>
+                </ul>
+            </div>
+        </td>
+    </tr>
+    {% endautoescape %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% block view %}
+<i class="ri-links-fill fs-8 text-danger"> </i>
+        <a class="text-danger py-3"
+           href="#"
+           hx-trigger="click"
+           hx-target="#modal"
+           hx-ext="json-enc"
+           hx-post="/base/modal"
+           hx-vals='{
+"model": "{{ line.model_name }}",
+"id": "{{ line.id }}",
+"key": "{{ line.key }}"
+}'
+>{{ line.display_title }}
+        </a>
+{% endblock %}

@@ -69,6 +69,15 @@ class CacheManager:
             })
         return new_data
 
+    async def get_by_tag(self, tag) -> dict:
+        data =  await self.backend.get_startswith(key=tag)
+        new_data = {}
+        for key, value in data.items():
+            new_data.update({
+                key.split(':')[-1]: value
+            })
+        return new_data
+
     async def get(self, tag: CacheTag, key):
         key = f'{tag.value}:{key}'
         return await self.backend.get(key=key)

@@ -1,0 +1,122 @@
+{% block widget %}
+    <div id="{{ 'table' ~'--'~ cls.key }}"
+         hx-post="/base/table{% if edit %}?edit=true{% endif %}"
+         hx-ext="json-enc"
+         hx-target="this"
+         hx-vals='{
+        "model": "{{ cls.model_name or cls.model.name }}",
+        "key": "{{ cls.key }}",
+        "method": "{{ method.value or "get" }}"
+     }'
+         hx-trigger="change from:{{ '#filter' ~'--'~ cls.key }} delay:500ms, load, update delay:500ms"
+         hx-include="{{ '#filter' ~'--'~ cls.key }}"
+    >
+        <div class="card htmx-indicator">
+            <table class="table">
+                <thead class="text-muted table-light">
+                <tr class="placeholder-lg placeholder-glow">
+                    {% for i in range(8) %}
+                        <th><span class="placeholder col-12"></span></th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in range(8) %}
+                    <tr class="placeholder-glow">
+                        {% for i in range(8) %}
+                            <td><span class="placeholder col-12"></span></td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!--end card-->
+    </div>
+{% endblock %}
+
+{% block as_table %}
+    {% autoescape false %}
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive " style="width: auto; min-height: 400px; white-space: nowrap;" data-show-columns="true">
+                <table class="table table-hover table-striped" id="{{ 'table' ~'--'~ cls.key }}" style="vertical-align: middle;">
+                    <thead class="text-muted table-light">
+                    <tr class="text-uppercase fs-13" style="text-align: center">
+                        <th scope="col" >
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="{{ cls.key ~'--'~ 'checkAll' }}"
+                                       value="option">
+                            </div>
+                        </th>
+                        {% for field in cls.line.fields|table(method) %}
+                            <td data-bs-toggle="tooltip" data-bs-html="true" title="{{field.get.description or field.get.title}}">
+                                {{ field.get.title or field.field_name  }}
+                            </td>
+                        {% endfor %}
+                        <th style="min-width: 14rem">Active</th>
+                    </tr>
+                    </thead>
+                    <tbody id="{{ 'tbody-table' ~'--'~ cls.key }}">
+                    {% if cls.lines %}
+                        {% if method in ('update', 'create') %}
+                            {{ cls.lines.as_table_form}}
+                        {% else %}
+                            {{ cls.lines.as_table_view }}
+                        {% endif %}
+                    {% endif %}
+
+                    </tbody>
+                <tr>
+                        <td>
+                            <a
+                               hx-boost="true"
+                               id="{{ cls.field_name~'--create' }}"
+                               hx-ext="json-enc"
+                               hx-include="none"
+                               hx-target="#{{ 'tbody-table' ~'--'~ cls.key }}"
+                               hx-swap="beforeend"
+                               hx-params="model,key,method"
+                               hx-post="/base/table/line/add"
+                               hx-vals='{
+                                "model": "{{ cls.model_name or cls.model.name }}",
+                                "key": "{{ cls.key}}",
+                                "method": "{{ method.value or "get" }}"
+                                }'
+                               class="btn btn-soft-secondary fw-medium">
+                                <i class="ri-add-fill me-1 align-bottom"></i> Add Item
+                            </a>
+                        </td>
+                    </tr>
+
+                </table>
+                <!------Таблица----->
+            </div>
+
+        </div>
+    </div>
+    {% endautoescape %}
+{% endblock %}
+
+{#{% block badges %}#}
+{#    <div class="d-flex flex-wrap gap-2">#}
+{#        {% for line in cls.lines %}#}
+{#            <a href="#"#}
+{#               hx-params="model, id, prefix, method"#}
+{#               hx-trigger="click"#}
+{#               hx-target="#modal"#}
+{#               hx-ext="json-enc"#}
+{#               hx-post="/base/modal"#}
+{#               hx-vals='{#}
+{#                "model": "{{ line.model.name }}",#}
+{#                "method": "get",#}
+{#                "id": "{{ line.id }}",#}
+{#                "prefix": "{{ line.prefix }}"#}
+{#                }'#}
+{#               class="text-success d-inline-block edit-item-btn">#}
+{#                <span class="badge bg-secondary">{{ line.display_title }}</span>#}
+{#            </a>#}
+{#        {% endfor %}#}
+{#    </div>#}
+{##}
+{#{% endblock %}#}

@@ -8,15 +8,15 @@ var myToast = Toastify({
   },
 })
 myToast.showToast();
-var table = htmx.find("#table_{{ cls.prefix }}")
+var table = htmx.find("#table_{{ cls.key }}")
 if (table){
     htmx.trigger(table, 'update')
 }
-var form = htmx.find("#form_{{ cls.prefix }}")
+var form = htmx.find("#form_{{ cls.key }}")
 if (form){
     htmx.trigger(form, 'update')
 }
-var modal = htmx.find("#modal_{{ cls.prefix }}")
+var modal = htmx.find("#modal_{{ cls.key }}")
 if (modal){
     htmx.trigger(modal, 'update')
 }

@@ -1,0 +1,22 @@
+{% block as_form %}
+    <input class="datetime form-control" type="text"
+           name="{{ field.key }}"
+            {% if field.required %} aria-required="true" {% endif %}
+           onfocus="(this.type='date')"
+           placeholder="{{ field.update.title or field.field_name }}" id="{{ field.field_name }}"
+           value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
+{% endblock %}
+{% block as_view %}
+    <input  type="text"
+                    class="form-control"
+                    {% if field.required %} required {% endif %}
+                    disabled
+                    name="{{ field.key }}"
+                    placeholder=""
+                    value="{{field.val.strftime('%Y-%m-%d') if field.val else ''}}"
+            >
+
+{% endblock %}
+{% block as_table %}
+{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}<small class="text-muted"> {{ field.val.strftime('%H-%M') if field.val else '' }}</small>
+{% endblock %}
