@@ -303,6 +303,7 @@ class LineType(str, Enum):
     FILTER: str = 'filter'
     HEADER: str = 'header'
     LINE: str = 'line'
+    NEW: str = 'new'
 
 
 class Line(BaseModel):
@@ -328,6 +329,20 @@ class Line(BaseModel):
     @property
     def key(self):
         return f'{self.class_key}--{self.id if self.type == LineType.LINE else self.type.value}'
+
+    def _change_assign_line(self):
+        for _, field in self.fields:
+            if field.model_name == self.model_name:
+                field.line = self
+            else:
+                field.line.type = LineType.NEW
+
+    def line_copy(self, type=None):
+        new_line = self.copy(deep=True)
+        if type:
+            new_line.type = type
+        new_line._change_assign_line()
+        return new_line
 
     def render(self, block_name: str, method: MethodType = MethodType.GET, last=False) -> str:
         """
@@ -502,6 +517,7 @@ class ClassView(AsyncObj, FieldFields):
     params: Optional[QueryParams] | dict | None  # Параметры на вхрде
     lines: Lines  # Список обьектов
     line: Line  # Заголовок ( те по сути схема )
+    new: Line  # Новый обьект, формируется
     filter: FilterLine
     cursor: int = 0  # Курсор текущей остановки
     exclude: Optional[list] = [None]  # Исключаемые солбцы
@@ -556,6 +572,8 @@ class ClassView(AsyncObj, FieldFields):
             class_key=self.key,
             view=self
         )
+        self.new = self.line.line_copy(type=LineType.NEW)
+        self.new.id = uuid.uuid4()
         self.filter = await self._get_line(
             schema=self.model.schemas.filter,
             type=LineType.FILTER
@@ -607,6 +625,7 @@ class ClassView(AsyncObj, FieldFields):
         filter_fieldinfo = self.model.schemas.filter.model_fields.get(fieldname)
         if fieldname == 'id':
             if update_fieldinfo:
+                update_fieldinfo.title = 'ID'
                 if update_fieldinfo.json_schema_extra:
                     update_fieldinfo.json_schema_extra.update({
                         'table': True,
@@ -619,6 +638,34 @@ class ClassView(AsyncObj, FieldFields):
                     }
             else:
                 update_fieldinfo = PyFild(title='ID', table=True, hidden=False)
+            if get_fieldinfo:
+                get_fieldinfo.title = 'ID'
+                if get_fieldinfo.json_schema_extra:
+                    get_fieldinfo.json_schema_extra.update({
+                        'table': True,
+                        'hidden': False
+                    })
+                else:
+                    get_fieldinfo.json_schema_extra = {
+                        'table': True,
+                        'hidden': False
+                    }
+            else:
+                get_fieldinfo = PyFild(title='ID', table=True, hidden=False)
+            if create_fieldinfo:
+                create_fieldinfo.title = 'ID'
+                if create_fieldinfo.json_schema_extra:
+                    create_fieldinfo.json_schema_extra.update({
+                        'table': True,
+                        'hidden': False
+                    })
+                else:
+                    create_fieldinfo.json_schema_extra = {
+                        'table': True,
+                        'hidden': False
+                    }
+            else:
+                create_fieldinfo = PyFild(title='ID', table=True, hidden=False)
         return {
             'create': self._get_view_vars_by_fieldinfo(create_fieldinfo),
             'update': self._get_view_vars_by_fieldinfo(
@@ -657,6 +704,8 @@ class ClassView(AsyncObj, FieldFields):
                     model_name = c.Config.__name__.lower()
                 res += 'rel'
                 model = self.env[model_name]
+                subclass = await ClassView(request=self.request, model=model, key=self.key, force_init=False)
+                line = subclass.line
             else:
                 res += c.__name__.lower()
         if not model and model_name:

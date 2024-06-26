@@ -167,8 +167,8 @@ async def line(request: Request, schema: TableSchema):
         qp = clean_filter(form_data, form_data['key'])
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}
-    cls = await ClassView(request, params=qp, model=schema.model, key=f'{schema.key}--{new_id}')
-    return cls.line.as_tr_add
+    cls = await ClassView(request, params=qp, model=schema.model, key=schema.key)
+    return cls.new.as_tr_add
 
 
 class ModelSchema(BaseSchema):
@@ -222,8 +222,8 @@ async def modal(request: Request, schema: ModalSchema):
         return cls.send_message(f'{cls.model.name.capitalize()}: is {schema.method.capitalize()}')
     else:
         if schema.method == 'create':
-            await cls.init(params={'id__in': schema.id})
-            return getattr(cls.line, f'get_{schema.method.value}')
+            #await cls.init(params={'id__in': schema.id})
+            return getattr(cls.new, f'get_{schema.method.value}')
         await cls.init(params={'id__in': schema.id})
         line = cls.lines.lines[0]
         return getattr(line, f'get_{schema.method.value}')

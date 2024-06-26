@@ -191,7 +191,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                     for _obj in value:
                         rel_service = import_service(_obj.Config.service)
                         rel = rel_service(self.request)
-                        if hasattr(_obj, 'id'):
+                        if hasattr(_obj, 'id') and _obj.id:
                             rel_entity = await rel.update(id=_obj.id, obj=_obj, commit=False)
                         else:
                             _dump = _obj.model_dump()
