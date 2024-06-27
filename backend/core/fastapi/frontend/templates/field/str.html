@@ -2,7 +2,8 @@
         <input
                 class="form-control"
                 {% if field.update.required %} required {% endif %}
-                {% if field.update.readonly %}disabled{% endif %}
+                {% if field.update.readonly %} disabled{% endif %}
+                {% if field.update.hidden %} hidden{% endif %}
                 name="{{ field.key }}"
                 placeholder="Enter {{ field.update.title }}"
                 value="{{ field.val if field.val else "" }}"

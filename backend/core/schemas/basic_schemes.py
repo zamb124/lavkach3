@@ -48,7 +48,7 @@ class PhoneSchema(BaseModel):
 
 
 class ActionBaseSchame(BaseModel):
-    id: Optional[UUID4] = Field(default=None,title='Id', hidden=True)
+    id: Optional[UUID4] = Field(default=None, title='Id', hidden=True)
     ids: Optional[list[UUID4]] = Field(default=[], title='Ids', hidden=True)
     lsn: Optional[int] = Field(default=0, title='Lsn', hidden=True)
     vars: Optional[dict] = Field(default={}, title='Vars', hidden=True)

@@ -3,6 +3,7 @@
                 class="dict form-control"
                 {% if field.required %} required {% endif %}
                 name="{{ field.key }}"
+                {% if field.update.hidden %}hidden{% endif %}
                 placeholder="Enter {{ field.title }}"
                 value="{{ field.val if field.val else "" }}"
         >

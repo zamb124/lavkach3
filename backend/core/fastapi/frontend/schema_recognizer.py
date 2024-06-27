@@ -305,6 +305,7 @@ class LineType(str, Enum):
     HEADER: str = 'header'
     LINE: str = 'line'
     NEW: str = 'new'
+    ACTION: str = 'action'
 
 
 class Line(BaseModel):
@@ -421,26 +422,8 @@ class Line(BaseModel):
             line=self
         )
 
-    @property
-    async def get_action(self) -> str:
-        """
-            Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
-        """
-        key = self.key
-        data = {k: ids if k == 'ids' else None for k, v in schema.model_fields.items()}
-        line, lines, _ = await self._get_data(
-            params={},
-            data=[data],
-            schema=schema,
-            key='action--0',
-            join_related=False,
-        )
-        view = ViewAction(ids=ids, line=lines[0], key='action--0', model=self.model, action=action)
-        return render_block(
-            environment=environment,
-            template_name=f'cls/action.html',
-            block_name='action', view=view
-        )
+
+
 
     @property
     def get_get(self) -> str:
@@ -521,6 +504,8 @@ class ClassView(AsyncObj, FieldFields):
     lines: Lines  # Список обьектов
     line: Line  # Заголовок ( те по сути схема )
     new: Line  # Новый обьект, формируется
+    action_line: Optional[Line] = None
+    action_lines: Optional[Lines] = None
     filter: FilterLine
     cursor: int = 0  # Курсор текущей остановки
     exclude: Optional[list] = [None]  # Исключаемые солбцы
@@ -620,11 +605,18 @@ class ClassView(AsyncObj, FieldFields):
             'description': fielinfo.description,
         })
 
-    def _get_view_vars(self, fieldname: str, is_filter: bool):
-        create_fieldinfo = self.model.schemas.create.model_fields.get(fieldname)
-        update_fieldinfo = self.model.schemas.update.model_fields.get(fieldname)
-        get_fieldinfo = self.model.schemas.get.model_fields.get(fieldname)
-        filter_fieldinfo = self.model.schemas.filter.model_fields.get(fieldname)
+    def _get_view_vars(self, fieldname: str, is_filter: bool, schema: BaseModel):
+        if schema:
+            default_fieldinfo = schema.model_fields.get(fieldname)
+            create_fieldinfo = update_fieldinfo=get_fieldinfo=filter_fieldinfo = default_fieldinfo
+        else:
+
+            create_fieldinfo = self.model.schemas.create.model_fields.get(fieldname)
+            update_fieldinfo = self.model.schemas.update.model_fields.get(fieldname)
+            get_fieldinfo = self.model.schemas.get.model_fields.get(fieldname)
+            filter_fieldinfo = self.model.schemas.filter.model_fields.get(fieldname)
+        if fieldname == 'value':
+            a=1
         if fieldname == 'id':
             if update_fieldinfo:
                 update_fieldinfo.title = 'ID'
@@ -717,7 +709,7 @@ class ClassView(AsyncObj, FieldFields):
                 model = self.env[model_name]
             assert model, f'Model for field {field_name} is not defined'
         field = Field(**{
-            **self._get_view_vars(field_name, is_filter),
+            **self._get_view_vars(field_name, is_filter, schema),
             'is_filter': is_filter,
             'field_name': field_name,
             'is_reserved': True if field_name in reserved_fields else False,
@@ -852,6 +844,7 @@ class ClassView(AsyncObj, FieldFields):
             params: QueryParams | dict | None = None,
             join_related: bool = True,
             join_field: list | None = None,
+            line: Line = None,
             data: list | dict | None = None,
             **kwargs
     ):
@@ -867,7 +860,7 @@ class ClassView(AsyncObj, FieldFields):
         if join_field:
             self.join_fields = join_field or []
         model = kwargs.get('model') or self.model
-        key = kwargs.get('key') or self.key
+        line = line or self.line
         cursor = 0
         if not data:
             async with model.adapter as a:
@@ -880,13 +873,14 @@ class ClassView(AsyncObj, FieldFields):
         lines = []
         i = len(data)
         for n, row in enumerate(data):
-            line_copied = self.line.copy(deep=True)
+            line_copied = line.copy(deep=True)
             line_copied.id = row['id']
             line_copied.type = LineType.LINE
             line_copied.is_last = True if i - 1 == n else False
             line_copied.display_title = row.get('title')
             line_copied.company_id = row.get('company_id')
             line_copied.id = row.get('id')
+            line_copied.lsn = row.get('lsn')
             line_copied.actions = self.actions
             for _, col in line_copied.fields:
                 col.val = row[col.field_name]
@@ -1038,3 +1032,23 @@ class ClassView(AsyncObj, FieldFields):
 
     def as_kanban(self):
         return self.render('kanban')
+
+    async def get_action(self, action: str, ids: list[uuid.UUID], schema: BaseModel) -> str:
+        """
+            Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
+        """
+        data = {k: ids if k == 'ids' else None for k, v in schema.model_fields.items()}
+        self.action_line = await self._get_line(schema=schema, type=LineType.ACTION)
+        lines, _ = await self._get_data(
+            params={},
+            data=[data],
+            key='action--0',
+            line=self.action_line,
+            join_related=False,
+        )
+        self.action_lines = Lines(lines=lines)
+        return render_block(
+            environment=environment,
+            template_name=f'cls/action.html',
+            block_name='action', cls=self, action=action
+        )

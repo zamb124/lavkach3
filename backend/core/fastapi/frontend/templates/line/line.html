@@ -99,6 +99,7 @@
                     <a
                             data-bs-toggle="{{ action_vals.doc }}"
                             data-key="{{ action_vals.tkey }}"
+                            hx-include="model,action,method,ids,key"
                             hx-trigger="click"
                             hx-ext="json-enc"
                             hx-target="#modal"
@@ -106,7 +107,7 @@
                             hx-vals='{
                                 "model": "{{ line.model_name }}",
                                 "action": "{{ action_name }}",
-                                "method": "{% if action_vals.schema %}get_action{% else %}commit{% endif %}",
+                                "method": "{% if action_vals.schema %}get{% else %}update{% endif %}",
                                 "ids": ["{{ line.id }}"],
                                 "key": "{{ line.key }}"
                             }'
@@ -141,11 +142,11 @@
                     hx-include="{{ '#filter' ~'--'~ line.class_key }}"
                     hx-post="/base/table"
                     hx-ext="json-enc"
-                    hx-trigger="revealed" hx-swap="afterend" hx-select="#{{ 'tbody-table' ~'--'~ line.class_key }}>tr"
-                    hx-target="#{{ line.class_key }}"
+                    hx-trigger="revealed" hx-swap="beforeend" hx-select="#{{ 'tbody-table' ~'--'~ line.class_key }}>tr"
+                    hx-target="#tbody-table--{{ line.class_key }}"
                     hx-vals='{
                             "model": "{{ line.model_name }}",
-                            "{{ line.class_key ~'--'~ 'cursor' }}": "{{ line.lsn }}",
+                            "{{ line.class_key ~'--filter--'~ 'cursor' }}": "{{ line.lsn }}",
                             "key": "{{ line.class_key }}"
                         }'
                 {% endif %}>

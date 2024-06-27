@@ -1,5 +1,5 @@
 {% block action %}
-    <div class="modal" id="{{ 'action--'~view.key }}" tabindex="-1" aria-hidden="true">
+    <div class="modal" id="{{ 'action--'~cls.key }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -14,10 +14,10 @@
                       hx-include="this"
                       hx-target="#trash"
                       hx-vals='{
-                "model": "{{ view.model.name }}",
-                "action": "{{ view.action }}",
-                "key": "{{ view.key }}",
-                "method": "action_commit"
+                "model": "{{ cls.model.name }}",
+                "action": "{{ action }}",
+                "key": "{{ cls.key }}",
+                "method": "update"
               }'
                 >
                     <div class="modal-body text-center p-5">
@@ -28,8 +28,9 @@
                         </lord-icon>
                         <div class="card">
                             <div class="card-body">
+                            {% for line in cls.action_lines.lines %}
                                 <div class="row">
-                                    {% for field in view.line.fields if not field.type =='dict' %}
+                                    {% for field_name, field in line.fields %}
                                         {% if loop.length % 3 != 0 and loop.first %}
                                             <div class="row">
                                         {% endif %}
@@ -37,21 +38,19 @@
                                             <div class="row">
                                         {% endif %}
                                     <div class="col" {% if field.hidden %} style="display: none" {% endif %}>
-                                        <p style="margin-bottom: 0; margin-top: 1rem"
-                                           class="sort text-uppercase text-muted text-start "
-                                           for="{{ field.key }}">{{ field.title|capitalize }}:</p>
-                                        {{ field.as_form()|safe }}
-
+                                        {{ field.label|safe }}
+                                        {{ field.as_form|safe }}
                                     </div>
                                     {% if loop.index % 3 == 0 %}
                                         </div>
                                     {% endif %}
                                     {% endfor %}
                                     </div>
+                                {% endfor %}
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" onclick="hideModals()" >Close
                                         </button>
-                                        <button id="{{ 'submit'~view.key }}" type="submit" class="btn btn-success">
+                                        <button id="{{ 'submit'~cls.key }}" type="submit" class="btn btn-success">
                                             Save
                                         </button>
 
@@ -63,7 +62,7 @@
         </div>
     </div>
     <script>
-        var modal = new bootstrap.Modal('#{{ 'action--'~view.key }}')
+        var modal = new bootstrap.Modal('#{{ 'action--'~cls.key }}')
         modal.show()
     </script>
 {% endblock %}

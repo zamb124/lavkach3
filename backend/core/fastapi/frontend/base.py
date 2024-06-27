@@ -244,20 +244,23 @@ async def action(request: Request, schema: ActionSchema):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    cls = ClassView(request, schema.model, key=schema.key)
+    cls = await ClassView(request, schema.model)
     func = getattr(cls.model.adapter, schema.action)
     result = []
-    if schema.method == 'commit':
-        res = await func(payload=schema.model_dump_json())
-        return cls.send_message(res['detail'])
-    elif schema.method == 'get_action':
-        return await cls.get_action(action=schema.action, ids=schema.ids, schema=func['schema'])
-    elif schema.method == 'action_commit':
+    if schema.model_extra and schema.method =='update':
+        action_schema = cls.actions[schema.action]['schema']
         if data := schema.model_extra:
             _json = {}
             data = clean_filter(data, schema.key)
             for line in data:
-                obj = func['schema'](**line)
+                obj = action_schema(**line)
                 res = await func(obj)
                 result += res
+    elif schema.method == 'update':
+        res = await func(payload=schema.model_dump_json())
+        return cls.send_message(res['detail'])
+    elif schema.method == 'get':
+        action_schema = cls.actions[schema.action]['schema']
+        return await cls.get_action(action=schema.action, ids=schema.ids, schema=action_schema)
+
     return cls.send_message('Action Done')
