@@ -169,20 +169,23 @@ def get_types(annotation, _class=[]):
 
 
 class FieldFields:
-    model_name: str
-    line: 'Line'
-    lines: 'Lines'
-    vars: Optional[dict] = None
+    model_name: str              # Имя поля
+    line: 'Line'                 # Какому обьекту принадлежит
+    lines: 'Lines'               # Есои имеет под обьекты - релевантно если поле list_rel
+    vars: Optional[dict] = None  # Переменные если нужно передать контекст
 
 
 class ViewVars(BaseModel):
-    title: Optional[str] = None
-    hidden: bool = False
-    readonly: bool = False
-    required: bool = False
-    table: bool = False
-    filter: Optional[dict] = None
-    description: Optional[str] = None
+    """
+        Набор полей для фронтенда, в разных ракурсах update, create, get
+    """
+    title: Optional[str] = None         # Tittle - Наименования поля для UI
+    hidden: bool = False                # Скрыть его ели нет
+    readonly: bool = False              # Только на чтение
+    required: bool = False              # Обязательно заполнить, актуально для форм
+    table: bool = False                 # Учавствует ли поле при построении таблицы
+    filter: Optional[dict] = None       # Учавствует ли поле, если это фильтр
+    description: Optional[str] = None   # Описание поля в UI
 
 
 class Field(BaseModel, FieldFields):
@@ -193,21 +196,20 @@ class Field(BaseModel, FieldFields):
         as_table_edit - виджет как таблица (доступен только для list_rel) полей
         as_table_view - виджет как таблица (доступен только для list_rel) полей
     """
-    field_name: str
-    type: str
-    model_name: str
-    domain_name: str
+    field_name: str                     # Системное имя поля
+    type: str                           # Тип поля (srt, ins, rel, list_rel ... )
+    model_name: str                     # Наименование модели
+    domain_name: str                    # Наименование домена модели
     # widget params
-    enums: Optional[Any] = None
-    val: Any = None
-    sort_idx: int = 0
-    line: Optional['Line'] = None
-    new: Optional['Line'] = None
-    lines: Optional['Lines'] = None
-    color_map: Optional[dict] = {}
-    color: Optional[Any] = None
-    is_filter: bool = False
-    is_reserved: bool = False
+    enums: Optional[Any] = None         # Если поле enum, то тут будет список енумов
+    val: Any = None                     # Значение поля
+    sort_idx: int = 0                   # Индекс сортировки поля
+    line: Optional['Line'] = None       # Обьект, которому принадлежит поле
+    lines: Optional['Lines'] = None     # Если поле list_rel, то субобьекты
+    color_map: Optional[dict] = {}      # Мапа для цветовой палитры
+    color: Optional[Any] = None         # Значение цвета
+    is_filter: bool = False             # Является ли поле фильтром
+    is_reserved: bool = False           # Призна
     # Views vars
     get: ViewVars
     create: ViewVars
@@ -217,15 +219,6 @@ class Field(BaseModel, FieldFields):
     def key(self):
         """Отдает уникальный идентификатор для поля"""
         return f'{self.line.key}--{self.field_name}'
-
-    @property
-    def label(self):
-        return render_block(
-            environment=environment,
-            template_name=f'field/label.html',
-            block_name='label',
-            field=self,
-        )
 
     def render(self, block_name: str, type: str = '', backdrop: list = []):
         type = type or self.type
@@ -241,6 +234,20 @@ class Field(BaseModel, FieldFields):
             print(ex)
             raise
         return rendered_html
+
+
+    @property
+    def label(self):
+        """
+            Отдать Наименование поля
+        """
+        return render_block(
+            environment=environment,
+            template_name=f'field/label.html',
+            block_name='label',
+            field=self,
+        )
+
 
     @property
     def as_form(self):
@@ -258,6 +265,9 @@ class Field(BaseModel, FieldFields):
 
     @property
     def as_table(self):
+        """
+            Отобразить поле как Таблицу (Если поле является list_rel)
+        """
         return render_block(
             environment=environment,
             template_name=f'cls/table.html',
@@ -268,6 +278,9 @@ class Field(BaseModel, FieldFields):
 
     @property
     def as_table_form(self):
+        """
+            Отобразить поле как Таблицу на редактирование (Если поле является list_rel)
+        """
         block_name = 'as_table'
         return render_block(
             environment=environment,
@@ -278,6 +291,9 @@ class Field(BaseModel, FieldFields):
         )
 
     def filter_as_string(self):
+        """
+            Костыльная утилита, что бы в js передать фильтр
+        """
         filter = ''
         if self.update.filter:
             filter += '{'
@@ -291,7 +307,7 @@ class Field(BaseModel, FieldFields):
 
 class Fields(BaseModel):
     """
-        Обертка для удобства
+        Обертка для удобства, что бы с полями работать как с обьектом
     """
 
     class Config:
@@ -304,6 +320,7 @@ class LineType(str, Enum):
         FILTER: Лайн, который обозначеет фильр
         HEADER: Лайн. как заголовок обьекта
         LINE: Лайн с данными
+        ACTION: Лайн является Экшеном
     """
     FILTER: str = 'filter'
     HEADER: str = 'header'
@@ -314,8 +331,7 @@ class LineType(str, Enum):
 
 class Line(BaseModel):
     """
-        as_tr отображение лайна в ввиде строчки в таблице
-        as_card - отображение лайна в ввиде карточки
+        Обертка для обьекта
     """
     type: LineType
     parent_field: Field = None
