@@ -453,7 +453,15 @@
                 htmx.trigger(element, 'update')
         })
 
-        function hideModals() {
+        function hideModals(modal) {
+            //debugger
+            if (modal){
+                modal = document.getElementById(modal)
+                let currentModal = bootstrap.Modal.getInstance(modal)
+                if (currentModal) {
+                    currentModal.hide()
+                }
+            } else {
             var $modals = document.querySelectorAll('.modal')
             $modals.forEach(modal => {
                 let currentModal = bootstrap.Modal.getInstance(modal)
@@ -469,7 +477,7 @@
                 var body = document.body
                 body.style.removeProperty('overflow');
             })
-        }
+        }}
 
         htmx.on('htmx:afterSwap', (e) => {
             //trans()
