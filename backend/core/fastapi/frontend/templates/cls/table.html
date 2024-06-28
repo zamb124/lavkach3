@@ -49,11 +49,7 @@
                                        value="option">
                             </div>
                         </th>
-                        {% for field in cls.line.fields|table(method) %}
-                            <td data-bs-toggle="tooltip" data-bs-html="true" title="{{field.get.description or field.get.title}}">
-                                {{ field.get.title or field.field_name  }}
-                            </td>
-                        {% endfor %}
+                        {{ cls.lines.as_table_header }}
                         <th style="min-width: 14rem">Active</th>
                     </tr>
                     </thead>
@@ -80,7 +76,7 @@
                                hx-post="/base/table/line/add"
                                hx-vals='{
                                 "model": "{{ cls.model_name or cls.model.name }}",
-                                "key": {% if method == 'update' %}"{{ cls.line.class_key }}"{% else %}"{{ cls.key }}"{% endif %},
+                                "key": "{{ cls.key }}",
                                 "method": "{{ method.value or "get" }}"
                                 }'
                                class="btn btn-soft-secondary fw-medium">

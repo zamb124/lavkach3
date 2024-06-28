@@ -120,7 +120,17 @@
         </ul>
     </div>
 {% endblock %}
+{% block as_tr_header %}
+    {% for field in line.fields|table(method=method)  %}
+            <td
+                data-bs-toggle="tooltip"
+                data-bs-html="true"
+                title="{{field.get.description or field.get.title}}">
+                {{ field.get.title or field.field_name  }}
+            </td>
+        {% endfor %}
 
+{% endblock %}
 {% block as_tr %}
     {% autoescape false %}
     <tr id="{{ line.key }}" class="mb-0 fw-semibold text-muted">

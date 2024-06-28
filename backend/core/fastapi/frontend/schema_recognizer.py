@@ -3,6 +3,7 @@ import datetime
 import enum
 import logging
 import os
+import random
 import uuid
 from collections import defaultdict
 from copy import copy
@@ -24,6 +25,7 @@ from core.env import Model
 from core.schemas import BaseFilter
 from core.utils.timeit import timed
 from pydantic import Field as PyFild
+from functools import cached_property
 
 """
 
@@ -169,6 +171,7 @@ class FieldFields:
     model_name: str
     line: 'Line'
     lines: 'Lines'
+    vars: Optional[dict] = None
 
 
 class ViewVars(BaseModel):
@@ -314,6 +317,7 @@ class Line(BaseModel):
         as_card - отображение лайна в ввиде карточки
     """
     type: LineType
+    parent_field: Field = None
     model_name: str
     schema: Any
     actions: dict
@@ -327,10 +331,18 @@ class Line(BaseModel):
     is_inline: bool = False
     is_last: bool = False
     class_key: str
+    vars: Optional[dict] = None
 
     @property
     def key(self):
-        return f'{self.class_key}--{self.id if self.type == LineType.LINE else self.type.value}'
+        if self.type == LineType.LINE:
+            key = self.id
+        elif self.type == LineType.NEW:
+            key = id(self)
+        else:
+            key = self.type.value
+        return f'{self.class_key}--{key}'
+
 
     def _change_assign_line(self):
         for _, field in self.fields:
@@ -389,6 +401,10 @@ class Line(BaseModel):
     @property
     def as_tr_view(self):
         return self.render(block_name='as_tr', method=MethodType.GET)
+
+    @property
+    def as_tr_header(self):
+        return self.render(block_name='as_tr_header', method=MethodType.GET)
 
     @property
     def as_tr_form(self):
@@ -473,8 +489,17 @@ class Lines(BaseModel):
     """
         Делаем класс похожий на List и уже работаем с ним
     """
-    lines: list['Line'] = []
+    line_header: Line
+    line_new: Line
+    lines: list['Line'] = None
+    vars: Optional[dict] = None
 
+
+    def __bool__(self):
+        if not self.lines:
+            return False
+        else:
+            return True
     @property
     def as_table_form(self):
         rendered_html = ''
@@ -493,6 +518,10 @@ class Lines(BaseModel):
             rendered_html += line.as_tr_view
         return rendered_html
 
+    @property
+    def as_table_header(self):
+        return self.line_header.as_tr_header
+
 
 class ClassView(AsyncObj, FieldFields):
     """
@@ -503,6 +532,7 @@ class ClassView(AsyncObj, FieldFields):
     params: Optional[QueryParams] | dict | None  # Параметры на вхрде
     lines: Lines  # Список обьектов
     line: Line  # Заголовок ( те по сути схема )
+    subline: Line  # Заголовок ( те по сути схема )
     new: Line  # Новый обьект, формируется
     action_line: Optional[Line] = None
     action_lines: Optional[Lines] = None
@@ -561,6 +591,7 @@ class ClassView(AsyncObj, FieldFields):
             view=self
         )
         self.new = self.line.line_copy(type=LineType.NEW)
+        self.lines = Lines(line_header=self.line, line_new=self.new)
         self.filter = await self._get_line(
             schema=self.model.schemas.filter,
             type=LineType.FILTER
@@ -579,7 +610,7 @@ class ClassView(AsyncObj, FieldFields):
             join_related=join_related or self.join_related,
             join_field=self.join_fields,
         )
-        self.lines = Lines(lines=lines)
+        self.lines.lines=lines
         self._sort_columns()
 
     def _get_view_vars_by_fieldinfo(self, fielinfo: FieldInfo = None):
@@ -674,6 +705,7 @@ class ClassView(AsyncObj, FieldFields):
         fielinfo = schema.model_fields[field_name]
         res = ''
         enums = []
+        lines = None
         class_types = get_types(fielinfo.annotation, [])
         model = None
         model_name = self.model.name
@@ -699,7 +731,7 @@ class ClassView(AsyncObj, FieldFields):
                 res += 'rel'
                 model = self.env[model_name]
                 subclass = await ClassView(request=self.request, model=model, key=self.key, force_init=False)
-                line = subclass.line
+                lines = subclass.lines
             else:
                 res += c.__name__.lower()
         if not model and model_name:
@@ -719,6 +751,7 @@ class ClassView(AsyncObj, FieldFields):
             'enums': enums,
             'sort_idx': self.sort.get(field_name, 999),
             'line': line,
+            'lines': lines
         })
         return field
 
@@ -895,11 +928,14 @@ class ClassView(AsyncObj, FieldFields):
                     color_enum = col.enums(col.val)
                     col.color = col.color_map.get(color_enum)
                 elif col.type.endswith('list_rel'):
-                    submodel = await ClassView(request=self.request,model=col.model_name, key=col.key, force_init=False)
+                    submodel = await ClassView(request=self.request, model=col.model_name, key=col.line.key, force_init=False)
                     if col.val:
                         sub_lines, _ = await submodel._get_data(data=col.val, join_related=False)
-                        col.lines = Lines(lines=sub_lines)
-                    col.line = submodel.line
+                        submodel.lines.lines = sub_lines
+                        col.lines = submodel.lines.lines
+                    else:
+                        col.lines = submodel.lines
+                    #col.line = submodel.line
 
             lines.append(line_copied)
         logging.info(f"_GET_DATA LINES SERIALIZE: {datetime.datetime.now() - time_start}")
