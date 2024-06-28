@@ -880,7 +880,6 @@ class ClassView(AsyncObj, FieldFields):
             join_field: list | None = None,
             line: Line = None,
             data: list | dict | None = None,
-            is_rel: bool = False,
             **kwargs
     ):
         """
