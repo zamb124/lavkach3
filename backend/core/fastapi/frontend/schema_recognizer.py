@@ -662,7 +662,6 @@ class ClassView(AsyncObj, FieldFields):
             default_fieldinfo = schema.model_fields.get(fieldname)
             create_fieldinfo = update_fieldinfo=get_fieldinfo=filter_fieldinfo = default_fieldinfo
         else:
-
             create_fieldinfo = self.model.schemas.create.model_fields.get(fieldname)
             update_fieldinfo = self.model.schemas.update.model_fields.get(fieldname)
             get_fieldinfo = self.model.schemas.get.model_fields.get(fieldname)
@@ -672,44 +671,50 @@ class ClassView(AsyncObj, FieldFields):
                 update_fieldinfo.title = 'ID'
                 if update_fieldinfo.json_schema_extra:
                     update_fieldinfo.json_schema_extra.update({
+                        'readonly': True,
                         'table': True,
                         'hidden': False
                     })
                 else:
                     update_fieldinfo.json_schema_extra = {
+                        'readonly': True,
                         'table': True,
                         'hidden': False
                     }
             else:
-                update_fieldinfo = PyFild(title='ID', table=True, hidden=False)
+                update_fieldinfo = PyFild(title='ID', table=True, hidden=False, readonly=True)
             if get_fieldinfo:
                 get_fieldinfo.title = 'ID'
                 if get_fieldinfo.json_schema_extra:
                     get_fieldinfo.json_schema_extra.update({
+                        'readonly': True,
                         'table': True,
                         'hidden': False
                     })
                 else:
                     get_fieldinfo.json_schema_extra = {
+                        'readonly': True,
                         'table': True,
                         'hidden': False
                     }
             else:
-                get_fieldinfo = PyFild(title='ID', table=True, hidden=False)
+                get_fieldinfo = PyFild(title='ID', table=True, hidden=False, readonly=True)
             if create_fieldinfo:
                 create_fieldinfo.title = 'ID'
                 if create_fieldinfo.json_schema_extra:
                     create_fieldinfo.json_schema_extra.update({
+                        'readonly': True,
                         'table': True,
                         'hidden': False
                     })
                 else:
                     create_fieldinfo.json_schema_extra = {
+                        'readonly': True,
                         'table': True,
                         'hidden': False
                     }
             else:
-                create_fieldinfo = PyFild(title='ID', table=True, hidden=False)
+                create_fieldinfo = PyFild(title='ID', table=True, hidden=False, readonly=True)
         return {
             'create': self._get_view_vars_by_fieldinfo(create_fieldinfo),
             'update': self._get_view_vars_by_fieldinfo(

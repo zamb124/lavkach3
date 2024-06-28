@@ -45,8 +45,7 @@
                                 trigger="loop"
                                 style="width:150px;height:150px">
                         </lord-icon>
-                        <div class="card">
-                            <div class="card-body">
+
                                 <div class="row">
                                     {% for field_name, field in line.fields if not field.is_reserved and field.type != 'list_rel' %}
                                         {% if loop.length % 3 != 0 and loop.first %}
@@ -106,8 +105,7 @@
                                         </button>
 
                                     </div>
-                                    </div>
-                                </div>
+
                 </form>
             </div>
         </div>
