@@ -928,7 +928,7 @@ class ClassView(AsyncObj, FieldFields):
                     color_enum = col.enums(col.val)
                     col.color = col.color_map.get(color_enum)
                 elif col.type.endswith('list_rel'):
-                    submodel = await ClassView(request=self.request, model=col.model_name, key=col.key, force_init=False)
+                    submodel = await ClassView(request=self.request, model=col.model_name, key=col.key, force_init=False)#
                     if col.val:
                         sub_lines, _ = await submodel._get_data(data=col.val, join_related=False)
                         submodel.lines.lines = sub_lines
