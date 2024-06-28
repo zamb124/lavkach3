@@ -148,7 +148,7 @@
         {% endfor %}
         <td class="text-center" style="padding-bottom: 0px;">
             <div
-                {% if line.is_last  %}
+                {% if line.is_last and not line.is_rel %}
                     hx-include="{{ '#filter' ~'--'~ line.class_key }}"
                     hx-post="/base/table"
                     hx-ext="json-enc"

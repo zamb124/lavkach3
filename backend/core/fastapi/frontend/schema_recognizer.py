@@ -23,6 +23,7 @@ from starlette.requests import Request
 
 from core.env import Model
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import ActionBaseSchame
 from core.utils.timeit import timed
 from pydantic import Field as PyFild
 from functools import cached_property
@@ -332,6 +333,7 @@ class Line(BaseModel):
     is_last: bool = False
     class_key: str
     vars: Optional[dict] = None
+    is_rel: bool = False
 
     @property
     def key(self):
@@ -544,6 +546,7 @@ class ClassView(AsyncObj, FieldFields):
     sort: Optional[dict] = {}  # Правила сортировки
     key: str  # Префикс - TODO: Перейти на имя модели
     actions: False  # Доступные Методы модели
+    is_rel: bool = False
 
     async def __ainit__(self,
                         request,
@@ -555,7 +558,8 @@ class ClassView(AsyncObj, FieldFields):
                         sort: list | None = None,
                         force_init: bool = False,
                         is_inline: bool = False,
-                        key: str | None = None
+                        key: str | None = None,
+                        is_rel: bool = False
                         ):
         self.request = request
         if isinstance(model, Model):
@@ -567,6 +571,7 @@ class ClassView(AsyncObj, FieldFields):
         except Exception as ex:
             raise
         self.model_name = self.model.name
+        self.is_rel = is_rel
         self.actions = self.model.adapter.get_actions()
         self.env = request.scope['env']
         self.key = key or _get_key()
@@ -637,7 +642,7 @@ class ClassView(AsyncObj, FieldFields):
         })
 
     def _get_view_vars(self, fieldname: str, is_filter: bool, schema: BaseModel):
-        if schema:
+        if schema and issubclass(schema, ActionBaseSchame):
             default_fieldinfo = schema.model_fields.get(fieldname)
             create_fieldinfo = update_fieldinfo=get_fieldinfo=filter_fieldinfo = default_fieldinfo
         else:
@@ -646,8 +651,6 @@ class ClassView(AsyncObj, FieldFields):
             update_fieldinfo = self.model.schemas.update.model_fields.get(fieldname)
             get_fieldinfo = self.model.schemas.get.model_fields.get(fieldname)
             filter_fieldinfo = self.model.schemas.filter.model_fields.get(fieldname)
-        if fieldname == 'value':
-            a=1
         if fieldname == 'id':
             if update_fieldinfo:
                 update_fieldinfo.title = 'ID'
@@ -730,8 +733,6 @@ class ClassView(AsyncObj, FieldFields):
                     model_name = c.Config.__name__.lower()
                 res += 'rel'
                 model = self.env[model_name]
-                subclass = await ClassView(request=self.request, model=model, key=self.key, force_init=False)
-                lines = subclass.lines
             else:
                 res += c.__name__.lower()
         if not model and model_name:
@@ -750,8 +751,7 @@ class ClassView(AsyncObj, FieldFields):
             'domain_name': model.domain.name,
             'enums': enums,
             'sort_idx': self.sort.get(field_name, 999),
-            'line': line,
-            'lines': lines
+            'line': line
         })
         return field
 
@@ -810,7 +810,8 @@ class ClassView(AsyncObj, FieldFields):
             id=id,
             actions=self.actions,
             is_inline=self.is_inline,
-            class_key=key
+            class_key=key,
+            is_rel=self.is_rel
         )
         if not fields:
             fields = await self._get_schema_fields(
@@ -879,6 +880,7 @@ class ClassView(AsyncObj, FieldFields):
             join_field: list | None = None,
             line: Line = None,
             data: list | dict | None = None,
+            is_rel: bool = False,
             **kwargs
     ):
         """
@@ -928,13 +930,17 @@ class ClassView(AsyncObj, FieldFields):
                     color_enum = col.enums(col.val)
                     col.color = col.color_map.get(color_enum)
                 elif col.type.endswith('list_rel'):
-                    submodel = await ClassView(request=self.request, model=col.model_name, key=col.key, force_init=False)#
+                    submodel = await ClassView(
+                        request=self.request,
+                        model=col.model_name,
+                        key=col.key,
+                        force_init=False,
+                        is_rel=True
+                    )#
                     if col.val:
                         sub_lines, _ = await submodel._get_data(data=col.val, join_related=False)
                         submodel.lines.lines = sub_lines
-                        col.lines = submodel.lines
-                    else:
-                        col.lines = submodel.lines
+                    col.lines = submodel.lines
                     #col.line = submodel.line
 
             lines.append(line_copied)
