@@ -56,7 +56,7 @@
                     <tbody id="{{ 'tbody-table' ~'--'~ cls.key }}">
                     {% if cls.lines %}
                         {% if method in ('update', 'create') %}
-                            {{ cls.lines.as_table_form}}
+                            {{ cls.lines.as_table_form }}
                         {% else %}
                             {{ cls.lines.as_table_view }}
                         {% endif %}

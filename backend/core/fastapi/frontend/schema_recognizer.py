@@ -491,8 +491,8 @@ class Lines(BaseModel):
     """
     line_header: Line
     line_new: Line
-    lines: list['Line'] = None
-    vars: Optional[dict] = None
+    lines: list['Line'] = []
+    vars: Optional[dict] = {}
 
 
     def __bool__(self):
@@ -928,11 +928,11 @@ class ClassView(AsyncObj, FieldFields):
                     color_enum = col.enums(col.val)
                     col.color = col.color_map.get(color_enum)
                 elif col.type.endswith('list_rel'):
-                    submodel = await ClassView(request=self.request, model=col.model_name, key=col.line.key, force_init=False)
+                    submodel = await ClassView(request=self.request, model=col.model_name, key=col.key, force_init=False)
                     if col.val:
                         sub_lines, _ = await submodel._get_data(data=col.val, join_related=False)
                         submodel.lines.lines = sub_lines
-                        col.lines = submodel.lines.lines
+                        col.lines = submodel.lines
                     else:
                         col.lines = submodel.lines
                     #col.line = submodel.line
