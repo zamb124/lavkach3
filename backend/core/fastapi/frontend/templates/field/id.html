@@ -2,7 +2,7 @@
         <input
                 class="id form-control"
                 {% if field.update.required %} required {% endif %}
-                {% if field.update.readonly %} disabled{% endif %}
+                {% if field.update.readonly %} readonly {% endif %}
                 {% if field.update.hidden %} hidden{% endif %}
                 name="{{ field.key }}"
                 placeholder="Enter {{ field.title }}"
@@ -13,7 +13,7 @@
     <input
                 class="form-control"
                 {% if field.get.required %} required {% endif %}
-                {% if field.get.readonly %} disabled{% endif %}
+                {% if field.get.readonly %}  readonly {% endif %}
                 {% if field.get.hidden %} hidden {% endif %}
                 name="{{ field.key }}"
                 placeholder="Enter {{ field.title }}"

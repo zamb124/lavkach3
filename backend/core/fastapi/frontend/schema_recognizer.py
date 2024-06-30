@@ -364,10 +364,11 @@ class Line(BaseModel):
 
     def _change_assign_line(self):
         for _, field in self.fields:
-            if field.model_name == self.model_name:
-                field.line = self
-            else:
-                field.line.type = LineType.NEW
+            field.line = self
+            # if field.model_name == self.model_name:
+            #     field.line = self
+            # else:
+            #     field.line.type = LineType.NEW
 
     def line_copy(self, type=None):
         new_line = self.copy(deep=True)
