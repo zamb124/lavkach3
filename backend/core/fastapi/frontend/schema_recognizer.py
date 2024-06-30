@@ -566,7 +566,7 @@ class ClassView(AsyncObj, FieldFields):
 
     async def __ainit__(self,
                         request,
-                        model: str,
+                        model: str | Model,
                         params: QueryParams | dict | None = None,
                         exclude: list = [],
                         join_related: bool = True,
@@ -612,11 +612,11 @@ class ClassView(AsyncObj, FieldFields):
             view=self
         )
         self.new = self.line.line_copy(type=LineType.NEW)
-        self.lines = Lines(line_header=self.line, line_new=self.new)
         self.filter = await self._get_line(
             schema=self.model.schemas.filter,
             type=LineType.FILTER
         )
+        self.lines = Lines(line_header=self.line, line_new=self.new)
         if force_init:
             await self.init()
 
@@ -754,14 +754,25 @@ class ClassView(AsyncObj, FieldFields):
                     model_name = c.Config.__name__.lower()
                 res += 'rel'
                 model = self.env[model_name]
+                submodel = await ClassView(
+                    request=self.request,
+                    model=model_name,
+                    key=line.key,
+                    force_init=False,
+                    is_rel=True
+                )  #
+                lines = submodel.lines
             else:
                 res += c.__name__.lower()
+
         if not model and model_name:
             if model_name == self.model.name:
                 model = self.model
             elif model_name != self.model.name:
                 model = self.env[model_name]
             assert model, f'Model for field {field_name} is not defined'
+        if field_name == 'move_list_rel':
+            a=1
         field = Field(**{
             **self._get_view_vars(field_name, is_filter, schema),
             'is_filter': is_filter,
@@ -772,7 +783,8 @@ class ClassView(AsyncObj, FieldFields):
             'domain_name': model.domain.name,
             'enums': enums,
             'sort_idx': self.sort.get(field_name, 999),
-            'line': line
+            'line': line,
+            'lines': lines
         })
         return field
 
@@ -1108,7 +1120,7 @@ class ClassView(AsyncObj, FieldFields):
             line=self.action_line,
             join_related=False,
         )
-        self.action_lines = Lines(lines=lines)
+        self.action_lines = Lines(lines=lines, line_header=self.line, line_new=self.new)
         return render_block(
             environment=environment,
             template_name=f'cls/action.html',
