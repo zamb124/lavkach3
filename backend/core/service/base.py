@@ -322,6 +322,5 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         return True
 
     async def delete(self, id: Any) -> bool:
-        #self.basecache.delete(id)
         res = await self._delete(id)
         return res

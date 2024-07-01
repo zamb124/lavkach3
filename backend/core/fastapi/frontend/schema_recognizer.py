@@ -3,10 +3,8 @@ import datetime
 import enum
 import logging
 import os
-import random
 import uuid
 from collections import defaultdict
-from copy import copy
 from enum import Enum
 from inspect import isclass
 from types import UnionType
@@ -17,6 +15,7 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2_fragments import render_block, render_block_async
 from pydantic import BaseModel
+from pydantic import Field as PyFild
 from pydantic.fields import FieldInfo
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
@@ -25,8 +24,6 @@ from core.env import Model
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import ActionBaseSchame
 from core.utils.timeit import timed
-from pydantic import Field as PyFild
-from functools import cached_property
 
 """
 
@@ -127,7 +124,7 @@ class AsyncObj:
 
 
 def _get_key():
-    """Генерирует уникальный идетификатор для модельки"""
+    """Генерирует уникальный идетификатор для конструктора модели"""
     return f'A{uuid.uuid4().hex[:10]}'
 
 
@@ -169,9 +166,9 @@ def get_types(annotation, _class=[]):
 
 
 class FieldFields:
-    model_name: str              # Имя поля
-    line: 'Line'                 # Какому обьекту принадлежит
-    lines: 'Lines'               # Есои имеет под обьекты - релевантно если поле list_rel
+    model_name: str  # Имя поля
+    line: 'Line'  # Какому обьекту принадлежит
+    lines: 'Lines'  # Есои имеет под обьекты - релевантно если поле list_rel
     vars: Optional[dict] = None  # Переменные если нужно передать контекст
 
 
@@ -179,13 +176,14 @@ class ViewVars(BaseModel):
     """
         Набор полей для фронтенда, в разных ракурсах update, create, get
     """
-    title: Optional[str] = None         # Tittle - Наименования поля для UI
-    hidden: bool = False                # Скрыть его ели нет
-    readonly: bool = False              # Только на чтение
-    required: bool = False              # Обязательно заполнить, актуально для форм
-    table: bool = False                 # Учавствует ли поле при построении таблицы
-    filter: Optional[dict] = None       # Учавствует ли поле, если это фильтр
-    description: Optional[str] = None   # Описание поля в UI
+    title: Optional[str] = None  # Tittle - Наименования поля для UI
+    hidden: bool = False  # Скрыть его ели нет (Если скрыть совсем, то он не попадет дальше в запросы)
+    display: bool = True  # display
+    readonly: bool = False  # Только на чтение
+    required: bool = False  # Обязательно заполнить, актуально для форм
+    table: bool = False  # Учавствует ли поле при построении таблицы
+    filter: Optional[dict] = None  # Учавствует ли поле, если это фильтр
+    description: Optional[str] = None  # Описание поля в UI
 
 
 class Field(BaseModel, FieldFields):
@@ -193,23 +191,23 @@ class Field(BaseModel, FieldFields):
         Описание поля
         as_form - виджет поля как редактируемого
         as_view - виджет поля как просмотра
-        as_table_edit - виджет как таблица (доступен только для list_rel) полей
-        as_table_view - виджет как таблица (доступен только для list_rel) полей
+        as_table_form - виджет как таблица (доступен только для list_rel) полей
+        as_table - виджет как таблица (доступен только для list_rel) полей
     """
-    field_name: str                     # Системное имя поля
-    type: str                           # Тип поля (srt, ins, rel, list_rel ... )
-    model_name: str                     # Наименование модели
-    domain_name: str                    # Наименование домена модели
+    field_name: str  # Системное имя поля
+    type: str  # Тип поля (srt, ins, rel, list_rel ... )
+    model_name: str  # Наименование модели
+    domain_name: str  # Наименование домена модели
     # widget params
-    enums: Optional[Any] = None         # Если поле enum, то тут будет список енумов
-    val: Any = None                     # Значение поля
-    sort_idx: int = 0                   # Индекс сортировки поля
-    line: Optional['Line'] = None       # Обьект, которому принадлежит поле
-    lines: Optional['Lines'] = None     # Если поле list_rel, то субобьекты
-    color_map: Optional[dict] = {}      # Мапа для цветовой палитры
-    color: Optional[Any] = None         # Значение цвета
-    is_filter: bool = False             # Является ли поле фильтром
-    is_reserved: bool = False           # Призна
+    enums: Optional[Any] = None  # Если поле enum, то тут будет список енумов
+    val: Any = None  # Значение поля
+    sort_idx: int = 0  # Индекс сортировки поля
+    line: Optional['Line'] = None  # Обьект, которому принадлежит поле
+    lines: Optional['Lines'] = None  # Если поле list_rel, то субобьекты
+    color_map: Optional[dict] = {}  # Мапа для цветовой палитры
+    color: Optional[Any] = None  # Значение цвета
+    is_filter: bool = False  # Является ли поле фильтром
+    is_reserved: bool = False  # Призна
     # Views vars
     get: ViewVars
     create: ViewVars
@@ -235,11 +233,10 @@ class Field(BaseModel, FieldFields):
             raise
         return rendered_html
 
-
     @property
     def label(self):
         """
-            Отдать Наименование поля
+            Отдать Label for шаблон для поля
         """
         return render_block(
             environment=environment,
@@ -247,7 +244,6 @@ class Field(BaseModel, FieldFields):
             block_name='label',
             field=self,
         )
-
 
     @property
     def as_form(self):
@@ -333,26 +329,25 @@ class Line(BaseModel):
     """
         Обертка для обьекта
     """
-    type: LineType
-    parent_field: Field = None
-    model_name: str
-    schema: Any
-    actions: dict
-    fields: Optional[Fields] = None
-    id: Optional[uuid.UUID] = None
-    lsn: Optional[int] = None
-    vars: Optional[dict] = None
-    company_id: Optional[uuid.UUID] = None
-    display_title: Optional[str] = None
-    selected: Optional[bool] = False
-    is_inline: bool = False
-    is_last: bool = False
-    class_key: str
-    vars: Optional[dict] = None
-    is_rel: bool = False
+    type: LineType  # Тип поля СМ LineType
+    model_name: str  # Имя модели
+    schema: Any  # Схема обьекта
+    actions: dict  # Доступные методы обьекта
+    fields: Optional[Fields] = None  # Поля обьекта
+    id: Optional[uuid.UUID] = None  # ID обьекта (если есть)
+    lsn: Optional[int] = None  # LSN обьекта (если есть)
+    vars: Optional[dict] = None  # vars обьекта (если есть)
+    company_id: Optional[uuid.UUID] = None  # Компания обьекта (если есть обьект)
+    display_title: Optional[str] = None  # Title (Поле title, или Компьют поле)
+    is_last: bool = False  # True Если обьект последний в Lines
+    class_key: str  # Уникальный ключ конструктора
+    is_rel: bool = False  # True если обьек является relation от поля родителя
 
     @property
     def key(self):
+        """
+            Проп генерации UI ключа для обьекта
+        """
         if self.type == LineType.LINE:
             key = self.id
         elif self.type == LineType.NEW:
@@ -361,16 +356,13 @@ class Line(BaseModel):
             key = self.type.value
         return f'{self.class_key}--{key}'
 
-
     def _change_assign_line(self):
+        "Присвоение нового обьекта Line'у"
         for _, field in self.fields:
             field.line = self
-            # if field.model_name == self.model_name:
-            #     field.line = self
-            # else:
-            #     field.line.type = LineType.NEW
 
     def line_copy(self, type=None):
+        "Метод копирования лайна"
         new_line = self.copy(deep=True)
         if type:
             new_line.type = type
@@ -399,56 +391,62 @@ class Line(BaseModel):
 
     @property
     def button_view(self):
+        """Сгенерировать кнопку на просмотр обьекта"""
         return self.render('button_view')
 
     @property
     def button_update(self):
+        """Сгенерировать кнопку на редактирование обьекта"""
         return self.render('button_update')
 
     @property
     def button_create(self):
+        """Сгенерировать кнопку на создание обьекта"""
         return self.render('button_create')
 
     @property
     def button_delete(self):
+        """Сгенерировать кнопку на удаление обьекта"""
         return self.render(block_name='button_delete')
 
     @property
     def button_actions(self):
+        """Сгенерировать кнопку на меню доступных методов обьекта"""
         return self.render(block_name='button_actions')
 
     @property
     def as_tr_view(self):
+        """Отобразить обьект как строку таблицы на просмотр"""
         return self.render(block_name='as_tr', method=MethodType.GET)
 
     @property
     def as_tr_header(self):
+        """Отобразить обьект как строку заголовок таблицы"""
         return self.render(block_name='as_tr_header', method=MethodType.GET)
 
     @property
     def as_tr_form(self):
+        """Отобразить обьект как строку таблицы на редактирование"""
         return self.render(block_name='as_tr', method=MethodType.UPDATE)
 
     @property
     def as_tr_add(self) -> str:
-        """
-            Метод отдает пустую строку
-        """
+        """Отобразить обьект как строку таблицы на создание"""
         return self.render(block_name='as_tr', method=MethodType.CREATE)
 
     @property
     def as_card_form(self):
+        """Отобразить обьект как card на редактирование"""
         return self.render(block_name='as_form')
 
     @property
     def as_card_view(self):
+        """Отобразить обьект как card на просмотр"""
         return self.render(block_name='as_form')
 
     @property
     def get_update(self) -> str:
-        """
-            Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
-        """
+        """Метод отдает модалку на редактирование обьекта"""
         return render_block(
             environment=environment,
             template_name=f'line/modal.html',
@@ -457,14 +455,9 @@ class Line(BaseModel):
             line=self
         )
 
-
-
-
     @property
     def get_get(self) -> str:
-        """
-            Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
-        """
+        """Метод отдает модалку на просмотр обьекта"""
         return render_block(
             environment=environment,
             template_name=f'line/modal.html',
@@ -475,9 +468,7 @@ class Line(BaseModel):
 
     @property
     def get_delete(self) -> str:
-        """
-            Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
-        """
+        """Метод отдает модалку на удаление обьекта"""
         return render_block(
             environment=environment,
             template_name=f'line/modal.html',
@@ -488,9 +479,7 @@ class Line(BaseModel):
 
     @property
     def get_create(self) -> str:
-        """
-            Метод отдает создать схему , те столбцы с типами для HTMX шаблонов
-        """
+        """Метод отдает модалку на создание нового обьекта"""
         return render_block(
             environment=environment,
             template_name=f'line/modal.html',
@@ -505,22 +494,21 @@ class FilterLine(Line):
 
 
 class Lines(BaseModel):
-    """
-        Делаем класс похожий на List и уже работаем с ним
-    """
+    """Делаем класс похожий на List и уже работаем с ним"""
     line_header: Line
     line_new: Line
     lines: list['Line'] = []
     vars: Optional[dict] = {}
-
 
     def __bool__(self):
         if not self.lines:
             return False
         else:
             return True
+
     @property
     def as_table_form(self):
+        """Метод отдает список обьектов как таблицу на редактирование"""
         rendered_html = ''
         for i, line in enumerate(self.lines):
             if i == len(self.lines) - 1:
@@ -530,6 +518,7 @@ class Lines(BaseModel):
 
     @property
     def as_table_view(self):
+        """Метод отдает список обьектов как таблицу на просмотр"""
         rendered_html = ''
         for i, line in enumerate(self.lines):
             if i == len(self.lines) - 1:
@@ -544,26 +533,25 @@ class Lines(BaseModel):
 
 class ClassView(AsyncObj, FieldFields):
     """
-        Класс управление собирания таблиц, форм, строчек и тд связанных с HTMX
+        Классконструктор модели для манипулирование уже их UI HTMX
     """
     request: Request  # Реквест - TODO: надо потом убрать
     model: Model  # Модель данных
     params: Optional[QueryParams] | dict | None  # Параметры на вхрде
     lines: Lines  # Список обьектов
     line: Line  # Заголовок ( те по сути схема )
-    subline: Line  # Заголовок ( те по сути схема )
     new: Line  # Новый обьект, формируется
-    action_line: Optional[Line] = None
-    action_lines: Optional[Lines] = None
-    filter: FilterLine
+    filter: FilterLine  # Схема фильтра модели
+    action_line: Optional[Line] = None  # Если конструктор выступает в роли Экшена
+    action_lines: Optional[Lines] = None  # Если конструктор выступает в роли Экшена
     cursor: int = 0  # Курсор текущей остановки
     exclude: Optional[list] = [None]  # Исключаемые солбцы
     join_related: Optional[bool] = True  # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
     sort: Optional[dict] = {}  # Правила сортировки
-    key: str  # Префикс - TODO: Перейти на имя модели
+    key: str  # Ключ конструктора
     actions: False  # Доступные Методы модели
-    is_rel: bool = False
+    is_rel: bool = False  # True, если
 
     async def __ainit__(self,
                         request,
@@ -622,9 +610,7 @@ class ClassView(AsyncObj, FieldFields):
             await self.init()
 
     async def init(self, params: dict = None, join_related: bool = True):
-        """
-            Майнинг данных для класса
-        """
+        """Майнинг данных по params"""
 
         lines, self.cursor = await self._get_data(
             schema=self.model.schemas.get,
@@ -632,8 +618,15 @@ class ClassView(AsyncObj, FieldFields):
             join_related=join_related or self.join_related,
             join_field=self.join_fields,
         )
-        self.lines.lines=lines
+        self.lines.lines = lines
         self._sort_columns()
+
+    def _sort_columns(self):
+        if self.lines:
+            ...
+            # sorted(self.line.fields.items(), key=lambda x: x[1].sort_idx)
+            for line in self.lines:
+                ...  # line.fields.sort(key=lambda x: x.sort_idx)
 
     def _get_view_vars_by_fieldinfo(self, fielinfo: FieldInfo = None):
         if not fielinfo:
@@ -659,9 +652,10 @@ class ClassView(AsyncObj, FieldFields):
         })
 
     def _get_view_vars(self, fieldname: str, is_filter: bool, schema: BaseModel):
+        """Костыльный метод собирания ViewVars"""
         if schema and issubclass(schema, ActionBaseSchame):
             default_fieldinfo = schema.model_fields.get(fieldname)
-            create_fieldinfo = update_fieldinfo=get_fieldinfo=filter_fieldinfo = default_fieldinfo
+            create_fieldinfo = update_fieldinfo = get_fieldinfo = filter_fieldinfo = default_fieldinfo
         else:
             create_fieldinfo = self.model.schemas.create.model_fields.get(fieldname)
             update_fieldinfo = self.model.schemas.update.model_fields.get(fieldname)
@@ -725,7 +719,7 @@ class ClassView(AsyncObj, FieldFields):
 
     async def _get_field(self, line: Line, field_name: str, schema: BaseModel, **kwargs):
         """
-        Для шаблонизатора распознаем тип для удобства HTMX (универсальные компоненты)
+            Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
         fielinfo = schema.model_fields[field_name]
         res = ''
@@ -772,8 +766,6 @@ class ClassView(AsyncObj, FieldFields):
             elif model_name != self.model.name:
                 model = self.env[model_name]
             assert model, f'Model for field {field_name} is not defined'
-        if field_name == 'move_list_rel':
-            a=1
         field = Field(**{
             **self._get_view_vars(field_name, is_filter, schema),
             'is_filter': is_filter,
@@ -790,9 +782,7 @@ class ClassView(AsyncObj, FieldFields):
         return field
 
     async def _get_schema_fields(self, line, schema: BaseModel, **kwargs):
-        """
-            Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2
-        """
+        """Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2"""
         fields = {}
         field_class = Fields()
         exclude = kwargs.get('exclude') or self.exclude or []
@@ -823,7 +813,6 @@ class ClassView(AsyncObj, FieldFields):
             setattr(field_class, field_name, field)
         return field_class
 
-    @timed
     async def _get_line(self, schema: BaseModel, type: LineType, **kwargs) -> Line:
         key = kwargs.get('key') or self.key
         id = kwargs.get('model_id')
@@ -843,7 +832,6 @@ class ClassView(AsyncObj, FieldFields):
             fields=fields,
             id=id,
             actions=self.actions,
-            is_inline=self.is_inline,
             class_key=key,
             is_rel=self.is_rel
         )
@@ -857,55 +845,6 @@ class ClassView(AsyncObj, FieldFields):
         line.fields = fields
         return line
 
-    @property
-    def as_filter(self) -> str:
-        """
-            Метод отдает фильтр , те столбцы с типами для HTMX шаблонов
-        """
-        return render_block(
-            environment=environment, template_name=f'cls/filter.html',
-            block_name='filter', method=MethodType.UPDATE, view=self
-        )
-
-    async def get_link_view(self, model_id: uuid.UUID, **kwargs) -> str:
-        """
-            По id забираем модельку
-        """
-        kwargs.update({'type': 'view'})
-        params = {'id__in': model_id}
-        lines, _ = await self._get_data(
-            params=params,
-            schema=self.model.schemas.get,
-            join_related=False,
-        )
-        assert len(lines) == 1 or 0, f'Model: {self.model.name}, params: {params}'
-        return render_block(
-            environment=environment,
-            template_name=f'cls/link.html',
-            block_name='view',
-            line=lines[0]
-        )
-
-    @property
-    def as_table(self):
-        """
-            Метод отдает Таблицу с хидером,
-        """
-        return render_block(
-            environment=environment, template_name=f'cls/table.html',
-            block_name='as_table', method=MethodType.GET, cls=self
-        )
-
-    @property
-    def as_table_form(self):
-        """
-            Метод отдает Таблицу с хидером,
-        """
-        return render_block(
-            environment=environment, template_name=f'cls/table.html',
-            block_name='as_table', method=MethodType.UPDATE, cls=self
-        )
-
     @timed
     async def _get_data(
             self,
@@ -917,7 +856,7 @@ class ClassView(AsyncObj, FieldFields):
             **kwargs
     ):
         """
-            Метод собирает данные для модели
+            Метод собирает данные для конструктора модели
         """
         time_start = datetime.datetime.now()
         logging.info(f"_GET_DATA START: {time_start}")
@@ -969,12 +908,12 @@ class ClassView(AsyncObj, FieldFields):
                         key=col.key,
                         force_init=False,
                         is_rel=True
-                    )#
+                    )  #
                     if col.val:
                         sub_lines, _ = await submodel._get_data(data=col.val, join_related=False)
                         submodel.lines.lines = sub_lines
                     col.lines = submodel.lines
-                    #col.line = submodel.line
+                    # col.line = submodel.line
 
             lines.append(line_copied)
         logging.info(f"_GET_DATA LINES SERIALIZE: {datetime.datetime.now() - time_start}")
@@ -1035,15 +974,50 @@ class ClassView(AsyncObj, FieldFields):
                         _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
         return lines, cursor
 
-    def _sort_columns(self):
-        if self.lines:
-            ...
-            # sorted(self.line.fields.items(), key=lambda x: x[1].sort_idx)
-            for line in self.lines:
-                ...  # line.fields.sort(key=lambda x: x.sort_idx)
+    @property
+    def as_filter(self) -> str:
+        """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
+        return render_block(
+            environment=environment, template_name=f'cls/filter.html',
+            block_name='filter', method=MethodType.UPDATE, view=self
+        )
+
+    async def get_link_view(self, model_id: uuid.UUID, **kwargs) -> str:
+        """ Отдает ссылку на основе ID модели """
+        kwargs.update({'type': 'view'})
+        params = {'id__in': model_id}
+        lines, _ = await self._get_data(
+            params=params,
+            schema=self.model.schemas.get,
+            join_related=False,
+        )
+        assert len(lines) == 1 or 0, f'Model: {self.model.name}, params: {params}'
+        return render_block(
+            environment=environment,
+            template_name=f'cls/link.html',
+            block_name='view',
+            line=lines[0]
+        )
+
+    @property
+    def as_table(self):
+        """Метод отдает Таблицу с хидером на просмотр"""
+        return render_block(
+            environment=environment, template_name=f'cls/table.html',
+            block_name='as_table', method=MethodType.GET, cls=self
+        )
+
+    @property
+    def as_table_form(self):
+        """Метод отдает Таблицу с хидером на редакетирование"""
+        return render_block(
+            environment=environment, template_name=f'cls/table.html',
+            block_name='as_table', method=MethodType.UPDATE, cls=self
+        )
 
     @property
     def as_table_widget(self):
+        """Отдает виджет HTMX для построение таблицы"""
         return render_block(
             environment=environment,
             template_name=f'cls/table.html',
@@ -1054,6 +1028,7 @@ class ClassView(AsyncObj, FieldFields):
 
     @property
     def as_filter_widget(self):
+        """Отдает виджет HTMX для построение фильтра"""
         return render_block(
             environment=environment,
             template_name=f'cls/filter.html',
@@ -1063,6 +1038,7 @@ class ClassView(AsyncObj, FieldFields):
 
     @property
     def as_header_widget(self):
+        """Отдает виджет HTMX для построения заголовка страницы обьекта"""
         return render_block(
             environment=environment,
             template_name=f'cls/header.html',
@@ -1072,6 +1048,7 @@ class ClassView(AsyncObj, FieldFields):
 
     @property
     def button_create(self):
+        """Отдает кнопку для создания нового обьекта"""
         try:
             rendered_html = render_block(
                 environment=environment,
@@ -1084,6 +1061,7 @@ class ClassView(AsyncObj, FieldFields):
         return rendered_html
 
     def send_message(self, message: str):
+        """Отправить пользователю сообщение """
         return render_block(
             environment=environment,
             template_name=f'components/message.html',
