@@ -43,7 +43,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
             raise ModuleException(
                 status_code=406,
                 enum=SuggestErrors.SUGGEST_INVALID_VALUE,
-                message=str(e)
+                message=str(e)#
             )
         for suggest_entity in suggest_entities:
             if suggest_entity.status == SuggestStatus.DONE:
