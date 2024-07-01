@@ -16,7 +16,7 @@
 <div class="card">
     <div class="card-body">
         <div class="row g-3">
-            {% for field_name, field in view.filter.fields %}
+            {% for field_name, field in view.lines.line_filter.fields %}
                 {% if field.field_name != 'order_by' %}
                     <div class="col-xxl-2 col-sm-4">
                         {{ field.as_form|safe }}

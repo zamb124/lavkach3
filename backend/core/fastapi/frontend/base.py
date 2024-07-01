@@ -143,7 +143,8 @@ async def table(request: Request, schema: TableSchema):
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}
 
-    cls = await ClassView(request, params=qp, model=schema.model, key=schema.key, force_init=True)
+    cls = await ClassView(request, model=schema.model, key=schema.key)
+    await cls.init(params=qp, join_related=False)
     if request.query_params.get('edit'):
         return cls.as_table_form
     else:
@@ -187,7 +188,6 @@ async def model_id(request: Request, schema: ModelSchema):
     """
      отдает простой контрол для чтения
     """
-    form_data = await request.json()
     cls = await ClassView(request, schema.model, force_init=False)
     link_view = await cls.get_link_view(model_id=schema.id)
     return link_view

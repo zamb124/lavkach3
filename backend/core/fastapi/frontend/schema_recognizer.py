@@ -8,7 +8,7 @@ from collections import defaultdict
 from enum import Enum
 from inspect import isclass
 from types import UnionType
-from typing import Optional, Any, get_args, get_origin, Annotated, Union
+from typing import Optional, Any, get_args, get_origin, Annotated, Union, Iterable
 
 from fastapi import HTTPException
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -20,7 +20,7 @@ from pydantic.fields import FieldInfo
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
-from core.env import Model
+from core.env import Model, Env
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import ActionBaseSchame
 from core.utils.timeit import timed
@@ -167,8 +167,6 @@ def get_types(annotation, _class=[]):
 
 class FieldFields:
     model_name: str  # Имя поля
-    line: 'Line'  # Какому обьекту принадлежит
-    lines: 'Lines'  # Есои имеет под обьекты - релевантно если поле list_rel
     vars: Optional[dict] = None  # Переменные если нужно передать контекст
 
 
@@ -329,19 +327,20 @@ class Line(BaseModel):
     """
         Обертка для обьекта
     """
-    type: LineType  # Тип поля СМ LineType
-    model_name: str  # Имя модели
-    schema: Any  # Схема обьекта
-    actions: dict  # Доступные методы обьекта
-    fields: Optional[Fields] = None  # Поля обьекта
-    id: Optional[uuid.UUID] = None  # ID обьекта (если есть)
-    lsn: Optional[int] = None  # LSN обьекта (если есть)
-    vars: Optional[dict] = None  # vars обьекта (если есть)
+    type: LineType                          # Тип поля СМ LineType
+    lines: 'Lines'
+    model_name: str                         # Имя модели
+    schema: Any                             # Схема обьекта
+    actions: dict                           # Доступные методы обьекта
+    fields: Optional[Fields] = None         # Поля обьекта
+    id: Optional[uuid.UUID] = None          # ID обьекта (если есть)
+    lsn: Optional[int] = None               # LSN обьекта (если есть)
+    vars: Optional[dict] = None             # vars обьекта (если есть)
     company_id: Optional[uuid.UUID] = None  # Компания обьекта (если есть обьект)
-    display_title: Optional[str] = None  # Title (Поле title, или Компьют поле)
-    is_last: bool = False  # True Если обьект последний в Lines
-    class_key: str  # Уникальный ключ конструктора
-    is_rel: bool = False  # True если обьек является relation от поля родителя
+    display_title: Optional[str] = None     # Title (Поле title, или Компьют поле)
+    is_last: bool = False                   # True Если обьект последний в Lines
+    class_key: str                          # Уникальный ключ конструктора
+    is_rel: bool = False                    # True если обьек является relation от поля родителя
 
     @property
     def key(self):
@@ -356,13 +355,15 @@ class Line(BaseModel):
             key = self.type.value
         return f'{self.class_key}--{key}'
 
+    @timed
     def _change_assign_line(self):
-        "Присвоение нового обьекта Line'у"
+        """Присвоение нового обьекта Line'у"""
         for _, field in self.fields:
             field.line = self
 
+    @timed
     def line_copy(self, type=None):
-        "Метод копирования лайна"
+        """Метод копирования лайна"""
         new_line = self.copy(deep=True)
         if type:
             new_line.type = type
@@ -495,16 +496,144 @@ class FilterLine(Line):
 
 class Lines(BaseModel):
     """Делаем класс похожий на List и уже работаем с ним"""
-    line_header: Line
-    line_new: Line
+    parent_field: Optional[Any] = None
+    class_key: Optional[str]
+    line_header: Optional[Line] = None
+    line_new: Optional[Line] = None
+    line_filter: Optional[Line] = None
     lines: list['Line'] = []
     vars: Optional[dict] = {}
+
+    params: Optional[dict] = {}  # Параметры на вхрде
+    join_related: Optional[bool] = True  # Джойнить рилейшен столбцы
+    join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
+    @property
+    def key(self):
+        return self.parent_field.key if self.parent_field else self.class_key
 
     def __bool__(self):
         if not self.lines:
             return False
         else:
             return True
+
+    def __deepcopy__(self, memodict={}):
+        return self
+
+    @timed
+    async def _get_data(
+            self,
+            env: Env,
+            model: Model,
+            params: QueryParams | dict | None = None,
+            join_related: bool = True,
+            join_fields: list | None = None,
+            data: list | dict | None = None,
+            **kwargs
+    ):
+        """Метод собирает данные для конструктора модели"""
+        if not params:
+            params = self.params
+        if join_related:
+            self.join_related = join_related
+        if join_fields:
+            self.join_fields = join_fields or []
+        if not data:
+            async with model.adapter as a:
+                resp_data = await a.list(params=params)
+                data = resp_data['data']
+        await self.fill_lines(data, join_related, join_fields, env)
+
+    @timed
+    async def fill_lines(
+            self,
+            data: Iterable,
+            join_related: bool = False,
+            join_fields: list = None,
+            env: Env = None,
+    ):
+        if join_related and not env:
+            raise HTMXException(status_code=500, detail=f'Impossible join_related without env')
+        i = len(data)
+        for n, row in enumerate(data):
+            line_copied = self.line_header.line_copy(type=LineType.LINE)
+            line_copied.id = row['id']
+            line_copied.type = LineType.LINE
+            line_copied.is_last = True if i - 1 == n else False
+            line_copied.display_title = row.get('title')
+            line_copied.company_id = row.get('company_id')
+            line_copied.id = row.get('id')
+            line_copied.lsn = row.get('lsn')
+            for _, col in line_copied.fields:
+                col.val = row[col.field_name]
+                col.line = line_copied
+                if col.type in ('date', 'datetime'):
+                    if col.val:
+                        col.val = datetime.datetime.fromisoformat(col.val)
+                elif col.type == 'id':
+                    if not col.val:
+                        col.val = []
+                elif col.type == 'enum' and col.color_map and col.val:
+                    color_enum = col.enums(col.val)
+                    col.color = col.color_map.get(color_enum)
+                elif col.type.endswith('list_rel'):
+                    print(f'rel - {col.lines.line_header.model_name}')
+                    await col.lines.fill_lines(data=col.val, join_related=False)
+            self.lines.append(line_copied)
+
+        if join_related:
+            missing_fields = defaultdict(list)
+            for _line in self.lines:
+                """Достаем все релейтед обьекты у которых модуль отличается"""
+                for field_name, field in _line.fields:
+                    if field.type in ('uuid',):
+                        # if field.widget.get('table'):  # TODO: может все надо а не ток table
+                        if not join_fields:
+                            missing_fields[field.field_name].append((field.val, field))
+                        elif field.field_name in join_fields:
+                            missing_fields[field.field_name].append((field.val, field))
+            to_serialize = []
+            for miss_key, miss_value in missing_fields.items():
+                # _data = []
+                _vals, _fields = [i[0] for i in miss_value], [i[1] for i in miss_value]
+                miss_value_str = ''
+                _corutine_data = None
+                if isinstance(_vals, list):
+                    miss_value_str = ','.join([i for i in _vals if i])
+                if miss_value_str:
+                    qp = {'id__in': miss_value_str}
+                    _corutine_data = asyncio.create_task(env[_fields[0].model_name].adapter.list(params=qp))
+                to_serialize.append((_vals, _fields, _corutine_data))
+            for _vals, _fields, _corutine_data in to_serialize:
+                _join_lines = {}
+                if _corutine_data:
+                    _data = await _corutine_data
+                    _join_lines = {i['id']: i for i in _data['data']}
+                for _val, _field in zip(_vals, _fields):
+                    if isinstance(_val, list):
+                        _new_vals = []
+                        for _v in _val:
+                            __val = _join_lines.get(_v)
+                            if __val:
+                                _new_vals.append(__val)
+                        _field.val = _new_vals
+                    else:
+                        _field.val = _join_lines.get(_val)
+                    if _field.type == 'uuid':
+                        _field.type = 'rel'
+                    elif _field.type == 'list_uuid':
+                        _field.type = 'list_rel'
+                    else:
+                        raise HTMXException(
+                            status_code=500,
+                            detail=f'Wrong field name {_field.field_name} in table model {_field.model}'
+                        )
+
+            for col in missing_fields.keys():
+                for _field_name, _header_col in self.line_header.fields:
+                    if col == _field_name:
+                        _header_col.type = _header_col.type.replace('uuid', 'rel')
+                        _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
 
     @property
     def as_table_form(self):
@@ -538,16 +667,12 @@ class ClassView(AsyncObj, FieldFields):
     request: Request  # Реквест - TODO: надо потом убрать
     model: Model  # Модель данных
     params: Optional[QueryParams] | dict | None  # Параметры на вхрде
-    lines: Lines  # Список обьектов
-    line: Line  # Заголовок ( те по сути схема )
-    new: Line  # Новый обьект, формируется
-    filter: FilterLine  # Схема фильтра модели
-    action_line: Optional[Line] = None  # Если конструктор выступает в роли Экшена
-    action_lines: Optional[Lines] = None  # Если конструктор выступает в роли Экшена
-    cursor: int = 0  # Курсор текущей остановки
-    exclude: Optional[list] = [None]  # Исключаемые солбцы
     join_related: Optional[bool] = True  # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
+    lines: Lines  # Список обьектов
+    action_line: Optional[Line] = None  # Если конструктор выступает в роли Экшена
+    action_lines: Optional[Lines] = None  # Если конструктор выступает в роли Экшена
+    exclude: Optional[list] = [None]  # Исключаемые солбцы
     sort: Optional[dict] = {}  # Правила сортировки
     key: str  # Ключ конструктора
     actions: False  # Доступные Методы модели
@@ -594,31 +719,36 @@ class ClassView(AsyncObj, FieldFields):
             if config_sort:
                 self.sort = {v: i for i, v in enumerate(config_sort)}
         self.is_inline = is_inline
-        self.line = await self._get_line(
+        self.lines = Lines(class_key=self.key)
+        line_header = await self._get_line(
             schema=self.model.schemas.get,
             type=LineType.HEADER,
             class_key=self.key,
             view=self
         )
-        self.new = self.line.line_copy(type=LineType.NEW)
-        self.filter = await self._get_line(
+        self.lines.line_header = line_header
+        line_new = self.lines.line_header.line_copy(type=LineType.NEW)
+        self.lines.line_new = line_new
+        line_filter = await self._get_line(
             schema=self.model.schemas.filter,
             type=LineType.FILTER
         )
-        self.lines = Lines(line_header=self.line, line_new=self.new)
+        self.lines.line_filter = line_filter
+
         if force_init:
             await self.init()
 
     async def init(self, params: dict = None, join_related: bool = True):
         """Майнинг данных по params"""
 
-        lines, self.cursor = await self._get_data(
+        await self.lines._get_data(
+            env=self.env,
+            model=self.model,
             schema=self.model.schemas.get,
             params=params or self.params,
             join_related=join_related or self.join_related,
-            join_field=self.join_fields,
+            join_fields=self.join_fields,
         )
-        self.lines.lines = lines
         self._sort_columns()
 
     def _sort_columns(self):
@@ -766,6 +896,8 @@ class ClassView(AsyncObj, FieldFields):
             elif model_name != self.model.name:
                 model = self.env[model_name]
             assert model, f'Model for field {field_name} is not defined'
+        if field_name == 'move_list_rel':
+            a = 1
         field = Field(**{
             **self._get_view_vars(field_name, is_filter, schema),
             'is_filter': is_filter,
@@ -779,6 +911,8 @@ class ClassView(AsyncObj, FieldFields):
             'line': line,
             'lines': lines
         })
+        if lines is not None:
+            lines.parent_field = field
         return field
 
     async def _get_schema_fields(self, line, schema: BaseModel, **kwargs):
@@ -813,7 +947,7 @@ class ClassView(AsyncObj, FieldFields):
             setattr(field_class, field_name, field)
         return field_class
 
-    async def _get_line(self, schema: BaseModel, type: LineType, **kwargs) -> Line:
+    async def _get_line(self, schema: BaseModel, type: LineType, lines: Lines = None, **kwargs) -> Line:
         key = kwargs.get('key') or self.key
         id = kwargs.get('model_id')
         lsn = kwargs.get('lsn')
@@ -822,6 +956,7 @@ class ClassView(AsyncObj, FieldFields):
         company_id = kwargs.get('company_id')
         fields = kwargs.get('fields')
         line = Line(
+            lines=lines or self.lines,
             type=type,
             schema=schema,
             model_name=self.model.name,
@@ -845,134 +980,7 @@ class ClassView(AsyncObj, FieldFields):
         line.fields = fields
         return line
 
-    @timed
-    async def _get_data(
-            self,
-            params: QueryParams | dict | None = None,
-            join_related: bool = True,
-            join_field: list | None = None,
-            line: Line = None,
-            data: list | dict | None = None,
-            **kwargs
-    ):
-        """
-            Метод собирает данные для конструктора модели
-        """
-        time_start = datetime.datetime.now()
-        logging.info(f"_GET_DATA START: {time_start}")
-        if not params:
-            params = self.params
-        if join_related:
-            self.join_related = join_related
-        if join_field:
-            self.join_fields = join_field or []
-        model = kwargs.get('model') or self.model
-        line = line or self.line
-        cursor = 0
-        if not data:
-            async with model.adapter as a:
-                resp_data = await a.list(params=params)
-                cursor = resp_data['cursor']
-                data = resp_data['data']
-            logging.info(f"_GET_DATA END REQUEST: {datetime.datetime.now() - time_start}")
-        if not data:
-            return [], 0
-        lines = []
-        i = len(data)
-        for n, row in enumerate(data):
-            line_copied = line.copy(deep=True)
-            line_copied.id = row['id']
-            line_copied.type = LineType.LINE
-            line_copied.is_last = True if i - 1 == n else False
-            line_copied.display_title = row.get('title')
-            line_copied.company_id = row.get('company_id')
-            line_copied.id = row.get('id')
-            line_copied.lsn = row.get('lsn')
-            line_copied.actions = self.actions
-            for _, col in line_copied.fields:
-                col.val = row[col.field_name]
-                col.line = line_copied
-                if col.type in ('date', 'datetime'):
-                    if col.val:
-                        col.val = datetime.datetime.fromisoformat(col.val)
-                elif col.type == 'id':
-                    if not col.val:
-                        col.val = []
-                elif col.type == 'enum' and col.color_map and col.val:
-                    color_enum = col.enums(col.val)
-                    col.color = col.color_map.get(color_enum)
-                elif col.type.endswith('list_rel'):
-                    submodel = await ClassView(
-                        request=self.request,
-                        model=col.model_name,
-                        key=col.key,
-                        force_init=False,
-                        is_rel=True
-                    )  #
-                    if col.val:
-                        sub_lines, _ = await submodel._get_data(data=col.val, join_related=False)
-                        submodel.lines.lines = sub_lines
-                    col.lines = submodel.lines
-                    # col.line = submodel.line
 
-            lines.append(line_copied)
-        logging.info(f"_GET_DATA LINES SERIALIZE: {datetime.datetime.now() - time_start}")
-        ### Если необходимо сджойнить
-        # if False:
-        if join_related:
-            missing_fields = defaultdict(list)
-            for _line in lines:
-                """Достаем все релейтед обьекты у которых модуль отличается"""
-                for field_name, field in _line.fields:
-                    if field.type in ('uuid',):
-                        # if field.widget.get('table'):  # TODO: может все надо а не ток table
-                        if not self.join_fields:
-                            missing_fields[field.field_name].append((field.val, field))
-                        elif field.field_name in self.join_fields:
-                            missing_fields[field.field_name].append((field.val, field))
-            to_serialize = []
-            for miss_key, miss_value in missing_fields.items():
-                # _data = []
-                _vals, _fields = [i[0] for i in miss_value], [i[1] for i in miss_value]
-                miss_value_str = ''
-                _corutine_data = None
-                if isinstance(_vals, list):
-                    miss_value_str = ','.join([i for i in _vals if i])
-                if miss_value_str:
-                    qp = {'id__in': miss_value_str}
-                    _corutine_data = asyncio.create_task(self.env[_fields[0].model_name].adapter.list(params=qp))
-                    # _join_lines = {i['id']: i for i in _data['data']}
-                to_serialize.append((_vals, _fields, _corutine_data))
-            logging.info(f"_GET_DATA GET CORUTINE CREATED: {datetime.datetime.now() - time_start}")
-            for _vals, _fields, _corutine_data in to_serialize:
-                _join_lines = {}
-                if _corutine_data:
-                    _data = await _corutine_data
-                    _join_lines = {i['id']: i for i in _data['data']}
-                for _val, _field in zip(_vals, _fields):
-                    if isinstance(_val, list):
-                        _new_vals = []
-                        for _v in _val:
-                            __val = _join_lines.get(_v)
-                            if __val:
-                                _new_vals.append(__val)
-                        _field.val = _new_vals
-                    else:
-                        _field.val = _join_lines.get(_val)
-                    if _field.type == 'uuid':
-                        _field.type = 'rel'
-                    elif _field.type == 'list_uuid':
-                        _field.type = 'list_rel'
-                    else:
-                        raise HTMXException(status_code=500,
-                                            detail=f'Wrong field name {_field.field_name} in table model {_field.model}')
-            logging.info(f"_GET_DATA GET CORUTINE REALEASE: {datetime.datetime.now() - time_start}")
-            for col in missing_fields.keys():
-                for _field_name, _header_col in self.line.fields:
-                    if col == _field_name:
-                        _header_col.type = _header_col.type.replace('uuid', 'rel')
-                        _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
-        return lines, cursor
 
     @property
     def as_filter(self) -> str:
@@ -991,12 +999,12 @@ class ClassView(AsyncObj, FieldFields):
             schema=self.model.schemas.get,
             join_related=False,
         )
-        assert len(lines) == 1 or 0, f'Model: {self.model.name}, params: {params}'
+        assert len(self.lines.lines) == 1 or 0, f'Model: {self.model.name}, params: {params}'
         return render_block(
             environment=environment,
             template_name=f'cls/link.html',
             block_name='view',
-            line=lines[0]
+            line=self.lines.lines[0]
         )
 
     @property
@@ -1087,19 +1095,19 @@ class ClassView(AsyncObj, FieldFields):
         return self.render('kanban')
 
     async def get_action(self, action: str, ids: list[uuid.UUID], schema: BaseModel) -> str:
-        """
-            Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов
-        """
+        """Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов"""
         data = {k: ids if k == 'ids' else None for k, v in schema.model_fields.items()}
         self.action_line = await self._get_line(schema=schema, type=LineType.ACTION)
-        lines, _ = await self._get_data(
+        self.action_lines = Lines(class_key=self.key,  line_header=self.action_line, line_new=self.action_line)
+        await self.action_lines._get_data(
+            self.env,
+            self.model,
             params={},
             data=[data],
             key='action--0',
-            line=self.action_line,
             join_related=False,
         )
-        self.action_lines = Lines(lines=lines, line_header=self.line, line_new=self.new)
+
         return render_block(
             environment=environment,
             template_name=f'cls/action.html',

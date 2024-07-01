@@ -37,11 +37,19 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
     @permit('suggest_confirm')
     async def suggest_confirm(self, suggest_ids: List[uuid.UUID], value, commit=True) -> Optional[ModelType]:
         suggest_entities = await self.list({'id__in': suggest_ids}, 999)
+        try:
+            value = float(value)
+        except ValueError as e:
+            raise ModuleException(
+                status_code=406,
+                enum=SuggestErrors.SUGGEST_INVALID_VALUE,
+                message=str(e)
+            )
         for suggest_entity in suggest_entities:
             if suggest_entity.status == SuggestStatus.DONE:
                 raise ModuleException(
                     status_code=406,
-                    enum=SuggestErrors.SUGGEST_ALREADY_DONE,
+                    enum=SuggestErrors.SUGGEST_ALREADY_DONE
                 )
             elif suggest_entity.type == SuggestType.IN_QUANTITY:
                 val_in_cleaned = float(value)
