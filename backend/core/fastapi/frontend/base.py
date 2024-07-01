@@ -247,7 +247,7 @@ async def action(request: Request, schema: ActionSchema):
     cls = await ClassView(request, schema.model)
     func = getattr(cls.model.adapter, schema.action)
     result = []
-    if schema.schema and schema.method =='update':
+    if schema.commit and schema.method =='update':
         action_schema = cls.actions[schema.action]['schema']
         if data := schema.model_extra:
             _json = {}

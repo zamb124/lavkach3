@@ -17,7 +17,8 @@
                 "model": "{{ cls.model.name }}",
                 "action": "{{ action }}",
                 "key": "{{ cls.key }}",
-                "method": "update"
+                "method": "update",
+                "commit": "true"
               }'
                 >
                     <div class="modal-body text-center p-5">
@@ -27,6 +28,7 @@
                                 style="width:150px;height:150px">
                         </lord-icon>
                         <div class="card">
+                            <h3 class="card-header" data-key="t-{{ action }}"> {{ action }} </h3>
                             <div class="card-body">
                             {% for line in cls.action_lines.lines %}
                                 <div class="row">
@@ -37,7 +39,7 @@
                                         {% if loop.index0 % 3 == 0 %}
                                             <div class="row">
                                         {% endif %}
-                                    <div class="col" {% if field.hidden %} style="display: none" {% endif %}>
+                                    <div class="col" {% if field.field_name in ('id', 'ids', 'lsn', 'vars') %} style="display: none" {% endif %}>
                                         {{ field.label|safe }}
                                         {{ field.as_form|safe }}
                                     </div>
