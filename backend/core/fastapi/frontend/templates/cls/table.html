@@ -72,7 +72,7 @@
                                hx-ext="json-enc"
                                hx-include="none"
                                hx-target="#{{ 'tbody-table' ~'--'~ cls.key }}"
-                               hx-swap="beforeend"
+                               hx-swap="beforeend transition: true"
                                hx-params="model,key,method"
                                hx-post="/base/table/line/add"
                                hx-vals='{

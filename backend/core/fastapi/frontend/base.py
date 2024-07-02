@@ -1,4 +1,3 @@
-import json
 import uuid
 from enum import Enum
 from typing import Optional, Any
@@ -15,10 +14,8 @@ from core.fastapi.frontend.schema_recognizer import ClassView
 from core.fastapi.frontend.uttils import clean_filter
 
 
-
-
 class Method(str, Enum):
-    GET:    str = 'get'
+    GET: str = 'get'
     CREATE: str = 'create'
     UPDATE: str = 'update'
     DELETE: str = 'delete'
@@ -35,7 +32,6 @@ class BaseSchema(BaseModel):
     model: str
     key: str
     method: Method
-
 
 
 router = APIRouter(
@@ -70,7 +66,7 @@ class SearchSchema(BaseSchema):
             Так же убираем все пустые params
         """
 
-        if f:=value.get('filter'):
+        if f := value.get('filter'):
             if isinstance(f, str):
                 try:
                     value['filter'] = eval(f)
@@ -200,11 +196,10 @@ class ModalSchema(BaseSchema):
         extra = 'allow'
 
 
-
 @router.post("/modal", response_class=HTMLResponse)
 async def modal(request: Request, schema: ModalSchema):
     """
-     Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
+     Универсальный запрос модалки, который отдает форму модели
     """
     cls = await ClassView(request, schema.model, key=schema.key, force_init=False)
     if data := schema.model_extra:
@@ -234,9 +229,9 @@ class ActionSchema(BaseSchema):
     schema: Any = None
     commit: Optional[bool] = False
 
-
     class Config:
         extra = 'allow'
+
 
 @router.post("/action", response_class=HTMLResponse)
 async def action(request: Request, schema: ActionSchema):
@@ -246,7 +241,7 @@ async def action(request: Request, schema: ActionSchema):
     cls = await ClassView(request, schema.model)
     func = getattr(cls.model.adapter, schema.action)
     result = []
-    if schema.commit and schema.method =='update':
+    if schema.commit and schema.method == 'update':
         action_schema = cls.actions[schema.action]['schema']
         if data := schema.model_extra:
             _json = {}
