@@ -50,7 +50,7 @@ class OrderCreateScheme(OrderBaseScheme):
 
 class OrderScheme(OrderCreateScheme, TimeStampScheme, CustomBaseModel):
     lsn: int = Field(title='LSN', readonly=True)
-    id: UUID4 = Field(title='ID', readonly=True)
+    id: UUID4
     company_id: UUID = Field(title='Company', model='company')
     vars: Optional[dict] = None
     number: str = Field(title='Order #', table=True, form=True, description="Internal number of order")

@@ -56,7 +56,7 @@ class Model:
         self.domain = domain
         self.schemas = Schemas(**schemas)
         self.model = model
-        self.sort = sort
+        self.sort = sort if sort else ['id', 'created_at', 'updated_at']
         self.cache_strategy = cache_strategy
         self.actions = actions.get(name, {})
     def __copy__(self):

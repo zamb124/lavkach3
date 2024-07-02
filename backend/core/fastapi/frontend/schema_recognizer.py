@@ -911,7 +911,7 @@ class ClassView(AsyncObj, FieldFields):
             'model_name': model.name,
             'domain_name': model.domain.name,
             'enums': enums,
-            'sort_idx': self.sort.get(field_name, 999),
+            'sort_idx': self.sort.get(field_name, 1),
             'line': line,
             'lines': lines
         })

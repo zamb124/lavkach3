@@ -8,10 +8,10 @@
     <a href="#"
        hx-params="model,method,id,key,backdrop"
        hx-trigger="click"
-       hx-target="#modal"
+       hx-target="body"
        hx-ext="json-enc"
        hx-post="/base/modal"
-       hx-swap="innerHTML transition:true"
+       hx-swap="outerHTML transition:true"
        hx-vals='{
 "model": "{{ line.model_name }}",
 "method": "get",
@@ -31,9 +31,9 @@
             href="#"
             hx-params="model,method,id,key,backdrop"
             hx-trigger="click"
-            hx-target="#modal"
+            hx-target="body"
             hx-ext="json-enc"
-            hx-swap="innerHTML transition:true"
+            hx-swap="afterend transition:true"
             hx-post="/base/modal"
             hx-vals='{
 "model": "{{ line.model_name }}",
@@ -53,9 +53,9 @@
     <a href="#"
        hx-params="model,method,key,backdrop"
        hx-trigger="click"
-       hx-target="#modal"
+       hx-target="body"
        hx-ext="json-enc"
-       hx-swap="innerHTML transition:true"
+       hx-swap="afterend transition:true"
        hx-post="/base/modal"
        hx-vals='{
 "model": "{{ line.model_name }}",
@@ -75,9 +75,9 @@
     <a href="#"
        hx-params="model,method,id,key,target_id,backdrop"
        hx-trigger="click"
-       hx-target="#modal"
+       hx-target="body"
        hx-ext="json-enc"
-       hx-swap="innerHTML transition:true"
+       hx-swap="afterend transition:true"
        hx-post="/base/modal"
        hx-vals='{
 "model": "{{ line.model_name }}",
@@ -167,9 +167,9 @@
             </div>
             <div>
                 <ul class="list-inline text-center position-relative">
-                    <li class="list-inline-item view-btn" title="View">
-                        {{ line.button_view }}
-                    </li>
+{#                    <li class="list-inline-item view-btn" title="View">#}
+{#                        {{ line.button_view }}#}
+{#                    </li>#}
                     <li class="list-inline-item edit" title="Edit">
                         {{ line.button_update }}
                     </li>

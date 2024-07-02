@@ -10,14 +10,21 @@
         >
 {% endblock %}
 {% block as_view %}
-    <input
-                class="form-control"
-                {% if field.get.required %} required {% endif %}
-                {% if field.get.readonly %}  readonly {% endif %}
-                {% if field.get.hidden %} hidden {% endif %}
-                name="{{ field.key }}"
-                placeholder="Enter {{ field.title }}"
-                value="{{ field.val if field.val else "" }}"
-        >
+    <a class="text-danger form-control " style="background-color: var(--vz-tertiary-bg);"
+           href="#"
+           hx-include="none"
+           hx-trigger="click"
+           hx-target="body"
+           hx-swap="afterend transition:true"
+           hx-ext="json-enc"
+           hx-post="/base/modal"
+           hx-vals='{
+"model": "{{ field.model_name }}",
+"method": "get",
+"id": "{{ field.line.id }}",
+"key": "{{ field.key }}"
+}'
+        >{{ field.line.display_title}}
+        </a>
 {% endblock %}
 
