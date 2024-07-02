@@ -2,9 +2,6 @@
 
 {% endblock %}
 {% block button_view %}
-    <script>
-        //hideModals()
-    </script>
     <a href="#"
        hx-params="model,method,id,key,backdrop"
        hx-trigger="click"
@@ -55,7 +52,7 @@
        hx-trigger="click"
        hx-target="#htmx_content"
        hx-ext="json-enc"
-       hx-swap="afterend transition:true"
+       hx-swap="beforeend transition:true"
        hx-post="/base/modal"
        hx-vals='{
 "model": "{{ line.model_name }}",
@@ -77,7 +74,7 @@
        hx-trigger="click"
        hx-target="#htmx_content"
        hx-ext="json-enc"
-       hx-swap="afterend transition:true"
+       hx-swap="beforeend transition:true"
        hx-post="/base/modal"
        hx-vals='{
 "model": "{{ line.model_name }}",

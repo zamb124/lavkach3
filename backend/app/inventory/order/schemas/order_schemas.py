@@ -58,7 +58,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme, CustomBaseModel):
     created_by: UUID = Field(title='Created By', table=True, model='user')
     edited_by: UUID = Field(title='Edit By', model='user')
     user_ids: Optional[list[UUID]] = Field(default=[], title='Users', form=True, model='user')
-    order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True)
+    order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True, readonly=True)
     move_list_rel: Optional[list[MoveScheme]] = Field(default=[], title='Order Movements', form=True)
     @computed_field
     def title(self) -> str:

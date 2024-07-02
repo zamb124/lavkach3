@@ -100,9 +100,11 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
                                         </button>
-                                        <button id="{{ 'submit'~line.key }}" type="submit" class="btn btn-success">
+                                        {% if method in ('create', 'update') %}
+                                            <button id="{{ 'submit'~line.key }}" type="submit" class="btn btn-success">
                                             Save
-                                        </button>
+                                            </button>
+                                        {% endif %}
 
                                     </div>
 

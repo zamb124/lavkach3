@@ -1,7 +1,7 @@
 {% block as_form %}
     <select class="uuid form-control is-valid text-start "
             id="{{ field.key }}"
-            {% if field.update.readonly %}disabled{% endif %}
+            {% if field.update.readonly %}readonly {% endif %}
             name="{{ field.key }}"
             {% if field.update.required %} required {% endif %}
             data-choices
@@ -11,13 +11,15 @@
         {% endif %}
     </select>
     <script>
-
         (async function () {
             let element = document.getElementById("{{ field.key }}");
             let choices = new Choices(element, {
                 placeholderValue: "Enter {{ field.update.title }}",
                 removeItemButton: true,
+                read_only: true,
             });
+
+
 
             async function searchChoices(value) {
                 try {

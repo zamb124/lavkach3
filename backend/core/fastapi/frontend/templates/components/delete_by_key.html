@@ -1,0 +1,12 @@
+{% block delete_by_key %}
+<script>
+var myToast = Toastify({
+ text: "Deleted",
+ duration: 3000,
+})
+myToast.showToast();
+
+document.getElementById("{{key}}").remove();
+
+</script>
+{% endblock %}

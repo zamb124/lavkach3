@@ -24,7 +24,7 @@
 {% block as_form %}
     <select class="uuid form-control is-valid text-start "
             id="{{ field.key }}"
-            {% if field.update.readonly %}disabled{% endif %}
+            {% if field.update.readonly %} readonly {% endif %}
             name="{{ field.key }}"
             {% if field.update.required %} required {% endif %}
             data-choices
@@ -40,6 +40,9 @@
                 placeholderValue: "Enter {{ field.update.title }}",
                 removeItemButton: true,
             });
+            {% if field.update.readonly %}
+                choices.disable()
+            {% endif %}
 
             async function searchChoices(value) {
                 try {

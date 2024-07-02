@@ -165,7 +165,7 @@ async def line(request: Request, schema: TableSchema):
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}
     cls = await ClassView(request, params=qp, model=schema.model, key=schema.key)
-    return cls.new.as_tr_add
+    return cls.lines.line_new.as_tr_add
 
 
 class ModelSchema(BaseSchema):
@@ -214,11 +214,17 @@ async def modal(request: Request, schema: ModalSchema):
             _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
         adapter_method = getattr(cls.model.adapter, schema.method.value)
         await adapter_method(id=schema.id, model=schema.model, json=_json)
+        if schema.method == 'delete':
+            return cls.delete_by_key(key=schema.key)
         return cls.send_message(f'{cls.model.name.capitalize()}: is {schema.method.capitalize()}')
     else:
         if schema.method == 'create':
             return getattr(cls.lines.line_new, f'get_{schema.method.value}')
         await cls.init(params={'id__in': schema.id})
+        if schema.method == 'delete' and not cls.lines:
+            return cls.delete_by_key(key=schema.key)
+        if not cls.lines:
+            return cls.send_message(f'Line is not ready')
         line = cls.lines.lines[0]
         return getattr(line, f'get_{schema.method.value}')
 

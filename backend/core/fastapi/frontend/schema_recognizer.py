@@ -352,7 +352,7 @@ class Line(BaseModel):
             key = id(self)
         else:
             key = self.type.value
-        return f'{self.class_key}--{key}'
+        return f'{self.lines.key}--{key}'
 
     @timed
     def _change_assign_line(self):
@@ -578,6 +578,7 @@ class Lines(BaseModel):
                     col.color = col.color_map.get(color_enum)
                 elif col.type.endswith('list_rel'):
                     print(f'rel - {col.lines.line_header.model_name}')
+                    col.lines.parent_field = col
                     await col.lines.fill_lines(data=col.val, join_related=False)
             self.lines.append(line_copied)
 
@@ -886,7 +887,7 @@ class ClassView(AsyncObj, FieldFields):
                 submodel = await ClassView(
                     request=self.request,
                     model=model_name,
-                    key=line.key,
+                    key=line.class_key,
                     force_init=False,
                     is_rel=True
                 )  #
@@ -915,8 +916,6 @@ class ClassView(AsyncObj, FieldFields):
             'line': line,
             'lines': lines
         })
-        if lines is not None:
-            lines.parent_field = field
         return field
 
     async def _get_schema_fields(self, line, schema: BaseModel, **kwargs):
@@ -1078,6 +1077,14 @@ class ClassView(AsyncObj, FieldFields):
             block_name='success',
             cls=self,
             message=message
+        )
+    def delete_by_key(self, key: str):
+        """Отправить пользователю сообщение """
+        return render_block(
+            environment=environment,
+            template_name=f'components/delete_by_key.html',
+            block_name='delete_by_key',
+            key=key,
         )
 
     @timed

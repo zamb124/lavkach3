@@ -3,7 +3,7 @@
             type="number"
             class="float form-control"
             name="{{ field.key }}"
-            {% if field.readonly %}disabled{% endif %}
+            {% if field.readonly %}readonly{% endif %}
             step="any"
             {% if field.required %}required {% endif %}
             placeholder="Enter {{ field.title }}"

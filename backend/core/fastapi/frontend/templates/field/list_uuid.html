@@ -2,7 +2,7 @@
     <select class="list-uuid form-control is-valid"
             id="{{ field.key }}"
             {% if field.update.required and not field.is_filter %} required {% endif %}
-            {% if field.update.readonly %} disabled {% endif %}
+            {% if field.update.readonly %} readonly {% endif %}
             name="{{ field.key }}"
             data-choices multiple
     >   {% if field.val %}
