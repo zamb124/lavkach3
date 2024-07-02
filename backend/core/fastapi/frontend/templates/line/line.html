@@ -8,10 +8,10 @@
     <a href="#"
        hx-params="model,method,id,key,backdrop"
        hx-trigger="click"
-       hx-target="body"
+       hx-target="#htmx_content"
        hx-ext="json-enc"
        hx-post="/base/modal"
-       hx-swap="outerHTML transition:true"
+       hx-swap="beforeend transition:true"
        hx-vals='{
 "model": "{{ line.model_name }}",
 "method": "get",
@@ -31,9 +31,9 @@
             href="#"
             hx-params="model,method,id,key,backdrop"
             hx-trigger="click"
-            hx-target="body"
+            hx-target="#htmx_content"
             hx-ext="json-enc"
-            hx-swap="afterend transition:true"
+            hx-swap="beforeend transition:true"
             hx-post="/base/modal"
             hx-vals='{
 "model": "{{ line.model_name }}",
@@ -53,7 +53,7 @@
     <a href="#"
        hx-params="model,method,key,backdrop"
        hx-trigger="click"
-       hx-target="body"
+       hx-target="#htmx_content"
        hx-ext="json-enc"
        hx-swap="afterend transition:true"
        hx-post="/base/modal"
@@ -75,7 +75,7 @@
     <a href="#"
        hx-params="model,method,id,key,target_id,backdrop"
        hx-trigger="click"
-       hx-target="body"
+       hx-target="#htmx_content"
        hx-ext="json-enc"
        hx-swap="afterend transition:true"
        hx-post="/base/modal"

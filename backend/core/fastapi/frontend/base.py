@@ -201,7 +201,7 @@ async def modal(request: Request, schema: ModalSchema):
     """
      Универсальный запрос модалки, который отдает форму модели
     """
-    cls = await ClassView(request, schema.model, key=schema.key, force_init=False)
+    cls = await ClassView(request, schema.model, force_init=False)
     if data := schema.model_extra:
         _json = {}
         data = clean_filter(data, schema.key)
