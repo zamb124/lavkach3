@@ -854,8 +854,6 @@ class ClassView(AsyncObj, FieldFields):
         """
             Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
-        if '_range' in field_name:
-            a=1
         fielinfo = schema.model_fields[field_name]
         res = ''
         enums = []
@@ -901,8 +899,6 @@ class ClassView(AsyncObj, FieldFields):
             elif model_name != self.model.name:
                 model = self.env[model_name]
             assert model, f'Model for field {field_name} is not defined'
-        if field_name == 'move_list_rel':
-            a = 1
         field = Field(**{
             **self._get_view_vars(field_name, is_filter, schema),
             'is_filter': is_filter,
@@ -924,7 +920,6 @@ class ClassView(AsyncObj, FieldFields):
         field_class = Fields()
         exclude = kwargs.get('exclude') or self.exclude or []
         exclude_add = []
-        type = kwargs.get('type')
         if issubclass(schema, Filter):
             for f, v in schema.model_fields.items():
                 if v.json_schema_extra:
