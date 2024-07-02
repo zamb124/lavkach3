@@ -67,6 +67,14 @@ passed_classes = [
     UnionType,
 ]
 
+readonly_fields = [
+    'id',
+    'lsn',
+    'created_at',
+    'updated_at',
+    'company_id'
+]
+
 reserved_fields = [
     # 'id',
     'company_id',
@@ -794,9 +802,9 @@ class ClassView(AsyncObj, FieldFields):
             update_fieldinfo = self.model.schemas.update.model_fields.get(fieldname)
             get_fieldinfo = self.model.schemas.get.model_fields.get(fieldname)
             filter_fieldinfo = self.model.schemas.filter.model_fields.get(fieldname)
-        if fieldname == 'id':
+        if fieldname in readonly_fields:
             if update_fieldinfo:
-                update_fieldinfo.title = 'ID'
+                update_fieldinfo.title = fieldname.capitalize()
                 if update_fieldinfo.json_schema_extra:
                     update_fieldinfo.json_schema_extra.update({
                         'readonly': True,
@@ -810,9 +818,9 @@ class ClassView(AsyncObj, FieldFields):
                         'hidden': False
                     }
             else:
-                update_fieldinfo = PyFild(title='ID', table=True, hidden=False, readonly=True)
+                update_fieldinfo = PyFild(title=fieldname.capitalize(), table=True, hidden=False, readonly=True)
             if get_fieldinfo:
-                get_fieldinfo.title = 'ID'
+                get_fieldinfo.title = fieldname.capitalize()
                 if get_fieldinfo.json_schema_extra:
                     get_fieldinfo.json_schema_extra.update({
                         'readonly': True,
@@ -826,9 +834,9 @@ class ClassView(AsyncObj, FieldFields):
                         'hidden': False
                     }
             else:
-                get_fieldinfo = PyFild(title='ID', table=True, hidden=False, readonly=True)
+                get_fieldinfo = PyFild(title=fieldname.capitalize(), table=True, hidden=False, readonly=True)
             if create_fieldinfo:
-                create_fieldinfo.title = 'ID'
+                create_fieldinfo.title = fieldname.capitalize()
                 if create_fieldinfo.json_schema_extra:
                     create_fieldinfo.json_schema_extra.update({
                         'readonly': True,
@@ -842,7 +850,7 @@ class ClassView(AsyncObj, FieldFields):
                         'hidden': False
                     }
             else:
-                create_fieldinfo = PyFild(title='ID', table=True, hidden=False, readonly=True)
+                create_fieldinfo = PyFild(title=fieldname.capitalize(), table=True, hidden=False, readonly=True)
         return {
             'create': self._get_view_vars_by_fieldinfo(create_fieldinfo),
             'update': self._get_view_vars_by_fieldinfo(
@@ -908,7 +916,7 @@ class ClassView(AsyncObj, FieldFields):
             'model_name': model.name,
             'domain_name': model.domain.name,
             'enums': enums,
-            'sort_idx': self.sort.get(field_name, 1),
+            'sort_idx': self.sort.get(field_name, 999),
             'line': line,
             'lines': lines
         })
