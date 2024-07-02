@@ -101,6 +101,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
                 "company_ids": company_ids,
                 "company_id": user.company_id.__str__() if user.company_id else None,
                 "role_ids": [i.id.__str__() for i in set(roles)],
+                'store_id': user.store_id,
                 "is_admin": user.is_admin,
                 'locale': user.locale.language,
                 'country': user.country.code

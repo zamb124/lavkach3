@@ -11,6 +11,7 @@
        hx-target="#modal"
        hx-ext="json-enc"
        hx-post="/base/modal"
+       hx-swap="innerHTML transition:true"
        hx-vals='{
 "model": "{{ line.model_name }}",
 "method": "get",
@@ -32,6 +33,7 @@
             hx-trigger="click"
             hx-target="#modal"
             hx-ext="json-enc"
+            hx-swap="innerHTML transition:true"
             hx-post="/base/modal"
             hx-vals='{
 "model": "{{ line.model_name }}",
@@ -53,6 +55,7 @@
        hx-trigger="click"
        hx-target="#modal"
        hx-ext="json-enc"
+       hx-swap="innerHTML transition:true"
        hx-post="/base/modal"
        hx-vals='{
 "model": "{{ line.model_name }}",
@@ -74,6 +77,7 @@
        hx-trigger="click"
        hx-target="#modal"
        hx-ext="json-enc"
+       hx-swap="innerHTML transition:true"
        hx-post="/base/modal"
        hx-vals='{
 "model": "{{ line.model_name }}",

@@ -1,5 +1,9 @@
+import json
+
 from core.fastapi.adapters import BaseAdapter
 from app.basic.basic_config import config
+from core.fastapi.adapters.action_decorator import action
+
 
 class BasicAdapter(BaseAdapter):
     module = 'basic'
@@ -64,3 +68,12 @@ class BasicAdapter(BaseAdapter):
         path = f'/api/basic/product/barcode/{barcode}'
         responce = await self.client.get(self.host + path, params=None)
         return self.env['product'].schemas.get(**responce.json())
+
+    @action(model='store', multiple=False, permits=[])
+    async def action_assign_store(self, payload: dict | str):
+        """Метод прикрепления к складу """
+        path = f'/api/basic/store/assign_store'
+        if isinstance(payload, str):
+            payload = json.loads(payload)
+        responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()

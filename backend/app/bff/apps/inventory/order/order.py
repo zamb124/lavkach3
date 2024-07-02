@@ -7,6 +7,14 @@ from app.bff.template_spec import templates
 
 order_router = APIRouter()
 
+class OrderView(ClassView):
+    """Переопределяем модель"""
+    model_name = "order"
+
+
+    def get_store_dashboard(self):
+        a=1
+
 @order_router.get("", response_class=HTMLResponse)
 async def order(request: Request):
     """
@@ -16,5 +24,16 @@ async def order(request: Request):
         3 - какие фильтры используем на странице (важно, что порядок будет тот же)
     """
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
-    cls = await ClassView(request, model='order')
+    cls = await OrderView(request)
+    return templates.TemplateResponse(request, template, context={'cls': cls})
+
+
+@order_router.get("/mystore", response_class=HTMLResponse)
+async def mystore(request: Request):
+    """
+        Отдает интерфейс склада с текущими ордерами и их статусами, так же текущими сотрудниками склада
+    """
+    template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
+    order_cls = await OrderView(request)
+    store_dash = order_cls.get_store_dashboard()
     return templates.TemplateResponse(request, template, context={'cls': cls})

@@ -13,3 +13,5 @@ async def store(request: Request):
     cls = await ClassView(request, 'store')
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template,  context={'cls': cls})
+
+

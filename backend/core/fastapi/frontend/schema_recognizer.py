@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 import enum
-import logging
 import os
 import uuid
 from collections import defaultdict
@@ -327,20 +326,20 @@ class Line(BaseModel):
     """
         Обертка для обьекта
     """
-    type: LineType                          # Тип поля СМ LineType
+    type: LineType  # Тип поля СМ LineType
     lines: 'Lines'
-    model_name: str                         # Имя модели
-    schema: Any                             # Схема обьекта
-    actions: dict                           # Доступные методы обьекта
-    fields: Optional[Fields] = None         # Поля обьекта
-    id: Optional[uuid.UUID] = None          # ID обьекта (если есть)
-    lsn: Optional[int] = None               # LSN обьекта (если есть)
-    vars: Optional[dict] = None             # vars обьекта (если есть)
+    model_name: str  # Имя модели
+    schema: Any  # Схема обьекта
+    actions: dict  # Доступные методы обьекта
+    fields: Optional[Fields] = None  # Поля обьекта
+    id: Optional[uuid.UUID] = None  # ID обьекта (если есть)
+    lsn: Optional[int] = None  # LSN обьекта (если есть)
+    vars: Optional[dict] = None  # vars обьекта (если есть)
     company_id: Optional[uuid.UUID] = None  # Компания обьекта (если есть обьект)
-    display_title: Optional[str] = None     # Title (Поле title, или Компьют поле)
-    is_last: bool = False                   # True Если обьект последний в Lines
-    class_key: str                          # Уникальный ключ конструктора
-    is_rel: bool = False                    # True если обьек является relation от поля родителя
+    display_title: Optional[str] = None  # Title (Поле title, или Компьют поле)
+    is_last: bool = False  # True Если обьект последний в Lines
+    class_key: str  # Уникальный ключ конструктора
+    is_rel: bool = False  # True если обьек является relation от поля родителя
 
     @property
     def key(self):
@@ -507,6 +506,7 @@ class Lines(BaseModel):
     params: Optional[dict] = {}  # Параметры на вхрде
     join_related: Optional[bool] = True  # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
+
     @property
     def key(self):
         return self.parent_field.key if self.parent_field else self.class_key
@@ -664,23 +664,23 @@ class ClassView(AsyncObj, FieldFields):
     """
         Классконструктор модели для манипулирование уже их UI HTMX
     """
-    request: Request  # Реквест - TODO: надо потом убрать
-    model: Model  # Модель данных
-    params: Optional[QueryParams] | dict | None  # Параметры на вхрде
-    join_related: Optional[bool] = True  # Джойнить рилейшен столбцы
-    join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
-    lines: Lines  # Список обьектов
-    action_line: Optional[Line] = None  # Если конструктор выступает в роли Экшена
-    action_lines: Optional[Lines] = None  # Если конструктор выступает в роли Экшена
-    exclude: Optional[list] = [None]  # Исключаемые солбцы
-    sort: Optional[dict] = {}  # Правила сортировки
-    key: str  # Ключ конструктора
-    actions: False  # Доступные Методы модели
-    is_rel: bool = False  # True, если
+    request: Request                                # Реквест - TODO: надо потом убрать
+    model: Model                                    # Модель данных
+    params: Optional[QueryParams] | dict | None     # Параметры на вхрде
+    join_related: Optional[bool] = True             # Джойнить рилейшен столбцы
+    join_fields: Optional[list] = []                # Список присоединяемых полей, если пусто, значит все
+    lines: Lines                                    # Список обьектов
+    action_line: Optional[Line] = None              # Если конструктор выступает в роли Экшена
+    action_lines: Optional[Lines] = None            # Если конструктор выступает в роли Экшена
+    exclude: Optional[list] = [None]                # Исключаемые солбцы
+    sort: Optional[dict] = {}                       # Правила сортировки
+    key: str                                        # Ключ конструктора
+    actions: False                                  # Доступные Методы модели
+    is_rel: bool = False                            # True, если
 
     async def __ainit__(self,
                         request,
-                        model: str | Model,
+                        model: str | Model = None,
                         params: QueryParams | dict | None = None,
                         exclude: list = [],
                         join_related: bool = True,
@@ -694,8 +694,10 @@ class ClassView(AsyncObj, FieldFields):
         self.request = request
         if isinstance(model, Model):
             self.model = model
-        else:
+        elif model:
             self.model = request.scope['env'][model]
+        elif self.model_name:
+            self.model = request.scope['env'][self.model_name]
         try:
             assert self.model, 'Model is not defined'
         except Exception as ex:
@@ -851,6 +853,8 @@ class ClassView(AsyncObj, FieldFields):
         """
             Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
+        if '_range' in field_name:
+            a=1
         fielinfo = schema.model_fields[field_name]
         res = ''
         enums = []
@@ -980,8 +984,6 @@ class ClassView(AsyncObj, FieldFields):
         line.fields = fields
         return line
 
-
-
     @property
     def as_filter(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
@@ -1098,7 +1100,7 @@ class ClassView(AsyncObj, FieldFields):
         """Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов"""
         data = {k: ids if k == 'ids' else None for k, v in schema.model_fields.items()}
         self.action_line = await self._get_line(schema=schema, type=LineType.ACTION)
-        self.action_lines = Lines(class_key=self.key,  line_header=self.action_line, line_new=self.action_line)
+        self.action_lines = Lines(class_key=self.key, line_header=self.action_line, line_new=self.action_line)
         await self.action_lines._get_data(
             self.env,
             self.model,

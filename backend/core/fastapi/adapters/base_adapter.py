@@ -160,17 +160,17 @@ class BaseAdapter:
         }
 
     async def create(self, json: dict, model: str | None = None, params=None, id: uuid.UUID | None = None, **kwargs):
-        path = f'/api/{self.model.domain.name}/{model or self.model}'
+        path = f'/api/{self.model.domain.name}/{model or self.model.name}'
         responce = await self.client.post(self.host + path, json=json, params=params)
         return await common_exception_handler(responce)
 
     async def update(self, id: uuid.UUID, json: dict, model: str | None = None, params=None, **kwargs):
-        path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
+        path = f'/api/{self.model.domain.name}/{model or self.model.name}/{id}'
         responce = await self.client.put(self.host + path, json=json, params=params)
         return await common_exception_handler(responce)
 
     async def get(self, id: uuid.UUID, model: str | None = None, params=None, **kwargs):
-        path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
+        path = f'/api/{self.model.domain.name}/{model or self.model.name}/{id}'
         responce = await self.client.get(self.host + path, params=params, kwargs=kwargs)
         return await common_exception_handler(responce)
 
@@ -178,6 +178,6 @@ class BaseAdapter:
         return await self.get(id, model, params, kwargs=kwargs)
 
     async def delete(self, id: uuid.UUID, model: str | None = None, params=None, **kwargs):
-        path = f'/api/{self.model.domain.name}/{model or self.model}/{id}'
+        path = f'/api/{self.model.domain.name}/{model or self.model.name}/{id}'
         responce = await self.client.delete(self.host + path, params=params)
         return await common_exception_handler(responce)

@@ -1,6 +1,7 @@
 import typing
 import uuid
 
+from fastapi import APIRouter, Query, Request
 from fastapi_filter import FilterDepends
 
 from app.basic.store.schemas import (
@@ -10,11 +11,7 @@ from app.basic.store.schemas import (
     ExceptionResponseSchema, StoreListSchema, StoreFilter
 )
 from app.basic.store.services import StoreService
-from core.fastapi.dependencies import (
-    PermissionDependency,
-    IsAuthenticated,
-)
-from fastapi import APIRouter, Depends, Query, Request
+from core.schemas.basic_schemes import ActionBaseSchame, ActionRescposeSchema
 
 store_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
@@ -52,3 +49,8 @@ async def store_update(request: Request, store_id: uuid.UUID, schema: StoreUpdat
 @store_router.delete("/{store_id}")
 async def store_delete(request: Request, store_id: uuid.UUID):
     await StoreService(request).delete(id=store_id)
+
+
+@store_router.post("/assign_store", response_model=ActionRescposeSchema)
+async def assign_store(request: Request, schema: ActionBaseSchame):
+    return await StoreService(request).assign_store(store_id=schema.ids[0])

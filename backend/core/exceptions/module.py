@@ -7,7 +7,7 @@ class ModuleException(HTTPException):
             raise ModuleException(status_code=500, code='ENUM_ERROR', message='Enum not found')
         if enum:
             code = enum.name
-            message = enum.value
+            message = enum.value + message if message else ''
         super().__init__(status_code=status_code, detail={
             'code': code,
             'msg': message

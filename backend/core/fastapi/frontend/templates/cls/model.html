@@ -8,6 +8,7 @@
             hx-trigger="click"
             hx-target="#modal"
             hx-ext="json-enc"
+            hx-swap="innerHTML transition:true"
             hx-post="/base/modal"
             hx-vals='{
 "model": "{{ line.model_name }}",

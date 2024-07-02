@@ -1,0 +1,22 @@
+{% block as_form %}
+    <input type="text" id="{{ field.key }}" size="24" style="text-align:center">
+    <script>
+            window.addEventListener("load", function (event) {
+                new DateRangePicker('{{ field.key }}');
+            });
+        </script>
+{% endblock %}
+{% block as_view %}
+    <input  type="text"
+                    class="form-control"
+                    {% if field.required %} required {% endif %}
+                    disabled
+                    name="{{ field.key }}"
+                    placeholder=""
+                    value="{{field.val.strftime('%Y-%m-%d') if field.val else ''}}"
+            >
+
+{% endblock %}
+{% block as_table %}
+{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}<small class="text-muted"> {{ field.val.strftime('%H-%M') if field.val else '' }}</small>
+{% endblock %}

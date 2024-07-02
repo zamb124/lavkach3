@@ -3,16 +3,10 @@ from datetime import datetime, timedelta
 from typing import Optional, List, Iterable, Union, Annotated
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, UUID4, model_validator
+from pydantic import BaseModel, Field, UUID4, model_validator, computed_field
 
 created_at_gte_default = datetime.now() - timedelta(days=365)
 created_at_lt_default = datetime.now() + timedelta(days=365)
-
-
-@dataclasses.dataclass
-class DatetimeRange:
-    datetime__gte: datetime
-    datetime__lt: datetime
 
 
 
@@ -32,6 +26,7 @@ class BaseFilter(Filter):
     # company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None, title='Company')
     order_by: Optional[List[str]] = Field(default=["lsn", ], title='Order by', filter=False)
    ##
+
     @model_validator(mode='before')
     def check(cls, value):
         """

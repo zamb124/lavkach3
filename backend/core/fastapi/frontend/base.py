@@ -21,7 +21,7 @@ class Method(str, Enum):
     GET:    str = 'get'
     CREATE: str = 'create'
     UPDATE: str = 'update'
-    DELETE: str = 'update'
+    DELETE: str = 'delete'
 
 
 class ExceptionResponseSchema(BaseModel):
@@ -222,8 +222,7 @@ async def modal(request: Request, schema: ModalSchema):
         return cls.send_message(f'{cls.model.name.capitalize()}: is {schema.method.capitalize()}')
     else:
         if schema.method == 'create':
-            #await cls.init(params={'id__in': schema.id})
-            return getattr(cls.new, f'get_{schema.method.value}')
+            return getattr(cls.lines.line_new, f'get_{schema.method.value}')
         await cls.init(params={'id__in': schema.id})
         line = cls.lines.lines[0]
         return getattr(line, f'get_{schema.method.value}')

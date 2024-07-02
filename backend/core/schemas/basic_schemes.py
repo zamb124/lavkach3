@@ -1,6 +1,6 @@
-from typing import Optional, Any, List
+from typing import Optional, List
 
-from pydantic import BaseModel, Json, validator, UUID4, Field
+from pydantic import BaseModel, UUID4, Field
 
 from core.schemas.list_schema import GenericListSchema
 
@@ -11,18 +11,20 @@ class CountrySchema(BaseModel):
     name: str
     code: str
 
+
 class CountryListSchema(GenericListSchema):
     data: Optional[List[CountrySchema]]
 
 
 class LocaleSchema(BaseModel):
     lsn: int = 0
-    id: str= None
+    id: str = None
     language: str
-    territory: Optional[str|None] = None
+    territory: Optional[str | None] = None
     display_name: str
     english_name: str
     language_name: str
+
 
 class LocaleListSchema(GenericListSchema):
     data: Optional[List[LocaleSchema]]
@@ -34,8 +36,10 @@ class CurrencySchema(BaseModel):
     name: str
     code: str
 
+
 class CurrencyListSchema(GenericListSchema):
     data: Optional[List[CurrencySchema]]
+
 
 class PhoneSchema(BaseModel):
     id: int = 0
@@ -55,3 +59,8 @@ class ActionBaseSchame(BaseModel):
 
     class Config:
         extra = 'allow'
+
+
+class ActionRescposeSchema(BaseModel):
+    status: str
+    detail: str

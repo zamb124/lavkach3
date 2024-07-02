@@ -27,3 +27,16 @@ class StoreService(BaseService[Store, StoreCreateScheme, StoreUpdateScheme, Stor
     @permit('store_delete')
     async def delete(self, id: Any) -> None:
         return await super(StoreService, self).delete(id)
+
+    @permit('assign_store')
+    async def assign_store(self, store_id: Any) -> None:
+        store_entity = await self.get(store_id)
+        user_entity = await self.env['user'].service.get(self.user.user_id)
+        user_entity.store_id = store_entity.id
+        self.session.add(user_entity)
+        await self.session.commit()
+        return {
+            'status': 'OK',
+            'detail': 'User has been assigned the store'
+        }
+
