@@ -2,6 +2,7 @@
     <select class="uuid form-control is-valid text-start "
             id="{{ field.key }}"
             {% if field.update.readonly %}readonly {% endif %}
+            {% if field.update.hidden  %}hidden {% endif %}
             name="{{ field.key }}"
             {% if field.update.required %} required {% endif %}
             data-choices
@@ -154,6 +155,7 @@
         <input type="text"
                class="form-control"
                 {% if field.required %} required {% endif %}
+                {% if field.get.hidden  %}hidden {% endif %}
                disabled
                name="{{ field.key }}"
                placeholder=""

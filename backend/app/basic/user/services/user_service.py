@@ -101,7 +101,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
                 "company_ids": company_ids,
                 "company_id": user.company_id.__str__() if user.company_id else None,
                 "role_ids": [i.id.__str__() for i in set(roles)],
-                'store_id': user.store_id,
+                'store_id': user.store_id.hex if user.store_id else None,
                 "is_admin": user.is_admin,
                 'locale': user.locale.language,
                 'country': user.country.code
@@ -112,7 +112,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             "company_id": user.company_id if user.company_id else None,
             'nickname': user.nickname,
             'permission_list': permissions_list,
-            'store_id': user.store_id,
+            'store_id': user.store_id.hex if user.store_id else None,
             'role_ids': [i.title for i in roles] if not user.is_admin else ['superadmin'],
             'locale': user.locale.language,
             'country': user.country.code
