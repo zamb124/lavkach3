@@ -78,6 +78,10 @@ hidden_fields = [
     'lsn',
     'company_id'
 ]
+table_fields = [
+    'id',
+    'created_at'
+]
 
 reserved_fields = [
     # 'id',
@@ -641,7 +645,6 @@ class Lines(BaseModel):
                             status_code=500,
                             detail=f'Wrong field name {_field.field_name} in table model {_field.model}'
                         )
-
             for col in missing_fields.keys():
                 for _field_name, _header_col in self.line_header.fields:
                     if col == _field_name:
@@ -807,55 +810,56 @@ class ClassView(AsyncObj, FieldFields):
             get_fieldinfo = self.model.schemas.get.model_fields.get(fieldname)
             filter_fieldinfo = self.model.schemas.filter.model_fields.get(fieldname)
         if fieldname in readonly_fields:
-            hidden  = True if fieldname in hidden_fields else False
+            hidden = True if fieldname in hidden_fields else False
+            table = True if fieldname in table_fields else False
             if update_fieldinfo:
                 update_fieldinfo.title = fieldname.capitalize()
                 if update_fieldinfo.json_schema_extra:
                     update_fieldinfo.json_schema_extra.update({
                         'readonly': True,
-                        'table': hidden,
+                        'table': table,
                         'hidden': hidden
                     })
                 else:
                     update_fieldinfo.json_schema_extra = {
                         'readonly': True,
-                        'table': hidden,
+                        'table': table,
                         'hidden': hidden
                     }
             else:
-                update_fieldinfo = PyFild(title=fieldname.capitalize(), table=hidden, hidden=hidden, readonly=True)
+                update_fieldinfo = PyFild(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
             if get_fieldinfo:
                 get_fieldinfo.title = fieldname.capitalize()
                 if get_fieldinfo.json_schema_extra:
                     get_fieldinfo.json_schema_extra.update({
                         'readonly': True,
-                        'table': hidden,
+                        'table': table,
                         'hidden': hidden
                     })
                 else:
                     get_fieldinfo.json_schema_extra = {
                         'readonly': True,
-                        'table': hidden,
+                        'table': table,
                         'hidden': hidden
                     }
             else:
-                get_fieldinfo = PyFild(title=fieldname.capitalize(), table=True, hidden=hidden, readonly=True)
+                get_fieldinfo = PyFild(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
             if create_fieldinfo:
                 create_fieldinfo.title = fieldname.capitalize()
                 if create_fieldinfo.json_schema_extra:
                     create_fieldinfo.json_schema_extra.update({
                         'readonly': True,
-                        'table': hidden,
+                        'table': table,
                         'hidden': hidden
                     })
                 else:
                     create_fieldinfo.json_schema_extra = {
                         'readonly': True,
-                        'table': hidden,
+                        'table': table,
                         'hidden': hidden
                     }
             else:
-                create_fieldinfo = PyFild(title=fieldname.capitalize(), table=True, hidden=hidden, readonly=True)
+                create_fieldinfo = PyFild(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
         return {
             'create': self._get_view_vars_by_fieldinfo(create_fieldinfo),
             'update': self._get_view_vars_by_fieldinfo(
