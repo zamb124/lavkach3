@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bus.bus.models.bus_models import Bus
 from app.bus.bus.shemas.bus_schemas import BusCreateScheme, BusUpdateScheme, BusFilter
+from app.bus.tkq import broker
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
@@ -22,7 +23,8 @@ class BusService(BaseService[Bus, BusCreateScheme, BusUpdateScheme, BusFilter]):
 
     @permit('bus_create')
     async def create(self, obj: CreateSchemaType) -> ModelType:
-        return await super(BusService, self).create(obj)
+        bus_entity = await super(BusService, self).create(obj)
+        return bus_entity
 
     @permit('bus_delete')
     async def delete(self, id: Any) -> None:

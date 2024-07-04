@@ -174,7 +174,6 @@ async def line(request: Request, schema: LineSchema):
         return getattr(lines[0], f'as_{schema.mode}_get')
     elif schema.method == Method.CREATE:
         """Отдать обьект на создание, в зависимости от mode (tr/div)"""
-        data = clean_filter(schema.model_extra, schema.key)
         return cls.lines.line_new.as_tr_create
     elif schema.method == Method.DELETE:
         """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
@@ -182,17 +181,14 @@ async def line(request: Request, schema: LineSchema):
         return lines[0].get_delete
     elif schema.method == Method.DELETE_DELETE:
         """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
-        lines = await cls.lines.delete_lines(ids=[schema.id])
     elif schema.method == Method.SAVE:
         """Сохранение записи при измененнии"""
         data = clean_filter(schema.model_extra, schema.key)
-        lines = await cls.lines.update_lines(id=schema.id, data=data)
-        return cls.send_message('Updated')
+        await cls.lines.update_lines(id=schema.id, data=data)
     elif schema.method == Method.SAVE_CREATE:
         """Сохранение записи при создании"""
         data = clean_filter(schema.model_extra, schema.key)
-        lines = await cls.lines.create_lines(data)
-        return lines[0].as_div_update
+        await cls.lines.create_lines(data)
 
 
 
