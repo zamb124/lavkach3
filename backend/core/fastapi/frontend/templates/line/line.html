@@ -190,6 +190,7 @@
         <div
                 {% if line.is_last and not line.is_rel %}
                     hx-include="{{ '#filter' ~'--'~ line.class_key }}"
+                    hx-params="*"
                     hx-post="/base/table"
                     hx-ext="json-enc"
                     hx-trigger="revealed" hx-swap="beforeend" hx-select="#{{ 'tbody-table' ~'--'~ line.class_key }}>tr"
@@ -207,9 +208,6 @@
                 {#                        {{ line.button_view }}#}
                 {#                    </li>#}
                 {% if line.type == 'new' %}
-                    <li class="list-inline-item edit" title="Edit">
-                        {{ line.button_save }}
-                    </li>
                 {% else %}
                     <li class="list-inline-item edit" title="Edit">
                         {{ line.button_update }}
