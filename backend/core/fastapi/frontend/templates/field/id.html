@@ -12,7 +12,7 @@
 {% block as_get %}
     <a class="text-danger form-control " style="background-color: var(--vz-tertiary-bg);"
            href="#"
-           hx-include="none"
+           hx-params="model,method,id,key"
            hx-trigger="click"
            hx-target="#htmx_content"
            hx-swap="beforeend transition:true"

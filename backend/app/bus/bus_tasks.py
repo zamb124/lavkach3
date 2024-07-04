@@ -29,9 +29,14 @@ async def start_processing_messages_task():
         for message in messages:
             if connection.user.company_id == message.company_id:
                 try:
-                    await ws_manager.send_tagged_message(websocket=connection, tag=message.cache_tag, message=message.message)
+                    await ws_manager.send_tagged_message(
+                        websocket=connection,
+                        tag=message.cache_tag,
+                        message=message.message,
+                        vars=message.vars
+                    )
                 except Exception as e:
-                    ws_manager.disconnect(websocket=connection)
+                    ws_manager.active_connections.pop(_)
                 message.status = BusStatus.DELIVERED
                 bs.session.add(message)
     await bs.session.commit()

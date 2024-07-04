@@ -22,7 +22,8 @@
         <!-- custom Css-->
         <link href="{{ url_for('static' ,path='css/custom.min.css') }}" id="app-style" rel="stylesheet"
               type="text/css"/>
-        <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/alumuko/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.css">
+        <link type="text/css" rel="stylesheet"
+              href="https://cdn.jsdelivr.net/gh/alumuko/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.css">
         <style>
             .footer {
                 border-top-left-radius: 15px;
@@ -448,39 +449,63 @@
                     htmx.trigger(modal, 'update')
                 }
             } else if (message.tag === 'MODEL') {
-                var element = document.querySelector(`[ui_key="${message.message}"]`);
-                htmx.trigger(element, 'backend_update')
+                // Ловим эвенты если записи изменились
+                // Ищем элементы на странице, и если у них lsn больше  чем  lsn  из  записи  в  базе  данных
+                // то ничего не меняем
+                var elements = htmx.findAll(`[ui_key="${message.vars.model}--${message.vars.id}"]`)
+                for (var i = elements.length - 1; i >= 0; i--) {
+                    var el = elements[i]
+                    if (message.vars.method === 'update') {
+                        console.log(el.attributes.lsn)
+                        var elLsn = Number(el.attributes.lsn.nodeValue)
+                        if (elLsn < message.vars.lsn) {
+                            el.attributes.lsn.nodeValue = message.vars.lsn
+                            htmx.trigger(el, 'backend_update')
+                            var myToast = Toastify({
+                                text: message.message,
+                            })
+                            myToast.showToast();
+                        }
+
+                    }
+                    else if  (message.vars.method === 'delete')  {
+                            el.remove();
+                                    var myToast = Toastify({
+                                text: message.message,
+                            })
+                            myToast.showToast();
+                        }
+                }
             }
-            console.log(message)
-                var element = htmx.find(message.message)
-                htmx.trigger(element, 'update')
+
         })
 
         function hideModals(modal) {
             //debugger
-            if (modal){
+            if (modal) {
                 modal = document.getElementById(modal)
                 let currentModal = bootstrap.Modal.getInstance(modal)
                 if (currentModal) {
                     currentModal.hide()
                 }
             } else {
-            var $modals = document.querySelectorAll('.modal')
-            $modals.forEach(modal => {
-                let currentModal = bootstrap.Modal.getInstance(modal)
-                if (currentModal) {
-                    currentModal.hide()
-                }
-            })
-            var $modals = document.querySelectorAll('.modal-backdrop')
-            $modals.forEach(back => {
-                if (back) {
-                    back.remove()
-                }
-                var body = document.body
-                body.style.removeProperty('overflow');
-            })
-        }}
+                var $modals = document.querySelectorAll('.modal')
+                $modals.forEach(modal => {
+                    let currentModal = bootstrap.Modal.getInstance(modal)
+                    if (currentModal) {
+                        currentModal.hide()
+                    }
+                })
+                var $modals = document.querySelectorAll('.modal-backdrop')
+                $modals.forEach(back => {
+                    if (back) {
+                        back.remove()
+                    }
+                    var body = document.body
+                    body.style.removeProperty('overflow');
+                })
+            }
+        }
 
         htmx.on('htmx:afterSwap', (e) => {
             //trans()

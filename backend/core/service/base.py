@@ -278,11 +278,17 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             return await self.get(id)
         return entity
 
-    async def prepere_bus(self, entity: ModelType):
+    async def prepere_bus(self, entity: ModelType, method: str):
         return {
             'cache_tag': CacheTag.MODEL,
-            'message': f'{self.model.__tablename__}--{entity.id}',
+            'message': f'{self.model.__tablename__.capitalize()} is {method.capitalize()}',
             'company_id': entity.company_id if hasattr(entity,  'company_id') else entity.id,
+            'vars': {
+                'id': entity.id,
+                'lsn': entity.lsn,
+                'model': self.model.__tablename__,
+                'method': method,
+            }
         }
 
     @broker.task
@@ -301,13 +307,15 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
         entity = await self._update(id, obj, commit=commit)
-        message = await self.prepere_bus(entity)
+        message = await self.prepere_bus(entity, 'update')
         task = await self.update_notify.kiq(self.model.__tablename__, message)
         return entity
 
     async def _delete(self, id: Any) -> bool:
         entity = await self.get(id)
+        message = await self.prepere_bus(entity, 'delete')
         await self.session.delete(entity)
+        task = await self.update_notify.kiq(self.model.__tablename__, message)
         try:
             await self.session.commit()
         except IntegrityError as e:

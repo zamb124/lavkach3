@@ -15,10 +15,13 @@ from core.fastapi.frontend.uttils import clean_filter
 
 
 class Method(str, Enum):
-    GET: str = 'get'
-    CREATE: str = 'create'
-    UPDATE: str = 'update'
-    DELETE: str = 'delete'
+    GET: str = 'get'                      # Дать запись на чтение
+    CREATE: str = 'create'                # Дать запись на создание
+    UPDATE: str = 'update'                # Дать запись на изменение
+    DELETE: str = 'delete'                # Дать запись на удаление
+    SAVE: str = 'save'                    # Сохранить изменения
+    SAVE_CREATE: str = 'save_create'      # Сохранить новую запись
+    DELETE_DELETE: str = 'delete_delete'  # Подтвердить удаление записи
 
 
 class ExceptionResponseSchema(BaseModel):
@@ -32,6 +35,7 @@ class BaseSchema(BaseModel):
     model: str
     key: str
     method: Method
+
 
 
 router = APIRouter(
@@ -148,43 +152,48 @@ async def table(request: Request, schema: TableSchema):
 
 
 class LineSchema(BaseSchema):
-    id: UUID4
-    mode: str
+    id: Optional[UUID4] = None
+    mode: Optional[str] = 'get'
 
-
-@router.post("/table/line/add", response_class=HTMLResponse)
-async def line(request: Request, schema: TableSchema):
-    """
-     Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
-    """
-    form_data = await request.json()
-    qp = request.query_params
-    if form_data.get('key'):
-        qp = clean_filter(form_data, form_data['key'])
-        if qp:
-            qp = {i: v for i, v in qp[0].items() if v}
-    cls = await ClassView(request, params=qp, model=schema.model, key=schema.key)
-    return cls.lines.line_new.as_tr_create
-
+    class Config:
+        extra = "allow"
 
 @router.post("/line", response_class=HTMLResponse)
 async def line(request: Request, schema: LineSchema):
     """
-     Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
+     Универсальный запрос, который отдает/изменяет обьект
     """
     cls = await ClassView(request, model=schema.model, key=schema.key)
-    match schema.method:
-        case Method.GET:
-            lines = await cls.lines.get_lines(ids=[schema.id])
-            return lines[0].as_tr_view
-    form_data = await request.json()
-    qp = request.query_params
-    if form_data.get('key'):
-        qp = clean_filter(form_data, form_data['key'])
-        if qp:
-            qp = {i: v for i, v in qp[0].items() if v}
-    cls = await ClassView(request, params=qp, model=schema.model, key=schema.key)
-    return cls.lines.line_new.as_tr_create
+    if schema.method == Method.UPDATE:
+        """Отдать обьект на редактирование, в зависимости от mode (tr/div)"""
+        lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+        return getattr(lines[0], f'as_{schema.mode}_update')
+    elif schema.method == Method.GET:
+        """Отдать обьект на чтение, в зависимости от mode (tr/div)"""
+        lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+        return getattr(lines[0], f'as_{schema.mode}_get')
+    elif schema.method == Method.CREATE:
+        """Отдать обьект на создание, в зависимости от mode (tr/div)"""
+        data = clean_filter(schema.model_extra, schema.key)
+        return cls.lines.line_new.as_tr_create
+    elif schema.method == Method.DELETE:
+        """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
+        lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
+        return lines[0].get_delete
+    elif schema.method == Method.DELETE_DELETE:
+        """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
+        lines = await cls.lines.delete_lines(ids=[schema.id])
+    elif schema.method == Method.SAVE:
+        """Сохранение записи при измененнии"""
+        data = clean_filter(schema.model_extra, schema.key)
+        lines = await cls.lines.update_lines(id=schema.id, data=data)
+        return cls.send_message('Updated')
+    elif schema.method == Method.SAVE_CREATE:
+        """Сохранение записи при создании"""
+        data = clean_filter(schema.model_extra, schema.key)
+        lines = await cls.lines.create_lines(data)
+        return lines[0].as_div_update
+
 
 
 class ModelSchema(BaseSchema):

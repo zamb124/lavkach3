@@ -39,29 +39,13 @@
             {% else %}
                 {{ line.as_div_get }}
             {% endif %}
+        </div>
+    </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
                     </button>
                     {% if method in ('create', 'update') %}
-                        <button
-                                id="{{ 'submit-'~line.key }}"
-                                class="btn btn-success"
-                                hx-boost="true"
-                                hx-include="#{{ line.key }}"
-                                hx-post="/base/modal"
-                                hx-ext="json-enc"
-                                hx-target="#{{ line.key }}"
-                                hx-select="#{{ line.key }}"
-                                hx-swap="outerHTML transition: true"
-                                hx-vals='{
-                                    {% if line.id %}"id": "{{ line.id }}",{% endif %}
-                                    "model": "{{ line.model_name }}",
-                                    "method": "{{ method.value }}",
-                                    "key": "{{ line.key }}",
-                                    }'
-                        >
-                            Save
-                        </button>
+                        {{ line.button_save }}
                     {% endif %}
 
                 </div>
@@ -96,23 +80,15 @@
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                             <button type="button"
                                     hx-trigger="click"
-                                    hx-post="/base/modal"
+                                    hx-post="/base/line"
                                     hx-ext="json-enc"
+                                    hx-target="this"
                                     hx-vals='{
                                 "model": "{{ line.model_name }}",
-                                "method": "delete",
+                                "method": "delete_delete",
                                 "id": "{{ line.id }}",
-                                "key": "{{ line.key }}",
-                                "delete_id": "{{ line.id }}",
-                                "class_key": "{{ line.class_key }}"
-
+                                "key": "{{ line.key }}"
                             }'
-                                    {% if target_id %}
-                                    hx-target="#{{ target_id }}"
-                                    hx-swap="delete"
-                                    {% else %}
-                                    hx-swap="none"
-                                    {% endif %}
                                     data-bs-dismiss="modal"
                                     class="btn btn-danger">Delete
                             </button>

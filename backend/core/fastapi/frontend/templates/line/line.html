@@ -21,18 +21,23 @@
 {% endblock %}
 
 {% block button_save %}
-    <button href="#"
-            hx-include="closest tr"
+    <button
+            id="{{ 'submit-'~line.key }}"
+            class="btn btn-success"
+            hx-boost="true"
+            hx-include="#{{ line.key }}"
+            hx-post="/base/line"
             hx-ext="json-enc"
-            hx-post="/base/table/line"
+            hx-target="{% if line.type == 'new' %}#{{ line.key }}{% else %}this{% endif %}"
+            hx-swap="{% if line.type == 'new' %}outerHTML{% else %}none{% endif %}"
             hx-vals='{
-"model": "{{ line.model_name }}",
-"method": "update",
-"id": "{{ line.id or "" }}",
-"key": "{{ line.key }}"
-}'
-            class="btn btn-soft-success">
-        <i class="ri-save-fill h4"></i>
+                {% if line.id %}"id": "{{ line.id }}",{% endif %}
+                "model": "{{ line.model_name }}",
+                "method": "{% if line.type == 'new' %}save_create{% else %}save{% endif %}",
+                "key": "{{ line.key }}"
+                }'
+    >
+        Save
     </button>
 {% endblock %}
 
@@ -91,7 +96,7 @@
        hx-target="#htmx_content"
        hx-ext="json-enc"
        hx-swap="beforeend transition:true"
-       hx-post="/base/modal"
+       hx-post="/base/line"
        hx-vals='{
 "model": "{{ line.model_name }}",
 "method": "delete",
@@ -154,14 +159,17 @@
         id="{{ line.key }}"
         class="mb-0 fw-semibold text-muted"
         ui_key="{{ line.ui_key }}"
+        lsn="{{ line.lsn }}"
         hx-trigger="backend_update"
-        hx-post="/base/table/line"
+        hx-params="model,method,mode,id,key"
+        hx-post="/base/line"
         hx-ext="json-enc"
         hx-swap="outerHTML transition:true"
         hx-target="#{{ line.key }}"
         hx-vals='{
                     "model": "{{ line.model_name }}",
                     "method": "{{ method.value }}",
+                    "mode": "tr",
                     "key": "{{ line.class_key }}",
                     "id": "{{ line.id }}"
                     }'
@@ -220,54 +228,71 @@
 {% endautoescape %}
 {% endblock %}
 {% block as_div %}
-    <div class="row formline was-validated" id="{{ line.key }}" ui_key="{{ line.ui_key }}">
-        {% for field_name, field in line.fields if not field.is_reserved and field.type != 'list_rel' %}
-            {% if loop.length % 3 != 0 and loop.first %}
-                <div class="row">
-            {% endif %}
-            {% if loop.index0 % 3 == 0 %}
-                <div class="row">
-            {% endif %}
-        <div class="col">
-            {{ field.label|safe }}
-            {% if method in ('create', 'update') %}
-                {% if field.type == 'list_rel' %}
-                    {{ field.as_table_update|safe }}
-                {% else %}
-                    {{ field.as_update|safe }}
-                {% endif %}
-            {% else %}
-                {% if field.type == 'list_rel' %}
-                    {{ field.as_table_view|safe }}
-                {% else %}
-                    {{ field.as_get|safe }}
-                {% endif %}
-            {% endif %}
-
-        </div>
-        {% if loop.index % 3 == 0 %}
-            </div>
-        {% endif %}
-        {% endfor %}
-        {% for field_name, field in line.fields if not field.is_reserved and field.type == 'list_rel' %}
+    <div class="row formline was-validated"
+         id="{{ line.key }}"
+         lsn="{{ line.lsn }}"
+         ui_key="{{ line.ui_key }}"
+         hx-trigger="backend_update"
+         hx-post="/base/line"
+         hx-ext="json-enc"
+         hx-swap="outerHTML transition:true"
+         hx-target="#{{ line.key }}"
+         hx-vals='{
+                    "model": "{{ line.model_name }}",
+                    "method": "{{ method.value }}",
+                    "mode": "div",
+                    "key": "{{ line.class_key }}",
+                    "id": "{{ line.id }}"
+                    }'
+    >
+    {% for field_name, field in line.fields if not field.is_reserved and field.type != 'list_rel' %}
+        {% if loop.length % 3 != 0 and loop.first %}
             <div class="row">
-            <div class="col">
-            <p style="margin-bottom: 0; margin-top: 1rem"
-               class="sort text-uppercase text-muted text-start"
-               for="{{ field.key }}">{{ field.get.title|capitalize }}:</p>
-            {% if method in ('create', 'update') %}
-                {% if field.type == 'list_rel' %}
-                    {{ field.as_table_update|safe }}
-                {% else %}
-                    {{ field.as_update|safe }}
-                {% endif %}
+        {% endif %}
+        {% if loop.index0 % 3 == 0 %}
+            <div class="row">
+        {% endif %}
+    <div class="col">
+        {{ field.label|safe }}
+        {% if method in ('create', 'update') %}
+            {% if field.type == 'list_rel' %}
+                {{ field.as_table_update|safe }}
             {% else %}
-                {% if field.type == 'list_rel' %}
-                    {{ field.as_table_get|safe }}
-                {% else %}
-                    {{ field.as_get|safe }}
-                {% endif %}
+                {{ field.as_update|safe }}
             {% endif %}
-        {% endfor %}
+        {% else %}
+            {% if field.type == 'list_rel' %}
+                {{ field.as_table_view|safe }}
+            {% else %}
+                {{ field.as_get|safe }}
+            {% endif %}
+        {% endif %}
+
     </div>
+    {% if loop.index % 3 == 0 %}
+        </div>
+    {% endif %}
+    {% endfor %}
+    {% for field_name, field in line.fields if not field.is_reserved and field.type == 'list_rel' %}
+        <div class="row">
+        <div class="col">
+        <p style="margin-bottom: 0; margin-top: 1rem"
+           class="sort text-uppercase text-muted text-start"
+           for="{{ field.key }}">{{ field.get.title|capitalize }}:</p>
+        {% if method in ('create', 'update') %}
+            {% if field.type == 'list_rel' %}
+                {{ field.as_table_update|safe }}
+            {% else %}
+                {{ field.as_update|safe }}
+            {% endif %}
+        {% else %}
+            {% if field.type == 'list_rel' %}
+                {{ field.as_table_get|safe }}
+            {% else %}
+                {{ field.as_get|safe }}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>
 {% endblock %}
+

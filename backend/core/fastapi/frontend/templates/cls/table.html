@@ -74,11 +74,11 @@
                                hx-target="#{{ 'tbody-table' ~'--'~ cls.key }}"
                                hx-swap="beforeend transition: true"
                                hx-params="model,key,method"
-                               hx-post="/base/table/line/add"
+                               hx-post="/base/line"
                                hx-vals='{
                                 "model": "{{ cls.model_name or cls.model.name }}",
                                 "key": "{{ cls.key }}",
-                                "method": "{{ method.value or "get" }}"
+                                "method": "create"
                                 }'
                                class="btn btn-soft-secondary fw-medium">
                                 <i class="ri-add-fill me-1 align-bottom"></i> Add Item
