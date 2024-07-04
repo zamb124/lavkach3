@@ -29,6 +29,7 @@ before_fields = ['role_ids', 'company_ids', 'is_admin', 'store_id']
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class Model:
     service: object
@@ -94,7 +95,7 @@ class BaseCache:
     def get(self, id: uuid.UUID):
         return self.cache[self.service.model.__tablename__].get(id)
 
-    def set(self, sql_obj:list | object):
+    def set(self, sql_obj: list | object):
         if isinstance(sql_obj, list):
             for obj in sql_obj:
                 self.set(obj)
@@ -134,7 +135,6 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         self.user = CurrentUser(id=uuid4(), is_admin=True)
         return self
 
-
     async def _get(self, id: Any) -> Row | RowMapping:
         query = select(self.model).where(self.model.id == id)
         if self.user.is_admin:
@@ -149,7 +149,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         entity = None
         if not entity:
             entity = await self._get(id)
-            #self.basecache.set(entity)
+            # self.basecache.set(entity)
         insp = inspect(entity)
         if not insp.persistent:
             self.session.add(entity)
@@ -172,7 +172,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def list(self, _filter: FilterSchemaType | dict, size: int = 100):
         entitys = await self._list(_filter, size)
-        #self.basecache.set(entitys)
+        # self.basecache.set(entitys)
         return entitys
 
     async def _create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
@@ -183,7 +183,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=422, detail=str(ex))
         to_set = []
         exclude_rel = []
-        #exclude_rel = list(obj.model_extra.keys())
+        # exclude_rel = list(obj.model_extra.keys())
         relcations_to_create = []
         for key, value in obj.__dict__.items():
             if is_pydantic(value):
@@ -228,7 +228,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
         entity = await self._create(obj, commit=commit)
-        #self.basecache.set(entity)
+        # self.basecache.set(entity)
         return entity
 
     async def _update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
@@ -280,10 +280,11 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def prepere_bus(self, entity: ModelType):
         return {
-                'cache_tag': CacheTag.MODEL,
-                'message': f'{self.model.__tablename__}--{entity.lsn}',
-                'company_id': entity.company_id
+            'cache_tag': CacheTag.MODEL,
+            'message': f'{self.model.__tablename__}--{entity.id}',
+            'company_id': entity.company_id if hasattr(entity,  'company_id') else entity.id,
         }
+
     @broker.task
     async def update_notify(model: str, data: dict):
 
@@ -298,12 +299,10 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         else:
             logger.warning(responce.text)
 
-
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
         entity = await self._update(id, obj, commit=commit)
         message = await self.prepere_bus(entity)
         task = await self.update_notify.kiq(self.model.__tablename__, message)
-        #self.basecache.set(entity)
         return entity
 
     async def _delete(self, id: Any) -> bool:

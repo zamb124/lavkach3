@@ -20,6 +20,22 @@
     </a>
 {% endblock %}
 
+{% block button_save %}
+    <button href="#"
+       hx-include="closest tr"
+       hx-ext="json-enc"
+       hx-post="/base/table/line"
+       hx-vals='{
+"model": "{{ line.model_name }}",
+"method": "update",
+"id": "{{ line.id or ""}}",
+"key": "{{ line.key }}"
+}'
+       class="btn btn-soft-success">
+        <i class="ri-save-fill h4"></i>
+    </button>
+{% endblock %}
+
 {% block button_update %}
     <script>
         //hideModals()
@@ -134,7 +150,22 @@
 {% endblock %}
 {% block as_tr %}
     {% autoescape false %}
-    <tr id="{{ line.key }}" class="mb-0 fw-semibold text-muted">
+    <tr
+            id="{{ line.key }}"
+            class="mb-0 fw-semibold text-muted"
+            ui_key="{{ line.ui_key  }}"
+            hx-trigger="backend_update"
+            hx-post="/base/table/line"
+            hx-ext="json-enc"
+            hx-swap="outerHTML transition:true"
+            hx-target="#{{ line.key }}"
+            hx-vals='{
+                    "model": "{{ line.model_name }}",
+                    "method": "{{ method.value }}",
+                    "key": "{{ line.class_key }}",
+                    "id": "{{ line.id  }}"
+                    }'
+    >
         <th scope="row">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="{{ line.key ~ '--check' }}" value="">
@@ -167,15 +198,21 @@
 {#                    <li class="list-inline-item view-btn" title="View">#}
 {#                        {{ line.button_view }}#}
 {#                    </li>#}
-                    <li class="list-inline-item edit" title="Edit">
-                        {{ line.button_update }}
-                    </li>
-                    <li class="list-inline-item" title="Remove">
-                        {{ line.button_delete }}
-                    </li>
-                    <li class="list-inline-item" title="Actions">
-                        {{ line.button_actions }}
-                    </li>
+                    {% if line.type == 'new' %}
+                        <li class="list-inline-item edit" title="Edit">
+                            {{ line.button_save }}
+                        </li>
+                    {% else %}
+                        <li class="list-inline-item edit" title="Edit">
+                            {{ line.button_update }}
+                        </li>
+                        <li class="list-inline-item" title="Remove">
+                            {{ line.button_delete }}
+                        </li>
+                        <li class="list-inline-item" title="Actions">
+                            {{ line.button_actions }}
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </td>

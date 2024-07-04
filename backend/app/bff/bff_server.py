@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from typing import List
 
+import taskiq_fastapi
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -170,3 +171,4 @@ if cf.css_engine == 'tailwind':
     app.mount(f"/static", StaticFiles(directory=f"{path}/tailwind/static"), name="static")
 else:
     app.mount(f"/static", StaticFiles(directory=f"{path}/static"), name="static")
+taskiq_fastapi.init(broker, cf.BROKER_PATH)

@@ -447,7 +447,10 @@
                 if (modal) {
                     htmx.trigger(modal, 'update')
                 }
-            } else if (message.tag === 'MODEL') {}
+            } else if (message.tag === 'MODEL') {
+                var element = document.querySelector(`[ui_key="${message.message}"]`);
+                htmx.trigger(element, 'backend_update')
+            }
             console.log(message)
                 var element = htmx.find(message.message)
                 htmx.trigger(element, 'update')

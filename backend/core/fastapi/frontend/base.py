@@ -148,8 +148,7 @@ async def table(request: Request, schema: TableSchema):
 
 
 class LineSchema(BaseSchema):
-    model: str
-    key: str
+    id: UUID4
 
 
 @router.post("/table/line/add", response_class=HTMLResponse)
@@ -158,7 +157,26 @@ async def line(request: Request, schema: TableSchema):
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
     form_data = await request.json()
-    new_id = uuid.uuid4()
+    qp = request.query_params
+    if form_data.get('key'):
+        qp = clean_filter(form_data, form_data['key'])
+        if qp:
+            qp = {i: v for i, v in qp[0].items() if v}
+    cls = await ClassView(request, params=qp, model=schema.model, key=schema.key)
+    return cls.lines.line_new.as_tr_add
+
+
+@router.post("/table/line", response_class=HTMLResponse)
+async def line(request: Request, schema: LineSchema):
+    """
+     Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
+    """
+    cls = await ClassView(request, model=schema.model, key=schema.key)
+    match schema.method:
+        case Method.GET:
+            lines = await cls.lines.get_lines(ids=[schema.id])
+            return lines[0].as_tr_view
+    form_data = await request.json()
     qp = request.query_params
     if form_data.get('key'):
         qp = clean_filter(form_data, form_data['key'])
@@ -191,6 +209,7 @@ async def model_id(request: Request, schema: ModelSchema):
 
 class ModalSchema(BaseSchema):
     id: Optional[UUID4] = None
+    class_key: Optional[str] = None
 
     class Config:
         extra = 'allow'
@@ -201,31 +220,47 @@ async def modal(request: Request, schema: ModalSchema):
     """
      Универсальный запрос модалки, который отдает форму модели
     """
-    cls = await ClassView(request, schema.model, force_init=False)
+
     if data := schema.model_extra:
+        """Если указаны данные для модалки"""
+        cls = await ClassView(request, schema.model, key=schema.class_key)
         _json = {}
         data = clean_filter(data, schema.key)
-        method_schema = getattr(cls.model.schemas, schema.method)
-        if data:
-            try:
-                method_schema_obj = method_schema(**data[0])
-            except ValidationError as e:
-                raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
-            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
-        adapter_method = getattr(cls.model.adapter, schema.method.value)
-        await adapter_method(id=schema.id, model=schema.model, json=_json)
-        if schema.method == 'delete':
-            return cls.delete_by_key(key=schema.key)
+        match schema.method:
+            case Method.UPDATE:
+                lines = await cls.lines.update_lines(data, id=schema.id)
+                return lines[0].get_update
+            case Method.DELETE:
+                await cls.lines.delete_lines(ids=[schema.id])
+                return ""
+            case Method.CREATE:
+                lines = await cls.lines.create_lines(data)
+                return lines[0].get_update
+
         return cls.send_message(f'{cls.model.name.capitalize()}: is {schema.method.capitalize()}')
     else:
+        """Если не указаны данные для модалки, то отдает форму модалки"""
+        cls = await ClassView(request, schema.model, force_init=False)
+        match schema.method:
+            case Method.GET:
+                lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+                return lines[0].get_get
+            case Method.UPDATE:
+                lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+                return lines[0].get_update
+            case Method.DELETE:
+                lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
+                return lines[0].get_delete
+            case Method.CREATE:
+                return cls.lines.line_new.get_create
+
         if schema.method == 'create':
             return getattr(cls.lines.line_new, f'get_{schema.method.value}')
-        await cls.init(params={'id__in': schema.id})
+        line = await cls.lines.get_line(id=schema.id)
         if schema.method == 'delete' and not cls.lines:
             return cls.delete_by_key(key=schema.key)
         if not cls.lines:
             return cls.send_message(f'Line is not ready')
-        line = cls.lines.lines[0]
         return getattr(line, f'get_{schema.method.value}')
 
 

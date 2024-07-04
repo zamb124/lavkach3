@@ -22,19 +22,21 @@ cursors = {}
 async def start_processing_messages_task():
     env = await Env.get_sudo_env()
     bs = env['bus'].service
-    to_done = []
     filter = BusFilter(status__in=[BusStatus.NEW, BusStatus.ERROR])
     messages = await bs.list(_filter=filter)
     active_connections = ws_manager.active_connections
     for _, connection in active_connections.items():
         for message in messages:
             if connection.user.company_id == message.company_id:
-                await ws_manager.send_tagged_message(websocket=connection, tag=message.cache_tag, message=message.message)
+                try:
+                    await ws_manager.send_tagged_message(websocket=connection, tag=message.cache_tag, message=message.message)
+                except Exception as e:
+                    ws_manager.disconnect(websocket=connection)
                 message.status = BusStatus.DELIVERED
                 bs.session.add(message)
     await bs.session.commit()
 
-@repeat_every(seconds=20, logger=logger)
+@repeat_every(seconds=2, logger=logger)
 async def start_processing_messages() -> None:
     task = await start_processing_messages_task.kiq()
     res = await task.wait_result()

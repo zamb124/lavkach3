@@ -13,14 +13,18 @@ from fastapi import HTTPException
 from fastapi_filter.contrib.sqlalchemy import Filter
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from jinja2_fragments import render_block, render_block_async
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from pydantic import Field as PyFild
 from pydantic.fields import FieldInfo
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
+from app.bff.tkq import broker
 from core.env import Model, Env
+from core.helpers.cache import CacheTag
 from core.schemas import BaseFilter
+from core.service.base import logger
+from core.service_config import config
 from core.schemas.basic_schemes import ActionBaseSchame
 from core.utils.timeit import timed
 
@@ -342,21 +346,20 @@ class Line(BaseModel):
     """
         Обертка для обьекта
     """
-    type: LineType  # Тип поля СМ LineType
+    type: LineType                              # Тип поля СМ LineType
     lines: 'Lines'
-    model_name: str  # Имя модели
-    schema: Any  # Схема обьекта
-    actions: dict  # Доступные методы обьекта
-    fields: Optional[Fields] = None  # Поля обьекта
-    id: Optional[uuid.UUID] = None  # ID обьекта (если есть)
-    lsn: Optional[int] = None  # LSN обьекта (если есть)
-    vars: Optional[dict] = None  # vars обьекта (если есть)
-    company_id: Optional[uuid.UUID] = None  # Компания обьекта (если есть обьект)
-    display_title: Optional[str] = None  # Title (Поле title, или Компьют поле)
-    is_last: bool = False  # True Если обьект последний в Lines
-    class_key: str  # Уникальный ключ конструктора
-    is_rel: bool = False  # True если обьек является relation от поля родителя
-
+    model_name: str                             # Имя модели
+    schema: Any                                 # Схема обьекта
+    actions: dict                               # Доступные методы обьекта
+    fields: Optional[Fields] = None             # Поля обьекта
+    id: Optional[uuid.UUID] = None              # ID обьекта (если есть)
+    lsn: Optional[int] = None                   # LSN обьекта (если есть)
+    vars: Optional[dict] = None                 # vars обьекта (если есть)
+    company_id: Optional[uuid.UUID] = None      # Компания обьекта (если есть обьект)
+    display_title: Optional[str] = None         # Title (Поле title, или Компьют поле)
+    is_last: bool = False                       # True Если обьект последний в Lines
+    class_key: str                              # Уникальный ключ конструктора
+    is_rel: bool = False                        # True если обьек является relation от поля родителя
     @property
     def key(self):
         """
@@ -370,6 +373,9 @@ class Line(BaseModel):
             key = self.type.value
         return f'{self.lines.key}--{key}'
 
+    @property
+    def ui_key(self):
+        return f'{self.model_name}--{self.id}'
     @timed
     def _change_assign_line(self):
         """Присвоение нового обьекта Line'у"""
@@ -424,6 +430,11 @@ class Line(BaseModel):
     def button_delete(self):
         """Сгенерировать кнопку на удаление обьекта"""
         return self.render(block_name='button_delete')
+
+    @property
+    def button_save(self):
+        """Кнопка сохранения обьекта"""
+        return self.render(block_name='button_save')
 
     @property
     def button_actions(self):
@@ -522,10 +533,15 @@ class Lines(BaseModel):
     params: Optional[dict] = {}  # Параметры на вхрде
     join_related: Optional[bool] = True  # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
+    cls: Optional['ClassView'] = None
 
+    class Config:
+        arbitrary_types_allowed = True
     @property
     def key(self):
         return self.parent_field.key if self.parent_field else self.class_key
+
+
 
     def __bool__(self):
         if not self.lines:
@@ -539,8 +555,6 @@ class Lines(BaseModel):
     @timed
     async def _get_data(
             self,
-            env: Env,
-            model: Model,
             params: QueryParams | dict | None = None,
             join_related: bool = True,
             join_fields: list | None = None,
@@ -555,10 +569,10 @@ class Lines(BaseModel):
         if join_fields:
             self.join_fields = join_fields or []
         if not data:
-            async with model.adapter as a:
+            async with self.cls.model.adapter as a:
                 resp_data = await a.list(params=params)
                 data = resp_data['data']
-        await self.fill_lines(data, join_related, join_fields, env)
+        await self.fill_lines(data, join_related, join_fields)
 
     @timed
     async def fill_lines(
@@ -566,16 +580,13 @@ class Lines(BaseModel):
             data: Iterable,
             join_related: bool = False,
             join_fields: list = None,
-            env: Env = None,
     ):
-        if join_related and not env:
-            raise HTMXException(status_code=500, detail=f'Impossible join_related without env')
         i = len(data)
         for n, row in enumerate(data):
             line_copied = self.line_header.line_copy(type=LineType.LINE)
             line_copied.id = row['id']
             line_copied.type = LineType.LINE
-            line_copied.is_last = True if i - 1 == n else False
+            line_copied.is_last = False
             line_copied.display_title = row.get('title')
             line_copied.company_id = row.get('company_id')
             line_copied.id = row.get('id')
@@ -619,7 +630,7 @@ class Lines(BaseModel):
                     miss_value_str = ','.join([i for i in _vals if i])
                 if miss_value_str:
                     qp = {'id__in': miss_value_str}
-                    _corutine_data = asyncio.create_task(env[_fields[0].model_name].adapter.list(params=qp))
+                    _corutine_data = asyncio.create_task(self.cls.env[_fields[0].model_name].adapter.list(params=qp))
                 to_serialize.append((_vals, _fields, _corutine_data))
             for _vals, _fields, _corutine_data in to_serialize:
                 _join_lines = {}
@@ -651,6 +662,48 @@ class Lines(BaseModel):
                         _header_col.type = _header_col.type.replace('uuid', 'rel')
                         _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
 
+    async def get_lines(self, ids: list[uuid.UUID], join_related: bool=False):
+        await self._get_data(
+            schema=self.cls.model.schemas.get,
+            params={'id__in': ids},
+            join_related=join_related or self.join_related,
+            join_fields=self.join_fields,
+        )
+        return self.lines
+
+    async def update_lines(self, data: dict, id: uuid.UUID):
+        """Метод обновления обьектов"""
+        new_data = []
+        for raw_line in data:
+            try:
+                method_schema_obj = self.cls.model.schemas.update(**raw_line)
+            except ValidationError as e:
+                raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
+            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
+            line = await self.cls.model.adapter.update(id=id, json=_json)
+            new_data.append(line)
+        await self.fill_lines(new_data)
+        return self.lines
+
+    async def create_lines(self, data: dict):
+        """Метод создания обьектов"""
+        new_data = []
+        for raw_line in data:
+            try:
+                method_schema_obj = self.cls.model.schemas.create(**raw_line)
+            except ValidationError as e:
+                raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
+            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
+            line = await self.cls.model.adapter.create(json=_json)
+            new_data.append(line)
+        await self.fill_lines(new_data)
+        return self.lines
+
+    async def delete_lines(self, ids: list[uuid.UUID]):
+        """Метод удаления обьектов"""
+        for _id in ids:
+            await self.cls.model.adapter.delete(id=_id)
+        return True
     @property
     def as_table_form(self):
         """Метод отдает список обьектов как таблицу на редактирование"""
@@ -737,7 +790,7 @@ class ClassView(AsyncObj, FieldFields):
             if config_sort:
                 self.sort = {v: i for i, v in enumerate(config_sort)}
         self.is_inline = is_inline
-        self.lines = Lines(class_key=self.key)
+        self.lines = Lines(class_key=self.key, cls=self)
         line_header = await self._get_line(
             schema=self.model.schemas.get,
             type=LineType.HEADER,
@@ -767,14 +820,19 @@ class ClassView(AsyncObj, FieldFields):
             join_related=join_related or self.join_related,
             join_fields=self.join_fields,
         )
-        self._sort_columns()
 
-    def _sort_columns(self):
-        if self.lines:
-            ...
-            # sorted(self.line.fields.items(), key=lambda x: x[1].sort_idx)
-            for line in self.lines:
-                ...  # line.fields.sort(key=lambda x: x.sort_idx)
+
+
+    async def get_line_by_id(self, id: uuid.UUID):
+        return await self.get_line(id)
+
+    async def get_line_by_fieldinfo(self, fieldinfo: FieldInfo):
+        return await self.get_line(fieldinfo.id)
+
+    async def get_line_by_fieldinfo_or_id(self, fieldinfo_or_id: FieldInfo | uuid.UUID):
+        if isinstance(fieldinfo_or_id, uuid.UUID):
+            return await self.get_line(fieldinfo_or_id)
+
 
     def _get_view_vars_by_fieldinfo(self, fielinfo: FieldInfo = None):
         if not fielinfo:
