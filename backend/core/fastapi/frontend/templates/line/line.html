@@ -12,7 +12,7 @@
        hx-vals='{
 "model": "{{ line.model_name }}",
 "method": "get",
-"id": "{{ line.id or ""}}",
+"id": "{{ line.id or "" }}",
 "key": "{{ line.key }}"
 }'
        class="btn btn-soft-success">
@@ -22,16 +22,16 @@
 
 {% block button_save %}
     <button href="#"
-       hx-include="closest tr"
-       hx-ext="json-enc"
-       hx-post="/base/table/line"
-       hx-vals='{
+            hx-include="closest tr"
+            hx-ext="json-enc"
+            hx-post="/base/table/line"
+            hx-vals='{
 "model": "{{ line.model_name }}",
 "method": "update",
-"id": "{{ line.id or ""}}",
+"id": "{{ line.id or "" }}",
 "key": "{{ line.key }}"
 }'
-       class="btn btn-soft-success">
+            class="btn btn-soft-success">
         <i class="ri-save-fill h4"></i>
     </button>
 {% endblock %}
@@ -138,48 +138,48 @@
     </div>
 {% endblock %}
 {% block as_tr_header %}
-    {% for field in line.fields|table(method=method)  %}
-            <td
+    {% for field in line.fields|table(method=method) %}
+        <td
                 data-bs-toggle="tooltip"
                 data-bs-html="true"
-                title="{{field.get.description or field.get.title}}">
-                {{ field.get.title or field.field_name  }}
-            </td>
-        {% endfor %}
+                title="{{ field.get.description or field.get.title }}">
+            {{ field.get.title or field.field_name }}
+        </td>
+    {% endfor %}
 
 {% endblock %}
 {% block as_tr %}
-    {% autoescape false %}
-    <tr
-            id="{{ line.key }}"
-            class="mb-0 fw-semibold text-muted"
-            ui_key="{{ line.ui_key  }}"
-            hx-trigger="backend_update"
-            hx-post="/base/table/line"
-            hx-ext="json-enc"
-            hx-swap="outerHTML transition:true"
-            hx-target="#{{ line.key }}"
-            hx-vals='{
+{% autoescape false %}
+<tr
+        id="{{ line.key }}"
+        class="mb-0 fw-semibold text-muted"
+        ui_key="{{ line.ui_key }}"
+        hx-trigger="backend_update"
+        hx-post="/base/table/line"
+        hx-ext="json-enc"
+        hx-swap="outerHTML transition:true"
+        hx-target="#{{ line.key }}"
+        hx-vals='{
                     "model": "{{ line.model_name }}",
                     "method": "{{ method.value }}",
                     "key": "{{ line.class_key }}",
-                    "id": "{{ line.id  }}"
+                    "id": "{{ line.id }}"
                     }'
-    >
-        <th scope="row">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="{{ line.key ~ '--check' }}" value="">
-            </div>
-        </th>
-        {% for field in line.fields|table(method=method)  %}
-            {% if method in ('update', 'create') %}
-                <td class="text-center" style="padding-left: 2px; padding-right: 2px;">{{ field.as_form }}</td>
-            {% else %}
-                <td class="text-center" style="padding-left: 2px; padding-right: 2px;">{{ field.as_view }}</td>
-            {% endif %}
-        {% endfor %}
-        <td class="text-center" style="padding-bottom: 0px;">
-            <div
+>
+    <th scope="row">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="{{ line.key ~ '--check' }}" value="">
+        </div>
+    </th>
+    {% for field in line.fields|table(method=method) %}
+        {% if method in ('update', 'create') %}
+            <td class="text-center" style="padding-left: 2px; padding-right: 2px;">{{ field.as_update }}</td>
+        {% else %}
+            <td class="text-center" style="padding-left: 2px; padding-right: 2px;">{{ field.as_get }}</td>
+        {% endif %}
+    {% endfor %}
+    <td class="text-center" style="padding-bottom: 0px;">
+        <div
                 {% if line.is_last and not line.is_rel %}
                     hx-include="{{ '#filter' ~'--'~ line.class_key }}"
                     hx-post="/base/table"
@@ -192,30 +192,82 @@
                             "key": "{{ line.class_key }}"
                         }'
                 {% endif %}>
+        </div>
+        <div>
+            <ul class="list-inline text-center position-relative">
+                {#                    <li class="list-inline-item view-btn" title="View">#}
+                {#                        {{ line.button_view }}#}
+                {#                    </li>#}
+                {% if line.type == 'new' %}
+                    <li class="list-inline-item edit" title="Edit">
+                        {{ line.button_save }}
+                    </li>
+                {% else %}
+                    <li class="list-inline-item edit" title="Edit">
+                        {{ line.button_update }}
+                    </li>
+                    <li class="list-inline-item" title="Remove">
+                        {{ line.button_delete }}
+                    </li>
+                    <li class="list-inline-item" title="Actions">
+                        {{ line.button_actions }}
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </td>
+</tr>
+{% endautoescape %}
+{% endblock %}
+{% block as_div %}
+    <div class="row formline was-validated" id="{{ line.key }}" ui_key="{{ line.ui_key }}">
+        {% for field_name, field in line.fields if not field.is_reserved and field.type != 'list_rel' %}
+            {% if loop.length % 3 != 0 and loop.first %}
+                <div class="row">
+            {% endif %}
+            {% if loop.index0 % 3 == 0 %}
+                <div class="row">
+            {% endif %}
+        <div class="col">
+            {{ field.label|safe }}
+            {% if method in ('create', 'update') %}
+                {% if field.type == 'list_rel' %}
+                    {{ field.as_table_update|safe }}
+                {% else %}
+                    {{ field.as_update|safe }}
+                {% endif %}
+            {% else %}
+                {% if field.type == 'list_rel' %}
+                    {{ field.as_table_view|safe }}
+                {% else %}
+                    {{ field.as_get|safe }}
+                {% endif %}
+            {% endif %}
+
+        </div>
+        {% if loop.index % 3 == 0 %}
             </div>
-            <div>
-                <ul class="list-inline text-center position-relative">
-{#                    <li class="list-inline-item view-btn" title="View">#}
-{#                        {{ line.button_view }}#}
-{#                    </li>#}
-                    {% if line.type == 'new' %}
-                        <li class="list-inline-item edit" title="Edit">
-                            {{ line.button_save }}
-                        </li>
-                    {% else %}
-                        <li class="list-inline-item edit" title="Edit">
-                            {{ line.button_update }}
-                        </li>
-                        <li class="list-inline-item" title="Remove">
-                            {{ line.button_delete }}
-                        </li>
-                        <li class="list-inline-item" title="Actions">
-                            {{ line.button_actions }}
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </td>
-    </tr>
-    {% endautoescape %}
+        {% endif %}
+        {% endfor %}
+        {% for field_name, field in line.fields if not field.is_reserved and field.type == 'list_rel' %}
+            <div class="row">
+            <div class="col">
+            <p style="margin-bottom: 0; margin-top: 1rem"
+               class="sort text-uppercase text-muted text-start"
+               for="{{ field.key }}">{{ field.get.title|capitalize }}:</p>
+            {% if method in ('create', 'update') %}
+                {% if field.type == 'list_rel' %}
+                    {{ field.as_table_update|safe }}
+                {% else %}
+                    {{ field.as_update|safe }}
+                {% endif %}
+            {% else %}
+                {% if field.type == 'list_rel' %}
+                    {{ field.as_table_get|safe }}
+                {% else %}
+                    {{ field.as_get|safe }}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
 {% endblock %}

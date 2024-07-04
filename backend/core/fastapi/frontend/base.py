@@ -149,6 +149,7 @@ async def table(request: Request, schema: TableSchema):
 
 class LineSchema(BaseSchema):
     id: UUID4
+    mode: str
 
 
 @router.post("/table/line/add", response_class=HTMLResponse)
@@ -163,10 +164,10 @@ async def line(request: Request, schema: TableSchema):
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}
     cls = await ClassView(request, params=qp, model=schema.model, key=schema.key)
-    return cls.lines.line_new.as_tr_add
+    return cls.lines.line_new.as_tr_create
 
 
-@router.post("/table/line", response_class=HTMLResponse)
+@router.post("/line", response_class=HTMLResponse)
 async def line(request: Request, schema: LineSchema):
     """
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
@@ -183,7 +184,7 @@ async def line(request: Request, schema: LineSchema):
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}
     cls = await ClassView(request, params=qp, model=schema.model, key=schema.key)
-    return cls.lines.line_new.as_tr_add
+    return cls.lines.line_new.as_tr_create
 
 
 class ModelSchema(BaseSchema):

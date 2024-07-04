@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <input class="datetime form-control" type="text"
            name="{{ field.key }}"
             {% if field.required %} aria-required="true" {% endif %}
@@ -6,7 +6,7 @@
            placeholder="{{ field.update.title or field.field_name }}" id="{{ field.field_name }}"
            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
     <input  type="text"
                     class="form-control"
                     {% if field.required %} required {% endif %}

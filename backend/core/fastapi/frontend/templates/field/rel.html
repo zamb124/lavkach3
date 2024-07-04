@@ -1,4 +1,4 @@
-{% block as_view %}
+{% block as_get %}
     <div class="text-start form-control" style="background-color: var(--vz-tertiary-bg);">
         <i
                 class="rel ri-links-fill fs-6 text-danger"> </i>
@@ -21,7 +21,7 @@
 
     </div>
 {% endblock %}
-{% block as_form %}
+{% block as_update %}
     <select class="uuid form-control is-valid text-start "
             id="{{ field.key }}"
             {% if field.update.readonly %} readonly {% endif %}

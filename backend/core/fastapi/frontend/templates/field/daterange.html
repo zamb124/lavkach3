@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <input type="text" id="{{ field.key }}" size="24" style="text-align:center">
     <script>
             window.addEventListener("load", function (event) {
@@ -6,7 +6,7 @@
             });
         </script>
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
     <input  type="text"
                     class="form-control"
                     {% if field.required %} required {% endif %}

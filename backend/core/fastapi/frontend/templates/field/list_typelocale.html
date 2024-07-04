@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <select class="list_typelocale form-control is-valid"
             id="{{ field.key }}"
             name="{{ field.key }}"
@@ -49,7 +49,7 @@
         })();
     </script>
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
         {{ field.val.english_name or field.val.name or field.val}}
 {% endblock %}
 {% block as_table %}

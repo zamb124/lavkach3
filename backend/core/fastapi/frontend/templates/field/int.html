@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <input
             type="number"
             class="int form-control"
@@ -11,7 +11,7 @@
             style="padding-right: 1rem; padding-left: 1rem"
     >
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
         <input  type="text"
                     class="form-control"
                     {% if field.required %} required {% endif %}

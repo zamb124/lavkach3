@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <input
             type="number"
             class="form-control"
@@ -7,7 +7,7 @@
             value="{{ field.val.national_number }}"
     >
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
     <input  type="text"
                     class="form-control"
                     {% if field.required %} required {% endif %}

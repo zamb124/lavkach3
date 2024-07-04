@@ -1,4 +1,5 @@
 {% block modal %}
+    {% autoescape false %}
     <div class="modal" id="{{ 'modal_'~line.class_key }}" tabindex="-1" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
     <div class="modal-content">
@@ -26,85 +27,37 @@
 
         </div>
     </div>
-    <div class="was-validated" id="{{ 'modal_body'~ line.class_key }}">
+    <div id="{{ 'modal_body'~ line.class_key }}">
         <div class="modal-body text-center p-5">
             <lord-icon
                     src="https://cdn.lordicon.com/ghhwiltn.json"
                     trigger="loop"
                     style="width:150px;height:150px">
             </lord-icon>
-
-            <div class="row">
-                {% for field_name, field in line.fields if not field.is_reserved and field.type != 'list_rel' %}
-                    {% if loop.length % 3 != 0 and loop.first %}
-                        <div class="row">
-                    {% endif %}
-                    {% if loop.index0 % 3 == 0 %}
-                        <div class="row">
-                    {% endif %}
-                <div class="col">
-                    {{ field.label|safe }}
-                    {% if method in ('create', 'update') %}
-                        {% if field.type == 'list_rel' %}
-                            {{ field.as_table_form|safe }}
-                        {% else %}
-                            {{ field.as_form|safe }}
-                        {% endif %}
-                    {% else %}
-                        {% if field.type == 'list_rel' %}
-                            {{ field.as_table_view|safe }}
-                        {% else %}
-                            {{ field.as_view|safe }}
-                        {% endif %}
-                    {% endif %}
-
-                </div>
-                {% if loop.index % 3 == 0 %}
-                    </div>
-                {% endif %}
-                {% endfor %}
-                {% for field_name, field in line.fields if not field.is_reserved and field.type == 'list_rel' %}
-                    <div class="row">
-                    <div class="col">
-                    <p style="margin-bottom: 0; margin-top: 1rem"
-                       class="sort text-uppercase text-muted text-start"
-                       for="{{ field.key }}">{{ field.get.title|capitalize }}:</p>
-                    {% if method in ('create', 'update') %}
-                        {% if field.type == 'list_rel' %}
-                            {{ field.as_table_form|safe }}
-                        {% else %}
-                            {{ field.as_form|safe }}
-                        {% endif %}
-                    {% else %}
-                        {% if field.type == 'list_rel' %}
-                            {{ field.as_table|safe }}
-                        {% else %}
-                            {{ field.as_view|safe }}
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-
-                </div></div>
+            {% if method in ('create', 'update') %}
+                {{ line.as_div_update }}
+            {% else %}
+                {{ line.as_div_get }}
+            {% endif %}
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
                     </button>
                     {% if method in ('create', 'update') %}
                         <button
-                                id="{{ 'submit'~line.key }}"
+                                id="{{ 'submit-'~line.key }}"
                                 class="btn btn-success"
                                 hx-boost="true"
-                                hx-include="#{{ 'modal_body'~ line.class_key  }}"
+                                hx-include="#{{ line.key }}"
                                 hx-post="/base/modal"
                                 hx-ext="json-enc"
-                                hx-target="#{{ 'modal_body'~ line.class_key }}"
-                                hx-select="#{{ 'modal_body'~ line.class_key }}"
+                                hx-target="#{{ line.key }}"
+                                hx-select="#{{ line.key }}"
                                 hx-swap="outerHTML transition: true"
                                 hx-vals='{
                                     {% if line.id %}"id": "{{ line.id }}",{% endif %}
                                     "model": "{{ line.model_name }}",
                                     "method": "{{ method.value }}",
                                     "key": "{{ line.key }}",
-                                    "class_key": "{{ line.class_key }}"
                                     }'
                         >
                             Save
@@ -112,15 +65,15 @@
                     {% endif %}
 
                 </div>
-
-                </div>
             </div>
+
         </div>
     </div>
     <script>
         var modal = new bootstrap.Modal('#{{ 'modal_'~line.class_key }}')
         modal.show()
     </script>
+{% endautoescape %}
 {% endblock %}
 
 {% block delete %}

@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <select class="uuid form-control is-valid text-start "
             id="{{ field.key }}"
             {% if field.update.readonly %}readonly {% endif %}
@@ -134,7 +134,7 @@
         })();
     </script>
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
     {% if field.val %}
         <div id="{{ field.key }}" class="uuid form-control text-start "
              style="background-color: var(--vz-tertiary-bg);"

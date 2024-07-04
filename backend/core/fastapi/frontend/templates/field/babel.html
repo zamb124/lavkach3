@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <div    id="{{ field.key }}"
             class="babel row"
             hx-ext="json-enc"
@@ -14,7 +14,7 @@
     >
     </div>
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
     <input  type="text"
                     class="form-control"
                     {% if field.required %} required {% endif %}

@@ -1,4 +1,4 @@
-{% block as_view %}
+{% block as_get %}
     <input
             name="{{ field.key }}"
             id="{{ field.key }}"
@@ -21,7 +21,7 @@
     </script>
 {% endblock %}
 
-{% block as_form %}
+{% block as_update %}
     <input
             name="{{ field.key }}"
             id="{{ field.key }}"
@@ -77,9 +77,9 @@
     </script>
 {% endblock %}
 
-{% block as_table_form %}
-    {{ field.as_table|safe }}
+{% block as_table_update %}
+    {{ field.as_table_update|safe }}
 {% endblock %}
 {% block as_table_view %}
-    {{ field.as_table|safe }}
+    {{ field.as_table_get|safe }}
 {% endblock %}

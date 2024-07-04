@@ -7,7 +7,7 @@ from collections import defaultdict
 from enum import Enum
 from inspect import isclass
 from types import UnionType
-from typing import Optional, Any, get_args, get_origin, Annotated, Union, Iterable
+from typing import Optional, Any, get_args, get_origin, Annotated, Union, Iterable, Callable
 
 from fastapi import HTTPException
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -28,10 +28,6 @@ from core.service_config import config
 from core.schemas.basic_schemes import ActionBaseSchame
 from core.utils.timeit import timed
 
-"""
-
-
-"""
 
 path = os.path.dirname(os.path.abspath(__file__))
 
@@ -60,6 +56,7 @@ def form(fields: 'Fields', method: 'MethodType'):
         Фильтр, который смотрит, если поле подходит к методу
     """
     return _crud_filter(fields, method, 'form')
+
 
 
 environment.filters['table'] = table
@@ -263,21 +260,21 @@ class Field(BaseModel, FieldFields):
         )
 
     @property
-    def as_form(self):
+    def as_update(self):
         """
             Отобразить поле с возможностью редактирования
         """
-        return self.render(block_name='as_form')
+        return self.render(block_name='as_update')
 
     @property
-    def as_view(self):
+    def as_get(self):
         """
             Отобразить поле только на чтение
         """
-        return self.render(block_name='as_view')
+        return self.render(block_name='as_get')
 
     @property
-    def as_table(self):
+    def as_table_get(self):
         """
             Отобразить поле как Таблицу (Если поле является list_rel)
         """
@@ -290,7 +287,7 @@ class Field(BaseModel, FieldFields):
         )
 
     @property
-    def as_table_form(self):
+    def as_table_update(self):
         """
             Отобразить поле как Таблицу на редактирование (Если поле является list_rel)
         """
@@ -442,7 +439,7 @@ class Line(BaseModel):
         return self.render(block_name='button_actions')
 
     @property
-    def as_tr_view(self):
+    def as_tr_get(self):
         """Отобразить обьект как строку таблицы на просмотр"""
         return self.render(block_name='as_tr', method=MethodType.GET)
 
@@ -452,24 +449,29 @@ class Line(BaseModel):
         return self.render(block_name='as_tr_header', method=MethodType.GET)
 
     @property
-    def as_tr_form(self):
+    def as_tr_update(self):
         """Отобразить обьект как строку таблицы на редактирование"""
         return self.render(block_name='as_tr', method=MethodType.UPDATE)
 
     @property
-    def as_tr_add(self) -> str:
+    def as_tr_create(self) -> str:
         """Отобразить обьект как строку таблицы на создание"""
         return self.render(block_name='as_tr', method=MethodType.CREATE)
 
     @property
-    def as_card_form(self):
-        """Отобразить обьект как card на редактирование"""
-        return self.render(block_name='as_form')
+    def as_div_get(self):
+        """Отобразить обьект как строку таблицы на просмотр"""
+        return self.render(block_name='as_div', method=MethodType.GET)
 
     @property
-    def as_card_view(self):
-        """Отобразить обьект как card на просмотр"""
-        return self.render(block_name='as_form')
+    def as_div_update(self):
+        """Отобразить обьект как строку таблицы на просмотр"""
+        return self.render(block_name='as_div', method=MethodType.UPDATE)
+
+    @property
+    def as_div_create(self):
+        """Отобразить обьект как строку таблицы на просмотр"""
+        return self.render(block_name='as_div', method=MethodType.CREATE)
 
     @property
     def get_update(self) -> str:
@@ -705,23 +707,23 @@ class Lines(BaseModel):
             await self.cls.model.adapter.delete(id=_id)
         return True
     @property
-    def as_table_form(self):
+    def as_table_update(self):
         """Метод отдает список обьектов как таблицу на редактирование"""
         rendered_html = ''
         for i, line in enumerate(self.lines):
             if i == len(self.lines) - 1:
                 line.is_last = True
-            rendered_html += line.as_tr_form
+            rendered_html += line.as_tr_update
         return rendered_html
 
     @property
-    def as_table_view(self):
+    def as_table_get(self):
         """Метод отдает список обьектов как таблицу на просмотр"""
         rendered_html = ''
         for i, line in enumerate(self.lines):
             if i == len(self.lines) - 1:
                 line.is_last = True
-            rendered_html += line.as_tr_view
+            rendered_html += line.as_tr_get
         return rendered_html
 
     @property
@@ -1087,7 +1089,7 @@ class ClassView(AsyncObj, FieldFields):
         )
 
     @property
-    def as_table_form(self):
+    def as_table_update(self):
         """Метод отдает Таблицу с хидером на редакетирование"""
         return render_block(
             environment=environment, template_name=f'cls/table.html',
@@ -1163,7 +1165,7 @@ class ClassView(AsyncObj, FieldFields):
             rendered_html = render_block(
                 environment=environment,
                 template_name=f'view/{type}.html',
-                block_name='as_view',
+                block_name='as_get',
                 view=self
             )
         except Exception as ex:

@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <input
             class="form-control"
             name="{{ field.key }}"
@@ -6,7 +6,7 @@
             value="{{ field.val }}"
     >
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
         {{ field.val.english_name or field.val.name or field.val}}
 {% endblock %}
 {% block as_table %}

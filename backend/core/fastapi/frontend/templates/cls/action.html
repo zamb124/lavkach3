@@ -41,7 +41,7 @@
                                         {% endif %}
                                     <div class="col" {% if field.field_name in ('id', 'ids', 'lsn', 'vars') %} style="display: none" {% endif %}>
                                         {{ field.label|safe }}
-                                        {{ field.as_form|safe }}
+                                        {{ field.as_get|safe }}
                                     </div>
                                     {% if loop.index % 3 == 0 %}
                                         </div>

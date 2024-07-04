@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <select id="{{ field.key }}"
             name="{{ field.key }}"
             {% if field.required %} required {% endif %}
@@ -33,7 +33,7 @@
         })();
     </script>
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
     <select id="{{ field.key }}"
             name="{{ field.key }}"
             class="form-control"

@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
         <input
                 class="id form-control"
                 {% if field.update.required %} required {% endif %}
@@ -9,7 +9,7 @@
                 value="{{ field.val if field.val else "" }}"
         >
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
     <a class="text-danger form-control " style="background-color: var(--vz-tertiary-bg);"
            href="#"
            hx-include="none"

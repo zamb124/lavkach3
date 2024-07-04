@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <select class="form-control is-valid"
             id="{{ field.key }}"
             name="{{ field.key }}"
@@ -47,7 +47,7 @@
         })();
     </script>
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
     <input  type="text"
                     class="form-control"
                     {% if field.required %} required {% endif %}

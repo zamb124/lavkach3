@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <select class="list_typecountry form-control select"
             id="{{ field.key }}"
             name="{{ field.key }}"
@@ -50,6 +50,6 @@
         })();
     </script>
 {% endblock %}
-{% block as_view %}
+{% block as_get %}
 {{ field.val.english_name or field.val.name or field.val}}
 {% endblock %}

@@ -1,4 +1,4 @@
-{% block as_form %}
+{% block as_update %}
     <select class="list-uuid form-control is-valid"
             id="{{ field.key }}"
             {% if field.update.required and not field.is_filter %} required {% endif %}
@@ -93,7 +93,7 @@
 
 {% endblock %}
 
-{% block as_view %}
+{% block as_get %}
         <div class="text-start form-control" style="background-color: var(--vz-tertiary-bg); min-height: 40px" id="{{ field.key }}">
         </div>
     <script>
