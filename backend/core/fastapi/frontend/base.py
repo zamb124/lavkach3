@@ -226,48 +226,20 @@ async def modal(request: Request, schema: ModalSchema):
     """
      Универсальный запрос модалки, который отдает форму модели
     """
-
-    if data := schema.model_extra:
-        """Если указаны данные для модалки"""
-        cls = await ClassView(request, schema.model, key=schema.class_key)
-        _json = {}
-        data = clean_filter(data, schema.key)
-        match schema.method:
-            case Method.UPDATE:
-                lines = await cls.lines.update_lines(data, id=schema.id)
-                return lines[0].get_update
-            case Method.DELETE:
-                await cls.lines.delete_lines(ids=[schema.id])
-                return ""
-            case Method.CREATE:
-                lines = await cls.lines.create_lines(data)
-                return lines[0].get_update
-
-        return cls.send_message(f'{cls.model.name.capitalize()}: is {schema.method.capitalize()}')
-    else:
-        """Если не указаны данные для модалки, то отдает форму модалки"""
-        cls = await ClassView(request, schema.model, force_init=False)
-        match schema.method:
-            case Method.GET:
-                lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
-                return lines[0].get_get
-            case Method.UPDATE:
-                lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
-                return lines[0].get_update
-            case Method.DELETE:
-                lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
-                return lines[0].get_delete
-            case Method.CREATE:
-                return cls.lines.line_new.get_create
-
-        if schema.method == 'create':
-            return getattr(cls.lines.line_new, f'get_{schema.method.value}')
-        line = await cls.lines.get_line(id=schema.id)
-        if schema.method == 'delete' and not cls.lines:
-            return cls.delete_by_key(key=schema.key)
-        if not cls.lines:
-            return cls.send_message(f'Line is not ready')
-        return getattr(line, f'get_{schema.method.value}')
+    """Если не указаны данные для модалки, то отдает форму модалки"""
+    cls = await ClassView(request, schema.model, force_init=False)
+    match schema.method:
+        case Method.GET:
+            lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+            return lines[0].get_get
+        case Method.UPDATE:
+            lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+            return lines[0].get_update
+        case Method.DELETE:
+            lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
+            return lines[0].get_delete
+        case Method.CREATE:
+            return cls.lines.line_new.get_create
 
 
 class ActionSchema(BaseSchema):
