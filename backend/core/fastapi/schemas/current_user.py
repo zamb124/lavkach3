@@ -17,6 +17,8 @@ class CurrentUser(BaseModel):
     role_ids: Optional[List[str]] = []
     is_admin: Optional[bool] = False
     locale: Optional[TypeLocale] = False
+    nickname: Optional[str] = None
+    email: Optional[str] = None
 
     class Config:
         validate_assignment = True

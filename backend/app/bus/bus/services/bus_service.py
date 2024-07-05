@@ -23,7 +23,15 @@ class BusService(BaseService[Bus, BusCreateScheme, BusUpdateScheme, BusFilter]):
 
     @permit('bus_create')
     async def create(self, obj: CreateSchemaType) -> ModelType:
+        from app.bus.bus_tasks import send_message
         bus_entity = await super(BusService, self).create(obj)
+        send_message = await send_message.kiq({
+            'bus_id': bus_entity.id,
+            'cache_tag': bus_entity.cache_tag,
+            'message': bus_entity.message,
+            'company_id': bus_entity.company_id,
+            'vars': bus_entity.vars,
+        })
         return bus_entity
 
     @permit('bus_delete')

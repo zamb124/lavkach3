@@ -25,6 +25,11 @@
         <link type="text/css" rel="stylesheet"
               href="https://cdn.jsdelivr.net/gh/alumuko/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.css">
         <style>
+            @media (min-width: 768px) {
+                .topbar-user {
+                    background-color: var(--vz-topbar-);
+                }
+            }
 
             [data-bs-theme=dark] {
 
@@ -210,26 +215,24 @@
     </div>
 </div>
 <!-- Begin page -->
-
-<div id="layout-wrapper">
+    <div id="layout-wrapper">
     <div hx-get="/bff/topbar" hx-trigger="load"></div>
-    <div id="errors"></div>
+<div id="errors"></div>
     {% block sidebar %}
         {% include "partials/sidebar.html" %}
     {% endblock sidebar %}
-    <div id="htmx_content">
-        {% block content %}
-            <!--<div hx-get="/" hx-trigger="load"></div>-->
-        {% endblock %}
-    </div>
-
+<div id="htmx_content">
+    {% block content %}
+        <!--<div hx-get="/" hx-trigger="load"></div>-->
+    {% endblock %}
+</div>
     <div hx-get="/bff/footer" hx-trigger="load">
         {% block footer %}
 
         {% endblock footer %}
-    </div>
 
-    <div id="trash"></div>
+
+<div id="trash"></div>
 </div>
 
 {% block extra_content %}

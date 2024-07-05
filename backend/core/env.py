@@ -154,4 +154,16 @@ class Env:
         setattr(client, 'scope', {'env': env})
         return env
 
+    @classmethod
+    async def get_env(self):
+        """
+            Создает env путем ,без авторизации суперюзера
+        """
+        client = asyncclient()
+        env = Env(domains, client)
+        user = CurrentUser(id=uuid.uuid4(), is_admin=True)
+        setattr(client, 'user', user)
+        setattr(client, 'scope', {'env': env})
+        return env
+
 

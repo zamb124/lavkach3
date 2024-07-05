@@ -1,4 +1,3 @@
-import uuid
 from enum import Enum
 from typing import Optional, Any
 
@@ -6,8 +5,6 @@ from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, field_validator, UUID4, model_validator
-from pydantic_core import ValidationError
-from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
 
 from core.fastapi.frontend.schema_recognizer import ClassView
@@ -15,12 +12,12 @@ from core.fastapi.frontend.uttils import clean_filter
 
 
 class Method(str, Enum):
-    GET: str = 'get'                      # Дать запись на чтение
-    CREATE: str = 'create'                # Дать запись на создание
-    UPDATE: str = 'update'                # Дать запись на изменение
-    DELETE: str = 'delete'                # Дать запись на удаление
-    SAVE: str = 'save'                    # Сохранить изменения
-    SAVE_CREATE: str = 'save_create'      # Сохранить новую запись
+    GET: str = 'get'  # Дать запись на чтение
+    CREATE: str = 'create'  # Дать запись на создание
+    UPDATE: str = 'update'  # Дать запись на изменение
+    DELETE: str = 'delete'  # Дать запись на удаление
+    SAVE: str = 'save'  # Сохранить изменения
+    SAVE_CREATE: str = 'save_create'  # Сохранить новую запись
     DELETE_DELETE: str = 'delete_delete'  # Подтвердить удаление записи
 
 
@@ -35,7 +32,6 @@ class BaseSchema(BaseModel):
     model: str
     key: str
     method: Method
-
 
 
 router = APIRouter(
@@ -158,6 +154,7 @@ class LineSchema(BaseSchema):
     class Config:
         extra = "allow"
 
+
 @router.post("/line", response_class=HTMLResponse)
 async def line(request: Request, schema: LineSchema):
     """
@@ -189,7 +186,6 @@ async def line(request: Request, schema: LineSchema):
         """Сохранение записи при создании"""
         data = clean_filter(schema.model_extra, schema.key)
         await cls.lines.create_lines(data)
-
 
 
 class ModelSchema(BaseSchema):
@@ -226,7 +222,6 @@ async def modal(request: Request, schema: ModalSchema):
     """
      Универсальный запрос модалки, который отдает форму модели
     """
-    """Если не указаны данные для модалки, то отдает форму модалки"""
     cls = await ClassView(request, schema.model, force_init=False)
     match schema.method:
         case Method.GET:
