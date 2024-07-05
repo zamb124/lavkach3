@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import uuid
 from collections import defaultdict
@@ -220,6 +221,9 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                     raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
                 else:
                     raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
+            except TimeoutError as e:
+                await asyncio.sleep(1)
+                await self.session.refresh(entity)
             except Exception as e:
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         else:

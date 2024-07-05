@@ -471,7 +471,7 @@
                     if (message.vars.method === 'update') {
                         console.log(el.attributes.lsn)
                         var elLsn = Number(el.attributes.lsn.nodeValue)
-                        if (elLsn < message.vars.lsn) {
+                        if (true) {
                             el.attributes.lsn.nodeValue = message.vars.lsn
                             htmx.trigger(el, 'backend_update')
                             var myToast = Toastify({

@@ -29,8 +29,8 @@ def reset_session_context(context: Token) -> None:
 
 
 engines = {
-    "writer": create_async_engine(config.WRITER_DB_URL, echo=True, pool_recycle=3600),
-    "reader": create_async_engine(config.READER_DB_URL, echo=True, pool_recycle=3600),
+    "writer": create_async_engine(config.WRITER_DB_URL, echo=True, pool_recycle=3600, max_overflow=30),
+    "reader": create_async_engine(config.READER_DB_URL, echo=True, pool_recycle=3600, max_overflow=30),
 }
 
 

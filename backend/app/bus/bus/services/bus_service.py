@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bus.bus.models.bus_models import Bus
 from app.bus.bus.shemas.bus_schemas import BusCreateScheme, BusUpdateScheme, BusFilter
-from app.bus.tkq import broker
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 

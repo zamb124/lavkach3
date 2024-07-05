@@ -59,7 +59,7 @@ async def start_processing_messages_task():
                 bs.session.add(message)
     await bs.session.commit()
 
-@repeat_every(seconds=100, logger=logger)
+@repeat_every(seconds=99999, logger=logger)
 async def start_processing_messages() -> None:
     task = await start_processing_messages_task.kiq()
     res = await task.wait_result()
