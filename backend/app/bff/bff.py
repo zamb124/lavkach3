@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Annotated
 
 from fastapi import APIRouter
@@ -35,6 +36,24 @@ async def footer(request: Request):
 @index_router.get("/bff/topbar", response_class=HTMLResponse)
 async def topbar(request: Request):
     return templates.TemplateResponse(request, 'partials/topbar.html', context={})
+
+@index_router.get("/bff/sidebar", response_class=HTMLResponse)
+async def sidebar(request: Request):
+    env = request.scope['env']
+    domains = {}
+    for route in request.app.routes:
+        try:
+            domain_name, model_name = route.tags
+            if domain := domains.get(domain_name):
+                domain[model_name].append(route)
+            else:
+                domains[domain_name] = defaultdict(list)
+                domains[domain_name][model_name].append(route)
+        except:
+            continue
+    return templates.TemplateResponse(
+        request, 'partials/sidebar.html', context={'domains': domains}
+    )
 
 
 @index_router.get("/", response_class=HTMLResponse)

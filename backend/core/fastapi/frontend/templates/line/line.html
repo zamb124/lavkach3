@@ -109,7 +109,7 @@
 {% endblock %}
 
 {% block button_actions %}
-    <div class="dropdown">
+
 
         <button class="btn btn-soft-info" type="button" data-bs-toggle="dropdown" aria-expanded="false"
                 id="{{ "actions-" ~ line.key }}">
@@ -121,10 +121,11 @@
                     <a
                             data-bs-toggle="{{ action_vals.doc }}"
                             data-key="{{ action_vals.tkey }}"
-                            hx-include="model,action,method,ids,key"
+                            hx-params="model,action,method,ids,key"
                             hx-trigger="click"
                             hx-ext="json-enc"
-                            hx-target="#modal"
+                            hx-target="this"
+                            hx-swap="none"
                             hx-post="/base/action"
                             hx-vals='{
                                 "model": "{{ line.model_name }}",
@@ -140,7 +141,7 @@
             {% endfor %}
 
         </ul>
-    </div>
+
 {% endblock %}
 {% block as_tr_header %}
     {% for field in line.fields|table(method=method) %}
@@ -289,5 +290,18 @@
         {% endif %}
     {% endfor %}
 </div>
+{% endblock %}
+{% block as_item %}
+{% autoescape false %}
+<a href="{{ line.domain_name ~'/'~ line.model_name}}"
+   class="dropdown-item notify-item py-2" style="display: block;">
+    <div class="d-flex">
+        <div class="flex-grow-1">
+            <h6 class="m-0">{{ line.display_name}}</h6>
+            <span class="fs-11 mb-0 text-muted">Manager</span>
+        </div>
+    </div>
+</a>
+{% endautoescape %}
 {% endblock %}
 

@@ -57,167 +57,48 @@
                             </ul>
                         </div>
                     </li> <!-- end Dashboard Menu -->
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-admin">Administration</span>
+                    {% for domain_name, domain in domains.items() %}
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#sidebarInventory" data-bs-toggle="collapse"
-                           role="button" aria-expanded="false" aria-controls="sidebarInventory">
-                            <i class="ri-apps-2-line"></i> <span data-key="t-inventory">Inventory</span>
+                        <a class="nav-link menu-link" href="#sidebarDomain{{ domain_name }}" data-bs-toggle="collapse"
+                           role="button" aria-expanded="false" aria-controls="sidebar{{ domain_name|capitalize }}">
+                            <i class="ri-apps-2-line"></i> <span data-key="t-domain-{{ domain_name }}">{{ domain_name|capitalize }}</span>
                         </a>
-                        <div class="collapse menu-dropdown" id="sidebarInventory">
+                        <div class="collapse menu-dropdown" id="sidebarDomain{{ domain_name }}">
                             <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="#sidebarOrders" class="nav-link" data-bs-toggle="collapse" role="button"
-                                       aria-expanded="false" aria-controls="sidebarOrders" data-key="t-orders">
-                                        Orders
-                                    </a>
-                                    <div class="collapse menu-dropdown" id="sidebarOrders">
-                                        <ul class="nav nav-sm flex-column">
-                                            <li class="nav-item">
-                                                <a
-                                                    href="/inventory/order/mystore"
-                                                    class="nav-link"
-                                                    data-key="t-my-store"
-                                                    hx-target="#htmx_content"
-                                                    hx-swap="innerHTML transition:true"
-                                                    hx-push-url="true"
-                                                >
-                                                    My Store </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a
-                                                        href="/inventory/order"
-                                                        hx-target="#htmx_content"
-                                                        hx-push-url="true"
-                                                        hx-get="/inventory/order"
-                                                        class="nav-link"
-                                                        data-key="t-orders"
-                                                >
-                                                    Orders </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a
-                                                        href="/inventory/order_type"
-                                                        hx-target="#htmx_content"
-                                                        hx-push-url="true"
-                                                        hx-get="/inventory/order_type"
-                                                        class="nav-link"
-                                                        data-key="t-order_types"
-                                                >
-                                                    Order Types </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a
-                                                        href="/inventory/move"
-                                                        hx-target="#htmx_content"
-                                                        hx-push-url="true"
-                                                        class="nav-link"
-                                                        data-key="t-moves"
-                                                >
-                                                    Moves </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#sidebarStores" class="nav-link" data-bs-toggle="collapse" role="button"
-                                       aria-expanded="false" aria-controls="sidebarStores" data-key="t-shops">
-                                        Stores
-                                    </a>
-                                    <div class="collapse menu-dropdown" id="sidebarStores">
-                                        <ul class="nav nav-sm flex-column">
-                                            <li class="nav-item">
-                                                <a
-                                                    href="/basic/store"
-                                                    hx-target="#htmx_content"
-                                                    hx-push-url="true"
-                                                    hx-get="/basic/store"
-                                                    class="nav-link"
-                                                    data-key="t-all-store"> Stores
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
-                                <li class="nav-item">
-                                    <a
-                                                    href="/inventory/quant"
-                                                    hx-target="#htmx_content"
-                                                    hx-push-url="true"
-                                                    class="nav-link"
-                                                    data-key="t-stocks"> Stocks
-                                                </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#sidebarInventoryProducts" class="nav-link" data-bs-toggle="collapse" role="button"
-                                       aria-expanded="false" aria-controls="sidebarProducts" data-key="t-products">
-                                        Products
-                                    </a>
-                                    <div class="collapse menu-dropdown" id="sidebarInventoryProducts">
-                                        <ul class="nav nav-sm flex-column">
-                                            <li class="nav-item">
-                                                <a
-                                                    href="/basic/product_category"
-                                                    hx-target="#htmx_content"
-                                                    hx-push-url="true"
-                                                    class="nav-link"
-                                                    data-key="t-product-category"> Product Category
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a
-                                                    href="/basic/product_storage_type"
-                                                    hx-target="#htmx_content"
-                                                    hx-push-url="true"
-                                                    class="nav-link"
-                                                    data-key="t-product-storage-type"> Product Storage Type
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-
+                                {% for model_name, routes in domain.items() %}
+                                    <li class="nav-item">
+                                        <a href="#sidebar{{ model_name }}" class="nav-link" data-bs-toggle="collapse" role="button"
+                                           aria-expanded="false" aria-controls="sidebar{{ model_name }}" data-key="t-model-{{ model_name  }}">
+                                            {{ model_name|capitalize }}
+                                        </a>
+                                        <div class="collapse menu-dropdown" id="sidebar{{ model_name }}">
+                                            <ul class="nav nav-sm flex-column">
+                                                {% for route in routes %}
+                                                <li class="nav-item">
                                                     <a
-                                                    href="/basic/product"
-                                                    hx-target="#htmx_content"
-                                                    hx-push-url="true"
-                                                    class="nav-link"
-                                                    data-key="t-products"> Products
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#sidebarUom" class="nav-link" data-bs-toggle="collapse" role="button"
-                                       aria-expanded="false" aria-controls="sidebarUom" data-key="t-uom">
-                                        Uom
-                                    </a>
+                                                            href={{ route.path }}
+                                                            hx-target="#htmx_content"
+                                                            hx-push-url="true"
+                                                            hx-get={{ route.path }}
+                                                            class="nav-link"
+                                                            data-key="t-route-{{ route.name  }}"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="right" title={{ route.description}}>
+                                                            {{ route.name|capitalize}}
+                                                    </a>
+                                                </li>
+                                                    {% endfor  %}
+                                            </ul>
+                                        </div>
+                                    </li>
+                                {% endfor %}
 
-                                    <div class="collapse menu-dropdown" id="sidebarUom">
-                                        <ul class="nav nav-sm flex-column">
-                                            <li class="nav-item">
-                                                                     <a
-                                                    href="/basic/uom"
-                                                    hx-target="#htmx_content"
-                                                    hx-push-url="true"
-                                                    class="nav-link"
-                                                    data-key="t-uom"> Uoms
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-
-                                                <a
-                                                    href="/basic/uom_category"
-                                                    hx-target="#htmx_content"
-                                                    hx-push-url="true"
-                                                    class="nav-link"
-                                                    data-key="t-uom-category"> Uom Category
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
 
                             </ul>
                         </div>
                     </li>
+                    {% endfor %}
 
 
 

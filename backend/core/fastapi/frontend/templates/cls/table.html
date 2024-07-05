@@ -1,6 +1,6 @@
 {% block widget %}
     <div id="{{ 'table' ~'--'~ cls.key }}"
-         hx-post="/base/table{% if edit %}?edit=true{% endif %}"
+         hx-post="/base/table"
          hx-ext="json-enc"
          hx-target="this"
          hx-vals='{

@@ -218,9 +218,7 @@
     <div id="layout-wrapper">
     <div hx-get="/bff/topbar" hx-trigger="load"></div>
 <div id="errors"></div>
-    {% block sidebar %}
-        {% include "partials/sidebar.html" %}
-    {% endblock sidebar %}
+    <div hx-get="/bff/sidebar" hx-trigger="load"></div>
 <div id="htmx_content">
     {% block content %}
         <!--<div hx-get="/" hx-trigger="load"></div>-->

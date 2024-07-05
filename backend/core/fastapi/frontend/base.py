@@ -185,7 +185,8 @@ async def line(request: Request, schema: LineSchema):
     elif schema.method == Method.SAVE_CREATE:
         """Сохранение записи при создании"""
         data = clean_filter(schema.model_extra, schema.key)
-        await cls.lines.create_lines(data)
+        lines = await cls.lines.create_lines(data)
+        return lines[0].as_div_update
 
 
 class ModelSchema(BaseSchema):

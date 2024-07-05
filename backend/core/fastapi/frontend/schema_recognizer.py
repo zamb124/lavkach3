@@ -346,6 +346,7 @@ class Line(BaseModel):
     type: LineType                              # Тип поля СМ LineType
     lines: 'Lines'
     model_name: str                             # Имя модели
+    domain_name: str                            # Наименование домена модели
     schema: Any                                 # Схема обьекта
     actions: dict                               # Доступные методы обьекта
     fields: Optional[Fields] = None             # Поля обьекта
@@ -457,6 +458,11 @@ class Line(BaseModel):
     def as_tr_create(self) -> str:
         """Отобразить обьект как строку таблицы на создание"""
         return self.render(block_name='as_tr', method=MethodType.CREATE)
+
+    @property
+    def as_item(self) -> str:
+        """Отобразить обьект как айтем с заголовком"""
+        return self.render(block_name='as_item', method=MethodType.CREATE)
 
     @property
     def as_div_get(self):
@@ -1035,6 +1041,7 @@ class ClassView(AsyncObj, FieldFields):
             type=type,
             schema=schema,
             model_name=self.model.name,
+            domain_name=self.model.domain.name,
             lsn=lsn,
             vars=vars,
             display_title=display_title,

@@ -1,61 +1,64 @@
 {% block modal %}
-    {% autoescape false %}
-    <div class="modal" id="{{ 'modal_'~line.class_key }}" tabindex="-1" style="display: none;" aria-hidden="true">
+{% autoescape false %}
+<div class="modal" id="{{ 'modal_'~line.class_key }}" tabindex="-1" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
-    <div class="modal-content">
-    <div class="modal-header">
+        <div class="modal-content">
+            <div class="modal-header">
 
-        <div class="col-6">
-            <h5 class="modal-title">
-                {{ method|capitalize }} {{ line.model_name|capitalize }}
-                <span>
+                <div class="col-6">
+                    <h5 class="modal-title">
+                        {{ method|capitalize }} {{ line.model_name|capitalize }}
+                        <span>
                     {% if method in ('create', 'update') %}
                         {{ line.button_view|safe }}
                     {% else %}
                         {{ line.button_update|safe }}
                     {% endif %}
                         </span>
-                <span>
+                        <span>
                             {{ line.button_delete|safe }}
                         </span>
+                    <span>
+                        {{ line.button_actions  }}
+                    </span>
 
-            </h5>
-        </div>
+                    </h5>
+                </div>
 
-        <div class="bx-pull-right">
-            <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-    </div>
-    <div id="{{ 'modal_body'~ line.class_key }}">
-        <div class="modal-body text-center p-5">
-            <lord-icon
-                    src="https://cdn.lordicon.com/ghhwiltn.json"
-                    trigger="loop"
-                    style="width:150px;height:150px">
-            </lord-icon>
-            {% if method in ('create', 'update') %}
-                {{ line.as_div_update }}
-            {% else %}
-                {{ line.as_div_get }}
-            {% endif %}
-        </div>
-    </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
-                    </button>
-                    {% if method in ('create', 'update') %}
-                        {{ line.button_save }}
-                    {% endif %}
-
+                <div class="bx-pull-right">
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
             </div>
+            <div id="{{ 'modal_body'~ line.class_key }}">
+                <div class="modal-body text-center p-5">
+                    <lord-icon
+                            src="https://cdn.lordicon.com/ghhwiltn.json"
+                            trigger="loop"
+                            style="width:150px;height:150px">
+                    </lord-icon>
+                    {% if method in ('create', 'update') %}
+                        {{ line.as_div_update }}
+                    {% else %}
+                        {{ line.as_div_get }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                </button>
+                {% if method in ('create', 'update') %}
+                    {{ line.button_save }}
+                {% endif %}
 
+            </div>
         </div>
+
     </div>
-    <script>
-        var modal = new bootstrap.Modal('#{{ 'modal_'~line.class_key }}')
-        modal.show()
-    </script>
+</div>
+<script>
+    var modal = new bootstrap.Modal('#{{ 'modal_'~line.class_key }}')
+    modal.show()
+</script>
 {% endautoescape %}
 {% endblock %}
 

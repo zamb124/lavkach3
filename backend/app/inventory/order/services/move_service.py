@@ -106,9 +106,13 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
 
     async def confirm(self, moves: List[uuid.UUID] | List[Move], parent: Order | Move | None = None, user_id: uuid.UUID = None):
         for m in moves:
-            await self._confirm(m, parent, user_id)
+            move = await self._confirm(m, parent, user_id)
+
         try:
             await self.session.commit()
+            await self.session.refresh(move)
+            message = await self.prepere_bus(move, 'update')
+            await self.update_notify.kiq('move', message)
         except Exception as ex:
             await self.session.rollback()
             raise HTTPException(status_code=500, detail=f"ERROR:  {str(ex)}")
@@ -348,6 +352,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 quant_dest_entity.move_ids.append(move.id)
         #TODO: это надо убрать в отдельный вызов
         await self.create_suggests(move)
+        return move
     @permit('move_create')
     async def create(self, obj: CreateSchemaType, parent: Order | Move | None = None, commit=True) -> ModelType:
         obj.created_by = self.user.user_id
