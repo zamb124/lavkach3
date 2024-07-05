@@ -91,9 +91,18 @@
                     } else {
                         id__in = value.value
                     }
-
+                    var maybe_cache = cache[id__in]
+                    if (maybe_cache)  {
+                        return  [{
+                            value:  id__in,
+                            label:  maybe_cache,
+                        }]
+                    }
                     const items = await fetch('/base/get_by_ids?model={{ field.model_name }}&id__in=' + encodeURIComponent(id__in));
                     const results = await items.json();
+                    for  (let i = 0; i < results.length; i++) {
+                        cache[results[i].value] = results[i].label
+                    }
                     if (0 === results.length) { // Handle error from result, for example.
                         return []
                     }
