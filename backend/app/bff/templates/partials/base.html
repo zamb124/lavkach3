@@ -25,6 +25,12 @@
         <link type="text/css" rel="stylesheet"
               href="https://cdn.jsdelivr.net/gh/alumuko/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.css">
         <style>
+
+            [data-bs-theme=dark] {
+
+                --vz-form-valid-border-color: #0e5231;
+            }
+
             .footer {
                 border-top-left-radius: 15px;
                 border-top-right-radius: 15px;
@@ -92,6 +98,10 @@
                 margin-bottom: 0px;
                 font-size: 16px;
                 border-radius: 15px;
+            }
+
+            .is-valid {
+                border: 10px solid var(--vz-form-valid-border-color) !important;
             }
 
             .is-invalid {
@@ -467,14 +477,13 @@
                             myToast.showToast();
                         }
 
+                    } else if (message.vars.method === 'delete') {
+                        el.remove();
+                        var myToast = Toastify({
+                            text: message.message,
+                        })
+                        myToast.showToast();
                     }
-                    else if  (message.vars.method === 'delete')  {
-                            el.remove();
-                                    var myToast = Toastify({
-                                text: message.message,
-                            })
-                            myToast.showToast();
-                        }
                 }
             }
 

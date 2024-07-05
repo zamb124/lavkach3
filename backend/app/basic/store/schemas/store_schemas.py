@@ -32,7 +32,7 @@ class StoreBaseScheme(BaseModel):
         if v == '':
             return {}
 class StoreUpdateScheme(StoreBaseScheme):
-    title: str = Field(default=None, title='Title', table=True, form=True)
+    title: str = Field(title='Title', table=True, form=True)
     source: Optional[StoreType] = Field(default=None, title='Source', table=True, form=True)
 
 
