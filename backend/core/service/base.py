@@ -309,8 +309,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
         entity = await self._update(id, obj, commit=commit)
-        message = await self.prepere_bus(entity, 'update')
-        task = await self.update_notify.kiq(self.model.__tablename__, message)
+        message = await entity.notify('update')
         return entity
 
     async def _delete(self, id: Any) -> bool:

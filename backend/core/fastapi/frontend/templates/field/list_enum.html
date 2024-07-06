@@ -2,6 +2,7 @@
     <select id="{{ field.key }}"
             name="{{ field.key }}"
             {% if field.required %} required {% endif %}
+            {% if field.update.readonly %}readonly {% endif %}
             class="list_enum form-control"
             data-choices data-choices-removeItem
             multiple

@@ -157,7 +157,8 @@ class Suggest(Base, AllMixin):
     move_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('move.id', ondelete='CASCADE'), index=True)
     priority: Mapped[int]
     type: Mapped[SuggestType]
-    value: Mapped[Optional[str]]    # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
+    value: Mapped[Optional[str]]            # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
+    result_value: Mapped[Optional[str]]     # Фактически введенное значение пользователем
     user_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
     status: Mapped[SuggestStatus] = mapped_column(default=SuggestStatus.WAITING, index=True)
 

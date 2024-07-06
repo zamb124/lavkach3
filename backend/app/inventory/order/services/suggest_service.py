@@ -36,14 +36,6 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
     @permit('suggest_confirm')
     async def suggest_confirm(self, suggest_ids: List[uuid.UUID], value, commit=True) -> Optional[ModelType]:
         suggest_entities = await self.list({'id__in': suggest_ids}, 999)
-        try:
-            value = float(value)
-        except ValueError as e:
-            raise ModuleException(
-                status_code=406,
-                enum=SuggestErrors.SUGGEST_INVALID_VALUE,
-                message=str(e)#
-            )
         for suggest_entity in suggest_entities:
             if suggest_entity.status == SuggestStatus.DONE:
                 raise ModuleException(
@@ -54,14 +46,17 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                 val_in_cleaned = float(value)
                 val_s_cleaned = float(suggest_entity.value)
                 if val_in_cleaned == val_s_cleaned:
+                    suggest_entity.result_value = value
                     suggest_entity.status = SuggestStatus.DONE
             elif suggest_entity.type == SuggestType.IN_PRODUCT:
                 product_obj = await self.env['product'].adapter.product_by_barcode(value)
                 if product_obj:
+                    suggest_entity.result_value = value
                     suggest_entity.status = SuggestStatus.DONE
             elif suggest_entity.type == SuggestType.IN_LOCATION:
                 location_entity = await self.env['location'].service.list(_filter={'id__in': [value]})
                 if location_entity:
+                    suggest_entity.result_value = value
                     suggest_entity.status = SuggestStatus.DONE
             else:
                 raise ModuleException(
@@ -72,10 +67,13 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
         if commit:
             try:
                 await self.session.commit()
-                [await self.session.refresh(i) for i in suggest_entities]
+                for suggest_entity in suggest_entities:
+                    await self.session.refresh(suggest_entity)
+                    await suggest_entity.notify('update')
             except Exception as e:
                 await self.session.rollback()
                 raise HTTPException(status_code=500, detail=f"Some Error entity {str(e)}")
         else:
             await self.session.flush(suggest_entities)
+
         return suggest_entities

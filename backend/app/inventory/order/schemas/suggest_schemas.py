@@ -14,8 +14,9 @@ from core.schemas.timestamps import TimeStampScheme
 class SuggestBaseScheme(BaseModel):
     move_id: UUID4 = Field(title='Move ID', model='move', readonly=True)
     priority: int = Field(title='Priority', readonly=True)
-    type: SuggestType = Field(title='Type', readonly=True)
-    value: Optional[str] = Field(default=None, title='Value', readonly=True)  # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
+    type: SuggestType = Field(title='Type', readonly=True, table=True)
+    value: Optional[str] = Field(default=None, title='Value', readonly=True, table=True)  # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
+    result_value: Optional[str] = Field(default=None, title='Result value', table=True)  # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
     user_id: Optional[UUID4] = Field(default=None, title='User Done ID', model='user', readonly=True)
 
     class Config:
@@ -61,6 +62,5 @@ class SuggestListSchema(GenericListSchema):
 
 
 class SuggestConfirmScheme(ActionBaseSchame):
-    value: str = Field(title='Value', readonly=False)
-    barcode: Optional[str] = Field(default='', title='Barcode')
+    value: str = Field(title='Result value')
 

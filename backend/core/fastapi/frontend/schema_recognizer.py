@@ -7,7 +7,7 @@ from collections import defaultdict
 from enum import Enum
 from inspect import isclass
 from types import UnionType
-from typing import Optional, Any, get_args, get_origin, Annotated, Union, Iterable, Callable
+from typing import Optional, Any, get_args, get_origin, Annotated, Union, Iterable, List
 
 from fastapi import HTTPException
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -19,15 +19,10 @@ from pydantic.fields import FieldInfo
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
-from app.bff.tkq import broker
-from core.env import Model, Env
-from core.helpers.cache import CacheTag
+from core.env import Model
 from core.schemas import BaseFilter
-from core.service.base import logger
-from core.service_config import config
 from core.schemas.basic_schemes import ActionBaseSchame
 from core.utils.timeit import timed
-
 
 path = os.path.dirname(os.path.abspath(__file__))
 
@@ -1188,8 +1183,6 @@ class ClassView(AsyncObj, FieldFields):
         self.action_line = await self._get_line(schema=schema, type=LineType.ACTION)
         self.action_lines = Lines(class_key=self.key, line_header=self.action_line, line_new=self.action_line)
         await self.action_lines._get_data(
-            self.env,
-            self.model,
             params={},
             data=[data],
             key='action--0',

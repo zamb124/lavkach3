@@ -240,7 +240,7 @@ async def modal(request: Request, schema: ModalSchema):
 
 class ActionSchema(BaseSchema):
     action: str
-    ids: Optional[list[UUID4]] = []
+    ids: Optional[list[str]] = []
     schema: Any = None
     commit: Optional[bool] = False
 

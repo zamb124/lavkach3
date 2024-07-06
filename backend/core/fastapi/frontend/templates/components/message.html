@@ -3,23 +3,7 @@
 var myToast = Toastify({
  text: "{{message}}",
  duration: 3000,
-    style: {
-    background: "{{background}}",
-  },
 })
 myToast.showToast();
-var table = htmx.find("#table_{{ cls.key }}")
-if (table){
-    htmx.trigger(table, 'update')
-}
-var form = htmx.find("#form_{{ cls.key }}")
-if (form){
-    htmx.trigger(form, 'update')
-}
-var modal = htmx.find("#modal_{{ cls.key }}")
-if (modal){
-    htmx.trigger(modal, 'update')
-}
-
 </script>
 {% endblock %}

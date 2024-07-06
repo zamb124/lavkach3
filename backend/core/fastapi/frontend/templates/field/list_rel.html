@@ -26,6 +26,7 @@
             name="{{ field.key }}"
             id="{{ field.key }}"
             class="list-str form-control"
+            {% if field.update.readonly %}readonly {% endif %}
             data-choices
             data-choices-limit="Required Limit"
             data-choices-removeItem

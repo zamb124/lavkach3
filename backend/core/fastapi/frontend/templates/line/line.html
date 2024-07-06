@@ -124,8 +124,8 @@
                             hx-params="model,action,method,ids,key"
                             hx-trigger="click"
                             hx-ext="json-enc"
-                            hx-target="this"
-                            hx-swap="none"
+                            hx-target="#htmx_content"
+                            hx-swap="beforeend transition:true"
                             hx-post="/base/action"
                             hx-vals='{
                                 "model": "{{ line.model_name }}",

@@ -29,8 +29,8 @@ class OrderBaseScheme(BaseModel):
     planned_datetime: Optional[datetime] = Field(default=None, title='Planned Date', table=True, form=True)
     expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=True, form=True)
     description: Optional[str] = Field(default=None, title='Description', table=True, form=True)
-    status: OrderStatus = Field(title='Status', table=True, form=True)
-    order_id: Optional[UUID] = Field(default=None, title='Parent', form=True)
+    status: OrderStatus = Field(title='Status', readonly=True, table=True, form=True)
+    order_id: Optional[UUID] = Field(default=None, title='Parent',readonly=True,  form=True)
 
 
     class Config:
@@ -56,18 +56,12 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme, CustomBaseModel):
     actual_datetime: Optional[datetime] = Field(title='Actual Date', table=True, form=True)
     created_by: UUID = Field(title='Created By', table=True, model='user')
     edited_by: UUID = Field(title='Edit By', model='user')
-    user_ids: Optional[list[UUID]] = Field(default=[], title='Users', form=True, model='user')
+    user_ids: Optional[list[UUID]] = Field(default=[], title='Users', model='user')
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True, readonly=True)
     move_list_rel: Optional[list[MoveScheme]] = Field(default=[], title='Order Movements', form=True)
     @computed_field
     def title(self) -> str:
         return f'{self.order_type_rel.title}: [{self.number}]'
-
-
-
-def empty_erray(val):
-    if val:
-        return val
 
 
 class OrderFilter(BaseFilter):

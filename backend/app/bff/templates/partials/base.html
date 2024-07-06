@@ -42,6 +42,14 @@
                 border-top-right-radius: 15px;
             }
 
+            select[readonly] {
+                pointer-events: none;
+            }
+
+            .form-control:read-only {
+                background-color: var(--vz-tertiary-bg);
+            }
+
             .card-header {
                 border-bottom: hidden;
             }

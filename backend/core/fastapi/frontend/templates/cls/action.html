@@ -1,18 +1,19 @@
 {% block action %}
-    <div class="modal" id="{{ 'action--'~cls.key }}" tabindex="-1" aria-hidden="true">
+    <div class="modal" id="{{ 'action--'~cls.key }}" tabindex="-1" style="display: none;"aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
 
                     <div class="bx-pull-right">
-                        <button class="btn-close" onclick="hideModals()" aria-label="Close"></button>
+                         <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                 </div>
                 <form class="was-validated"
                       hx-post="/base/action"
                       hx-ext="json-enc"
                       hx-include="this"
-                      hx-target="#trash"
+                      hx-target="this"
+                      hx-swap="none"
                       hx-vals='{
                 "model": "{{ cls.model.name }}",
                 "action": "{{ action }}",
@@ -41,7 +42,7 @@
                                         {% endif %}
                                     <div class="col" {% if field.field_name in ('id', 'ids', 'lsn', 'vars') %} style="display: none" {% endif %}>
                                         {{ field.label|safe }}
-                                        {{ field.as_get|safe }}
+                                        {{ field.as_update|safe }}
                                     </div>
                                     {% if loop.index % 3 == 0 %}
                                         </div>
@@ -50,8 +51,8 @@
                                     </div>
                                 {% endfor %}
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" onclick="hideModals()" >Close
-                                        </button>
+                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                </button>
                                         <button id="{{ 'submit'~cls.key }}" type="submit" class="btn btn-success">
                                             Save
                                         </button>

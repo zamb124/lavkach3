@@ -52,6 +52,7 @@ class Config(BaseSettings):
     BASIC_PORT: str = os.environ.get('BASIC_PORT') or '8001'
     BUS_HOST: str = os.environ.get('BUS_HOST') or '127.0.0.1'
     BUS_PORT: str = os.environ.get('BUS_PORT') or '8099'
+    INTERCO_TOKEN: str = os.environ.get('INTERCO_TOKEN') or 'netu'
 class DevelopmentConfig(Config):
     ...
 

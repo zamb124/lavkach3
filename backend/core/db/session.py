@@ -1,6 +1,6 @@
 from contextvars import ContextVar, Token
 from typing import Union
-
+import logging
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,
@@ -10,9 +10,14 @@ from sqlalchemy.orm import registry
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from sqlalchemy.sql.expression import Update, Delete, Insert
-
+from core.helpers.broker import broker
 from core.db_config import config
+from httpx import AsyncClient as asyncclient
 
+from core.helpers.cache import CacheTag
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 session_context: ContextVar[str] = ContextVar("session_context")
 
 
@@ -62,3 +67,34 @@ class Base(metaclass=DeclarativeMeta):
 
     __init__ = mapper_registry.constructor
 
+    async def prepere_bus(self, entity: object, method: str):
+        return {
+            'cache_tag': CacheTag.MODEL,
+            'message': f'{self.__tablename__.capitalize()} is {method.capitalize()}',
+            'company_id': entity.company_id if hasattr(entity,  'company_id') else entity.id,
+            'vars': {
+                'id': entity.id,
+                'lsn': entity.lsn,
+                'model': self.__tablename__,
+                'method': method,
+            }
+        }
+
+    @broker.task
+    async def update_notify(model: str, data: dict):
+
+        client = asyncclient()
+        responce = await client.post(
+            url=f'http://{config.BUS_HOST}:{config.BUS_PORT}/api/bus/bus',
+            json=data,
+            headers={'Authorization': config.INTERCO_TOKEN}
+        )
+        if responce.status_code == 200:
+            logger.info(f'Message sended to bus.bus')
+        else:
+            logger.warning(responce.text)
+
+
+    async def notify(self, method):
+        message = await self.prepere_bus(self, method)
+        task = await self.update_notify.kiq(self.__tablename__, message)

@@ -6,7 +6,6 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from starlette.responses import RedirectResponse
 
-from app.bff.bff_config import config
 from app.bff.template_spec import templates
 from app.bff.utills import BasePermit
 
@@ -20,13 +19,12 @@ index_router = APIRouter(
 )
 
 
-
-
 @index_router.get("/", response_class=HTMLResponse)
 async def root_page(request: Request):
     if not request.user.user_id:
         return RedirectResponse("/landing")
     return RedirectResponse("/inventory/dashboard")
+
 
 @index_router.get("/landing", response_class=HTMLResponse)
 async def root_page(request: Request):
@@ -41,6 +39,7 @@ async def footer(request: Request):
 @index_router.get("/bff/topbar", response_class=HTMLResponse)
 async def topbar(request: Request):
     return templates.TemplateResponse(request, 'partials/topbar.html', context={})
+
 
 @index_router.get("/bff/sidebar", response_class=HTMLResponse)
 async def sidebar(request: Request):
@@ -71,7 +70,6 @@ async def sidebar(request: Request):
 @index_router.get("/", response_class=HTMLResponse)
 async def root_page(request: Request):
     return templates.TemplateResponse(request, 'index.html', context={'ws_domain': ws_domain})
-
 
 
 @index_router.get("/basic/dropdown-ids", response_class=HTMLResponse)
