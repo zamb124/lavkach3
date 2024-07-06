@@ -107,4 +107,8 @@ async def company_change(request: Request, schema: ChangeCompanyScheme, backgrou
     background_tasks.add_task(send_ws_company_changed, res.id)
     return res
 
+@user_router.get("/{user_id}/permissions", response_model=list[str], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+async def permissions(user_id: uuid.UUID, service: UserService = Depends()):
+    return await service.permissions(user_id=user_id)
+
 

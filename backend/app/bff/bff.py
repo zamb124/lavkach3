@@ -10,6 +10,7 @@ from starlette.responses import Response
 
 from app.bff.bff_config import config
 from app.bff.template_spec import templates
+from app.bff.utills import BasePermit
 
 
 class ExceptionResponseSchema(BaseModel):
@@ -19,6 +20,8 @@ class ExceptionResponseSchema(BaseModel):
 index_router = APIRouter(
     responses={"400": {"model": ExceptionResponseSchema}},
 )
+
+
 
 
 @index_router.get("/", response_class=HTMLResponse)
@@ -39,18 +42,25 @@ async def topbar(request: Request):
 
 @index_router.get("/bff/sidebar", response_class=HTMLResponse)
 async def sidebar(request: Request):
-    env = request.scope['env']
+    """Строит левое меню Админки, на базе tags в роутах и пермишенах Пользователя"""
     domains = {}
-    for route in request.app.routes:
-        try:
-            domain_name, model_name = route.tags
-            if domain := domains.get(domain_name):
-                domain[model_name].append(route)
-            else:
-                domains[domain_name] = defaultdict(list)
-                domains[domain_name][model_name].append(route)
-        except:
-            continue
+    is_admin = request.user.is_admin
+    async with request.scope['env']['company'].adapter as ad:
+        permits = await ad.permissions(user_id=request.user.user_id)
+    for route in filter(lambda r: hasattr(r, 'dependencies'), request.app.routes):
+        for dependency in route.dependencies:
+            if issubclass(dependency.dependency, BasePermit):
+                if is_admin or any(elem in dependency.dependency.permits for elem in permits):
+                    try:
+                        domain_name, model_name = route.tags
+                    except:
+                        continue
+                    if domain := domains.get(domain_name):
+                        domain[model_name].append(route)
+                    else:
+                        domains[domain_name] = defaultdict(list)
+                        domains[domain_name][model_name].append(route)
+
     return templates.TemplateResponse(
         request, 'partials/sidebar.html', context={'domains': domains}
     )
@@ -59,36 +69,6 @@ async def sidebar(request: Request):
 @index_router.get("/", response_class=HTMLResponse)
 async def root_page(request: Request):
     return templates.TemplateResponse(request, 'index.html', context={'ws_domain': ws_domain})
-
-
-@index_router.get("/basic/login", responses={"404": {"model": ExceptionResponseSchema}}, )
-async def login(request: Request, response: Response):
-    return templates.TemplateResponse(request, 'basic/login-full.html', context={})
-
-
-@index_router.post(
-    "/basic/login",
-    responses={"404": {"model": ExceptionResponseSchema}},
-)
-async def login(
-        request: Request,
-        username: Annotated[str, Form()],
-        password: Annotated[str, Form()]):
-    request.scope['env']
-    async with request.scope['env']['user'].adapter as a:
-        data = await a.login(username, password)
-    return templates.TemplateResponse(request, 'components/write_ls.html', context={'token': data['token'], 'refresh_token': data['refresh_token']})
-
-
-class RefreshTokenSchema(BaseModel):
-    token: str
-    refresh_token: str
-
-
-@index_router.post("/basic/user/refresh", responses={"404": {"model": ExceptionResponseSchema}}, )
-async def refresh_token(request: Request, refresh_schema: RefreshTokenSchema):
-    async with request.scope['env']['user'].adapter as a:
-        return await a.refresh_token(refresh_schema)
 
 
 

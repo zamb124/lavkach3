@@ -1,4 +1,5 @@
 import json
+from uuid import UUID
 
 from core.fastapi.adapters import BaseAdapter
 from app.basic.basic_config import config
@@ -68,6 +69,11 @@ class BasicAdapter(BaseAdapter):
         path = f'/api/basic/product/barcode/{barcode}'
         responce = await self.client.get(self.host + path, params=None)
         return self.env['product'].schemas.get(**responce.json())
+
+    async def permissions(self, user_id: UUID):
+        path = f'/api/basic/user/{user_id}/permissions'
+        responce = await self.client.get(self.host + path, params=None)
+        return responce.json()
 
     @action(model='store', multiple=False, permits=[])
     async def action_assign_store(self, payload: dict | str):

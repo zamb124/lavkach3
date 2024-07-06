@@ -1,5 +1,7 @@
 from typing import Any, Optional
 
+from starlette.requests import Request
+
 from app.basic.user.models.role_models import Role
 from app.basic.user.schemas.role_schemas import RoleCreateScheme, RoleUpdateScheme, RoleFilter
 from core.permissions import permit, permits
@@ -7,15 +9,15 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 
 class RoleService(BaseService[Role, RoleCreateScheme, RoleUpdateScheme, RoleFilter]):
-    def __init__(self, request=None, db_session=None):
-        super(RoleService, self).__init__(request, Role,  RoleCreateScheme, RoleUpdateScheme, db_session)
+    def __init__(self, request: Request):
+        super(RoleService, self).__init__(request, Role,  RoleCreateScheme, RoleUpdateScheme)
 
     @permit('role_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(RoleService, self).update(id, obj)
 
     @permit('role_list')
-    async def list(self, _filter: FilterSchemaType, size: int):
+    async def list(self, _filter: FilterSchemaType, size: int=999):
         return await super(RoleService, self).list(_filter, size)
 
     @permit('role_create')

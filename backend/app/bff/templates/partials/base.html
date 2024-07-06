@@ -312,9 +312,9 @@
             // if there is no auth token
             if (authToken == null && !window.location.pathname.includes('login')) {
                 e.preventDefault()
-                window.history.pushState('Login', 'Login', '/basic/login');
+                window.history.pushState('Login', 'Login', '/basic/user/login');
                 console.log('redirect login')
-                htmx.ajax('GET', '/basic/login', {
+                htmx.ajax('GET', '/basic/user/login', {
                     target: '#htmx_content', headers: {
                         'HX-Replace-Url': 'true'
                     }
@@ -383,6 +383,7 @@
             }
         })
         htmx.on('htmx:beforeSwap', function (evt) {
+
             if (evt.detail.xhr.status === 200) {
                 // do nothing
             } else if (evt.detail.xhr.status === 404) {
@@ -399,15 +400,21 @@
                 myToast.showToast();
             } else if (evt.detail.xhr.status === 403) {
                 // Запрещено
-                var errors = htmx.find("#errors");
-                evt.detail.target = errors
-                evt.detail.shouldSwap = true;
-                evt.detail.isError = false;
+                console.log('403')
+                var message  = evt.detail.xhr.responseText.replace(/\\n/g, '\n')
+                var myToast = Toastify({
+                text: message,
+                duration: 3000,
+                style: {
+                    background: "red",
+                },
+                })
+                myToast.showToast();
             } else if (evt.detail.xhr.status === 401 && !window.location.pathname.includes('login')) {
                 // Запрещено
-                debugger
-                window.history.pushState('Login', 'Login', '/basic/login');
-                htmx.ajax('GET', '/basic/login', {
+
+                window.history.pushState('Login', 'Login', '/basic/user/login');
+                htmx.ajax('GET', '/basic/user/login', {
                     target: '#htmx_content', headers: {
                         'HX-Replace-Url': 'true'
                     }

@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from starlette.requests import Request
 from app.bus.bus.models.bus_models import Bus
 from app.bus.bus.shemas.bus_schemas import BusCreateScheme, BusUpdateScheme, BusFilter
 from core.permissions import permit
@@ -9,8 +9,8 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 
 class BusService(BaseService[Bus, BusCreateScheme, BusUpdateScheme, BusFilter]):
-    def __init__(self, request, db_session: AsyncSession = None):
-        super(BusService, self).__init__(request, Bus,BusCreateScheme, BusUpdateScheme,db_session)
+    def __init__(self, request: Request):
+        super(BusService, self).__init__(request, Bus,BusCreateScheme, BusUpdateScheme)
 
     @permit('bus_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

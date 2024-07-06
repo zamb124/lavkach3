@@ -1,8 +1,10 @@
-from typing import Any
+from typing import Any, List
+from uuid import UUID
 
 from sqlalchemy import select, Row, RowMapping
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
+from starlette.requests import Request
 
 from app.basic.user.models.role_models import Role
 from app.basic.user.models.user_models import User
@@ -21,8 +23,8 @@ from core.utils.token_helper import TokenHelper
 
 
 class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilter]):
-    def __init__(self, request=None, db_session=None):
-        super(UserService, self).__init__(request, User,UserCreateScheme, UserUpdateScheme, db_session)
+    def __init__(self, request: Request):
+        super(UserService, self).__init__(request, User, UserCreateScheme, UserUpdateScheme)
 
     @permit('user_get')
     async def get(self, id: Any) -> Row | RowMapping:
@@ -156,3 +158,23 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         await self.session.commit()
         await self.session.refresh(user)
         return user
+
+    async def permissions(self, user_id: UUID) -> List[str]:
+        permits_allow: list[str] = []
+        permits_deny: list[str]  =  []
+        user_entity = await self.get(user_id)
+        role_service = self.env['role'].service
+        roles = await role_service.list(_filter={'id__in': user_entity.role_ids})
+        children = []
+        for r in roles:
+            permits_allow += r.permission_allow_list
+            permits_deny  += r.permission_deny_list
+            children += r.role_ids
+        while children:
+            child_roles_entities = await role_service.list(_filter={'id__in': children})
+            children = []
+            for child in child_roles_entities:
+                permits_allow += child.permission_allow_list
+                permits_deny += child.permission_deny_list
+                children += child.role_ids
+        return list(set(permits_allow) - set(permits_deny))

@@ -5,7 +5,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Generic, Optional, Type, TypeVar
 from uuid import uuid4
-
+from starlette.requests import Request
 from fastapi_filter.contrib.sqlalchemy import Filter
 from httpx import AsyncClient as asyncclient
 from pydantic import BaseModel
@@ -112,13 +112,11 @@ class BaseCache:
 class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterSchemaType]):
     def __init__(
             self,
-            request,
+            request: Request,
             model: Type[ModelType],
             create_schema: Type[CreateSchemaType],
             update_schema: Type[UpdateSchemaType],
-            db_session: AsyncSession = session,
             **kwargs
-
     ):
         if isinstance(request, CurrentUser):
             self.user = CurrentUser
@@ -127,9 +125,9 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         self.model = model
         self.create_schema = create_schema
         self.update_schema = update_schema
-        self.request = request
+        self.request = Request
         self.env = request.scope['env']
-        self.session = db_session if db_session else session
+        self.session = session
         self.basecache = BaseCache(self)
 
     def sudo(self):

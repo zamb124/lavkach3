@@ -93,8 +93,6 @@
                                         </div>
                                     </li>
                                 {% endfor %}
-
-
                             </ul>
                         </div>
                     </li>
@@ -102,41 +100,8 @@
 
 
 
-                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-admin">Administration</span>
+                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-admin">Authentication</span>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="#sidebarCompany" data-bs-toggle="collapse"
-                           role="button" aria-expanded="false" aria-controls="sidebarCompany">
-                            <i class="ri-share-line"></i> <span data-key="t-company">Company</span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="sidebarCompany">
-                            <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="/basic/company" hx-push-url="true" hx-get="/basic/company" hx-target="#htmx_content" class="nav-link" data-key="t-company">Companies </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#sidebarAccount" class="nav-link" data-bs-toggle="collapse" role="button"
-                                       aria-expanded="false" aria-controls="sidebarAccount" data-key="t-stores">
-                                        Stores
-                                    </a>
-                                    <div class="collapse menu-dropdown" id="sidebarAccount">
-                                        <ul class="nav nav-sm flex-column">
-                                            <li class="nav-item">
-                                                <a href="#" hx-get="/basic/store" hx-push-url="true" hx-target="#htmx_content" class="nav-link" data-key="t-stores"> Stores </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a href="#sidebarCrm" class="nav-link" data-bs-toggle="collapse"
-                                                   role="button" aria-expanded="false" aria-controls="sidebarCrm"
-                                                   data-key="t-level-2.2"> Stores
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarAuth" data-bs-toggle="collapse" role="button"
                            aria-expanded="false" aria-controls="sidebarAuth">
@@ -146,7 +111,7 @@
                         <div class="collapse menu-dropdown" id="sidebarAuth">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/basic/login" hx-get="/basic/login" hx-target="#htmx_content" hx-push-url="true" class="nav-link"
+                                    <a href="/basic/user/login" hx-get="/basic/user/login" hx-target="#htmx_content" hx-push-url="true" class="nav-link"
                                        data-key="t-sign in"> Sign in </a>
                                 </li>
                                 <li class="nav-item">
@@ -157,8 +122,6 @@
                                     <a href="/authentication/auth-signup-basic" class="nav-link"
                                        data-key="t-password-reset"> Password reset </a>
                                 </li>
-
-
                             </ul>
                         </div>
                     </li>
