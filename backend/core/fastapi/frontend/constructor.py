@@ -14,7 +14,7 @@ from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
 from core.env import Model
-from core.fastapi.frontend.Line import Line, Lines
+from core.fastapi.frontend.line import Line, Lines
 from core.fastapi.frontend.enviroment import passed_classes, readonly_fields, hidden_fields, table_fields, \
     reserved_fields, environment
 from core.fastapi.frontend.field import Field, Fields

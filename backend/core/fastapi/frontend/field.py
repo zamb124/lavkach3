@@ -13,8 +13,6 @@ class FieldFields:
     vars: Optional[dict] = None  # Переменные если нужно передать контекст
 
 
-
-
 class Field(BaseModel, FieldFields):
     """
         Описание поля
