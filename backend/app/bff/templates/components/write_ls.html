@@ -7,6 +7,7 @@
     document.cookie = "token={{token}};expires=" + expires  + ";path=/;"
     document.cookie = "refresh_token={{refresh_token}};expires=" + expires  + ";path=/;"
     console.log('seted auth cookie')
-    htmx.ajax('GET', '/', {target:'#htmx_content'})
+    window.location.replace("/");
+    //htmx.ajax('GET', '/', {target:'#htmx_content'})
                 //console.log(authToken)
 </script>

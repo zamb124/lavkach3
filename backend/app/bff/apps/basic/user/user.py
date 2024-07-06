@@ -44,8 +44,11 @@ async def login(
     request.scope['env']
     async with request.scope['env']['user'].adapter as a:
         data = await a.login(username, password)
-    return templates.TemplateResponse(request, 'components/write_ls.html',
-                                      context={'token': data['token'], 'refresh_token': data['refresh_token']})
+    return templates.TemplateResponse(
+        request,
+        'components/write_ls.html',
+        context={'token': data['token'], 'refresh_token': data['refresh_token']}
+    )
 
 
 class RefreshTokenSchema(BaseModel):

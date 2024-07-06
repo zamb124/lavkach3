@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
+from starlette.responses import RedirectResponse
 
 from app.bff.bff_config import config
 from app.bff.template_spec import templates
@@ -23,9 +24,13 @@ index_router = APIRouter(
 
 @index_router.get("/", response_class=HTMLResponse)
 async def root_page(request: Request):
-    if config.css_engine == 'tailwind':
-        return templates.TemplateResponse(request, 'index.html', context={})
-    return templates.TemplateResponse(request, 'index-full.html', context={})
+    if not request.user.user_id:
+        return RedirectResponse("/landing")
+    return RedirectResponse("/inventory/dashboard")
+
+@index_router.get("/landing", response_class=HTMLResponse)
+async def root_page(request: Request):
+    return templates.TemplateResponse(request, 'landing.html', context={})
 
 
 @index_router.get("/bff/footer", response_class=HTMLResponse)

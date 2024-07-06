@@ -530,7 +530,6 @@
         var body_init = null
         htmx.on('htmx:xhr:loadstart', (e) => {
             if (!body_init) {
-
                 body_init = 1
             }
         })
@@ -546,9 +545,9 @@
 </body>
 <script>
     //Не разобрался почему так, но без этого не работает
-    const timerId = setTimeout(() => {
+    var timerId = setTimeout(() => {
         main()
-    }, 1000)
+    }, 2000)
 </script>
 
 
