@@ -1,4 +1,5 @@
-import { elementChildren, nextTick } from '../../shared/utils.js';
+import {elementChildren, nextTick} from '../../shared/utils.js';
+
 export default function slideToClickedSlide() {
   const swiper = this;
   const {

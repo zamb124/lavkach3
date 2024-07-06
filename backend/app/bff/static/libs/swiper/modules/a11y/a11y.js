@@ -1,5 +1,6 @@
 import classesToSelector from '../../shared/classes-to-selector.js';
-import { createElement, elementIndex } from '../../shared/utils.js';
+import {createElement, elementIndex} from '../../shared/utils.js';
+
 export default function A11y({
   swiper,
   extendParams,

@@ -3,15 +3,12 @@ from typing import Annotated
 from fastapi import (
     APIRouter,
     Depends,
-    Query,
     status,
     WebSocket,
     WebSocketDisconnect,
     WebSocketException,
 )
-from starlette.requests import Request
 
-from core.db.session import session
 from app.basic.bus.managers import ws_manager
 from core.fastapi.middlewares import AuthBackend
 

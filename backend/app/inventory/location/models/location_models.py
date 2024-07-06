@@ -1,9 +1,8 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import Sequence, Uuid, ForeignKey, String, text, CheckConstraint
+from sqlalchemy import Sequence, Uuid, ForeignKey, text
 from sqlalchemy.orm import mapped_column, Mapped
-from sqlalchemy.sql.sqltypes import ARRAY
 
 from app.inventory.location.enums import LocationClass, PutawayStrategy
 from app.inventory.mixins import LocationMixin

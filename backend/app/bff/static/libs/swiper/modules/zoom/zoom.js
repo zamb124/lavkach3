@@ -1,5 +1,6 @@
-import { getWindow } from 'ssr-window';
-import { elementChildren, elementOffset, elementParents, getTranslate } from '../../shared/utils.js';
+import {getWindow} from 'ssr-window';
+import {elementChildren, elementOffset, elementParents, getTranslate} from '../../shared/utils.js';
+
 export default function Zoom({
   swiper,
   extendParams,

@@ -1,5 +1,6 @@
-import { getWindow } from 'ssr-window';
-import { getSupport } from './get-support.js';
+import {getWindow} from 'ssr-window';
+import {getSupport} from './get-support.js';
+
 let deviceCached;
 function calcDevice({
   userAgent

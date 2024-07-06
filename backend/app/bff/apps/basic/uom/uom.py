@@ -2,12 +2,12 @@ from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
+from app.bff.template_spec import templates
 from app.bff.utills import BasePermit
 from core.fastapi.frontend.schema_recognizer import ClassView
-from app.bff.template_spec import templates
 
 uom_router = APIRouter()
-from fastapi import APIRouter, Depends
+from fastapi import Depends
 class UomPermit(BasePermit):
     permits = ['uom_list']
 

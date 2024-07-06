@@ -9,9 +9,9 @@ from fastapi.responses import JSONResponse
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
-from app.inventory.inventory_router import inventory_router
 from app.inventory.inventory_config import config as app_config
-from core.helpers.broker import broker
+from app.inventory.inventory_router import inventory_router
+from core.db_config import config
 from core.env import Env, domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
@@ -20,9 +20,10 @@ from core.fastapi.middlewares import (
     AuthBackend,
     SQLAlchemyMiddleware,
 )
+from core.helpers.broker import broker
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
-from core.db_config import config
+
 
 class EnvMidlleWare:
     """

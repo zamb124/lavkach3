@@ -1,9 +1,9 @@
 /* eslint no-param-reassign: "off" */
-import { getDocument } from 'ssr-window';
-import { extend, deleteProps, createElement, elementChildren, elementStyle, elementIndex } from '../shared/utils.js';
-import { getSupport } from '../shared/get-support.js';
-import { getDevice } from '../shared/get-device.js';
-import { getBrowser } from '../shared/get-browser.js';
+import {getDocument} from 'ssr-window';
+import {createElement, deleteProps, elementChildren, elementIndex, elementStyle, extend} from '../shared/utils.js';
+import {getSupport} from '../shared/get-support.js';
+import {getDevice} from '../shared/get-device.js';
+import {getBrowser} from '../shared/get-browser.js';
 import Resize from './modules/resize/resize.js';
 import Observer from './modules/observer/observer.js';
 import eventsEmitter from './events-emitter.js';
@@ -19,7 +19,8 @@ import classes from './classes/index.js';
 import checkOverflow from './check-overflow/index.js';
 import defaults from './defaults.js';
 import moduleExtendParams from './moduleExtendParams.js';
-import { processLazyPreloader, preload } from '../shared/process-lazy-preloader.js';
+import {preload, processLazyPreloader} from '../shared/process-lazy-preloader.js';
+
 const prototypes = {
   eventsEmitter,
   update,

@@ -5,19 +5,18 @@ from typing import TYPE_CHECKING
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.inventory.location.models import Location
 from app.inventory.quant.models.quants_models import Quant
 from app.inventory.quant.schemas.quants_schemas import QuantCreateScheme, QuantUpdateScheme, QuantFilter
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-
+from starlette.requests import Request
 if TYPE_CHECKING:
-    from app.inventory.order.models import OrderType
+    pass
 
 
 class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, QuantFilter]):
-    def __init__(self, request, db_session: AsyncSession = None):
-        super(QuantService, self).__init__(request, Quant, QuantCreateScheme, QuantUpdateScheme, db_session)
+    def __init__(self, request:Request):
+        super(QuantService, self).__init__(request, Quant, QuantCreateScheme, QuantUpdateScheme)
 
     @permit('quant_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

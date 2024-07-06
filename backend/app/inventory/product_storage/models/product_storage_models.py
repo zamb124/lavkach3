@@ -1,8 +1,7 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import Sequence, Uuid, ARRAY, UniqueConstraint
-from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy import Sequence, Uuid, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from core.db import Base

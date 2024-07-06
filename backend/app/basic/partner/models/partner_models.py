@@ -1,13 +1,14 @@
-from typing import Optional
-
-from sqlalchemy import Column, Unicode, BigInteger, Boolean, Uuid, ForeignKey, Sequence
-from sqlalchemy_utils.types import PasswordType, EmailType, CountryType, ChoiceType, JSONType, LocaleType, PhoneNumber, PhoneNumberType
-from sqlalchemy_utils import CurrencyType, Currency, CountryType, LocaleType
-from core.db import Base
-from core.db.mixins import TimestampMixin, LsnMixin, AllMixin
 import uuid
 from enum import Enum
+from typing import Optional
+
+from sqlalchemy import Uuid, ForeignKey, Sequence
 from sqlalchemy.orm import relationship, mapped_column, Mapped
+from sqlalchemy_utils import CurrencyType, CountryType, LocaleType
+from sqlalchemy_utils.types import EmailType, PhoneNumberType
+
+from core.db import Base
+from core.db.mixins import AllMixin
 
 
 class PartnerType(str, Enum):

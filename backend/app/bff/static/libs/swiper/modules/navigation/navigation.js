@@ -1,4 +1,5 @@
 import createElementIfNotDefined from '../../shared/create-element-if-not-defined.js';
+
 export default function Navigation({
   swiper,
   extendParams,

@@ -1,4 +1,5 @@
-import { elementChildren } from '../../shared/utils.js';
+import {elementChildren} from '../../shared/utils.js';
+
 export default function loopCreate(slideRealIndex) {
   const swiper = this;
   const {

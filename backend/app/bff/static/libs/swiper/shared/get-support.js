@@ -1,4 +1,5 @@
-import { getWindow, getDocument } from 'ssr-window';
+import {getDocument, getWindow} from 'ssr-window';
+
 let support;
 function calcSupport() {
   const window = getWindow();

@@ -1,5 +1,6 @@
-import { getWindow, getDocument } from 'ssr-window';
-import { elementChildren } from '../../shared/utils.js';
+import {getDocument, getWindow} from 'ssr-window';
+import {elementChildren} from '../../shared/utils.js';
+
 export default function HashNavigation({
   swiper,
   extendParams,

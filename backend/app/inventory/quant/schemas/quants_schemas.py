@@ -6,10 +6,10 @@ from pydantic import BaseModel, Field, computed_field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import LocationClass
+from app.inventory.quant.models import Quant
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.inventory.quant.models import Quant
 
 
 class QuantBaseScheme(BaseModel):

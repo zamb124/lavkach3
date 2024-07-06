@@ -1,7 +1,4 @@
-import uuid
-
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 
 from app.basic.uom.models.uom_models import Uom
@@ -10,8 +7,8 @@ from core.service.base import BaseService
 
 
 class UomService(BaseService[Uom, UomCreateScheme, UomUpdateScheme, UomFilter]):
-    def __init__(self, request: Request, session: AsyncSession = None):
-        super(UomService, self).__init__(request, Uom,UomCreateScheme, UomUpdateScheme, session)
+    def __init__(self, request: Request):
+        super(UomService, self).__init__(request, Uom, UomCreateScheme, UomUpdateScheme)
 
     async def convert(self, objs: list[ConvertSchema]):
         ids = []

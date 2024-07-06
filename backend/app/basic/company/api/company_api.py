@@ -13,7 +13,6 @@ from app.basic.company.schemas import (
     CompanyFilter
 )
 from app.basic.company.services.company_service import CompanyService
-from app.basic.user.schemas import LoginResponseSchema
 
 company_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],

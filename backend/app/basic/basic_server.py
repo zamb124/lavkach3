@@ -1,4 +1,3 @@
-from asyncio import sleep
 from typing import List
 
 from fastapi import FastAPI, Request, Depends

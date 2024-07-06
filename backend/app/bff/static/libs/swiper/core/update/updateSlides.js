@@ -1,4 +1,5 @@
-import { elementChildren, elementOuterSize, elementStyle, setCSSProperty } from '../../shared/utils.js';
+import {elementChildren, elementOuterSize, elementStyle, setCSSProperty} from '../../shared/utils.js';
+
 export default function updateSlides() {
   const swiper = this;
   function getDirectionLabel(property) {

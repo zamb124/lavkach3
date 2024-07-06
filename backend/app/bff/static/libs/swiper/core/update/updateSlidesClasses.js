@@ -1,4 +1,5 @@
-import { elementChildren, elementNextAll, elementPrevAll } from '../../shared/utils.js';
+import {elementChildren, elementNextAll, elementPrevAll} from '../../shared/utils.js';
+
 export default function updateSlidesClasses() {
   const swiper = this;
   const {

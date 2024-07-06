@@ -1,6 +1,7 @@
 /* eslint-disable consistent-return */
-import { getWindow, getDocument } from 'ssr-window';
-import { elementOffset, elementParents } from '../../shared/utils.js';
+import {getDocument, getWindow} from 'ssr-window';
+import {elementOffset, elementParents} from '../../shared/utils.js';
+
 export default function Keyboard({
   swiper,
   extendParams,

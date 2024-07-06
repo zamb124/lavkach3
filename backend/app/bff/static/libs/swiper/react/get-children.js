@@ -1,4 +1,5 @@
 import React from 'react';
+
 function isChildSwiperSlide(child) {
   return child.type && child.type.displayName && child.type.displayName.includes('SwiperSlide');
 }

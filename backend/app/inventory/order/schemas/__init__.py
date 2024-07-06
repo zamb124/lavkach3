@@ -1,5 +1,3 @@
-from pydantic import BaseModel
-
 from .order_schemas import (
     OrderBaseScheme,
 OrderCreateScheme,

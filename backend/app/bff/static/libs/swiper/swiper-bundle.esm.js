@@ -11,7 +11,6 @@
  */
 
 import Swiper from './core/core.js';
-export { default as Swiper, default } from './core/core.js';
 import Virtual from './modules/virtual/virtual.js';
 import Keyboard from './modules/keyboard/keyboard.js';
 import Mousewheel from './modules/mousewheel/mousewheel.js';
@@ -35,6 +34,8 @@ import EffectFlip from './modules/effect-flip/effect-flip.js';
 import EffectCoverflow from './modules/effect-coverflow/effect-coverflow.js';
 import EffectCreative from './modules/effect-creative/effect-creative.js';
 import EffectCards from './modules/effect-cards/effect-cards.js';
+
+export { default as Swiper, default } from './core/core.js';
 
 // Swiper Class
 const modules = [Virtual, Keyboard, Mousewheel, Navigation, Pagination, Scrollbar, Parallax, Zoom, Controller, A11y, History, HashNavigation, Autoplay, Thumbs, FreeMode, Grid, Manipulation, EffectFade, EffectCube, EffectFlip, EffectCoverflow, EffectCreative, EffectCards];

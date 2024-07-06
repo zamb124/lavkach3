@@ -1,5 +1,5 @@
-import { attrToProp, extend } from '../components-shared/utils.js';
-import { paramsList } from '../components-shared/params-list.js';
+import {attrToProp, extend} from '../components-shared/utils.js';
+import {paramsList} from '../components-shared/params-list.js';
 import defaults from '../core/defaults.js';
 
 const formatValue = (val) => {

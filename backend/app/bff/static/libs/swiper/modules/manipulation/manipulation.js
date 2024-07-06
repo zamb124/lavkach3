@@ -3,6 +3,7 @@ import prependSlide from './methods/prependSlide.js';
 import addSlide from './methods/addSlide.js';
 import removeSlide from './methods/removeSlide.js';
 import removeAllSlides from './methods/removeAllSlides.js';
+
 export default function Manipulation({
   swiper
 }) {

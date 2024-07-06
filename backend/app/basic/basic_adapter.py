@@ -1,8 +1,8 @@
 import json
 from uuid import UUID
 
-from core.fastapi.adapters import BaseAdapter
 from app.basic.basic_config import config
+from core.fastapi.adapters import BaseAdapter
 from core.fastapi.adapters.action_decorator import action
 
 

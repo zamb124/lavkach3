@@ -1,4 +1,4 @@
-import { getDocument } from 'ssr-window';
+import {getDocument} from 'ssr-window';
 import onTouchStart from './onTouchStart.js';
 import onTouchMove from './onTouchMove.js';
 import onTouchEnd from './onTouchEnd.js';
@@ -6,6 +6,7 @@ import onResize from './onResize.js';
 import onClick from './onClick.js';
 import onScroll from './onScroll.js';
 import onLoad from './onLoad.js';
+
 let dummyEventAttached = false;
 function dummyEventListener() {}
 const events = (swiper, method) => {

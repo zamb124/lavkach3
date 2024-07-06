@@ -1,7 +1,4 @@
 import json
-from uuid import UUID
-
-from pydantic import BaseModel
 
 from app.inventory.inventory_config import config
 from app.inventory.order.schemas import SuggestConfirmScheme

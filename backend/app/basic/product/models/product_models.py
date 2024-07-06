@@ -2,8 +2,9 @@ import uuid
 from enum import Enum
 from typing import Optional
 from typing import TYPE_CHECKING
-from sqlalchemy.dialects.postgresql import ARRAY
+
 from sqlalchemy import Sequence, Uuid, ForeignKey, UniqueConstraint, String
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship
 

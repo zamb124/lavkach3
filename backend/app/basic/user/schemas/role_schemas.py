@@ -1,8 +1,7 @@
-from datetime import datetime
+from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
-from typing import Optional, List
 
 from app.basic.user.models.role_models import Role
 from core.schemas import BaseFilter

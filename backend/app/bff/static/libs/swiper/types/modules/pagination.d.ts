@@ -1,4 +1,4 @@
-import { CSSSelector } from '../shared';
+import {CSSSelector} from '../shared';
 import Swiper from '../swiper-class';
 
 export interface PaginationMethods {

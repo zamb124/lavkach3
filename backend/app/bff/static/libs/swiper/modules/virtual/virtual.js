@@ -1,5 +1,6 @@
-import { getDocument } from 'ssr-window';
-import { createElement, elementChildren, setCSSProperty } from '../../shared/utils.js';
+import {getDocument} from 'ssr-window';
+import {createElement, elementChildren, setCSSProperty} from '../../shared/utils.js';
+
 export default function Virtual({
   swiper,
   extendParams,

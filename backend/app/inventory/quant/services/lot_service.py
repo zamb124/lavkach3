@@ -4,14 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.inventory.quant.models.quants_models import Lot
 from app.inventory.quant.schemas import LotCreateScheme, LotUpdateScheme, LotFilter
-from core.db.session import session
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
-
+from starlette.requests import Request
 class LotService(BaseService[Lot, LotCreateScheme, LotUpdateScheme, LotFilter]):
-    def __init__(self, request, db_session: AsyncSession = None):
-        super(LotService, self).__init__(request, Lot,LotCreateScheme, LotUpdateScheme, db_session)
+    def __init__(self, request:Request):
+        super(LotService, self).__init__(request, Lot,LotCreateScheme, LotUpdateScheme)
 
     @permit('lot_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

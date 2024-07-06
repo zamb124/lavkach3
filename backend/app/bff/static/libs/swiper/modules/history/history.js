@@ -1,4 +1,5 @@
-import { getWindow } from 'ssr-window';
+import {getWindow} from 'ssr-window';
+
 export default function History({
   swiper,
   extendParams,

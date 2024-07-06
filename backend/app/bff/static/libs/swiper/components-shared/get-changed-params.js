@@ -1,5 +1,6 @@
-import { paramsList } from './params-list.js';
-import { isObject } from './utils.js';
+import {paramsList} from './params-list.js';
+import {isObject} from './utils.js';
+
 function getChangedParams(swiperParams, oldParams, children, oldChildren, getKey) {
   const keys = [];
   if (!oldParams) return keys;

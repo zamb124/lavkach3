@@ -1,4 +1,5 @@
-import { createElement, elementChildren } from './utils.js';
+import {createElement, elementChildren} from './utils.js';
+
 export default function createElementIfNotDefined(swiper, originalParams, params, checkProps) {
   if (swiper.params.createElements) {
     Object.keys(checkProps).forEach(key => {

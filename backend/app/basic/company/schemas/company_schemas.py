@@ -1,14 +1,13 @@
-from datetime import datetime
-
-from pydantic import BaseModel, Field, UUID4
 from typing import Optional, List
 
+from fastapi_filter.contrib.sqlalchemy import Filter
+from pydantic import BaseModel, Field, UUID4
+
+from app.basic.company.models.company_models import Company
+from core.schemas import BaseFilter
+from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from core.types.types import TypeCountry, TypeLocale, TypeCurrency
-from fastapi_filter.contrib.sqlalchemy import Filter
-from app.basic.company.models.company_models import Company
-from core.schemas.list_schema import GenericListSchema
-from core.schemas import BaseFilter
 
 
 class CompanyBaseScheme(BaseModel):

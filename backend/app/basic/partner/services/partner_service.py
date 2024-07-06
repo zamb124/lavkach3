@@ -1,11 +1,7 @@
 from typing import Any, Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.requests import Request
-
 from app.basic.partner.models import Partner
 from app.basic.partner.schemas import PartnerCreateScheme, PartnerUpdateScheme, PartnerFilter
-from core.db.session import session
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 

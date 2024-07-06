@@ -1,6 +1,7 @@
 import typing
 import uuid
 
+from fastapi import APIRouter, Query, Request
 from fastapi_filter import FilterDepends
 
 from app.inventory.order.schemas.suggest_schemas import (
@@ -12,11 +13,6 @@ from app.inventory.order.schemas.suggest_schemas import (
     SuggestConfirmScheme
 )
 from app.inventory.order.services.suggest_service import SuggestService
-from core.fastapi.dependencies import (
-    PermissionDependency,
-    IsAuthenticated,
-)
-from fastapi import APIRouter, Depends, Query, Request
 
 suggest_router = APIRouter(
 )

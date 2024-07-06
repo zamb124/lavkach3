@@ -1,5 +1,5 @@
 import Swiper from '../swiper-class';
-import { CSSSelector } from '../shared';
+import {CSSSelector} from '../shared';
 
 export interface MousewheelMethods {
   /**

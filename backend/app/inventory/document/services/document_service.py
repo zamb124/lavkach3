@@ -2,7 +2,7 @@ import datetime
 import uuid
 from typing import Any, Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.requests import Request
 
 from app.inventory.order.models.order_models import Order
 from app.inventory.order.schemas.order_schemas import OrderCreateScheme, OrderUpdateScheme, OrderFilter
@@ -10,10 +10,9 @@ from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
 
-
 class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, OrderFilter]):
-    def __init__(self, request, db_session: AsyncSession = None):
-        super(OrderService, self).__init__(request, Order, OrderCreateScheme, OrderUpdateScheme, db_session)
+    def __init__(self, request: Request):
+        super(OrderService, self).__init__(request, Order, OrderCreateScheme, OrderUpdateScheme)
 
     @permit('order_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
@@ -36,7 +35,6 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
     @permit('order_delete')
     async def delete(self, id: Any) -> None:
         return await super(OrderService, self).delete(id)
-
 
     @permit('order_move_counstructor')
     async def move_counstructor(self, order_id: uuid.UUID, moves: list) -> None:

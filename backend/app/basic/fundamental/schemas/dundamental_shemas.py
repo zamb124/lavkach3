@@ -2,8 +2,6 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from core.schemas import BaseFilter
-
 
 class Format(str, Enum):
     jpg = 'jpg'

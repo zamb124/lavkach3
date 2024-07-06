@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Response
 
-from .schemas import RefreshTokenRequest, VerifyTokenRequest, RefreshTokenResponse
-from app.basic.auth.services.jwt import JwtService
-from app.basic.user.schemas import ExceptionResponseSchema
+from .schemas import VerifyTokenRequest
 
 auth_router = APIRouter()
 

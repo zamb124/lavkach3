@@ -1,4 +1,5 @@
-import { preload } from '../../shared/process-lazy-preloader.js';
+import {preload} from '../../shared/process-lazy-preloader.js';
+
 export function getActiveIndexByTranslate(swiper) {
   const {
     slidesGrid,

@@ -1,15 +1,14 @@
-from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
+from app.inventory.location.enums import LocationClass, PutawayStrategy
+from app.inventory.location.models import LocationType
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.inventory.location.models import LocationType
-from app.inventory.location.enums import LocationClass, PutawayStrategy
 
 
 class LocationTypeBaseScheme(BaseModel):

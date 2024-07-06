@@ -1,5 +1,6 @@
 import effectInit from '../../shared/effect-init.js';
-import { createElement } from '../../shared/utils.js';
+import {createElement} from '../../shared/utils.js';
+
 export default function EffectCube({
   swiper,
   extendParams,

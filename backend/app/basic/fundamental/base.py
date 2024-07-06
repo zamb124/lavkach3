@@ -1,16 +1,16 @@
 import base64
 
 from babel.core import LOCALE_ALIASES
-from fastapi import APIRouter, Depends, HTTPException
+from babel.core import UnknownLocaleError
+from fastapi import APIRouter, HTTPException
 from fastapi import Response, Request
 from pydantic import BaseModel
 
 from app.basic.fundamental.schemas.dundamental_shemas import Image
-from core.helpers.s3.s3 import s3_client
 from core.schemas.basic_schemes import CurrencySchema, CountrySchema, LocaleSchema, CountryListSchema, \
     CurrencyListSchema, LocaleListSchema
-from core.types.types import TypeLocale, TypeCurrency, TypeCountry
-from babel.core import UnknownLocaleError
+from core.types.types import TypeLocale
+
 
 class ExceptionResponseSchema(BaseModel):
     error: str

@@ -1,6 +1,7 @@
 import typing
 import uuid
 
+from fastapi import APIRouter, Query, Request
 from fastapi_filter import FilterDepends
 
 from app.inventory.order.schemas.move_schemas import (
@@ -11,11 +12,6 @@ from app.inventory.order.schemas.move_schemas import (
     MoveFilter, MoveConfirmScheme,
 )
 from app.inventory.order.services.move_service import MoveService
-from core.fastapi.dependencies import (
-    PermissionDependency,
-    IsAuthenticated,
-)
-from fastapi import APIRouter, Depends, Query, Request
 
 move_router = APIRouter(
 )

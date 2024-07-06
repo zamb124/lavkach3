@@ -7,6 +7,7 @@ import updateProgress from './updateProgress.js';
 import updateSlidesClasses from './updateSlidesClasses.js';
 import updateActiveIndex from './updateActiveIndex.js';
 import updateClickedSlide from './updateClickedSlide.js';
+
 export default {
   updateSize,
   updateSlides,

@@ -1,4 +1,5 @@
-import { h } from 'vue';
+import {h} from 'vue';
+
 function renderVirtual(swiperRef, slides, virtualData) {
   if (!virtualData) return null;
   const getSlideIndex = index => {

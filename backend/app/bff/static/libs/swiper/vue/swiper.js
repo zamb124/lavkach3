@@ -1,13 +1,21 @@
-import { h, ref, onMounted, onUpdated, onBeforeUnmount, watch, nextTick, provide } from 'vue';
+import {h, nextTick, onBeforeUnmount, onMounted, onUpdated, provide, ref, watch} from 'vue';
 import SwiperCore from 'swiper';
-import { getParams } from '../components-shared/get-params.js';
-import { mountSwiper } from '../components-shared/mount-swiper.js';
-import { needsScrollbar, needsNavigation, needsPagination, uniqueClasses, extend, wrapperClass } from '../components-shared/utils.js';
-import { getChangedParams } from '../components-shared/get-changed-params.js';
-import { getChildren } from './get-children.js';
-import { updateSwiper } from '../components-shared/update-swiper.js';
-import { renderVirtual } from './virtual.js';
-import { updateOnVirtualData } from '../components-shared/update-on-virtual-data.js';
+import {getParams} from '../components-shared/get-params.js';
+import {mountSwiper} from '../components-shared/mount-swiper.js';
+import {
+    extend,
+    needsNavigation,
+    needsPagination,
+    needsScrollbar,
+    uniqueClasses,
+    wrapperClass
+} from '../components-shared/utils.js';
+import {getChangedParams} from '../components-shared/get-changed-params.js';
+import {getChildren} from './get-children.js';
+import {updateSwiper} from '../components-shared/update-swiper.js';
+import {renderVirtual} from './virtual.js';
+import {updateOnVirtualData} from '../components-shared/update-on-virtual-data.js';
+
 const Swiper = {
   name: 'Swiper',
   props: {

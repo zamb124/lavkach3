@@ -1,19 +1,19 @@
 import uuid
 from enum import Enum
 from typing import Optional
+from typing import TYPE_CHECKING
 
 from fastapi_localization import lazy_gettext as _
-from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey
-from sqlalchemy import Unicode, Boolean, Uuid, Sequence
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy import UniqueConstraint
+from sqlalchemy import Uuid, Sequence
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy_utils.types import PasswordType, EmailType, CountryType, LocaleType, PhoneNumberType
 
 from core.db import Base
 from core.db.mixins import TimestampMixin, VarsMixin, LsnMixin
 from core.db.types import ids
-from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from app.basic.company.models.company_models import Company
     from app.basic.store.models.store_models import Store

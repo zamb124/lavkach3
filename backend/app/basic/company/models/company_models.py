@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import Column, Unicode, BigInteger, Uuid, Sequence, ForeignKey
+from sqlalchemy import Uuid, Sequence
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from sqlalchemy_utils import CurrencyType, CountryType, LocaleType
 

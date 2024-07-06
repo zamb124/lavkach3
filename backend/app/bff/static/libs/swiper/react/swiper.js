@@ -1,16 +1,26 @@
-function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-import React, { useRef, useState, useEffect, forwardRef } from 'react';
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments);
+}
+
+import React, {forwardRef, useEffect, useRef, useState} from 'react';
 import SwiperCore from 'swiper';
-import { getParams } from '../components-shared/get-params.js';
-import { mountSwiper } from '../components-shared/mount-swiper.js';
-import { needsScrollbar, needsNavigation, needsPagination, uniqueClasses, extend, wrapperClass } from '../components-shared/utils.js';
-import { getChangedParams } from '../components-shared/get-changed-params.js';
-import { getChildren } from './get-children.js';
-import { updateSwiper } from '../components-shared/update-swiper.js';
-import { renderVirtual } from './virtual.js';
-import { updateOnVirtualData } from '../components-shared/update-on-virtual-data.js';
-import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
-import { SwiperContext } from './context.js';
+import {getParams} from '../components-shared/get-params.js';
+import {mountSwiper} from '../components-shared/mount-swiper.js';
+import {
+    extend,
+    needsNavigation,
+    needsPagination,
+    needsScrollbar,
+    uniqueClasses,
+    wrapperClass
+} from '../components-shared/utils.js';
+import {getChangedParams} from '../components-shared/get-changed-params.js';
+import {getChildren} from './get-children.js';
+import {updateSwiper} from '../components-shared/update-swiper.js';
+import {renderVirtual} from './virtual.js';
+import {updateOnVirtualData} from '../components-shared/update-on-virtual-data.js';
+import {useIsomorphicLayoutEffect} from './use-isomorphic-layout-effect.js';
+import {SwiperContext} from './context.js';
+
 const Swiper = /*#__PURE__*/forwardRef(function (_temp, externalElRef) {
   let {
     className,

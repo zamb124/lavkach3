@@ -1,7 +1,5 @@
 import datetime
-import enum
 import uuid
-from enum import Enum
 from typing import Optional
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint, ARRAY, \
@@ -17,7 +15,6 @@ from app.inventory.quant.models import Lot, Quant
 from core.db import Base
 from core.db.mixins import AllMixin, CreatedEdited
 from core.db.types import ids
-
 
 
 class OrderType(Base, AllMixin, CreatedEdited):

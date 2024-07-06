@@ -1,8 +1,8 @@
 from core.helpers.cache import CacheStrategy
-from .services import ProductStorageTypeService
 from .models import ProductStorageType
-from .schemas.product_storage_type_schemas import ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, ProductStorageTypeFilter, ProductStorageTypeScheme
-
+from .schemas.product_storage_type_schemas import ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, \
+    ProductStorageTypeFilter, ProductStorageTypeScheme
+from .services import ProductStorageTypeService
 
 __domain__ = {
     'product_storage_type': {

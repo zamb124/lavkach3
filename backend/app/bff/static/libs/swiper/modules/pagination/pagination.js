@@ -1,6 +1,7 @@
 import classesToSelector from '../../shared/classes-to-selector.js';
 import createElementIfNotDefined from '../../shared/create-element-if-not-defined.js';
-import { elementIndex, elementOuterSize, elementParents } from '../../shared/utils.js';
+import {elementIndex, elementOuterSize, elementParents} from '../../shared/utils.js';
+
 export default function Pagination({
   swiper,
   extendParams,

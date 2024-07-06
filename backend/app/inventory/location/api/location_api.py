@@ -1,6 +1,7 @@
 import typing
 import uuid
 
+from fastapi import APIRouter, Query, Request
 from fastapi_filter import FilterDepends
 
 from app.inventory.location.schemas import (
@@ -12,11 +13,6 @@ from app.inventory.location.schemas import (
     LocationFilter
 )
 from app.inventory.location.services import LocationService
-from core.fastapi.dependencies import (
-    PermissionDependency,
-    IsAuthenticated,
-)
-from fastapi import APIRouter, Depends, Query, Request
 
 location_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],

@@ -1,10 +1,9 @@
-import datetime
 import uuid
 from typing import Any, Optional, List
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.exceptions import HTTPException
-
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.requests import Request
 from app.inventory.order.enums.exceptions_suggest_enums import SuggestErrors
 from app.inventory.order.enums.order_enum import SuggestStatus, SuggestType
 from app.inventory.order.models.order_models import Suggest
@@ -15,8 +14,8 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 
 class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateScheme, SuggestFilter]):
-    def __init__(self, request, db_session: AsyncSession = None):
-        super(SuggestService, self).__init__(request, Suggest, SuggestCreateScheme, SuggestUpdateScheme, db_session)
+    def __init__(self, request: Request):
+        super(SuggestService, self).__init__(request, Suggest, SuggestCreateScheme, SuggestUpdateScheme)
 
     @permit('suggest_edit')
     async def update(self, id: Any, obj: UpdateSchemaType, commit=False) -> Optional[ModelType]:

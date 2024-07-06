@@ -1,14 +1,10 @@
-from sqlalchemy import select
 from typing import Any, Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.exceptions import HTTPException
-from starlette.requests import Request
+from sqlalchemy import select
 
 from app.basic.product.enums.exceptions_product_enums import ProductErrors
 from app.basic.product.models.product_models import Product
 from app.basic.product.schemas import ProductCreateScheme, ProductUpdateScheme, ProductFilter
-from core.db.session import session
 from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType

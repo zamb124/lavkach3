@@ -1,4 +1,5 @@
-import { getWindow } from 'ssr-window';
+import {getWindow} from 'ssr-window';
+
 let browser;
 function calcBrowser() {
   const window = getWindow();

@@ -2,12 +2,12 @@ from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
+from app.bff.template_spec import templates
 from app.bff.utills import BasePermit
 from core.fastapi.frontend.schema_recognizer import ClassView
-from app.bff.template_spec import templates
 
 product_storage_type_router = APIRouter()
-from fastapi import APIRouter, Depends
+from fastapi import Depends
 
 class ProductStorageTypePermit(BasePermit):
     permits = ['product_storage_type_list']

@@ -1,6 +1,7 @@
 /* eslint no-underscore-dangle: "off" */
 /* eslint no-use-before-define: "off" */
-import { getDocument } from 'ssr-window';
+import {getDocument} from 'ssr-window';
+
 export default function Autoplay({
   swiper,
   extendParams,

@@ -1,5 +1,6 @@
-import { getWindow } from 'ssr-window';
-import { elementParents } from '../../../shared/utils.js';
+import {getWindow} from 'ssr-window';
+import {elementParents} from '../../../shared/utils.js';
+
 export default function Observer({
   swiper,
   extendParams,

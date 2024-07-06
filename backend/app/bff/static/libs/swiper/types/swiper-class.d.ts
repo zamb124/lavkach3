@@ -1,29 +1,29 @@
-import { SwiperOptions } from './swiper-options';
-import { CSSSelector, SwiperModule } from './shared';
-import { SwiperEvents } from './swiper-events';
+import {SwiperOptions} from './swiper-options';
+import {CSSSelector, SwiperModule} from './shared';
+import {SwiperEvents} from './swiper-events';
 
-import { A11yMethods } from './modules/a11y';
-import { AutoplayMethods } from './modules/autoplay';
-import { ControllerMethods } from './modules/controller';
-import { CoverflowEffectMethods } from './modules/effect-coverflow';
-import { CubeEffectMethods } from './modules/effect-cube';
-import { FadeEffectMethods } from './modules/effect-fade';
-import { FlipEffectMethods } from './modules/effect-flip';
-import { CreativeEffectMethods } from './modules/effect-creative';
-import { CardsEffectMethods } from './modules/effect-cards';
-import { HashNavigationMethods } from './modules/hash-navigation';
-import { HistoryMethods } from './modules/history';
-import { KeyboardMethods } from './modules/keyboard';
-import { MousewheelMethods } from './modules/mousewheel';
-import { NavigationMethods } from './modules/navigation';
-import { PaginationMethods } from './modules/pagination';
-import { ParallaxMethods } from './modules/parallax';
-import { ScrollbarMethods } from './modules/scrollbar';
-import { ThumbsMethods } from './modules/thumbs';
-import { VirtualMethods } from './modules/virtual';
-import { ZoomMethods } from './modules/zoom';
-import { FreeModeMethods } from './modules/free-mode';
-import { ManipulationMethods } from './modules/manipulation';
+import {A11yMethods} from './modules/a11y';
+import {AutoplayMethods} from './modules/autoplay';
+import {ControllerMethods} from './modules/controller';
+import {CoverflowEffectMethods} from './modules/effect-coverflow';
+import {CubeEffectMethods} from './modules/effect-cube';
+import {FadeEffectMethods} from './modules/effect-fade';
+import {FlipEffectMethods} from './modules/effect-flip';
+import {CreativeEffectMethods} from './modules/effect-creative';
+import {CardsEffectMethods} from './modules/effect-cards';
+import {HashNavigationMethods} from './modules/hash-navigation';
+import {HistoryMethods} from './modules/history';
+import {KeyboardMethods} from './modules/keyboard';
+import {MousewheelMethods} from './modules/mousewheel';
+import {NavigationMethods} from './modules/navigation';
+import {PaginationMethods} from './modules/pagination';
+import {ParallaxMethods} from './modules/parallax';
+import {ScrollbarMethods} from './modules/scrollbar';
+import {ThumbsMethods} from './modules/thumbs';
+import {VirtualMethods} from './modules/virtual';
+import {ZoomMethods} from './modules/zoom';
+import {FreeModeMethods} from './modules/free-mode';
+import {ManipulationMethods} from './modules/manipulation';
 
 interface SwiperClass<Events> {
   /** Add event handler */

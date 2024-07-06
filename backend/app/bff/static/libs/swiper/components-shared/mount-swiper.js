@@ -1,4 +1,5 @@
-import { needsNavigation, needsPagination, needsScrollbar } from './utils.js';
+import {needsNavigation, needsPagination, needsScrollbar} from './utils.js';
+
 function mountSwiper({
   el,
   nextEl,

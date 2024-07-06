@@ -1,8 +1,11 @@
-function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-import React, { useRef, useState, forwardRef } from 'react';
-import { uniqueClasses } from '../components-shared/utils.js';
-import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js';
-import { SwiperSlideContext } from './context.js';
+function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments);
+}
+
+import React, {forwardRef, useRef, useState} from 'react';
+import {uniqueClasses} from '../components-shared/utils.js';
+import {useIsomorphicLayoutEffect} from './use-isomorphic-layout-effect.js';
+import {SwiperSlideContext} from './context.js';
+
 const SwiperSlide = /*#__PURE__*/forwardRef(function (_temp, externalRef) {
   let {
     tag: Tag = 'div',

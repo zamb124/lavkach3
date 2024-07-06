@@ -1,4 +1,5 @@
-import { elementTransitionEnd } from './utils.js';
+import {elementTransitionEnd} from './utils.js';
+
 export default function effectVirtualTransitionEnd({
   swiper,
   duration,

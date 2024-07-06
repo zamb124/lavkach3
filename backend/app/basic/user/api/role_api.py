@@ -9,8 +9,7 @@ from app.basic.user.schemas import (
     RoleCreateScheme,
     RoleUpdateScheme,
     ExceptionResponseSchema,
-    PermissionListSchema,
-    PermissionSchema
+    PermissionListSchema
 )
 from app.basic.user.schemas.role_schemas import RoleListSchema, RoleFilter
 from app.basic.user.services.role_service import RoleService

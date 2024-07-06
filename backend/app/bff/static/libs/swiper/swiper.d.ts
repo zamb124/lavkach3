@@ -1,6 +1,6 @@
 import Swiper from './types/swiper-class';
-import { SwiperOptions } from './types/swiper-options';
-import { SwiperModule } from './types/shared';
+import {SwiperOptions} from './types/swiper-options';
+import {SwiperModule} from './types/shared';
 
 declare const A11y: SwiperModule;
 declare const Autoplay: SwiperModule;

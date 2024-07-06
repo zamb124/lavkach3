@@ -2,14 +2,13 @@ import logging
 import logging
 import uuid
 from typing import Any, Optional, List
-
+from starlette.requests import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
 
-from app.inventory.location import Location
 from app.inventory.location.enums import VirtualLocationClass
 from app.inventory.order.enums.exceptions_move_enums import MoveErrors
-from app.inventory.order.models.order_models import Move, MoveType, Order, OrderType, OrderClass, MoveStatus, \
+from app.inventory.order.models.order_models import Move, MoveType, Order, OrderType, MoveStatus, \
     SuggestType
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
@@ -34,8 +33,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         DONE:       мув завершен (terminal)
         CANCELED:   мув отменен (terminal)
     """
-    def __init__(self, request, db_session: AsyncSession = None):
-        super(MoveService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme, db_session)
+    def __init__(self, request:Request):
+        super(MoveService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme)
 
     @permit('move_edit')
     async def update(self, id: Any, obj: UpdateSchemaType, commit:bool =True) -> Optional[ModelType]:

@@ -1,23 +1,16 @@
 import datetime
-import enum
 import uuid
-from enum import Enum
 from typing import Optional
 
-from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint, ARRAY, \
-    String
+from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 # from app.inventory.location.models import Location, LocationClass
-from app.inventory.location.enums import LocationClass, PutawayStrategy
-from app.inventory.location.models import Location
-from app.inventory.order.enums.order_enum import MoveStatus, OrderClass, BackOrderAction, ReservationMethod, \
-    OrderStatus, MoveType, SuggestType, SuggestStatus
-from app.inventory.quant.models import Lot, Quant
+from app.inventory.order.enums.order_enum import OrderStatus
+from app.inventory.quant.models import Lot
 from core.db import Base
 from core.db.mixins import AllMixin, CreatedEdited
 from core.db.types import ids
-
 
 
 class Document(Base, AllMixin, CreatedEdited):

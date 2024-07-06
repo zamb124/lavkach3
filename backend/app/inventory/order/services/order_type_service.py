@@ -1,19 +1,17 @@
-import datetime
 from typing import Any, Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.inventory.order.models.order_models import Order, OrderType
+from starlette.requests import Request
+from app.inventory.order.models.order_models import OrderType
 from app.inventory.order.schemas.order_type_schemas import OrderTypeCreateScheme, OrderTypeUpdateScheme, OrderTypeFilter
-from core.db.session import session
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
 
 class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUpdateScheme, OrderTypeFilter]):
-    def __init__(self, request, db_session: AsyncSession = None):
-        super(OrderTypeService, self).__init__(request, OrderType,OrderTypeCreateScheme, OrderTypeUpdateScheme,  db_session)
+    def __init__(self, request:Request):
+        super(OrderTypeService, self).__init__(request, OrderType,OrderTypeCreateScheme, OrderTypeUpdateScheme)
 
     @permit('order_type_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

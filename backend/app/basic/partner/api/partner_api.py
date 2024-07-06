@@ -1,10 +1,9 @@
 import uuid
-import typing
 
+from fastapi import APIRouter, Query
 from fastapi_filter import FilterDepends
 from starlette.requests import Request
 
-from app.basic.partner.models import Partner
 from app.basic.partner.schemas import (
     PartnerScheme,
     PartnerCreateScheme,
@@ -12,7 +11,6 @@ from app.basic.partner.schemas import (
     ExceptionResponseSchema, PartnerListSchema, PartnerFilter
 )
 from app.basic.partner.services import PartnerService
-from fastapi import APIRouter, Query
 
 partner_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],

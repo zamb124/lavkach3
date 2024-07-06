@@ -5,11 +5,11 @@ from app.inventory.product_storage.schemas import ProductStorageTypeCreateScheme
     ProductStorageTypeFilter
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-
+from starlette.requests import Request
 
 class ProductStorageTypeService(BaseService[ProductStorageType, ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, ProductStorageTypeFilter]):
-    def __init__(self, request, db_session=None):
-        super(ProductStorageTypeService, self).__init__(request, ProductStorageType, ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, db_session)
+    def __init__(self, request:Request):
+        super(ProductStorageTypeService, self).__init__(request, ProductStorageType, ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme,)
 
     @permit('product_storage_type_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

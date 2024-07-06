@@ -1,27 +1,27 @@
-import { SwiperOptions } from './swiper-options';
+import {SwiperOptions} from './swiper-options';
 import Swiper from './swiper-class';
 
-import { A11yEvents } from './modules/a11y';
-import { AutoplayEvents } from './modules/autoplay';
-import { ControllerEvents } from './modules/controller';
-import { CoverflowEffectEvents } from './modules/effect-coverflow';
-import { CubeEffectEvents } from './modules/effect-cube';
-import { FadeEffectEvents } from './modules/effect-fade';
-import { FlipEffectEvents } from './modules/effect-flip';
-import { CreativeEffectEvents } from './modules/effect-creative';
-import { CardsEffectEvents } from './modules/effect-cards';
-import { HashNavigationEvents } from './modules/hash-navigation';
-import { HistoryEvents } from './modules/history';
-import { KeyboardEvents } from './modules/keyboard';
-import { MousewheelEvents } from './modules/mousewheel';
-import { NavigationEvents } from './modules/navigation';
-import { PaginationEvents } from './modules/pagination';
-import { ParallaxEvents } from './modules/parallax';
-import { ScrollbarEvents } from './modules/scrollbar';
-import { ThumbsEvents } from './modules/thumbs';
-import { VirtualEvents } from './modules/virtual';
-import { ZoomEvents } from './modules/zoom';
-import { FreeModeEvents } from './modules/free-mode';
+import {A11yEvents} from './modules/a11y';
+import {AutoplayEvents} from './modules/autoplay';
+import {ControllerEvents} from './modules/controller';
+import {CoverflowEffectEvents} from './modules/effect-coverflow';
+import {CubeEffectEvents} from './modules/effect-cube';
+import {FadeEffectEvents} from './modules/effect-fade';
+import {FlipEffectEvents} from './modules/effect-flip';
+import {CreativeEffectEvents} from './modules/effect-creative';
+import {CardsEffectEvents} from './modules/effect-cards';
+import {HashNavigationEvents} from './modules/hash-navigation';
+import {HistoryEvents} from './modules/history';
+import {KeyboardEvents} from './modules/keyboard';
+import {MousewheelEvents} from './modules/mousewheel';
+import {NavigationEvents} from './modules/navigation';
+import {PaginationEvents} from './modules/pagination';
+import {ParallaxEvents} from './modules/parallax';
+import {ScrollbarEvents} from './modules/scrollbar';
+import {ThumbsEvents} from './modules/thumbs';
+import {VirtualEvents} from './modules/virtual';
+import {ZoomEvents} from './modules/zoom';
+import {FreeModeEvents} from './modules/free-mode';
 
 export interface SwiperEvents {
   // CORE_EVENTS_START

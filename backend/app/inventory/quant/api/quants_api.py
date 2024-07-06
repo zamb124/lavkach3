@@ -1,6 +1,6 @@
-import typing
 import uuid
 
+from fastapi import APIRouter, Query, Request
 from fastapi_filter import FilterDepends
 
 from app.inventory.quant.schemas import (
@@ -12,11 +12,6 @@ from app.inventory.quant.schemas import (
     QuantFilter
 )
 from app.inventory.quant.services import QuantService
-from core.fastapi.dependencies import (
-    PermissionDependency,
-    IsAuthenticated,
-)
-from fastapi import APIRouter, Depends, Query, Request
 
 quant_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],

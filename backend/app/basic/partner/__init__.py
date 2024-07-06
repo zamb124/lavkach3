@@ -1,7 +1,7 @@
 from core.helpers.cache import CacheStrategy
-from .services import PartnerService
 from .models import Partner
 from .schemas.partner_schemas import PartnerCreateScheme, PartnerUpdateScheme, PartnerFilter, PartnerScheme
+from .services import PartnerService
 
 __domain__ = {
     'partner': {

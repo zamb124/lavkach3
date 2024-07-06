@@ -1,4 +1,5 @@
-import { getWindow, getDocument } from 'ssr-window';
+import {getDocument, getWindow} from 'ssr-window';
+
 function deleteProps(obj) {
   const object = obj;
   Object.keys(object).forEach(key => {

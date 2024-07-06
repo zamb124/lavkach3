@@ -1,17 +1,16 @@
 import uuid
-from enum import Enum
 from typing import Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, Sequence
 from sqlalchemy import Numeric, Uuid
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from typing import TYPE_CHECKING
 
 from app.basic.uom.enums.uom_enum import UomType
 from core.db import Base
 from core.db.mixins import AllMixin
+
 if TYPE_CHECKING:
-    from app.basic.product.models import Product
     from app.basic.uom.models.uom_category_models import UomCategory
 
 

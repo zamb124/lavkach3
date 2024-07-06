@@ -1,4 +1,5 @@
-import { isObject, extend } from './utils.js';
+import {extend, isObject} from './utils.js';
+
 function updateSwiper({
   swiper,
   slides,

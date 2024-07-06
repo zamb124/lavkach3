@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
 
 from typing import Optional, List, Any
 
@@ -8,10 +7,10 @@ from pydantic import BaseModel, Field, model_validator
 from pydantic.types import UUID4
 
 from app.basic.product.models.product_models import Product, ProductType
+from app.basic.uom.schemas import UomScheme
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.basic.uom.schemas import UomScheme
 
 
 class ProductBaseScheme(BaseModel):

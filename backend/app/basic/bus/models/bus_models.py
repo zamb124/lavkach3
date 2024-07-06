@@ -1,8 +1,7 @@
 import uuid
 
-from sqlalchemy import Uuid, Sequence, Enum, ForeignKey
+from sqlalchemy import Uuid, Sequence
 from sqlalchemy.orm import mapped_column, Mapped
-
 
 from core.db import Base
 from core.db.mixins import AllMixin

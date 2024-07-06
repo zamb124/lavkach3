@@ -1,6 +1,7 @@
 import typing
 import uuid
 
+from fastapi import APIRouter, Query, Request
 from fastapi_filter import FilterDepends
 
 from app.inventory.order.schemas import (
@@ -13,11 +14,6 @@ from app.inventory.order.schemas import (
 
 )
 from app.inventory.order.services import OrderTypeService
-from core.fastapi.dependencies import (
-    PermissionDependency,
-    IsAuthenticated,
-)
-from fastapi import APIRouter, Depends, Query, Request
 
 order_type_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],

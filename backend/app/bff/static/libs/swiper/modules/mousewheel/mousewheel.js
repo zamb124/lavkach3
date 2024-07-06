@@ -1,6 +1,7 @@
 /* eslint-disable consistent-return */
-import { getWindow } from 'ssr-window';
-import { now, nextTick } from '../../shared/utils.js';
+import {getWindow} from 'ssr-window';
+import {nextTick, now} from '../../shared/utils.js';
+
 export default function Mousewheel({
   swiper,
   extendParams,

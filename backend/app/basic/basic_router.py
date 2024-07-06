@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Depends
 
-from app.basic.fundamental.base import fundamental_router
-from app.basic.user.api.user_api import user_router
-from app.basic.user.api.role_api import role_router
-from app.basic.uom.api.uom_api import uom_router, uom_category_router
-from app.basic.partner.api.partner_api import partner_router
 from app.basic.auth.api.auth import auth_router
-from app.basic.company.api.company_api import company_router
-from app.basic.store.api.store_api import store_router
-from app.basic.product.api import product_category_router, product_router
 from app.basic.bus.bus import ws_router
+from app.basic.company.api.company_api import company_router
+from app.basic.fundamental.base import fundamental_router
+from app.basic.partner.api.partner_api import partner_router
+from app.basic.product.api import product_category_router, product_router
+from app.basic.store.api.store_api import store_router
+from app.basic.uom.api.uom_api import uom_router, uom_category_router
+from app.basic.user.api.role_api import role_router
+from app.basic.user.api.user_api import user_router
 from core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,

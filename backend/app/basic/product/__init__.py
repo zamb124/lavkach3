@@ -1,9 +1,9 @@
 from core.helpers.cache import CacheStrategy
-from .services import ProductService, ProductCategoryService
 from .models import Product, ProductCategory
-from .schemas.product_schemas import ProductCreateScheme, ProductUpdateScheme, ProductFilter, ProductScheme
 from .schemas.product_category_schemas import ProductCategoryCreateScheme, ProductCategoryUpdateScheme, \
     ProductCategoryFilter, ProductCategoryScheme
+from .schemas.product_schemas import ProductCreateScheme, ProductUpdateScheme, ProductFilter, ProductScheme
+from .services import ProductService, ProductCategoryService
 
 __domain__ = {
     'product': {

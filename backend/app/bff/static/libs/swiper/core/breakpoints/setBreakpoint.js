@@ -1,4 +1,5 @@
-import { extend } from '../../shared/utils.js';
+import {extend} from '../../shared/utils.js';
+
 const isGridEnabled = (swiper, params) => {
   return swiper.grid && params.grid && params.grid.rows > 1;
 };

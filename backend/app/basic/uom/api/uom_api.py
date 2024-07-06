@@ -2,7 +2,6 @@ import uuid
 
 from fastapi import APIRouter, Query
 from fastapi_filter import FilterDepends
-from pydantic import BaseModel
 from starlette.requests import Request
 
 from app.basic.uom.schemas import (
@@ -20,8 +19,8 @@ from app.basic.uom.schemas import (
     UomListSchema,
     UomFilter
 )
-from app.basic.uom.services.uom_service import UomService
 from app.basic.uom.services.uom_category_service import UomCategoryService
+from app.basic.uom.services.uom_service import UomService
 
 uom_category_router = APIRouter(
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],

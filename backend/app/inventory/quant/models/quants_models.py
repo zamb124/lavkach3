@@ -2,10 +2,9 @@ import datetime
 import uuid
 from typing import Optional
 
-from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint
+from sqlalchemy import Sequence, Uuid, DateTime, UniqueConstraint
 from sqlalchemy.orm import mapped_column, Mapped
 
-from app.inventory.location.enums import LocationClass
 from app.inventory.mixins import StockMixin
 from core.db import Base
 from core.db.mixins import AllMixin

@@ -1,7 +1,6 @@
 import taskiq_fastapi
 from taskiq import InMemoryBroker
 #from taskiq_nats import NatsBroker
-from taskiq_redis import RedisAsyncResultBackend
 
 #from fastapi_app.settings import settings
 

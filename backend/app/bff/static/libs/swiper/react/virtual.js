@@ -1,4 +1,5 @@
 import React from 'react';
+
 function renderVirtual(swiper, slides, virtualData) {
   if (!virtualData) return null;
   const getSlideIndex = index => {

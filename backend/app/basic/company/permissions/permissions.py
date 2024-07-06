@@ -1,4 +1,5 @@
-from core.permissions import BasePermission, Allow, Deny
+from core.permissions import BasePermission
+
 
 class CompanyPermission(BasePermission):
     ...

@@ -2,14 +2,13 @@ from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
+from app.inventory.quant.models import Lot
 from core.schemas import BaseFilter
 from core.schemas.filter_generic import CustomBaseModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-from app.inventory.quant.models import Lot
 
 
 class LotBaseScheme(CustomBaseModel):

@@ -1,17 +1,16 @@
 from typing import Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from starlette.requests import Request
 from app.inventory.location.models.location_models import LocationType
 from app.inventory.location.schemas import LocationTypeCreateScheme, LocationTypeUpdateScheme, LocationTypeFilter
-from core.db.session import session
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
 
 class LocationTypeService(BaseService[LocationType, LocationTypeCreateScheme, LocationTypeUpdateScheme, LocationTypeFilter]):
-    def __init__(self, request, db_session: AsyncSession = None):
-        super(LocationTypeService, self).__init__(request, LocationType,LocationTypeCreateScheme, LocationTypeUpdateScheme, db_session)
+    def __init__(self, request:Request):
+        super(LocationTypeService, self).__init__(request, LocationType,LocationTypeCreateScheme, LocationTypeUpdateScheme)
 
     @permit('location_type_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

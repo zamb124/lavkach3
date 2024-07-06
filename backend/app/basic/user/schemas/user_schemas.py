@@ -1,17 +1,15 @@
 from typing import Optional, List
-from typing import TYPE_CHECKING
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import Field, UUID4
 
+from app.basic.company.schemas import CompanyCreateScheme, CompanyScheme
+from app.basic.store.schemas.store_schemas import StoreScheme
+from app.basic.user.models.user_models import UserType, User
 from core.schemas import BaseFilter
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from core.types.types import *
-from app.basic.user.models.user_models import UserType, User
-
-from app.basic.store.schemas.store_schemas import StoreScheme
-from app.basic.company.schemas import CompanyCreateScheme, CompanyScheme
 
 
 class LoginResponseSchema(BaseModel):

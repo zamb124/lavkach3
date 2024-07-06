@@ -1,4 +1,5 @@
-import { elementStyle } from '../../shared/utils.js';
+import {elementStyle} from '../../shared/utils.js';
+
 export default function updateSize() {
   const swiper = this;
   let width;

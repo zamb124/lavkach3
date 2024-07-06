@@ -1,5 +1,6 @@
-import { getDocument } from 'ssr-window';
-import { elementChildren, isObject } from '../../shared/utils.js';
+import {getDocument} from 'ssr-window';
+import {elementChildren, isObject} from '../../shared/utils.js';
+
 export default function Thumb({
   swiper,
   extendParams,

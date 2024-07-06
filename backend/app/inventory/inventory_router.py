@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends
 
+from app.inventory.location.api import location_router, location_type_router
+from app.inventory.order.api import order_router, order_type_router
 from app.inventory.order.api.move_api import move_router
 from app.inventory.order.api.suggest_api import suggest_router
 from app.inventory.product_storage.api import product_storage_type_router
 from app.inventory.quant.api import quant_router, lot_router
-from app.inventory.order.api import order_router, order_type_router
-from app.inventory.location.api import location_router, location_type_router
 from core.fastapi.dependencies import PermissionDependency, IsAuthenticated
 
 inventory_router = APIRouter()
