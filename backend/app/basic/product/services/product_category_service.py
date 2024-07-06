@@ -4,11 +4,11 @@ from app.basic.product.models.product_models import ProductCategory
 from app.basic.product.schemas import ProductCategoryCreateScheme, ProductCategoryUpdateScheme, ProductCategoryFilter
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-
+from starlette.requests import Request
 
 class ProductCategoryService(BaseService[ProductCategory, ProductCategoryCreateScheme, ProductCategoryUpdateScheme, ProductCategoryFilter]):
-    def __init__(self, request, db_session=None):
-        super(ProductCategoryService, self).__init__(request, ProductCategory, ProductCategoryCreateScheme, ProductCategoryUpdateScheme, db_session)
+    def __init__(self, request:Request):
+        super(ProductCategoryService, self).__init__(request, ProductCategory, ProductCategoryCreateScheme, ProductCategoryUpdateScheme)
 
     @permit('product_category_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

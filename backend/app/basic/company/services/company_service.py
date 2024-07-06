@@ -7,7 +7,7 @@ from core.service.base import BaseService, CreateSchemaType, ModelType
 
 
 class CompanyService(BaseService[Company, CompanyCreateScheme, CompanyUpdateScheme, CompanyFilter]):
-    def __init__(self, request=Request):
+    def __init__(self, request: Request):
         super(CompanyService, self).__init__(request, Company, CompanyCreateScheme, CompanyUpdateScheme)
 
     @permit('company_create', 'company_edit')

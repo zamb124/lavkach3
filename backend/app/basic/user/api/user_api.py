@@ -28,11 +28,11 @@ user_router = APIRouter()
 
 @user_router.get("", response_model=UserListSchema, dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def user_list(
-        request: Request,
         model_filter: UserFilter = FilterDepends(UserFilter),
         size: int = Query(ge=1, le=100, default=100),
+        service: UserService = Depends()
 ):
-    data = await UserService(request).list(model_filter, size)
+    data = await service.list(model_filter, size)
     if data:
         a = sorted(data, key=lambda x: x.lsn, reverse=True)
         cursor = a[0].lsn
@@ -47,25 +47,25 @@ async def user_list(
     responses={"400": {"model": ExceptionResponseSchema}},
     dependencies=[Depends(PermissionDependency([IsAuthenticated]))]
 )
-async def create_user(request: Request, shema: UserCreateScheme):
-    user = await UserService(request).create(shema)
+async def create_user(schema: UserCreateScheme, service: UserService = Depends()):
+    user = await service.create(schema)
     return user
 
 
 @user_router.get("/{user_id}", response_model=UserScheme, dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
-async def user_get(request: Request, user_id: uuid.UUID):
-    user = await UserService(request).get(id=user_id)
+async def user_get(user_id: uuid.UUID, service: UserService = Depends()):
+    user = await service.get(id=user_id)
     return user
 
-@user_router.put("/{user_id}", response_model=UserScheme,
-                 dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
-async def user_update(request: Request, user_id: uuid.UUID, schema: UserUpdateScheme):
-    return await UserService(request).update(id=user_id, obj=schema)
+
+@user_router.put("/{user_id}", response_model=UserScheme,dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+async def user_update(user_id: uuid.UUID, schema: UserUpdateScheme, service: UserService = Depends()):
+    return await service.update(id=user_id, obj=schema)
 
 
 @user_router.delete("/{user_id}", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
-async def user_delete(request: Request, user_id: uuid.UUID):
-    await UserService(request).delete(id=user_id)
+async def user_delete(user_id: uuid.UUID, service: UserService = Depends()):
+    await service.delete(id=user_id)
 
 
 @user_router.post(
@@ -73,16 +73,16 @@ async def user_delete(request: Request, user_id: uuid.UUID):
     response_model=LoginResponseSchema,
     responses={"404": {"model": ExceptionResponseSchema}},
 )
-async def login(request: Request, obj: LoginRequest, response: Response):
-    a = await UserService(request).login(
-        email=obj.email,
-        password=obj.password,
+async def login(schema: LoginRequest, service: UserService = Depends()):
+    return await service.login(
+        email=schema.email,
+        password=schema.password,
     )
-    return a
+
 
 @user_router.post("/signup", response_model=LoginResponseSchema)
-async def signup(request: Request, schema: SignUpScheme):
-    return await UserService(request).signup(obj=schema)
+async def signup(schema: SignUpScheme, service: UserService = Depends()):
+    return await service.signup(obj=schema)
 
 
 @user_router.post(
@@ -90,10 +90,10 @@ async def signup(request: Request, schema: SignUpScheme):
     response_model=LoginResponseSchema,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
-async def refresh_token(request: Request):
-    return await UserService(request).login(
-        user=request.user
-    )
+async def refresh_token(service: UserService = Depends()):
+    return await service.login(user=service.user)
+
+
 async def send_ws_company_changed(user_id):
     a = await ws_manager.send_personal_message(
         message='Company was changed',
@@ -101,14 +101,15 @@ async def send_ws_company_changed(user_id):
         message_type='COMPANY_CHANGED'
     )
 
+
 @user_router.post("/company_change", response_model=UserScheme)
-async def company_change(request: Request, schema: ChangeCompanyScheme, background_tasks: BackgroundTasks):
-    res = await UserService(request).company_change(schema)
+async def company_change(schema: ChangeCompanyScheme, background_tasks: BackgroundTasks, service: UserService = Depends()):
+    res = await service.company_change(schema)
     background_tasks.add_task(send_ws_company_changed, res.id)
     return res
 
-@user_router.get("/{user_id}/permissions", response_model=list[str], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+
+@user_router.get("/{user_id}/permissions", response_model=list[str],
+                 dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def permissions(user_id: uuid.UUID, service: UserService = Depends()):
     return await service.permissions(user_id=user_id)
-
-

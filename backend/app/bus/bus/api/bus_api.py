@@ -23,31 +23,32 @@ bus_router = APIRouter(
 
 @bus_router.get("", response_model=BusListSchema)
 async def bus_list(
-        request: Request,
+
         model_filter: BusFilter = FilterDepends(BusFilter),
         size: int = Query(ge=1, le=100, default=100),
+        service: BusService = Depends()
 ):
-    data = await BusService(request).list(model_filter, size)
+    data = await service.list(model_filter, size)
     cursor = model_filter.lsn__gt
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
 
 @bus_router.post("", response_model=BusScheme)
-async def bus_create(request: Request, schema: BusCreateScheme):
-    return await BusService(request).create(obj=schema)
+async def bus_create(schema: BusCreateScheme, service: BusService = Depends()):
+    return await service.create(obj=schema)
 
 
 @bus_router.get("/{bus_id}")
-async def bus_get(request: Request, bus_id: uuid.UUID) -> typing.Union[None, BusScheme]:
-    return await BusService(request).get(id=bus_id)
+async def bus_get(bus_id: uuid.UUID, service: BusService = Depends()) -> typing.Union[None, BusScheme]:
+    return await service.get(id=bus_id)
 
 
 @bus_router.put("/{bus_id}", response_model=BusScheme)
-async def bus_update(request: Request, bus_id: uuid.UUID, schema: BusUpdateScheme):
-    bus_entity = await BusService(request).update(id=bus_id, obj=schema)
+async def bus_update(bus_id: uuid.UUID, schema: BusUpdateScheme, service: BusService = Depends()):
+    bus_entity = await service.update(id=bus_id, obj=schema)
     return bus_entity
 
 
 @bus_router.delete("/{bus_id}")
-async def bus_delete(request: Request, bus_id: uuid.UUID):
-    await BusService(request).delete(id=bus_id)
+async def bus_delete(bus_id: uuid.UUID, service: BusService = Depends()):
+    await service.delete(id=bus_id)

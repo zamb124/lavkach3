@@ -104,6 +104,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return move
 
     async def confirm(self, moves: List[uuid.UUID] | List[Move], parent: Order | Move | None = None, user_id: uuid.UUID = None):
+        user_id = user_id or self.user.user_id
         for m in moves:
             move = await self._confirm(m, parent, user_id)
 

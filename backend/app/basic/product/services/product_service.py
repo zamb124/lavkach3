@@ -8,11 +8,11 @@ from app.basic.product.schemas import ProductCreateScheme, ProductUpdateScheme, 
 from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-
+from starlette.requests import Request
 
 class ProductService(BaseService[Product, ProductCreateScheme, ProductUpdateScheme, ProductFilter]):
-    def __init__(self, request, db_session=None):
-        super(ProductService, self).__init__(request, Product, ProductCreateScheme, ProductUpdateScheme, db_session)
+    def __init__(self, request: Request):
+        super(ProductService, self).__init__(request, Product, ProductCreateScheme, ProductUpdateScheme)
 
     @permit('product_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
