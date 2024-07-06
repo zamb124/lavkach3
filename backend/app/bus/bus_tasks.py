@@ -21,6 +21,7 @@ async def send_message(message):
     #filter = BusFilter(status__in=[BusStatus.NEW, BusStatus.ERROR])
     #messages = await bs.list(_filter=filter)
     active_connections = ws_manager.active_connections
+    conn_to_delete  = []
     for _, connection in active_connections.items():
         if connection.user.company_id.__str__() == message.get('company_id'):
             try:
@@ -31,7 +32,9 @@ async def send_message(message):
                     vars=message['vars']
                 )
             except Exception as e:
-                ws_manager.active_connections.pop(_)
+                conn_to_delete.append(_)
+    for con in conn_to_delete:
+        ws_manager.active_connections.pop(con)
     bs_entity = await bs.get(message['bus_id'])
     bs_entity.status = BusStatus.DELIVERED
     await bs.session.commit()
