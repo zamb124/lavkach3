@@ -6,11 +6,12 @@ from pydantic.types import UUID4
 
 from app.inventory.product_storage.models.product_storage_models import ProductStorageType
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class ProductStorageTypeBaseScheme(BaseModel):
+class ProductStorageTypeBaseScheme(BasicModel):
     vars: Optional[dict] = None
     title: str
     external_number: Optional[str] = None

@@ -8,11 +8,12 @@ from app.basic.company.schemas import CompanyScheme
 from app.basic.store.models.store_models import Store
 from app.basic.store.models.store_models import StoreType
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class StoreBaseScheme(BaseModel):
+class StoreBaseScheme(BasicModel):
     vars: Optional[dict] = None
     title: str = Field(title='Title', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)

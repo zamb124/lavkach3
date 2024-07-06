@@ -7,11 +7,12 @@ from pydantic.types import UUID4
 from app.inventory.location.enums import LocationClass, PutawayStrategy
 from app.inventory.location.models import LocationType
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class LocationTypeBaseScheme(BaseModel):
+class LocationTypeBaseScheme(BasicModel):
     vars: Optional[dict] = None
     title: str
     location_class: LocationClass

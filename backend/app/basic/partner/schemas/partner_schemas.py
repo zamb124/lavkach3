@@ -7,12 +7,13 @@ from pydantic import BaseModel, Field, UUID4
 from app.basic.company.schemas.company_schemas import CompanyScheme
 from app.basic.partner.models.partner_models import PartnerType, Partner
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from core.types.types import TypeCountry, TypePhone, TypeLocale, TypeCurrency
 
 
-class PartnerBaseScheme(BaseModel):
+class PartnerBaseScheme(BasicModel):
     title: str = Field(title='Title', description="Title")
     type: PartnerType = Field(title='Type', description='')
     external_number: Optional[str] = Field(title='External ID')

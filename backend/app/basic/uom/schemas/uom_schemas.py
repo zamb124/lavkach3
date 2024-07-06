@@ -8,11 +8,12 @@ from pydantic import BaseModel, Field, UUID4
 from app.basic.uom.models.uom_models import Uom
 from app.basic.uom.models.uom_models import UomType
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class UomBaseScheme(BaseModel):
+class UomBaseScheme(BasicModel):
     title: str = Field(title="Title", table=True)
     uom_category_id: UUID4 = Field(title="Uom Category", table=True, description='Select category of UOM Category', model='uom_category')
     type: 'UomType' = Field(title="Uom Type", table=True,

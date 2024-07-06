@@ -5,6 +5,12 @@ from pydantic import BaseModel, UUID4, Field
 from core.schemas.list_schema import GenericListSchema
 
 
+class BasicModel(BaseModel):
+    """
+     Переопределяем для удобства
+    """
+
+
 class CountrySchema(BaseModel):
     lsn: int = 0
     id: str

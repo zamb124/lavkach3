@@ -8,11 +8,12 @@ from app.bus.bus.enums import BusStatus
 from app.bus.bus.models.bus_models import Bus
 from core.helpers.cache import CacheTag
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class BusBaseScheme(BaseModel):
+class BusBaseScheme(BasicModel):
     vars: Optional[dict] = None
     cache_tag: CacheTag = Field(title='Tag')
     message: str = Field(title='Message')

@@ -12,13 +12,13 @@ from app.inventory.order.models import Order
 from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme
 from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
 from core.schemas import BaseFilter
-from core.schemas.filter_generic import CustomBaseModel
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from core.types import UUID
 
 
-class OrderBaseScheme(BaseModel):
+class OrderBaseScheme(BasicModel):
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
     order_type_id: UUID = Field(title='Order type', model='order_type')
     store_id: UUID = Field(title='Store', table=True, form=True, model='store')
@@ -47,7 +47,7 @@ class OrderCreateScheme(OrderBaseScheme):
     move_list_rel: Optional[list[MoveCreateScheme]] = Field(default=[], title='Order Movements', form=True)
 
 
-class OrderScheme(OrderCreateScheme, TimeStampScheme, CustomBaseModel):
+class OrderScheme(OrderCreateScheme, TimeStampScheme):
     lsn: int = Field(title='LSN', readonly=True)
     id: UUID4
     company_id: UUID = Field(title='Company', model='company')

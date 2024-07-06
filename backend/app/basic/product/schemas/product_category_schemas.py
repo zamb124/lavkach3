@@ -6,11 +6,12 @@ from pydantic.types import UUID4
 
 from app.basic.product.models.product_models import ProductCategory
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class ProductCategoryBaseScheme(BaseModel):
+class ProductCategoryBaseScheme(BasicModel):
     vars: Optional[dict] = None
     title: str = Field(title='Title')
     external_number: Optional[str] = Field(default=None, title='External ID')

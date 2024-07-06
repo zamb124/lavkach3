@@ -5,11 +5,12 @@ from pydantic import BaseModel, Field, UUID4
 
 from app.basic.user.models.role_models import Role
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class RoleBaseScheme(BaseModel):
+class RoleBaseScheme(BasicModel):
     vars: Optional[dict] = None
     title: Optional[str] = None
     permission_allow_list: Optional[List[str]] = None

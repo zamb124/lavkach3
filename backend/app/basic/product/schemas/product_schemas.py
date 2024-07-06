@@ -9,11 +9,12 @@ from pydantic.types import UUID4
 from app.basic.product.models.product_models import Product, ProductType
 from app.basic.uom.schemas import UomScheme
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class ProductBaseScheme(BaseModel):
+class ProductBaseScheme(BasicModel):
     vars: Optional[dict] = None
     title: str = Field(title='Title', table=True, form=True)
     description: Optional[str] = Field(default=None, title='Description', table=True, form=True)

@@ -7,12 +7,13 @@ from app.basic.company.schemas import CompanyCreateScheme, CompanyScheme
 from app.basic.store.schemas.store_schemas import StoreScheme
 from app.basic.user.models.user_models import UserType, User
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from core.types.types import *
 
 
-class LoginResponseSchema(BaseModel):
+class LoginResponseSchema(BasicModel):
     nickname: str
     store_id: Optional[UUID4]
     token: str = Field(..., description="Token")

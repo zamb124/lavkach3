@@ -188,14 +188,13 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             if is_pydantic(value):
                 if isinstance(value, list):
                     for _obj in value:
-                        rel_service = import_service(_obj.Config.service)
-                        rel = rel_service(self.request)
+                        rel_service = self.env[_obj.Config.orm_model.__tablename__].service
                         if hasattr(_obj, 'id') and _obj.id:
-                            rel_entity = await rel.update(id=_obj.id, obj=_obj, commit=False)
+                            rel_entity = await rel_service.update(id=_obj.id, obj=_obj, commit=False)
                         else:
                             _dump = _obj.model_dump()
-                            create_obj = rel.create_schema(**_dump)
-                            relcations_to_create.append((rel.create, create_obj))
+                            create_obj = rel_service.create_schema(**_dump)
+                            relcations_to_create.append((rel_service.create, create_obj))
                         exclude_rel.append(key)
                 else:
                     pass  # TODO: дописать такую логику где не list а model
@@ -244,16 +243,16 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 obj_value = getattr(obj, key)
                 if is_pydantic(obj_value):
                     for _obj in obj_value:
-                        rel_service = import_service(_obj.Config.service)
-                        rel = rel_service(self.request)
+                        rel_service = self.env[_obj.Config.orm_model.__tablename__].service
+                        #rel = rel_service(self.request)
                         if _obj.id:
-                            rel_entity = await rel.update(id=_obj.id, obj=_obj, commit=False)
+                            rel_entity = await rel_service.update(id=_obj.id, obj=_obj, commit=False)
                             self.session.add(rel_entity)
                         else:
                             _dump = _obj.model_dump()
                             _dump[f'{self.model.__tablename__}_id'] = id
-                            create_obj = rel.create_schema(**_dump)
-                            await rel.create(obj=create_obj, parent=entity, commit=False)
+                            create_obj = rel_service.create_schema(**_dump)
+                            await rel_service.create(obj=create_obj, parent=entity, commit=False)
                 else:
                     if key == 'id':
                         value = id

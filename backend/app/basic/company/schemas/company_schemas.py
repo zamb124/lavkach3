@@ -5,12 +5,13 @@ from pydantic import BaseModel, Field, UUID4
 
 from app.basic.company.models.company_models import Company
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from core.types.types import TypeCountry, TypeLocale, TypeCurrency
 
 
-class CompanyBaseScheme(BaseModel):
+class CompanyBaseScheme(BasicModel):
     title: str = Field(title='Title', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
     locale: Optional[TypeLocale] = Field(default='en_US', title='Locale', table=True, form=True, model='locale')

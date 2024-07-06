@@ -9,12 +9,12 @@ from app.inventory.order.enums.order_enum import MoveStatus, MoveType, move_colo
 from app.inventory.order.models import Move
 from app.inventory.order.schemas.suggest_schemas import SuggestScheme
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import ActionBaseSchame
+from core.schemas.basic_schemes import ActionBaseSchame, BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class MoveBaseScheme(BaseModel):
+class MoveBaseScheme(BasicModel):
     type: MoveType = Field(title='Move Type', table=True)
     order_id: Optional[UUID4] = Field(default=None, title='Order ID', model='order')
     order_type_id: UUID4 = Field(title='Order type', model='order_type', table=True)
@@ -39,7 +39,7 @@ class MoveBaseScheme(BaseModel):
         service = 'app.inventory.order.services.MoveService'
 
 class MoveUpdateScheme(MoveBaseScheme):
-    id: Optional[UUID4] = None
+    ...
 
 
 

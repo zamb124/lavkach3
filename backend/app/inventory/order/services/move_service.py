@@ -33,7 +33,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         DONE:       мув завершен (terminal)
         CANCELED:   мув отменен (terminal)
     """
-    def __init__(self, request:Request):
+    def __init__(self, request: Request):
         super(MoveService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme)
 
     @permit('move_edit')

@@ -72,8 +72,3 @@ class BaseFilter(Filter):
                 params.update({field: f})
         return params
 
-
-class CustomBaseModel(BaseModel):
-
-    def ui_sort(self):
-        return self
