@@ -69,10 +69,9 @@
                                                     <a
                                                             href={{ route.path }}
                                                             hx-target="#htmx_content"
-                                                            hx-push-url="true"
-                                                            hx-get={{ route.path }}
+
                                                             class="nav-link"
-                                                            data-key="t-route-{{ route.name  }}"
+                                                            data-key="t-route-{{ route.unique_id  }}"
                                                             data-bs-toggle="tooltip"
                                                             data-bs-placement="right" title="{{ route.description}}">
                                                             {{ route.name|capitalize}}

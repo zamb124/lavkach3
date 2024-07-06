@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="OmniStore warehouse and order system" name="description"/>
     <meta content="shvedvi" name="author"/>
+    <meta name="htmx-config" content='{"defaultSwapStyle":"innerHTML"}'>
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ url_for('static' ,path='images/favicon.ico') }}"/>
 
@@ -531,7 +532,7 @@
                     //debugger
                     var timerId = setTimeout(() => {
                         main()
-                    }, 1000)
+                    }, 3000)
                 }
             })
             var body_init = null

@@ -45,7 +45,10 @@ class CacheManager:
 
     async def set(self, *, tag: CacheTag, key: str, response=Any, ttl=None) -> None:
         key = f'{tag.value}:{key}'
-        await self.backend.set(response=response, key=key, ttl=ttl)
+        try:
+            await self.backend.set(response=response, key=key, ttl=ttl)
+        except:
+            pass #TODO: Надо убрать потом
         return key
 
     async def set_model(self, module, model, key: str, data=Any, ttl=10000) -> None:
