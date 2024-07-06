@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 
 from app.bff.template_spec import templates
 from app.bff.utills import BasePermit
-from core.fastapi.frontend.schema_recognizer import ClassView
+from core.fastapi.frontend.constructor import ClassView
 
 product_storage_type_router = APIRouter()
 from fastapi import Depends

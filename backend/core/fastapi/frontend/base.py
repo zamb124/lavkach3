@@ -7,8 +7,8 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, field_validator, UUID4, model_validator
 from starlette.responses import JSONResponse
 
-from core.fastapi.frontend.schema_recognizer import ClassView
-from core.fastapi.frontend.uttils import clean_filter
+from core.fastapi.frontend.constructor import ClassView
+from core.fastapi.frontend.utils import clean_filter
 
 
 class Method(str, Enum):

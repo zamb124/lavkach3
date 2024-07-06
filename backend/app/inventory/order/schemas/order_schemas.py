@@ -4,8 +4,9 @@ from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, computed_field
 from pydantic.types import UUID4
+from core.schemas.basic_schemes import BasicField as Field
 
 from app.inventory.order.enums.order_enum import OrderStatus
 from app.inventory.order.models import Order
@@ -29,14 +30,13 @@ class OrderBaseScheme(BasicModel):
     planned_datetime: Optional[datetime] = Field(default=None, title='Planned Date', table=True, form=True)
     expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=True, form=True)
     description: Optional[str] = Field(default=None, title='Description', table=True, form=True)
-    status: OrderStatus = Field(title='Status', readonly=True, table=True, form=True)
-    order_id: Optional[UUID] = Field(default=None, title='Parent',readonly=True,  form=True)
+    status: OrderStatus = Field(default=OrderStatus.DRAFT, title='Status', readonly=True, table=True, form=True)
+    order_id: Optional[UUID] = Field(default=None, title='Parent', readonly=True,  form=True)
 
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = Order
+        readonly = [('status', '==', 'draft')]            # Переопределяет readonly для всех полей модели для UI
 
 
 class OrderUpdateScheme(OrderBaseScheme):
