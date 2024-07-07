@@ -43,7 +43,7 @@ class Line(BaseModel):
         if self.type == LineType.LINE:
             key = self.id
         elif self.type == LineType.NEW:
-            key = id(self)
+            key = id(self)  # type: ignore
         else:
             key = self.type.value
         return f'{self.lines.key}--{key}'
@@ -56,7 +56,7 @@ class Line(BaseModel):
     @timed
     def _change_assign_line(self) -> None:
         """Присвоение нового обьекта Line'у"""
-        for _, field in self.fields:
+        for _, field in self.fields:  # type: ignore
             field.line = self
 
     @timed
@@ -220,7 +220,7 @@ class Lines(BaseModel):
     params: Optional[dict] = {}           # Параметры на вхрде
     join_related: Optional[bool] = True   # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []      # Список присоединяемых полей, если пусто, значит все
-    cls: Optional[Any] = None
+    cls: Any                              # Класс конструктора ClassView
 
     class Config:
         arbitrary_types_allowed = True
@@ -239,7 +239,7 @@ class Lines(BaseModel):
         return self
 
     @timed
-    async def _get_data(
+    async def get_data(
             self,
             params: QueryParams | dict | None = None,
             join_related: bool = True,
@@ -255,7 +255,7 @@ class Lines(BaseModel):
         if join_fields:
             self.join_fields = join_fields or []
         if not data:
-            async with self.cls.model.adapter as a:
+            async with self.cls.model.adapter as a:  # type: ignore
                 resp_data = await a.list(params=params)
                 data = resp_data['data']
         await self.fill_lines(data, join_related, join_fields)
@@ -263,11 +263,12 @@ class Lines(BaseModel):
     @timed
     async def fill_lines(
             self,
-            data: Iterable,
+            data: list,
             join_related: bool = False,
-            join_fields: list = None,
+            join_fields: list = [],
     ) -> None:
-        i = len(data)
+
+        assert self.line_header, 'Line header is not set'
         for n, row in enumerate(data):
             line_copied = self.line_header.line_copy(_type=LineType.LINE)
             line_copied.id = row['id']
@@ -299,6 +300,7 @@ class Lines(BaseModel):
             missing_fields = defaultdict(list)
             for _line in self.lines:
                 """Достаем все релейтед обьекты у которых модуль отличается"""
+                assert _line.fields,   "Проверяем что все поля есть"
                 for field_name, field in _line.fields:
                     if field.type in ('uuid',):
                         # if field.widget.get('table'):  # TODO: может все надо а не ток table
@@ -343,13 +345,13 @@ class Lines(BaseModel):
                             detail=f'Wrong field name {_field.field_name} in table model {_field.model}'
                         )
             for col in missing_fields.keys():
-                for _field_name, _header_col in self.line_header.fields:
+                for _field_name, _header_col in self.line_header.fields:  # type: ignore
                     if col == _field_name:
                         _header_col.type = _header_col.type.replace('uuid', 'rel')
                         _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
 
     async def get_lines(self, ids: list[uuid.UUID], join_related: bool = False) -> list[Line]:
-        await self._get_data(
+        await self.get_data(
             schema=self.cls.model.schemas.get,
             params={'id__in': ids},
             join_related=join_related or self.join_related,
@@ -413,4 +415,4 @@ class Lines(BaseModel):
 
     @property
     def as_table_header(self) -> str:
-        return self.line_header.as_tr_header
+        return self.line_header.as_tr_header  # type: ignore

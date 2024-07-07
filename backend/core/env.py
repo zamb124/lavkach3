@@ -18,8 +18,6 @@ from core.fastapi.schemas import CurrentUser
 from core.helpers.cache import CacheStrategy
 from pydantic import BaseModel
 
-
-
 if TYPE_CHECKING:
     from core.fastapi.adapters import BaseAdapter
     from core.service.base import Model, BaseService
@@ -29,6 +27,7 @@ if TYPE_CHECKING:
 class DeleteSchema(BaseModel):
     delete_id: uuid.UUID
 
+
 @dataclass
 class Schemas:
     create: Any = None
@@ -37,7 +36,8 @@ class Schemas:
     update: Any = None
     delete: Any = None
 
-class Model:
+
+class Model:  # type: ignore
     name: str
     _adapter: 'BaseAdapter'
     _service: 'BaseService'
@@ -48,8 +48,7 @@ class Model:
     cache_strategy: 'CacheStrategy' = CacheStrategy.NONE
     actions: dict = {}
 
-
-    def __init__(self , name, _adapter,_service, domain, schemas, model, sort=[], cache_strategy=CacheStrategy.NONE):
+    def __init__(self, name, _adapter, _service, domain, schemas, model, sort=[], cache_strategy=CacheStrategy.NONE):
         self.name = name
         self._adapter = _adapter
         self._service = _service
@@ -59,8 +58,10 @@ class Model:
         self.sort = sort if sort else ['id', 'created_at', 'updated_at', 'lsn']
         self.cache_strategy = cache_strategy
         self.actions = actions.get(name, {})
+
     def __copy__(self):
         return self
+
     @property
     def adapter(self):
         return self._adapter(
@@ -76,12 +77,12 @@ class Model:
             self.domain._env.request,
         )
 
+
 class Domain:
     name: str
     models: dict[str, Model]
     _env: 'Env'
     _adapter: 'BaseAdapter' = None
-
 
     def __init__(self, domain: dict):
         self.name = domain['name']
@@ -102,7 +103,7 @@ class Domain:
                 )})
         self.models = models
 
-    def __getitem__(self, item:str):
+    def __getitem__(self, item: str):
         return self.models[item]
 
 
@@ -112,25 +113,27 @@ domains = [
     Domain(bus_domain)
 ]
 
-class Env:
-    domains: dict[str: object]
-    request: HTTPConnection = None
-    broker: AsyncBroker = None
 
-    def __init__(self, domains: list, conn: HTTPConnection | AsyncClient | Request, broker: AsyncBroker = None):
+class Env:
+    domains: dict[str, Domain]
+    request: HTTPConnection
+    broker: AsyncBroker
+
+    def __init__(self, domains: list, conn: HTTPConnection | AsyncClient | Request, broker: AsyncBroker | None = None):
         _domains = {}
         for d in domains:
             d._env = self
             _domains.update({d.name: d})
-        self.request = conn
+        self.request = conn  # type: ignore
         self.domains = _domains
-        self.broker = broker
+        self.broker = broker  # type: ignore
 
     def __getitem__(self, item: str):
         for k, v in self.domains.items():
             exist_model = v.models.get(item)
             if exist_model:
                 return exist_model
+        raise KeyError
 
     @classmethod
     async def get_sudo_env(self):
@@ -165,5 +168,3 @@ class Env:
         setattr(client, 'user', user)
         setattr(client, 'scope', {'env': env})
         return env
-
-

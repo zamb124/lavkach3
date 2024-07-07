@@ -1,6 +1,5 @@
 import asyncio
 import enum
-import os
 import uuid
 from inspect import isclass
 from typing import Optional, get_args, get_origin
@@ -8,20 +7,18 @@ from typing import Optional, get_args, get_origin
 from fastapi_filter.contrib.sqlalchemy import Filter
 from jinja2_fragments import render_block
 from pydantic import BaseModel
-from pydantic import Field as PyFild
 from pydantic.fields import FieldInfo
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
 from core.env import Model
-from core.fastapi.frontend.line import Line, Lines
 from core.fastapi.frontend.enviroment import passed_classes, readonly_fields, hidden_fields, table_fields, \
     reserved_fields, environment
 from core.fastapi.frontend.field import Field, Fields
+from core.fastapi.frontend.line import Line, Lines
 from core.fastapi.frontend.types import LineType, ViewVars, MethodType
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import ActionBaseSchame, BasicField
-from core.utils.timeit import timed
 
 
 class AsyncObj:
@@ -125,10 +122,7 @@ class ClassView(AsyncObj):
             self.model = request.scope['env'][model]
         elif self.model_name:
             self.model = request.scope['env'][self.model_name]
-        try:
-            assert self.model, 'Model is not defined'
-        except Exception as ex:
-            raise
+        assert self.model, 'Model is not defined'
         self.model_name = self.model.name
         self.is_rel = is_rel
         self.actions = self.model.adapter.get_actions()
@@ -169,10 +163,10 @@ class ClassView(AsyncObj):
         if force_init:
             await self.init()
 
-    async def init(self, params: dict | None = None, join_related: bool = True) -> None:
+    async def init(self, params: dict | None = None, join_related: bool = False) -> None:
         """Майнинг данных по params"""
 
-        await self.lines._get_data(
+        await self.lines.get_data(
             env=self.env,
             model=self.model,
             schema=self.model.schemas.get,
@@ -338,14 +332,14 @@ class ClassView(AsyncObj):
 
     async def _get_schema_fields(self, line: Line, schema: BaseModel, **kwargs) -> Fields:
         """Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2"""
-        fields: list[tuple[str, Field]] =  []
+        fields: list[tuple[str, Field]] = []
         field_class = Fields()
         exclude = kwargs.get('exclude') or self.exclude or []
         exclude_add = []
         if issubclass(schema, Filter):                      # type: ignore
             for f, v in schema.model_fields.items():
                 if v.json_schema_extra:
-                    if v.json_schema_extra.get('filter') is False:# type: ignore
+                    if v.json_schema_extra.get('filter') is False:     # type: ignore
                         exclude.append(f)
         if type == 'as_table':
             for f, v in schema.model_fields.items():
@@ -369,9 +363,6 @@ class ClassView(AsyncObj):
 
     async def _get_line(self, schema: BaseModel, type: LineType, lines: Lines = None, **kwargs) -> Line:
         key = kwargs.get('key') or self.key
-        id = kwargs.get('model_id')
-        lsn = kwargs.get('lsn')
-        vars = kwargs.get('vars')
         display_title = kwargs.get('display_title')
         company_id = kwargs.get('company_id')
         fields = kwargs.get('fields')
@@ -381,12 +372,12 @@ class ClassView(AsyncObj):
             schema=schema,
             model_name=self.model.name,
             domain_name=self.model.domain.name,
-            lsn=lsn,
-            vars=vars,
+            lsn=None,
+            vars=None,
             display_title=display_title,
             company_id=company_id,
             fields=fields,
-            id=id,
+            id=None,
             actions=self.actions,
             class_key=key,
             is_rel=self.is_rel
@@ -407,23 +398,6 @@ class ClassView(AsyncObj):
         return render_block(
             environment=environment, template_name=f'cls/filter.html',
             block_name='filter', method=MethodType.UPDATE, view=self
-        )
-
-    async def get_link_view(self, model_id: uuid.UUID, **kwargs) -> str:
-        """ Отдает ссылку на основе ID модели """
-        kwargs.update({'type': 'view'})
-        params = {'id__in': model_id}
-        lines, _ = await self._get_data(
-            params=params,
-            schema=self.model.schemas.get,
-            join_related=False,
-        )
-        assert len(self.lines.lines) == 1 or 0, f'Model: {self.model.name}, params: {params}'
-        return render_block(
-            environment=environment,
-            template_name=f'cls/link.html',
-            block_name='view',
-            line=self.lines.lines[0]
         )
 
     @property
@@ -473,17 +447,6 @@ class ClassView(AsyncObj):
             cls=self
         )
 
-    @property
-    def button_create(self) -> str:
-        """Отдает кнопку для создания нового обьекта"""
-        rendered_html = render_block(
-            environment=environment,
-            template_name=f'cls/model.html',
-            block_name='button_create',
-            line=self.line,
-        )
-        return rendered_html
-
     def send_message(self, message: str) -> str:
         """Отправить пользователю сообщение """
         return render_block(
@@ -494,22 +457,12 @@ class ClassView(AsyncObj):
             message=message
         )
 
-    def delete_by_key(self, key: str) -> str:
-        """Отправить пользователю сообщение """
-        return render_block(
-            environment=environment,
-            template_name=f'components/delete_by_key.html',
-            block_name='delete_by_key',
-            key=key,
-        )
-
-
     async def get_action(self, action: str, ids: list[uuid.UUID], schema: BaseModel) -> str:
         """Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов"""
         data = {k: ids if k == 'ids' else None for k, v in schema.model_fields.items()}
         self.action_line = await self._get_line(schema=schema, type=LineType.ACTION)
         self.action_lines = Lines(class_key=self.key, line_header=self.action_line, line_new=self.action_line)
-        await self.action_lines._get_data(
+        await self.action_lines.get_data(
             params={},
             data=[data],
             key='action--0',

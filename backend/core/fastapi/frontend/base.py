@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Any
+from typing import Optional, Any, Callable
 
 from fastapi import APIRouter, Depends
 from fastapi import Request
@@ -56,8 +56,6 @@ async def _filter(request: Request, filschema: FilterSchema):
 class SearchSchema(BaseSchema):
     model: str
     search: str = ''
-    method: Optional[Method] = None
-    key: Optional[str] = None
     filter: Optional[Any] = None
 
     @model_validator(mode='before')
@@ -96,13 +94,13 @@ async def search(request: Request, schema: SearchSchema = Depends(SearchSchema))
 
 class SearchIds(BaseSchema):
     model: str
-    key: Optional[str] = None
-    method: Optional[Method] = None
     id__in: str
+    key: Optional[str] = None  # type: ignore
+    method: Method = Method.GET
 
 
 @router.get("/get_by_ids", response_class=JSONResponse)
-async def get_by_ids(request: Request, schema: SearchSchema = Depends(SearchIds)):
+async def get_by_ids(request: Request, schema: SearchIds = Depends(SearchIds)):
     """
      Универсальный запрос поиска
     """
@@ -137,7 +135,7 @@ async def table(request: Request, schema: TableSchema):
     if form_data.get('key'):
         qp = clean_filter(form_data, form_data['key'])
         if qp:
-            qp = {i: v for i, v in qp[0].items() if v}
+            qp = {i: v for i, v in qp[0].items() if v}  # type: ignore
 
     cls = await ClassView(request, model=schema.model, key=schema.key)
     await cls.init(params=qp, join_related=False)
@@ -189,34 +187,12 @@ async def line(request: Request, schema: LineSchema):
         return lines[0].as_div_update
 
 
-class ModelSchema(BaseSchema):
-    model: str
-    key: str
-    id: UUID4
-
-    @field_validator('id')
-    @classmethod
-    def id_validate(cls, val):
-        return val
-
-
-@router.post("/model_id", response_class=HTMLResponse)
-async def model_id(request: Request, schema: ModelSchema):
-    """
-     отдает простой контрол для чтения
-    """
-    cls = await ClassView(request, schema.model, force_init=False)
-    link_view = await cls.get_link_view(model_id=schema.id)
-    return link_view
-
-
 class ModalSchema(BaseSchema):
     id: Optional[UUID4] = None
     class_key: Optional[str] = None
 
     class Config:
         extra = 'allow'
-
 
 @router.post("/modal", response_class=HTMLResponse)
 async def modal(request: Request, schema: ModalSchema):
@@ -253,15 +229,15 @@ async def action(request: Request, schema: ActionSchema):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    cls = await ClassView(request, schema.model)
-    func = getattr(cls.model.adapter, schema.action)
+    cls: ClassView = await ClassView(request, schema.model)
+    func: Callable = getattr(cls.model.adapter, schema.action)
     result = []
     if schema.commit and schema.method == 'update':
         action_schema = cls.actions[schema.action]['schema']
         if data := schema.model_extra:
-            _json = {}
+            _json: dict = {}
             data = clean_filter(data, schema.key)
-            for line in data:
+            for line in data:  # type: ignore
                 obj = action_schema(**line)
                 res = await func(obj)
                 result += res
