@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import uuid
 from collections import defaultdict
-from typing import Optional, Any, Iterable, TYPE_CHECKING
+from typing import Optional, Any, Iterable
 
 from fastapi import HTTPException
 from jinja2_fragments import render_block
@@ -15,34 +15,31 @@ from core.fastapi.frontend.field import Fields
 from core.fastapi.frontend.types import MethodType
 from core.utils.timeit import timed
 from core.fastapi.frontend.types import LineType
-if TYPE_CHECKING:
-    from core.fastapi.frontend.constructor import ClassView
+
 
 class Line(BaseModel):
     """
-        Обертка для обьекта
+        Обьект описывающий обьект отданный из другого сервиса или класса с помощью Pydantic модели
     """
-    type: LineType  # Тип поля СМ LineType
-    lines: 'Lines'
-    model_name: str  # Имя модели
-    domain_name: str  # Наименование домена модели
-    schema: Any  # Схема обьекта
-    actions: dict  # Доступные методы обьекта
-    fields: Optional['Fields'] = None  # Поля обьекта
-    id: Optional[uuid.UUID] = None  # ID обьекта (если есть)
-    lsn: Optional[int] = None  # LSN обьекта (если есть)
-    vars: Optional[dict] = None  # vars обьекта (если есть)
+    type: LineType                          # Тип поля СМ LineType
+    lines: 'Lines'                          # Список, которому принадлежит строка
+    model_name: str                         # Имя модели
+    domain_name: str                        # Наименование домена модели
+    schema: Any                             # Схема обьекта
+    actions: dict                           # Доступные методы обьекта
+    fields: Optional['Fields'] = None       # Поля обьекта
+    id: Optional[uuid.UUID] = None          # ID обьекта (если есть)
+    lsn: Optional[int] = None               # LSN обьекта (если есть)
+    vars: Optional[dict] = None             # vars обьекта (если есть)
     company_id: Optional[uuid.UUID] = None  # Компания обьекта (если есть обьект)
-    display_title: Optional[str] = None  # Title (Поле title, или Компьют поле)
-    is_last: bool = False  # True Если обьект последний в Lines
-    class_key: str  # Уникальный ключ конструктора
-    is_rel: bool = False  # True если обьек является relation от поля родителя
+    display_title: Optional[str] = None     # Title (Поле title, или Компьют поле)
+    is_last: bool = False                   # True Если обьект последний в Lines
+    class_key: str                          # Уникальный ключ конструктора
+    is_rel: bool = False                    # True если обьек является relation от поля родителя
 
     @property
-    def key(self):
-        """
-            Проп генерации UI ключа для обьекта
-        """
+    def key(self) -> str:
+        """Проп генерации UI ключа для обьекта"""
         if self.type == LineType.LINE:
             key = self.id
         elif self.type == LineType.NEW:
@@ -52,23 +49,24 @@ class Line(BaseModel):
         return f'{self.lines.key}--{key}'
 
     @property
-    def ui_key(self):
+    def ui_key(self) -> str:
+        """Сгенерировать ключ обьекта для UI"""
         return f'{self.model_name}--{self.id}'
 
     @timed
-    def _change_assign_line(self):
+    def _change_assign_line(self) -> None:
         """Присвоение нового обьекта Line'у"""
         for _, field in self.fields:
             field.line = self
 
     @timed
-    def line_copy(self, type=None):
+    def line_copy(self, _type: LineType | None = None) -> 'Line':
         """Метод копирования лайна"""
         new_line = self.copy(deep=True)
-        if type:
-            new_line.type = type
+        if _type:
+            new_line.type = _type
         new_line._change_assign_line()
-        if type == LineType.NEW:
+        if _type == LineType.NEW:
             new_line.id = uuid.uuid4()
         return new_line
 
@@ -91,47 +89,47 @@ class Line(BaseModel):
         return rendered_html
 
     @property
-    def button_view(self):
+    def button_view(self) -> str:
         """Сгенерировать кнопку на просмотр обьекта"""
         return self.render('button_view')
 
     @property
-    def button_update(self):
+    def button_update(self) -> str:
         """Сгенерировать кнопку на редактирование обьекта"""
         return self.render('button_update')
 
     @property
-    def button_create(self):
+    def button_create(self) -> str:
         """Сгенерировать кнопку на создание обьекта"""
         return self.render('button_create')
 
     @property
-    def button_delete(self):
+    def button_delete(self) -> str:
         """Сгенерировать кнопку на удаление обьекта"""
         return self.render(block_name='button_delete')
 
     @property
-    def button_save(self):
+    def button_save(self) -> str:
         """Кнопка сохранения обьекта"""
         return self.render(block_name='button_save')
 
     @property
-    def button_actions(self):
+    def button_actions(self) -> str:
         """Сгенерировать кнопку на меню доступных методов обьекта"""
         return self.render(block_name='button_actions')
 
     @property
-    def as_tr_get(self):
+    def as_tr_get(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
         return self.render(block_name='as_tr', method=MethodType.GET)
 
     @property
-    def as_tr_header(self):
+    def as_tr_header(self) -> str:
         """Отобразить обьект как строку заголовок таблицы"""
         return self.render(block_name='as_tr_header', method=MethodType.GET)
 
     @property
-    def as_tr_update(self):
+    def as_tr_update(self) -> str:
         """Отобразить обьект как строку таблицы на редактирование"""
         return self.render(block_name='as_tr', method=MethodType.UPDATE)
 
@@ -146,17 +144,17 @@ class Line(BaseModel):
         return self.render(block_name='as_item', method=MethodType.CREATE)
 
     @property
-    def as_div_get(self):
+    def as_div_get(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
         return self.render(block_name='as_div', method=MethodType.GET)
 
     @property
-    def as_div_update(self):
+    def as_div_update(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
         return self.render(block_name='as_div', method=MethodType.UPDATE)
 
     @property
-    def as_div_create(self):
+    def as_div_create(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
         return self.render(block_name='as_div', method=MethodType.CREATE)
 
@@ -206,37 +204,38 @@ class Line(BaseModel):
 
 
 class FilterLine(Line):
+    """Обертка для определения класса фильтра"""
     ...
 
 
 class Lines(BaseModel):
     """Делаем класс похожий на List и уже работаем с ним"""
-    parent_field: Optional[Any] = None
-    class_key: Optional[str]
-    line_header: Optional[Line] = None
-    line_new: Optional[Line] = None
-    line_filter: Optional[Line] = None
-    lines: list['Line'] = []
-    vars: Optional[dict] = {}
-    params: Optional[dict] = {}  # Параметры на вхрде
-    join_related: Optional[bool] = True  # Джойнить рилейшен столбцы
-    join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
+    parent_field: Optional[Any] = None    # Поле родитель, если класс конструктор это Field другого класса
+    class_key: Optional[str]              # Ключ класса конструктора
+    line_header: Optional[Line] = None    # Обьект для заголовка
+    line_new: Optional[Line] = None       # Пустой обьект
+    line_filter: Optional[Line] = None    # Обьект, описывающий фильтр
+    lines: list['Line'] = []              # Список обьектов
+    vars: Optional[dict] = {}             # Произвольный словарь с параметрами
+    params: Optional[dict] = {}           # Параметры на вхрде
+    join_related: Optional[bool] = True   # Джойнить рилейшен столбцы
+    join_fields: Optional[list] = []      # Список присоединяемых полей, если пусто, значит все
     cls: Optional[Any] = None
 
     class Config:
         arbitrary_types_allowed = True
 
     @property
-    def key(self):
+    def key(self) -> str:
         return self.parent_field.key if self.parent_field else self.class_key
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         if not self.lines:
             return False
         else:
             return True
 
-    def __deepcopy__(self, memodict={}):
+    def __deepcopy__(self, memodict={}) -> 'Lines':
         return self
 
     @timed
@@ -247,7 +246,7 @@ class Lines(BaseModel):
             join_fields: list | None = None,
             data: list | dict | None = None,
             **kwargs
-    ):
+    ) -> None:
         """Метод собирает данные для конструктора модели"""
         if not params:
             params = self.params
@@ -267,10 +266,10 @@ class Lines(BaseModel):
             data: Iterable,
             join_related: bool = False,
             join_fields: list = None,
-    ):
+    ) -> None:
         i = len(data)
         for n, row in enumerate(data):
-            line_copied = self.line_header.line_copy(type=LineType.LINE)
+            line_copied = self.line_header.line_copy(_type=LineType.LINE)
             line_copied.id = row['id']
             line_copied.type = LineType.LINE
             line_copied.is_last = False
@@ -349,7 +348,7 @@ class Lines(BaseModel):
                         _header_col.type = _header_col.type.replace('uuid', 'rel')
                         _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
 
-    async def get_lines(self, ids: list[uuid.UUID], join_related: bool = False):
+    async def get_lines(self, ids: list[uuid.UUID], join_related: bool = False) -> list[Line]:
         await self._get_data(
             schema=self.cls.model.schemas.get,
             params={'id__in': ids},
@@ -358,7 +357,7 @@ class Lines(BaseModel):
         )
         return self.lines
 
-    async def update_lines(self, data: dict, id: uuid.UUID):
+    async def update_lines(self, data: dict, id: uuid.UUID) -> list[Line]:
         """Метод обновления обьектов"""
         new_data = []
         for raw_line in data:
@@ -372,7 +371,7 @@ class Lines(BaseModel):
         await self.fill_lines(new_data)
         return self.lines
 
-    async def create_lines(self, data: dict):
+    async def create_lines(self, data: dict) -> list[Line]:
         """Метод создания обьектов"""
         new_data = []
         for raw_line in data:
@@ -386,14 +385,14 @@ class Lines(BaseModel):
         await self.fill_lines(new_data)
         return self.lines
 
-    async def delete_lines(self, ids: list[uuid.UUID]):
+    async def delete_lines(self, ids: list[uuid.UUID]) -> bool:
         """Метод удаления обьектов"""
         for _id in ids:
             await self.cls.model.adapter.delete(id=_id)
         return True
 
     @property
-    def as_table_update(self):
+    def as_table_update(self) -> str:
         """Метод отдает список обьектов как таблицу на редактирование"""
         rendered_html = ''
         for i, line in enumerate(self.lines):
@@ -403,7 +402,7 @@ class Lines(BaseModel):
         return rendered_html
 
     @property
-    def as_table_get(self):
+    def as_table_get(self) -> str:
         """Метод отдает список обьектов как таблицу на просмотр"""
         rendered_html = ''
         for i, line in enumerate(self.lines):
@@ -413,5 +412,5 @@ class Lines(BaseModel):
         return rendered_html
 
     @property
-    def as_table_header(self):
+    def as_table_header(self) -> str:
         return self.line_header.as_tr_header

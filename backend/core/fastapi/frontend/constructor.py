@@ -20,7 +20,7 @@ from core.fastapi.frontend.enviroment import passed_classes, readonly_fields, hi
 from core.fastapi.frontend.field import Field, Fields
 from core.fastapi.frontend.types import LineType, ViewVars, MethodType
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import ActionBaseSchame
+from core.schemas.basic_schemes import ActionBaseSchame, BasicField
 from core.utils.timeit import timed
 
 
@@ -61,12 +61,12 @@ class AsyncObj:
         return "[initialization done and successful]"
 
 
-def _get_key():
+def _get_key() -> str:
     """Генерирует уникальный идетификатор для конструктора модели"""
     return f'A{uuid.uuid4().hex[:10]}'
 
 
-def get_types(annotation, _class=[]):
+def get_types(annotation:object, _class: list=[]) -> list[object]:
     """
         Рекурсивно берем типы из анотации типа
     """
@@ -89,21 +89,21 @@ class ClassView(AsyncObj):
     """
         Классконструктор модели для манипулирование уже их UI HTMX
     """
-    request: Request  # Реквест - TODO: надо потом убрать
-    model_name: str  # Имя поля
-    vars: Optional[dict] = None  # Переменные если нужно передать контекст
+    request: Request                                 # Реквест - TODO: надо потом убрать
+    model_name: str                                  # Имя поля
+    vars: Optional[dict] = None                      # Переменные если нужно передать контекст
     model: Model  # Модель данных
-    params: Optional[QueryParams] | dict | None  # Параметры на вхрде
-    join_related: Optional[bool] = True  # Джойнить рилейшен столбцы
-    join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
-    lines: Lines  # Список обьектов
-    action_line: Optional[Line] = None  # Если конструктор выступает в роли Экшена
-    action_lines: Optional[Lines] = None  # Если конструктор выступает в роли Экшена
-    exclude: Optional[list] = [None]  # Исключаемые солбцы
-    sort: Optional[dict] = {}  # Правила сортировки
-    key: str  # Ключ конструктора
-    actions: False  # Доступные Методы модели
-    is_rel: bool = False  # True, если
+    params: Optional[QueryParams] | dict | None      # Параметры на вхрде
+    join_related: Optional[bool] = True              # Джойнить рилейшен столбцы
+    join_fields: Optional[list] = []                 # Список присоединяемых полей, если пусто, значит все
+    lines: Lines                                     # Список обьектов
+    action_line: Optional[Line] = None               # Если конструктор выступает в роли Экшена
+    action_lines: Optional[Lines] = None             # Если конструктор выступает в роли Экшена
+    exclude: Optional[list] = [None]                 # Исключаемые солбцы
+    sort: dict = {}                                  # Правила сортировки
+    key: str                                         # Ключ конструктора
+    actions: dict                                    # Доступные Методы модели
+    is_rel: bool = False                             # True, если
 
     async def __ainit__(self,
                         request,
@@ -147,6 +147,8 @@ class ClassView(AsyncObj):
             config_sort = self.model.sort
             if config_sort:
                 self.sort = {v: i for i, v in enumerate(config_sort)}
+            else:
+                self.sort = {}
         self.is_inline = is_inline
         self.lines = Lines(class_key=self.key, cls=self)
         line_header = await self._get_line(
@@ -156,7 +158,7 @@ class ClassView(AsyncObj):
             view=self
         )
         self.lines.line_header = line_header
-        line_new = self.lines.line_header.line_copy(type=LineType.NEW)
+        line_new = self.lines.line_header.line_copy(_type=LineType.NEW)
         self.lines.line_new = line_new
         line_filter = await self._get_line(
             schema=self.model.schemas.filter,
@@ -167,7 +169,7 @@ class ClassView(AsyncObj):
         if force_init:
             await self.init()
 
-    async def init(self, params: dict = None, join_related: bool = True):
+    async def init(self, params: dict | None = None, join_related: bool = True) -> None:
         """Майнинг данных по params"""
 
         await self.lines._get_data(
@@ -179,17 +181,7 @@ class ClassView(AsyncObj):
             join_fields=self.join_fields,
         )
 
-    async def get_line_by_id(self, id: uuid.UUID):
-        return await self.get_line(id)
-
-    async def get_line_by_fieldinfo(self, fieldinfo: FieldInfo):
-        return await self.get_line(fieldinfo.id)
-
-    async def get_line_by_fieldinfo_or_id(self, fieldinfo_or_id: FieldInfo | uuid.UUID):
-        if isinstance(fieldinfo_or_id, uuid.UUID):
-            return await self.get_line(fieldinfo_or_id)
-
-    def _get_view_vars_by_fieldinfo(self, fielinfo: FieldInfo = None):
+    def _get_view_vars_by_fieldinfo(self, fielinfo: FieldInfo | None = None) -> ViewVars:
         if not fielinfo:
             return ViewVars(**{
                 'required': False,
@@ -204,17 +196,17 @@ class ClassView(AsyncObj):
         return ViewVars(**{
             'required': fielinfo.is_required(),
             'title': fielinfo.title or str(fielinfo),
-            'hidden': fielinfo.json_schema_extra.get('hidden', False) if fielinfo.json_schema_extra else False,
-            'color_map': fielinfo.json_schema_extra.get('color_map', {}) if fielinfo.json_schema_extra else {},
-            'readonly': fielinfo.json_schema_extra.get('readonly', False) if fielinfo.json_schema_extra else False,
-            'filter': fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {},
-            'table': fielinfo.json_schema_extra.get('table', False) if fielinfo.json_schema_extra else False,
+            'hidden': fielinfo.json_schema_extra.get('hidden', False) if fielinfo.json_schema_extra else False, # type: ignore
+            'color_map': fielinfo.json_schema_extra.get('color_map', {}) if fielinfo.json_schema_extra else {},# type: ignore
+            'readonly': fielinfo.json_schema_extra.get('readonly', False) if fielinfo.json_schema_extra else False,# type: ignore
+            'filter': fielinfo.json_schema_extra.get('filter', {}) if fielinfo.json_schema_extra else {},# type: ignore
+            'table': fielinfo.json_schema_extra.get('table', False) if fielinfo.json_schema_extra else False,# type: ignore
             'description': fielinfo.description,
         })
 
-    def _get_view_vars(self, fieldname: str, is_filter: bool, schema: BaseModel):
+    def _get_view_vars(self, fieldname: str, is_filter: bool, schema: BaseModel) -> dict[str, ViewVars]:
         """Костыльный метод собирания ViewVars"""
-        if schema and issubclass(schema, ActionBaseSchame):
+        if schema and issubclass(schema, ActionBaseSchame):  # type: ignore
             default_fieldinfo = schema.model_fields.get(fieldname)
             create_fieldinfo = update_fieldinfo = get_fieldinfo = filter_fieldinfo = default_fieldinfo
         else:
@@ -228,7 +220,7 @@ class ClassView(AsyncObj):
             if update_fieldinfo:
                 update_fieldinfo.title = fieldname.capitalize()
                 if update_fieldinfo.json_schema_extra:
-                    update_fieldinfo.json_schema_extra.update({
+                    update_fieldinfo.json_schema_extra.update({  # type: ignore
                         'readonly': True,
                         'table': table,
                         'hidden': hidden
@@ -240,11 +232,11 @@ class ClassView(AsyncObj):
                         'hidden': hidden
                     }
             else:
-                update_fieldinfo = PyFild(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
+                update_fieldinfo = BasicField(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
             if get_fieldinfo:
                 get_fieldinfo.title = fieldname.capitalize()
                 if get_fieldinfo.json_schema_extra:
-                    get_fieldinfo.json_schema_extra.update({
+                    get_fieldinfo.json_schema_extra.update({                # type: ignore
                         'readonly': True,
                         'table': table,
                         'hidden': hidden
@@ -256,11 +248,11 @@ class ClassView(AsyncObj):
                         'hidden': hidden
                     }
             else:
-                get_fieldinfo = PyFild(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
+                get_fieldinfo = BasicField(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
             if create_fieldinfo:
                 create_fieldinfo.title = fieldname.capitalize()
                 if create_fieldinfo.json_schema_extra:
-                    create_fieldinfo.json_schema_extra.update({
+                    create_fieldinfo.json_schema_extra.update({  # type: ignore
                         'readonly': True,
                         'table': table,
                         'hidden': hidden
@@ -272,7 +264,7 @@ class ClassView(AsyncObj):
                         'hidden': hidden
                     }
             else:
-                create_fieldinfo = PyFild(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
+                create_fieldinfo = BasicField(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
         return {
             'create': self._get_view_vars_by_fieldinfo(create_fieldinfo),
             'update': self._get_view_vars_by_fieldinfo(
@@ -280,18 +272,18 @@ class ClassView(AsyncObj):
             'get': self._get_view_vars_by_fieldinfo(get_fieldinfo),
         }
 
-    async def _get_field(self, line: Line, field_name: str, schema: BaseModel, **kwargs):
+    async def _get_field(self, line: Line, field_name: str, schema: BaseModel, **kwargs) -> Field:
         """
             Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
         fielinfo = schema.model_fields[field_name]
         res = ''
-        enums = []
+        enums: list = []
         lines = None
         class_types = get_types(fielinfo.annotation, [])
-        model = None
+        model: Model | None  = None
         model_name = self.model.name
-        is_filter = True if issubclass(schema, BaseFilter) else False
+        is_filter = True if issubclass(schema, BaseFilter) else False  # type: ignore
         if fielinfo.json_schema_extra:
             if fielinfo.json_schema_extra.get('model'):  # type: ignore
                 model_name = fielinfo.json_schema_extra.get('model')  # type: ignore
@@ -302,14 +294,14 @@ class ClassView(AsyncObj):
             if field_name == 'id':
                 res += 'id'
                 break
-            elif issubclass(c, enum.Enum):
+            elif issubclass(c, enum.Enum):# type: ignore
                 res += 'enum'
-                enums = c
-            elif issubclass(c, BaseModel):
+                enums = c# type: ignore
+            elif issubclass(c, BaseModel):# type: ignore
                 try:
-                    model_name = c.Config.orm_model.__tablename__
+                    model_name = c.Config.orm_model.__tablename__   # type: ignore
                 except Exception as ex:
-                    model_name = c.Config.__name__.lower()
+                    model_name = c.Config.__name__.lower()          # type: ignore
                 res += 'rel'
                 model = self.env[model_name]
                 submodel = await ClassView(
@@ -321,14 +313,14 @@ class ClassView(AsyncObj):
                 )  #
                 lines = submodel.lines
             else:
-                res += c.__name__.lower()
+                res += c.__name__.lower()                          # type: ignore
 
         if not model and model_name:
             if model_name == self.model.name:
                 model = self.model
             elif model_name != self.model.name:
                 model = self.env[model_name]
-            assert model, f'Model for field {field_name} is not defined'
+        assert model, f'Model for field {field_name} is not defined'
         field = Field(**{
             **self._get_view_vars(field_name, is_filter, schema),
             'is_filter': is_filter,
@@ -344,16 +336,16 @@ class ClassView(AsyncObj):
         })
         return field
 
-    async def _get_schema_fields(self, line, schema: BaseModel, **kwargs):
+    async def _get_schema_fields(self, line: Line, schema: BaseModel, **kwargs) -> Fields:
         """Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2"""
-        fields = {}
+        fields: list[tuple[str, Field]] =  []
         field_class = Fields()
         exclude = kwargs.get('exclude') or self.exclude or []
         exclude_add = []
-        if issubclass(schema, Filter):
+        if issubclass(schema, Filter):                      # type: ignore
             for f, v in schema.model_fields.items():
                 if v.json_schema_extra:
-                    if v.json_schema_extra.get('filter') is False:
+                    if v.json_schema_extra.get('filter') is False:# type: ignore
                         exclude.append(f)
         if type == 'as_table':
             for f, v in schema.model_fields.items():
@@ -368,9 +360,9 @@ class ClassView(AsyncObj):
             if k in exclude:
                 continue
             f = await self._get_field(line=line, field_name=k, schema=schema, **kwargs)
-            fields[k] = f
+            fields.append((k, f))
             n += 1
-        fields = sorted(fields.items(), key=lambda x: x[1].sort_idx)
+        fields = sorted(fields, key=lambda x: x[1].sort_idx)
         for field_name, field in fields:
             setattr(field_class, field_name, field)
         return field_class
@@ -435,7 +427,7 @@ class ClassView(AsyncObj):
         )
 
     @property
-    def as_table(self):
+    def as_table(self) -> str:
         """Метод отдает Таблицу с хидером на просмотр"""
         return render_block(
             environment=environment, template_name=f'cls/table.html',
@@ -443,7 +435,7 @@ class ClassView(AsyncObj):
         )
 
     @property
-    def as_table_update(self):
+    def as_table_update(self) -> str:
         """Метод отдает Таблицу с хидером на редакетирование"""
         return render_block(
             environment=environment, template_name=f'cls/table.html',
@@ -451,7 +443,7 @@ class ClassView(AsyncObj):
         )
 
     @property
-    def as_table_widget(self):
+    def as_table_widget(self) -> str:
         """Отдает виджет HTMX для построение таблицы"""
         return render_block(
             environment=environment,
@@ -462,7 +454,7 @@ class ClassView(AsyncObj):
         )
 
     @property
-    def as_filter_widget(self):
+    def as_filter_widget(self) -> str:
         """Отдает виджет HTMX для построение фильтра"""
         return render_block(
             environment=environment,
@@ -472,7 +464,7 @@ class ClassView(AsyncObj):
         )
 
     @property
-    def as_header_widget(self):
+    def as_header_widget(self) -> str:
         """Отдает виджет HTMX для построения заголовка страницы обьекта"""
         return render_block(
             environment=environment,
@@ -482,20 +474,17 @@ class ClassView(AsyncObj):
         )
 
     @property
-    def button_create(self):
+    def button_create(self) -> str:
         """Отдает кнопку для создания нового обьекта"""
-        try:
-            rendered_html = render_block(
-                environment=environment,
-                template_name=f'cls/model.html',
-                block_name='button_create',
-                line=self.line,
-            )
-        except Exception as ex:
-            raise
+        rendered_html = render_block(
+            environment=environment,
+            template_name=f'cls/model.html',
+            block_name='button_create',
+            line=self.line,
+        )
         return rendered_html
 
-    def send_message(self, message: str):
+    def send_message(self, message: str) -> str:
         """Отправить пользователю сообщение """
         return render_block(
             environment=environment,
@@ -505,7 +494,7 @@ class ClassView(AsyncObj):
             message=message
         )
 
-    def delete_by_key(self, key: str):
+    def delete_by_key(self, key: str) -> str:
         """Отправить пользователю сообщение """
         return render_block(
             environment=environment,
@@ -514,21 +503,6 @@ class ClassView(AsyncObj):
             key=key,
         )
 
-    @timed
-    def render(self, type: str = 'table'):
-        try:
-            rendered_html = render_block(
-                environment=environment,
-                template_name=f'view/{type}.html',
-                block_name='as_get',
-                view=self
-            )
-        except Exception as ex:
-            raise
-        return rendered_html
-
-    def as_kanban(self):
-        return self.render('kanban')
 
     async def get_action(self, action: str, ids: list[uuid.UUID], schema: BaseModel) -> str:
         """Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов"""

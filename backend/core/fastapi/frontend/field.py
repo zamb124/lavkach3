@@ -13,6 +13,13 @@ class FieldFields:
     vars: Optional[dict] = None  # Переменные если нужно передать контекст
 
 
+class Fields(BaseModel):
+    """Обертка для удобства, что бы с полями работать как с обьектом"""
+
+    class Config:
+        extra = 'allow'
+
+
 class Field(BaseModel, FieldFields):
     """
         Описание поля
@@ -21,47 +28,43 @@ class Field(BaseModel, FieldFields):
         as_table_form - виджет как таблица (доступен только для list_rel) полей
         as_table - виджет как таблица (доступен только для list_rel) полей
     """
-    field_name: str  # Системное имя поля
-    type: str  # Тип поля (srt, ins, rel, list_rel ... )
-    model_name: str  # Наименование модели
-    domain_name: str  # Наименование домена модели
+    field_name: str                    # Системное имя поля
+    type: str                          # Тип поля (srt, ins, rel, list_rel ... )
+    model_name: str                    # Наименование модели
+    domain_name: str                   # Наименование домена модели
     # widget params
-    enums: Optional[Any] = None  # Если поле enum, то тут будет список енумов
-    val: Any = None  # Значение поля
-    sort_idx: int = 0  # Индекс сортировки поля
-    line: Optional[Any] = None  # Обьект, которому принадлежит поле
-    lines: Optional[Any] = None  # Если поле list_rel, то субобьекты
-    color_map: Optional[dict] = {}  # Мапа для цветовой палитры
-    color: Optional[Any] = None  # Значение цвета
-    is_filter: bool = False  # Является ли поле фильтром
-    is_reserved: bool = False  # Призна
+    enums: Optional[Any] = None        # Если поле enum, то тут будет список енумов
+    val: Any = None                    # Значение поля
+    sort_idx: int = 0                  # Индекс сортировки поля
+    line: Optional[Any] = None         # Обьект, которому принадлежит поле
+    lines: Optional[Any] = None        # Если поле list_rel, то субобьекты
+    color_map: Optional[dict] = {}     # Мапа для цветовой палитры
+    color: Optional[Any] = None        # Значение цвета
+    is_filter: bool = False            # Является ли поле фильтром
+    is_reserved: bool = False          # Призна
     # Views vars
     get: ViewVars
     create: ViewVars
     update: ViewVars
 
     @property
-    def key(self):
+    def key(self) -> str:
         """Отдает уникальный идентификатор для поля"""
         return f'{self.line.key}--{self.field_name}'
 
-    def render(self, block_name: str, type: str = '', backdrop: list = []):
+    def render(self, block_name: str, type: str = '', backdrop: list = []) -> str:
         type = type or self.type
-        try:
-            rendered_html = render_block(
-                environment=environment,
-                template_name=f'field/{type}.html',
-                block_name=block_name,
-                field=self,
-                backdrop=backdrop
-            )
-        except Exception as ex:
-            print(ex)
-            raise
+        rendered_html = render_block(
+            environment=environment,
+            template_name=f'field/{type}.html',
+            block_name=block_name,
+            field=self,
+            backdrop=backdrop
+        )
         return rendered_html
 
     @property
-    def label(self):
+    def label(self) -> str:
         """
             Отдать Label for шаблон для поля
         """
@@ -73,21 +76,21 @@ class Field(BaseModel, FieldFields):
         )
 
     @property
-    def as_update(self):
+    def as_update(self) -> str:
         """
             Отобразить поле с возможностью редактирования
         """
         return self.render(block_name='as_update')
 
     @property
-    def as_get(self):
+    def as_get(self) -> str:
         """
             Отобразить поле только на чтение
         """
         return self.render(block_name='as_get')
 
     @property
-    def as_table_get(self):
+    def as_table_get(self) -> str:
         """
             Отобразить поле как Таблицу (Если поле является list_rel)
         """
@@ -100,7 +103,7 @@ class Field(BaseModel, FieldFields):
         )
 
     @property
-    def as_table_update(self):
+    def as_table_update(self) -> str:
         """
             Отобразить поле как Таблицу на редактирование (Если поле является list_rel)
         """
@@ -113,7 +116,7 @@ class Field(BaseModel, FieldFields):
             cls=self
         )
 
-    def filter_as_string(self):
+    def filter_as_string(self) -> str:
         """
             Костыльная утилита, что бы в js передать фильтр
         """
@@ -126,12 +129,3 @@ class Field(BaseModel, FieldFields):
                 filter += f'"{k}":"{v}",'
             filter += '}'
         return filter
-
-
-class Fields(BaseModel):
-    """
-        Обертка для удобства, что бы с полями работать как с обьектом
-    """
-
-    class Config:
-        extra = 'allow'
