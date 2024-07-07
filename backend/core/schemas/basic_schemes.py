@@ -70,6 +70,7 @@ def BasicField(
         default: Any = PydanticUndefined,
         *,
         #####
+        model: str | None = None,               # Имя модели
         readonly: bool | list = False,          # Только на чтение (всегда) или одно из условий  например
         # [('status','==', 'CONFIRMED')]
         table: bool = False,                    # Показывать в таблице
@@ -112,6 +113,7 @@ def BasicField(
     return Field(
         default,
         table=table,
+        model=model,
         readonly=readonly,
         default_factory= default_factory,
         alias= alias,

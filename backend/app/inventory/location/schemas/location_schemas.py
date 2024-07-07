@@ -1,8 +1,8 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field
 from pydantic.types import UUID4
+from core.schemas.basic_schemes import BasicField as Field
 
 from app.inventory.location.enums import LocationClass
 from app.inventory.location.models import Location

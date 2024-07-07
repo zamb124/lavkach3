@@ -461,7 +461,7 @@ class ClassView(AsyncObj):
         """Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов"""
         data = {k: ids if k == 'ids' else None for k, v in schema.model_fields.items()}
         self.action_line = await self._get_line(schema=schema, type=LineType.ACTION)
-        self.action_lines = Lines(class_key=self.key, line_header=self.action_line, line_new=self.action_line)
+        self.action_lines = Lines(cls=self, class_key=self.key, line_header=self.action_line, line_new=self.action_line)
         await self.action_lines.get_data(
             params={},
             data=[data],

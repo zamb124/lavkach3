@@ -34,7 +34,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
         return await super(SuggestService, self).delete(id)
 
     @permit('suggest_confirm')
-    async def suggest_confirm(self, suggest_ids: List[uuid.UUID], value, commit=True) -> Optional[ModelType]:
+    async def suggest_confirm(self, suggest_ids: List[uuid.UUID], value: Any, commit: bool = True) -> Optional[ModelType]:
         suggest_entities = await self.list({'id__in': suggest_ids}, 999)
         for suggest_entity in suggest_entities:
             if suggest_entity.status == SuggestStatus.DONE:
@@ -43,7 +43,14 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                     enum=SuggestErrors.SUGGEST_ALREADY_DONE
                 )
             elif suggest_entity.type == SuggestType.IN_QUANTITY:
-                val_in_cleaned = float(value)
+                try:
+                    val_in_cleaned = float(value)
+                except ValueError as e:
+                    raise ModuleException(
+                        status_code=406,
+                        enum=SuggestErrors.SUGGEST_INVALID_VALUE,
+                        message=str(e)
+                    )
                 val_s_cleaned = float(suggest_entity.value)
                 if val_in_cleaned == val_s_cleaned:
                     suggest_entity.result_value = value
@@ -54,7 +61,15 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                     suggest_entity.result_value = value
                     suggest_entity.status = SuggestStatus.DONE
             elif suggest_entity.type == SuggestType.IN_LOCATION:
-                location_entity = await self.env['location'].service.list(_filter={'id__in': [value]})
+                try:
+                    val_in_cleaned = uuid.UUID(value)  # type: ignore
+                except ValueError as e:
+                    raise ModuleException(
+                        status_code=406,
+                        enum=SuggestErrors.SUGGEST_INVALID_VALUE,
+                        message=str(e)
+                    )
+                location_entity = await self.env['location'].service.list(_filter={'id__in': [val_in_cleaned]})
                 if location_entity:
                     suggest_entity.result_value = value
                     suggest_entity.status = SuggestStatus.DONE
