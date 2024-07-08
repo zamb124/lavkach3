@@ -1,14 +1,35 @@
 {% block content %}
     <div class="row justify-content-center" style="min-height: 1000px">
         <div hx-ext="ws" ws-connect="/inventory/app?key={{ cls.key }}">
+            <form
+                    id="scan-form"
+                    style="display: none"
+                    hx-include=".app"
+                    hx-trigger="scan"
+                    ws-send
+                    hx-vals='{
+                    "type": "barcode"
+                    }'
+            >
+                <input style="display: none" name="scan-form-model" id="scan-form-model" value="">
+                <input style="display: none" name="scan-form-id" id="scan-form-id" value="">
+                <input style="display: none" name="scan-form-barcode" id="scan-form-barcode" value="">
+            </form>
             <div class="row">
                 <div class="col">
                     <div class="card">
                         <div class="card card-body text-end" style="margin-bottom: 0px">
                             <div class="row d-flex align-items-center">
                                 <div class="col-2">
-                                    <button ws-send name="back" value="True" class="btn btn-soft-success align-middle">
-                                            <i class="ri-arrow-left-circle-fill h4"></i></button>
+                                    <button
+                                            ws-send
+                                            name="back"
+                                            value="True"
+                                            class="btn btn-soft-success align-middle"
+                                            hx-vals='{
+                                            "type": "back"
+                                            }'
+                                    ><i class="ri-arrow-left-circle-fill h4"></i></button>
                                 </div>
                                 <div class="col-10">
                                     <div class="text-center">

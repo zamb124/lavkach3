@@ -1,18 +1,22 @@
-from typing import Annotated
+import uuid
+from enum import Enum
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, WebSocketException
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from jinja2_fragments import render_block
+from pydantic import BaseModel
 from starlette import status
 from starlette.responses import RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
+from app.bff.template_spec import environment
 from app.bff.template_spec import templates
 from core.fastapi.frontend.constructor import ClassView
-from core.fastapi.frontend.types import MethodType
 from core.fastapi.middlewares import AuthBackend
-from app.bff.template_spec import environment
+from core.fastapi.schemas import CurrentUser
+
 inventory_app = APIRouter()
 
 
@@ -36,86 +40,169 @@ users: dict = {
 }
 
 
+def _get_key() -> str:
+    """Генерирует уникальный идетификатор для конструктора модели"""
+    return f'A{uuid.uuid4().hex[:10]}'
+
+
+class MessageType(str, Enum):
+    MODEL: str = 'model'
+    BARCODE: str = 'barcode'
+    BACK: str = 'back'
+
+
+class Message(BaseModel):
+    HEADERS: dict
+    type: MessageType = MessageType.MODEL
+    model: Optional[str] = None
+    id: Optional[str] = None
+    barcode: Optional[str] = None
+
+    class Config:
+        extra = 'allow'
+
+
+class InventoryAPP:
+    class_key: str
+    user: CurrentUser
+    history: list = []
+    websocket: WebSocket
+    permissions: dict = {}
+    current_page: str
+    pages: dict = {
+        'order_type': 'get_orders_by_order_type',
+        'order': 'get_moves_by_order_id',
+        'move': 'get_suggests_by_move_id',
+    }
+    scan_methods: dict = {
+        None: 'common_scan_method',
+        'order_type': 'search_order_by_barcode',
+        'order': 'search_move_by_barcode'
+    }
+
+    async def search_order_by_barcode(self, message: Message):
+        cls = await ClassView(
+            self.websocket, 'order',
+            key=self.key,
+            params={'search': message.barcode},
+            force_init=True
+        )
+        template = self._render(
+            block_name='as_list',
+            title='Search Orders',
+            template='orders',
+            ui_key=f'order_type--{message.id}',
+            lines=cls.lines.lines
+        )
+        return await self.websocket.send_text(template)
+
+    def __init__(self, websocket: WebSocket, user: CurrentUser, key: str):
+        self.key = key
+        self.websocket = websocket
+        self.user = user
+
+    def _render(self, block_name: str, title: str, template: str, ui_key: str, lines: list):
+        return render_block(
+            environment=environment,
+            template_name=f'inventory/app/{template}.html',
+            block_name=block_name,
+            key=self.key,
+            title=title,
+            ui_key=ui_key,
+            lines=lines,
+        )
+
+    async def go_to_last(self):
+        """Отправляет юзер ана последнюю страницу или на главную если истории нет"""
+        if self.history and False:  # TODO:  fdsfdsfds
+            await self.dispatch_message(self.history[-1])
+        else:
+            return await self.main_page()
+
+    async def dispatch_message(self, message: dict | Message):
+        """Маршрутизирует сообщение """
+        if isinstance(message, dict):
+            message = Message(**message)
+        if message.type == MessageType.BACK:
+            await self.go_to_last()
+        elif message.type == MessageType.BARCODE:
+            message.model, message.id, message.barcode = message.model_extra['scan-form-model'], \
+                message.model_extra['scan-form-id'], message.model_extra['scan-form-barcode']
+            scan_method = self.scan_methods.get(message.model)
+            await getattr(self, scan_method)(message)
+        else:
+            next_page = self.pages.get(message.model)
+            await getattr(self, next_page)(message)
+        ...
+
+    async def get_orders_by_order_type(self, message: Message):
+        """Отдает список перемещений по типу"""
+        cls = await ClassView(
+            self.websocket, 'order',
+            key=self.key,
+            params={'order_type_id__in': [message.id]},
+            vars={
+                'button_update': False,
+                'button_view': True
+            },
+            force_init=True
+        )
+        if message:
+            self.history.append(message)
+        template = self._render(
+            block_name='as_list',
+            title='List Orders',
+            template='orders',
+            ui_key=f'order_type--{message.id}',
+            lines=cls.lines.lines
+        )
+        return await self.websocket.send_text(template)
+
+    async def main_page(self, message: dict = None):
+        """ Отдает главную страницу c OrderType"""
+        cls = await ClassView(
+            self.websocket, 'order_type',
+            key=self.key,
+            vars={
+                'button_update': False,
+                'button_view': True
+            }
+        )
+        await cls.init()
+        if message:
+            self.history.append(message)
+        return await self.websocket.send_text(cls.as_card_kanban)
+
+
 @inventory_app.websocket("")
-async def connect(websocket: WebSocket, user: Annotated[str, Depends(get_token)]):
+async def connect(websocket: WebSocket, user: Annotated[CurrentUser, Depends(get_token)]):
     """
             API получение сообщений
         """
     if not user.user_id:  # type: ignore
         raise WebSocketException(code=status.HTTP_401_UNAUTHORIZED)
     try:
-        session = users.get(user.user_id)  # type: ignore
+        app = users.get(user.user_id)  # type: ignore
         await websocket.accept()
-        if not session:
-            session = {  # type: ignore
-                'socket': websocket,
-                'address': None
-            }
-            users.update({user.user_id: session})
+        if not app:
+            app = InventoryAPP(websocket=websocket, user=user, key=websocket.query_params.get('key'))
         else:
-            session['socket'] = websocket
-        if not session['address']:
-            cls = await ClassView(
-                websocket,
-                model='order_type',
-                key=websocket.query_params.get('key'),
-                vars={
-                    'button_update': False,
-                    'button_view': True
-                })
-            await cls.init()
-            responce_text = cls.as_card_kanban
-        else:
-            cls = await ClassView(websocket, session['address']['model'], key=websocket.query_params.get('key'))
-            await cls.init(params={f'{session["address"]["model"]}_id__in': [session['address']['id']]})
-            responce_text = cls.as_card_list
-        await session['socket'].send_text(responce_text)
+            app.websocket = websocket
+            app.key = websocket.query_params.get('key')
+        users[user.user_id] = app
+        await app.go_to_last()
         while True:
-            message = await session['socket'].receive_json()
-            if message.get('back'):
-                session['address'] = None
-                cls = await ClassView(
-                    websocket, 'order_type',
-                    key=websocket.query_params.get('key'),
-                    vars={
-                        'button_update': False,
-                        'button_view': True
-                    }
-                )
-                await cls.init()
-                await session['socket'].send_text(cls.as_card_kanban)
-            if message.get('model') == 'order_type':
-                cls = await ClassView(websocket, key=message['class_key'], model='order')
-                await cls.init(params={'order_type_id__in': [message['id']]})
-                session['address'] = {
-                    'model': 'order_type',
-                    'id': message['id']
-                }
-                orders_template = render_block(
-                    environment=environment,
-                    template_name=f'inventory/app/orders.html',
-                    block_name='as_list',
-                    method=MethodType.UPDATE,
-                    key=cls.key,
-                    title=message.get('title'),
-                    lines=cls.lines.lines,
-                )
-                await session['socket'].send_text(orders_template)
-            elif message.get('model') == 'order':
-                cls = await ClassView(websocket, key=message['class_key'], model='move')
-                await cls.init(params={'order_id__in': [message['id']]})
-                moves_template = render_block(
-                    environment=environment,
-                    template_name=f'inventory/app/moves.html',
-                    block_name='as_list',
-                    method=MethodType.UPDATE,
-                    key=cls.key,
-                    title=message.get('title'),
-                    lines=cls.lines.lines,
-                )
-                await session['socket'].send_text(moves_template)
+            message = await app.websocket.receive_json()
+            await app.dispatch_message(message)
+
 
     except WebSocketDisconnect:
-        session.pop('socket')
+        app.websocket = None
+        app.key = None
     except Exception as e:
         raise e
+
+
+async def dispatch_message(message: dict):
+    if message['HEADERS']['HX-Trigger'] == 'barcode':
+        a = 1

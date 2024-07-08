@@ -1,9 +1,8 @@
 {% block as_list %}
 {% autoescape false %}
 <h5 id="app_title" style="display: block;">{{ title }}</h5>
-<div id="{{ key }}">
-{% for line in lines %}
-
+<div class="app" id="{{ key }}" ui_key="{{ ui_key }}" style="background-color: #292e32">
+    {% for line in lines %}
         <div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}">
             <div class="card-header text-center" style="padding-bottom: 0px;">
                 <h5 style="display: block;">{{ line.display_title }}</h5>
@@ -23,9 +22,9 @@
                             "model": "{{ line.model_name }}",
                             "method": "get",
                             "id": "{{ line.id or "" }}",
-                            "key": "{{ line.key }}",
                             "title": "{{ line.display_title }}",
-                            "class_key": "{{ line.class_key }}"
+                            "class_key": "{{ line.class_key }}",
+                            "ui_key": "{{ line.ui_key }}"
                         }'
                                     value="{{ line.id }}" class="btn btn-light col-12">View
                             </button>
@@ -44,7 +43,8 @@
                             "method": "update",
                             "id": "{{ line.id or "" }}",
                             "key": "{{ line.key }}",
-                            "class_key": "{{ line.class_key }}"
+                            "class_key": "{{ line.class_key }}",
+                            "ui_key": "{{ line.ui_key }}"
                         }'
                                     value="{{ line.id }}" class="btn btn-secondary col-12">Process
                             </button>
@@ -54,11 +54,13 @@
             </div>
         </div>
 
-{% endfor %}
-    </div>
-{% endautoescape %}
+    {% endfor %}
 <script>
     console.log('orders');
+    //barcodeScanEvent('666')
 </script>
+</div>
+{% endautoescape %}
+
 
 {% endblock %}

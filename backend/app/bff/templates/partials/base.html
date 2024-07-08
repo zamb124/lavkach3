@@ -572,7 +572,28 @@
 </script>
 <script>
 function barcodeScanEvent(e){
-    console.log(e)
+    try  {
+        var app = document.getElementsByClassName('app')
+        var app = app[0]
+    } catch  {
+        console.log('app not defined')
+    }
+    var ui_key = app.attributes.ui_key.nodeValue
+    var model = ui_key.split('--')[0]
+    var id = ui_key.split('--')[1]
+    try {
+        var scan_form  = document.getElementById('scan-form')
+    } catch   {
+        console.log('barcode_input not defined')
+    }
+
+    var scan_form_id = document.getElementById('scan-form-id')
+    var scan_form_model = document.getElementById('scan-form-model')
+    var scan_form_barcode = document.getElementById('scan-form-barcode')
+    scan_form_model.value = model
+    scan_form_id.value  = id
+    scan_form_barcode.value  = e
+    htmx.trigger(scan_form, 'scan')
 }
 </script>
 
