@@ -1,0 +1,37 @@
+{% block as_list %}
+{% autoescape false %}
+<h5 id="app_title" style="display: block;">{{ title }}</h5>
+
+    <div id="{{ key }}">
+        {% for line in lines %}
+            <div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}">
+                <div class="row g-0">
+                    <div class="col-4">
+                        <img class="rounded-start img-fluid h-100 object-fit-cover"
+                             src="https://ydt-stable-pim-files.s3.eu-west-1.amazonaws.com/images/96x96/f30cc285-e07c-43f7-96a5-addb3bdd63bf"
+                             alt="Card image">
+                    </div>
+                    <div class="col-8">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">{{ line.fields.product_id.as_get }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <p>Quantity</p>
+                                </div>
+                                <div class="col-6 text-start">
+                                    <p>{{ line.fields.quantity.val }}</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+{% endautoescape %}
+
+{% endblock %}

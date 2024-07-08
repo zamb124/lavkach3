@@ -104,7 +104,16 @@ async def connect(websocket: WebSocket, user: Annotated[str, Depends(get_token)]
             elif message.get('model') == 'order':
                 cls = await ClassView(websocket, key=message['class_key'], model='move')
                 await cls.init(params={'order_id__in': [message['id']]})
-                await session['socket'].send_text(cls.as_card_list)
+                moves_template = render_block(
+                    environment=environment,
+                    template_name=f'inventory/app/moves.html',
+                    block_name='as_list',
+                    method=MethodType.UPDATE,
+                    key=cls.key,
+                    title=message.get('title'),
+                    lines=cls.lines.lines,
+                )
+                await session['socket'].send_text(moves_template)
 
     except WebSocketDisconnect:
         session.pop('socket')

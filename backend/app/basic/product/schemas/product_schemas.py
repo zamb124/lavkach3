@@ -21,6 +21,7 @@ class ProductBaseScheme(BasicModel):
     external_number: Optional[str] = Field(default=None, title='External #', table=True, form=True)
     product_type: ProductType = Field(default=ProductType.STORABLE, title='Type', table=True, form=True)
     uom_id: UUID4 = Field(title='Uom', model='uom')
+    image_url: Optional[str]  = Field(default=None, title='Image Url')
     product_category_id: UUID4 = Field(title='Product Category', table=True, form=True, model='product_category')
     barcode_list: list[str] = Field(default=None, title='Barcodes', table=True, form=True)
 
