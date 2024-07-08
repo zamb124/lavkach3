@@ -57,6 +57,8 @@ class SearchSchema(BaseSchema):
     model: str
     search: str = ''
     filter: Optional[Any] = None
+    key: Optional[str] = None
+    method: Optional[Method] = Method.GET
 
     @model_validator(mode='before')
     def _filter(cls, value):

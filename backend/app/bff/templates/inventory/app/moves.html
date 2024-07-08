@@ -1,14 +1,13 @@
 {% block as_list %}
 {% autoescape false %}
 <h5 id="app_title" style="display: block;">{{ title }}</h5>
-
     <div id="{{ key }}">
         {% for line in lines %}
             <div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}">
                 <div class="row g-0">
                     <div class="col-4">
                         <img class="rounded-start img-fluid h-100 object-fit-cover"
-                             src="https://ydt-stable-pim-files.s3.eu-west-1.amazonaws.com/images/96x96/f30cc285-e07c-43f7-96a5-addb3bdd63bf"
+                             src="{{ line.fields.product_id.val.image_url }}"
                              alt="Card image">
                     </div>
                     <div class="col-8">
