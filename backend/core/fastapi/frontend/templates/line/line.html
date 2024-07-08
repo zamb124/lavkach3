@@ -324,6 +324,7 @@
                             "method": "get",
                             "id": "{{ line.id or "" }}",
                             "key": "{{ line.key }}",
+                            "title":  "{{ line.display_title  }}",
                             "class_key": "{{ line.class_key }}"
                         }'
                         value="{{ line.id }}" class="btn btn-light col-12">View
@@ -343,6 +344,7 @@
                             "method": "update",
                             "id": "{{ line.id or "" }}",
                             "key": "{{ line.key }}",
+                            "title":  "{{ line.display_title  }}",
                             "class_key": "{{ line.class_key }}"
                         }'
                         value="{{ line.id }}" class="btn btn-secondary col-12">Process

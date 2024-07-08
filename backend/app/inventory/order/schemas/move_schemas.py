@@ -64,6 +64,7 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
 
 class MoveFilter(BaseFilter):
     store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', model='store')
+    order_id__in: Optional[List[UUID4]] = Field(default=None, title='Order', model='order')
 
     class Config:
         populate_by_name = True

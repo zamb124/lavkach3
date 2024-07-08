@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
@@ -12,7 +13,7 @@ a=1
 template_path = "app/bff/templates/"
 
 templates = Jinja2Templates(directory=template_path)
-
+environment = templates.env
 templates.env.globals['datetime'] = datetime
 templates.env.globals['uuid'] = uuid4
 templates.env.globals['now'] = datetime.date(datetime.now()).isoformat()

@@ -1,17 +1,18 @@
-import json
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, WebSocketException
 from fastapi import Request
 from fastapi.responses import HTMLResponse
+from jinja2_fragments import render_block
 from starlette import status
 from starlette.responses import RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from app.bff.template_spec import templates
 from core.fastapi.frontend.constructor import ClassView
+from core.fastapi.frontend.types import MethodType
 from core.fastapi.middlewares import AuthBackend
-
+from app.bff.template_spec import environment
 inventory_app = APIRouter()
 
 
@@ -54,13 +55,20 @@ async def connect(websocket: WebSocket, user: Annotated[str, Depends(get_token)]
         else:
             session['socket'] = websocket
         if not session['address']:
-            cls = await ClassView(websocket,  'order_type', key=websocket.query_params.get('key'))
+            cls = await ClassView(
+                websocket,
+                model='order_type',
+                key=websocket.query_params.get('key'),
+                vars={
+                    'button_update': False,
+                    'button_view': True
+                })
             await cls.init()
             responce_text = cls.as_card_kanban
         else:
             cls = await ClassView(websocket, session['address']['model'], key=websocket.query_params.get('key'))
             await cls.init(params={f'{session["address"]["model"]}_id__in': [session['address']['id']]})
-            responce_text  = cls.as_card_list
+            responce_text = cls.as_card_list
         await session['socket'].send_text(responce_text)
         while True:
             message = await session['socket'].receive_json()
@@ -83,7 +91,16 @@ async def connect(websocket: WebSocket, user: Annotated[str, Depends(get_token)]
                     'model': 'order_type',
                     'id': message['id']
                 }
-                await session['socket'].send_text(cls.as_card_list)
+                orders_template = render_block(
+                    environment=environment,
+                    template_name=f'inventory/app/orders.html',
+                    block_name='as_list',
+                    method=MethodType.UPDATE,
+                    key=cls.key,
+                    title=message.get('title'),
+                    lines=cls.lines.lines,
+                )
+                await session['socket'].send_text(orders_template)
             elif message.get('model') == 'order':
                 cls = await ClassView(websocket, key=message['class_key'], model='move')
                 await cls.init(params={'order_id__in': [message['id']]})
@@ -92,5 +109,4 @@ async def connect(websocket: WebSocket, user: Annotated[str, Depends(get_token)]
     except WebSocketDisconnect:
         session.pop('socket')
     except Exception as e:
-        session.pop('socket')
-        a=1
+        raise e
