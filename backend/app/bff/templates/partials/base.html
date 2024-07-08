@@ -54,7 +54,7 @@
             .card-header {
                 border-bottom: hidden;
             }
-            
+
 
             .modal-content {
                 border-radius: 15px;
@@ -227,9 +227,12 @@
 </div>
 <!-- Begin page -->
 <div id="layout-wrapper">
+{% if not is_app %}
     <div hx-get="/bff/topbar" hx-trigger="load"></div>
-    <div id="errors"></div>
+
     <div hx-get="/bff/sidebar" hx-trigger="load"></div>
+{% endif %}
+<div id="errors"></div>
     <div id="htmx_content">
         {% block content %}
             <!--<div hx-get="/" hx-trigger="load"></div>-->

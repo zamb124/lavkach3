@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, WebSocketException
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from starlette import status
+from starlette.responses import RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from app.bff.template_spec import templates
@@ -17,9 +18,11 @@ inventory_app = APIRouter()
 @inventory_app.get("", response_class=HTMLResponse)
 async def move(request: Request):
     """Список перемещений"""
+    if not request.user.user_id:
+        return RedirectResponse(f"/basic/user/login?next={request.url.path}")
     cls = await ClassView(request, 'order_type')
     template = f'inventory/app/app{"" if request.scope["htmx"].hx_request else "-full"}.html'
-    return templates.TemplateResponse(request, template, context={'cls': cls})
+    return templates.TemplateResponse(request, template, context={'cls': cls, 'is_app': True})
 
 
 async def get_token(websocket: WebSocket):

@@ -66,7 +66,8 @@
                                     <p class="text-muted">Sign in to continue to Omnistore.</p>
                                 </div>
                                 <div class="p-2 mt-4">
-                                    <form hx-post="/basic/user/login" hx-target="#htmx_content" hx-push-url="/">
+                                    <form hx-post="/basic/user/login" hx-ext="json-enc" hx-target="#htmx_content" hx-push-url="/">
+                                        <input style="display: none" name="next" value="{{ next }}" type="text" class="form-control" id="next" >
                                         <div class="mb-3">
                                             <label for="username" class="form-label">Username</label>
                                             <input style="border-radius: 15px" name="username" type="text" class="form-control" id="username" placeholder="Enter username">

@@ -1,5 +1,5 @@
 import uuid
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Form
 from fastapi import Request
@@ -12,6 +12,7 @@ from app.bff.template_spec import templates
 from app.bff.utills import BasePermit
 
 user_router = APIRouter()
+
 
 class UserPermit(BasePermit):
     permits = ['user_list']
@@ -30,24 +31,32 @@ async def company_change(request: Request, company_id: uuid.UUID):
 
 @user_router.get("/login", responses={"404": {"model": ExceptionResponseSchema}}, )
 async def login(request: Request, response: Response):
-    return templates.TemplateResponse(request, 'basic/login-full.html', context={})
+    return templates.TemplateResponse(request, 'basic/login-full.html',
+                                      context={'next': request.query_params.get('next')})
+
+
+class LoginSchema(BaseModel):
+    username: str
+    password: str
+    next: Optional[str] = None
 
 
 @user_router.post(
     "/login",
     responses={"404": {"model": ExceptionResponseSchema}},
 )
-async def login(
-        request: Request,
-        username: Annotated[str, Form()],
-        password: Annotated[str, Form()]):
+async def login(request: Request, schema: LoginSchema, ):
     request.scope['env']
     async with request.scope['env']['user'].adapter as a:
-        data = await a.login(username, password)
+        data = await a.login(schema.username, schema.password)
     return templates.TemplateResponse(
         request,
         'components/write_ls.html',
-        context={'token': data['token'], 'refresh_token': data['refresh_token']}
+        context={
+            'token': data['token'],
+            'refresh_token': data['refresh_token'],
+            'next': schema.next,
+        }
     )
 
 
