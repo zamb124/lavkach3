@@ -1,0 +1,7 @@
+{% block as_cards_get %}
+{% autoescape false %}
+<div class="row" id="{{ cls.key }}">
+    {{ cls.lines.as_card_kanban }}
+</div>
+{% endautoescape %}
+{% endblock %}

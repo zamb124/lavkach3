@@ -159,6 +159,11 @@ class Line(BaseModel):
         return self.render(block_name='as_div', method=MethodType.CREATE)
 
     @property
+    def as_card(self) -> str:
+        """Отобразить обьект как строку таблицы на просмотр"""
+        return self.render(block_name='as_card', method=MethodType.GET)
+
+    @property
     def get_update(self) -> str:
         """Метод отдает модалку на редактирование обьекта"""
         return render_block(
@@ -411,6 +416,24 @@ class Lines(BaseModel):
             if i == len(self.lines) - 1:
                 line.is_last = True
             rendered_html += line.as_tr_get
+        return rendered_html
+
+    @property
+    def as_card_kanban(self) -> str:
+        rendered_html = ''
+        for i, line in enumerate(self.lines):
+            if i == len(self.lines) - 1:
+                line.is_last = True
+            rendered_html += f'<div class="col-6">{line.as_card}</div>'
+        return rendered_html
+
+    @property
+    def as_card_list(self)  -> str:
+        rendered_html = ''
+        for i, line in enumerate(self.lines):
+            if i == len(self.lines) - 1:
+                line.is_last = True
+            rendered_html += f'<div class="col-12">{line.as_card}</div>'
         return rendered_html
 
     @property

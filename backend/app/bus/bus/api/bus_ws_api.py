@@ -3,20 +3,14 @@ from typing import Annotated
 from fastapi import (
     APIRouter,
     Depends,
-    Query,
     status,
     WebSocket,
     WebSocketDisconnect,
     WebSocketException,
 )
-from pydantic import BaseModel
-from starlette.requests import Request
 
-from app.bus.bus.services import BusService
-from core.db.session import session
 from app.bus.bus.managers import ws_manager
 from core.fastapi.middlewares import AuthBackend
-from core.helpers.cache import CacheTag
 
 ws_router = APIRouter()
 
@@ -41,7 +35,7 @@ async def websocket_endpoint(websocket: WebSocket, user: Annotated[str, Depends(
             message = await websocket.receive_text()
             await ws_manager.send_personal_message(
                 {"message": message},
-                user.user_id,
+                user.user_id,  # type: ignore
             )
     except WebSocketDisconnect:
         await ws_manager.disconnect(session_key)

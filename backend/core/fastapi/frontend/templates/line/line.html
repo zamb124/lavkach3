@@ -111,36 +111,36 @@
 {% block button_actions %}
 
 
-        <button class="btn btn-soft-info" type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                id="{{ "actions-" ~ line.key }}">
-            <i class="ri-more-fill align-middle h4"></i>
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="{{ "actions-" ~'--'~ line.key }}">
-            {% for action_name, action_vals in line.actions.items() %}
-                <li class="dropdown-item">
-                    <a
-                            data-bs-toggle="{{ action_vals.doc }}"
-                            data-key="{{ action_vals.tkey }}"
-                            hx-params="model,action,method,ids,key"
-                            hx-trigger="click"
-                            hx-ext="json-enc"
-                            hx-target="#htmx_content"
-                            hx-swap="beforeend transition:true"
-                            hx-post="/base/action"
-                            hx-vals='{
+    <button class="btn btn-soft-info" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+            id="{{ "actions-" ~ line.key }}">
+        <i class="ri-more-fill align-middle h4"></i>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="{{ "actions-" ~'--'~ line.key }}">
+        {% for action_name, action_vals in line.actions.items() %}
+            <li class="dropdown-item">
+                <a
+                        data-bs-toggle="{{ action_vals.doc }}"
+                        data-key="{{ action_vals.tkey }}"
+                        hx-params="model,action,method,ids,key"
+                        hx-trigger="click"
+                        hx-ext="json-enc"
+                        hx-target="#htmx_content"
+                        hx-swap="beforeend transition:true"
+                        hx-post="/base/action"
+                        hx-vals='{
                                 "model": "{{ line.model_name }}",
                                 "action": "{{ action_name }}",
                                 "method": "{% if action_vals.schema %}get{% else %}update{% endif %}",
                                 "ids": ["{{ line.id }}"],
                                 "key": "{{ line.key }}"
                             }'
-                            class="dropdown-item remove-item-btn">
-                        <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> {{ action_name }}
-                    </a>
-                </li>
-            {% endfor %}
+                        class="dropdown-item remove-item-btn">
+                    <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> {{ action_name }}
+                </a>
+            </li>
+        {% endfor %}
 
-        </ul>
+    </ul>
 
 {% endblock %}
 {% block as_tr_header %}
@@ -293,15 +293,65 @@
 {% endblock %}
 {% block as_item %}
 {% autoescape false %}
-<a href="{{ line.domain_name ~'/'~ line.model_name}}"
+<a href="{{ line.domain_name ~'/'~ line.model_name }}"
    class="dropdown-item notify-item py-2" style="display: block;">
     <div class="d-flex">
         <div class="flex-grow-1">
-            <h6 class="m-0">{{ line.display_name}}</h6>
+            <h6 class="m-0">{{ line.display_name }}</h6>
             <span class="fs-11 mb-0 text-muted">Manager</span>
         </div>
     </div>
 </a>
+{% endautoescape %}
+{% endblock %}
+{% block as_card %}
+{% autoescape false %}
+<div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}">
+    <div class="card-header" style="padding-bottom: 0px;">
+        <h5 style="display: block;">{{ line.display_title }}</h5>
+    </div>
+    <div class="card-body text-muted">
+        <div class="row">
+            {% if line.vars.button_view %}
+            <div class="col">
+                <button
+                        name="{{ line.key }}"
+                        type="button"
+                        ws-send
+                        hx-ext="json-enc"
+                        hx-vals='{
+                            "model": "{{ line.model_name }}",
+                            "method": "get",
+                            "id": "{{ line.id or "" }}",
+                            "key": "{{ line.key }}",
+                            "class_key": "{{ line.class_key }}"
+                        }'
+                        value="{{ line.id }}" class="btn btn-light col-12">View
+                </button>
+            </div>
+            {% endif  %}
+            {% if line.vars.button_update%}
+            <div class="col">
+                <button
+                        type="button"
+                        name="{{ line.key }}"
+                        type="button"
+                        ws-send
+                        hx-ext="json-enc"
+                        hx-vals='{
+                            "model": "{{ line.model_name }}",
+                            "method": "update",
+                            "id": "{{ line.id or "" }}",
+                            "key": "{{ line.key }}",
+                            "class_key": "{{ line.class_key }}"
+                        }'
+                        value="{{ line.id }}" class="btn btn-secondary col-12">Process
+                </button>
+            </div>
+        {% endif  %}
+        </div>
+    </div>
+</div>
 {% endautoescape %}
 {% endblock %}
 

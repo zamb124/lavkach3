@@ -1,0 +1,28 @@
+{% block content %}
+    <div class="row justify-content-center" style="min-height: 1000px">
+        <div hx-ext="ws" ws-connect="/inventory/app?key={{ cls.key }}">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card card-body text-end" style="margin-bottom: 0px">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-2">
+                                    <button ws-send name="back" value="True" class="btn btn-soft-success align-middle">
+                                            <i class="ri-arrow-left-circle-fill h4"></i></button>
+                                </div>
+                                <div class="col-10">
+                                    <div class="text-center">
+                                        <h5 style="display: block;">{{ request.user.nickname }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div id="{{ cls.key }}"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

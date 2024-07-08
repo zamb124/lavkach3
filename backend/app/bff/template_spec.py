@@ -7,10 +7,9 @@ from starlette.templating import Jinja2Templates
 
 from app.bff.bff_config import config
 
-if config.css_engine =='tailwind':
-    template_path = "app/bff/tailwind/templates"
-else:
-    template_path = "app/bff/templates/"
+a=1
+
+template_path = "app/bff/templates/"
 
 templates = Jinja2Templates(directory=template_path)
 

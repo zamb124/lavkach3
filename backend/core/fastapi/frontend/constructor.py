@@ -88,7 +88,10 @@ class ClassView(AsyncObj):
     """
     request: Request                                 # Реквест - TODO: надо потом убрать
     model_name: str                                  # Имя поля
-    vars: Optional[dict] = None                      # Переменные если нужно передать контекст
+    vars: Optional[dict] = {
+        'button_update': True,
+        'button_view': True,
+    }                      # Переменные если нужно передать контекст
     model: Model  # Модель данных
     params: Optional[QueryParams] | dict | None      # Параметры на вхрде
     join_related: Optional[bool] = True              # Джойнить рилейшен столбцы
@@ -113,9 +116,12 @@ class ClassView(AsyncObj):
                         force_init: bool = False,
                         is_inline: bool = False,
                         key: str | None = None,
-                        is_rel: bool = False
+                        is_rel: bool = False,
+                        vars: dict | None = None,
                         ):
         self.request = request
+        if vars:
+            self.vars = vars
         if isinstance(model, Model):
             self.model = model
         elif model:
@@ -144,7 +150,11 @@ class ClassView(AsyncObj):
             else:
                 self.sort = {}
         self.is_inline = is_inline
-        self.lines = Lines(class_key=self.key, cls=self)
+        self.lines = Lines(
+            class_key=self.key,
+            cls=self,
+            vars=self.vars,
+        )
         line_header = await self._get_line(
             schema=self.model.schemas.get,
             type=LineType.HEADER,
@@ -366,6 +376,7 @@ class ClassView(AsyncObj):
         display_title = kwargs.get('display_title')
         company_id = kwargs.get('company_id')
         fields = kwargs.get('fields')
+        vars = kwargs.get('vars') or self.vars
         line = Line(
             lines=lines or self.lines,
             type=type,
@@ -373,7 +384,7 @@ class ClassView(AsyncObj):
             model_name=self.model.name,
             domain_name=self.model.domain.name,
             lsn=None,
-            vars=None,
+            vars=vars,
             display_title=display_title,
             company_id=company_id,
             fields=fields,
@@ -407,6 +418,15 @@ class ClassView(AsyncObj):
             environment=environment, template_name=f'cls/table.html',
             block_name='as_table', method=MethodType.GET, cls=self
         )
+
+    @property
+    def as_card_kanban(self) -> str:
+        """Метод отдает Таблицу с хидером на просмотр"""
+        return f'<div class="row" id="{self.key}">{self.lines.as_card_kanban}</div>'
+    @property
+    def as_card_list(self) -> str:
+        """Метод отдает Таблицу с хидером на просмотр"""
+        return f'<div class="row" id="{self.key}">{self.lines.as_card_list}</div>'
 
     @property
     def as_table_update(self) -> str:
