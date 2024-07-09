@@ -1,5 +1,5 @@
 {% block content %}
-    <div class="row justify-content-center" style="min-height: 1000px">
+    <div class="justify-content-center bg-dark-subtle" style="min-height: 1000px; width: -webkit-fill-available;">
         <div hx-ext="ws" ws-connect="/inventory/app?key={{ cls.key }}">
             <form
                     id="scan-form"
@@ -18,7 +18,7 @@
             <div class="row">
                 <div class="col">
                     <div class="card">
-                        <div class="card card-body text-end" style="margin-bottom: 0px">
+                        <div class="card card-body text-end">
                             <div class="row d-flex align-items-center">
                                 <div class="col-2">
                                     <button
@@ -41,8 +41,8 @@
                     </div>
                 </div>
             </div>
-            <div class="container">
-            <div class="col">
+            <div class="container ">
+            <div class="col ">
                 <div id="{{ cls.key }}"></div>
             </div>
                 </div>

@@ -1,59 +1,9 @@
 {% block as_list %}
 {% autoescape false %}
 <h5 id="app_title" style="display: block;">{{ title }}</h5>
-<div class="app" id="{{ key }}" ui_key="{{ ui_key }}" style="background-color: #292e32">
+<div class="app" id="{{ key }}" ui_key="{{ ui_key }}">
     {% for line in lines %}
-        <div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}">
-            <div class="card-header text-center" style="padding-bottom: 0px;">
-                <h5 style="display: block;">{{ line.display_title }}</h5>
-            </div>
-            <div class="card-body text-muted text-center">
-                <p> {{ line.fields.model_extra.move_list_rel.val|length }} items </p>
-                <p> {{ line.display_description }}</p>
-                <div class="row">
-                    {% if line.vars.button_view %}
-                        <div class="col">
-                            <button
-                                    name="{{ line.key }}"
-                                    type="button"
-                                    ws-send
-                                    hx-ext="json-enc"
-                                    hx-vals='{
-                            "model": "{{ line.model_name }}",
-                            "method": "get",
-                            "id": "{{ line.id or "" }}",
-                            "title": "{{ line.display_title }}",
-                            "class_key": "{{ line.class_key }}",
-                            "ui_key": "{{ line.ui_key }}"
-                        }'
-                                    value="{{ line.id }}" class="btn btn-light col-12">View
-                            </button>
-                        </div>
-                    {% endif %}
-                    {% if line.vars.button_update %}
-                        <div class="col">
-                            <button
-                                    type="button"
-                                    name="{{ line.key }}"
-                                    type="button"
-                                    ws-send
-                                    hx-ext="json-enc"
-                                    hx-vals='{
-                            "model": "{{ line.model_name }}",
-                            "method": "update",
-                            "id": "{{ line.id or "" }}",
-                            "key": "{{ line.key }}",
-                            "class_key": "{{ line.class_key }}",
-                            "ui_key": "{{ line.ui_key }}"
-                        }'
-                                    value="{{ line.id }}" class="btn btn-secondary col-12">Process
-                            </button>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
+        {% include "inventory/app/order.html"%}
     {% endfor %}
 <script>
     console.log('orders');

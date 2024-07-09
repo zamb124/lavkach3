@@ -1,0 +1,64 @@
+{% block as_card %}
+{% autoescape false %}
+<div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}" lsn="{{ line.lsn }}"
+     hx-trigger="backend_update"
+     hx-disinherit="*"
+     ws-send
+     hx-vals='{
+                "model": "{{ line.model_name }}",
+                "mode": "as_card",
+                "key": "{{ line.class_key }}",
+                "type": "update",
+                "id": "{{ line.id }}"
+                }'
+    >
+    <div class="card-header text-center">
+        <h5 style="display: block;">{{ line.display_title }}</h5>
+    </div>
+    <div class="card-body text-muted text-center">
+        <p> {{ line.fields.model_extra.move_list_rel.val|length }} items </p>
+        <p> {{ line.display_description }}</p>
+        <div class="row">
+            {% if line.vars.button_view %}
+                <div class="col">
+                    <button
+                            type="button"
+                            ws-send
+                            hx-include="this"
+                            hx-vals='{
+                            "model": "{{ line.model_name }}",
+                            "method": "get",
+                            "type": "model",
+                            "id": "{{ line.id or "" }}",
+                            "title": "{{ line.display_title }}",
+                            "class_key": "{{ line.class_key }}",
+                            "ui_key": "{{ line.ui_key }}"
+                        }' class="btn btn-light col-12">View
+                    </button>
+                </div>
+            {% endif %}
+            {% if line.vars.button_update %}
+                <div class="col">
+                    <button
+                            type="button"
+                            name="{{ line.key }}"
+                            type="button"
+                            ws-send
+                            hx-ext="json-enc"
+                            hx-vals='{
+                            "model": "{{ line.model_name }}",
+                            "method": "update",
+                            "id": "{{ line.id or "" }}",
+                            "key": "{{ line.key }}",
+                            "class_key": "{{ line.class_key }}",
+                            "ui_key": "{{ line.ui_key }}"
+                        }'
+                            value="{{ line.id }}" class="btn btn-secondary col-12">Process
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endautoescape %}
+{% endblock %}

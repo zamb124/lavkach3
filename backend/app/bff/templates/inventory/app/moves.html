@@ -1,38 +1,16 @@
 {% block as_list %}
 {% autoescape false %}
 <h5 id="app_title" style="display: block;">{{ title }}</h5>
-    <div id="{{ key }}">
-        {% for line in lines %}
-            <div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}">
-                <div class="row g-0">
-                    <div class="col-4">
-                        <img class="rounded-start img-fluid h-100 object-fit-cover"
-                             src="{{ line.fields.product_id.val.image_url }}"
-                             alt="Card image">
-                    </div>
-                    <div class="col-8">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">{{ line.fields.product_id.as_get }}</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-6">
-                                    <p>Quantity</p>
-                                </div>
-                                <div class="col-6 text-start">
-                                    <p>{{ line.fields.quantity.val }}</p>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        {% endfor %}
-    </div>
-{% endautoescape %}
+<div class="app" id="{{ key }}" ui_key="{{ ui_key }}">
+    {% for line in lines %}
+        {% include "inventory/app/move.html"%}
+    {% endfor %}
 <script>
-    console.log('orders');
+    console.log('moves');
+    //barcodeScanEvent('666')
 </script>
+</div>
+{% endautoescape %}
+
+
 {% endblock %}

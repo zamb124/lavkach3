@@ -9,6 +9,7 @@
     console.log('seted auth cookie')
     window.location.replace("/");
     {% if next %}
+    debugger
     window.location.replace("{{next}}");
     {% endif %}
     //htmx.ajax('GET', '/', {target:'#htmx_content'})

@@ -49,6 +49,7 @@ class MessageType(str, Enum):
     MODEL: str = 'model'
     BARCODE: str = 'barcode'
     BACK: str = 'back'
+    UPDATE: str = 'update'
 
 
 class Message(BaseModel):
@@ -57,6 +58,7 @@ class Message(BaseModel):
     model: Optional[str] = None
     id: Optional[str] = None
     barcode: Optional[str] = None
+    mode: Optional[str] = None
 
     class Config:
         extra = 'allow'
@@ -78,6 +80,11 @@ class InventoryAPP:
         None: 'common_scan_method',
         'order_type': 'search_order_by_barcode',
         'order': 'search_move_by_barcode'
+    }
+    model_templates: dict = {
+        'order': {
+            'as_card': 'inventory/app/order.html'
+        }
     }
 
     async def search_order_by_barcode(self, message: Message):
@@ -114,15 +121,18 @@ class InventoryAPP:
 
     async def go_to_last(self):
         """Отправляет юзер ана последнюю страницу или на главную если истории нет"""
-        if self.history and False:  # TODO:  fdsfdsfds
-            await self.dispatch_message(self.history[-1])
+        if self.history and len(self.history) > 1:
+            self.history.pop(-1)
+            await self.dispatch_message(self.history[-1], is_back=True)
         else:
             return await self.main_page()
 
-    async def dispatch_message(self, message: dict | Message):
+    async def dispatch_message(self, message: dict | Message, is_back: bool = False):
         """Маршрутизирует сообщение """
         if isinstance(message, dict):
             message = Message(**message)
+        if message.type != MessageType.BACK and not is_back:
+            self.history.append(message)
         if message.type == MessageType.BACK:
             await self.go_to_last()
         elif message.type == MessageType.BARCODE:
@@ -130,6 +140,25 @@ class InventoryAPP:
                 message.model_extra['scan-form-id'], message.model_extra['scan-form-barcode']
             scan_method = self.scan_methods.get(message.model)
             await getattr(self, scan_method)(message)
+        elif message.type == MessageType.UPDATE:
+            model_tempate = self.model_templates[message.model][message.mode]
+            cls = await ClassView(
+                self.websocket, message.model,
+                key=self.key,
+                params={'id__in': message.id},
+                force_init=True
+            )
+            line = cls.lines.lines[0]
+            template = render_block(
+                environment=environment,
+                template_name=f'inventory/app/{message.model}.html',
+                block_name=message.mode,
+                key=line.key,
+                title=line.display_title,
+                ui_key=line.ui_key,
+                line=line,
+            )
+            return await self.websocket.send_text(template)
         else:
             next_page = self.pages.get(message.model)
             await getattr(self, next_page)(message)
@@ -147,8 +176,6 @@ class InventoryAPP:
             },
             force_init=True
         )
-        if message:
-            self.history.append(message)
         template = self._render(
             block_name='as_list',
             title='List Orders',
@@ -158,6 +185,26 @@ class InventoryAPP:
         )
         return await self.websocket.send_text(template)
 
+    async def get_moves_by_order_id(self, message: Message):
+        """Отдает список перемещений по типу"""
+        cls = await ClassView(
+            self.websocket, 'move',
+            key=self.key,
+            params={'order_id__in': [message.id]},
+            vars={
+                'button_update': False,
+                'button_view': True
+            },
+            force_init=True
+        )
+        template = self._render(
+            block_name='as_list',
+            title='List Moves',
+            template='moves',
+            ui_key=f'order--{message.id}',
+            lines=cls.lines.lines
+        )
+        return await self.websocket.send_text(template)
     async def main_page(self, message: dict = None):
         """ Отдает главную страницу c OrderType"""
         cls = await ClassView(
@@ -169,8 +216,6 @@ class InventoryAPP:
             }
         )
         await cls.init()
-        if message:
-            self.history.append(message)
         return await self.websocket.send_text(cls.as_card_kanban)
 
 
@@ -199,8 +244,6 @@ async def connect(websocket: WebSocket, user: Annotated[CurrentUser, Depends(get
     except WebSocketDisconnect:
         app.websocket = None
         app.key = None
-    except Exception as e:
-        raise e
 
 
 async def dispatch_message(message: dict):
