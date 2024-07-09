@@ -50,3 +50,12 @@ class InventoryAdapter(BaseAdapter):
         path = f'/api/inventory/suggest/confirm'
         responce = await self.client.post(self.host + path, json=schema.model_dump_json(), params={})
         return responce.json()
+
+    @action(model='move', multiple=False, permits=[])
+    async def get_moves_by_barcode(self, barcode: str):
+        path = f'/api/inventory/move/get_moves_by_barcode'
+        payload = {
+            'barcode': barcode
+        }
+        responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()

@@ -371,3 +371,15 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
     @permit('move_move_counstructor')
     async def move_counstructor(self, move_id: uuid.UUID, moves: list) -> None:
         return await super(MoveService, self).delete(id)
+
+
+    @permit('get_moves_by_barcode')
+    async def get_moves_by_barcode(self, barcode: str):
+        """
+            Если прикрепился пользователь, то значит, что необходимо создать саджесты для выполнения
+        """
+        move = await self.get(move_id)
+        await move.create_suggests()
+        move.user_id = user_id
+        await self.session.commit()
+        return move

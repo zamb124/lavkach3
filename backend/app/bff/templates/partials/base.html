@@ -238,7 +238,8 @@
             <!--<div hx-get="/" hx-trigger="load"></div>-->
         {% endblock %}
     </div>
-    <div hx-get="/bff/footer" hx-trigger="load" class="fixed-bottom">
+{% if not is_app %}
+    <div hx-get="/bff/footer" hx-trigger="load">
         {% block footer %}
 
         {% endblock footer %}
@@ -246,6 +247,7 @@
 
         <div id="trash"></div>
     </div>
+{% endif %}
 
     {% block extra_content %}
     {% endblock extra_content %}

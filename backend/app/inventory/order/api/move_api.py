@@ -9,7 +9,7 @@ from app.inventory.order.schemas.move_schemas import (
     MoveCreateScheme,
     MoveUpdateScheme,
     MoveListSchema,
-    MoveFilter, MoveConfirmScheme,
+    MoveFilter, MoveConfirmScheme, GetMovesByBarcode,
 )
 from app.inventory.order.services.move_service import MoveService
 
@@ -52,3 +52,7 @@ async def move_delete(move_id: uuid.UUID, service: MoveService = Depends()):
 @move_router.post("/confirm")
 async def action_move_confirm(schema: MoveConfirmScheme, service: MoveService = Depends()):
     return await service.confirm(moves=schema.ids)
+
+@move_router.post("/get_moves_by_barcode")
+async def get_moves_by_barcode(schema: GetMovesByBarcode, service: MoveService = Depends()):
+    return await service.get_moves_by_barcode(barcode=schema.barcode)

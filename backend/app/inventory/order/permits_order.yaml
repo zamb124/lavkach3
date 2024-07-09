@@ -10,7 +10,7 @@ permits:
   move_delete: Может удалять квант
   move_get: Может смотреть на квант
   move_user_assign: Может прикрепить пользователя к move
-
+  get_moves_by_barcode: Может получить список мувов по баркоду
   suggest_create: Может создавать саджест
   suggest_edit: Может редактировать саджест
   suggest_list: Может получать список саджест

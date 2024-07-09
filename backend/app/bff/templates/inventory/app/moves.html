@@ -3,14 +3,21 @@
 <h5 id="app_title" style="display: block;">{{ title }}</h5>
 <div class="app" id="{{ key }}" ui_key="{{ ui_key }}">
     {% for line in lines %}
-        {% include "inventory/app/move.html"%}
+        {% include "inventory/app/move.html" %}
     {% endfor %}
-<script>
-    console.log('moves');
-    //barcodeScanEvent('666')
-</script>
-</div>
-{% endautoescape %}
+<div class="row sticky-bottom">
+    <div class="card ">
+        <div class="card-body">
+            <div class="row">
+            <div class="col-12">
+                <button class="btn btn-secondary content col-12" type="button">Start order</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    {% endautoescape %}
 
 
 {% endblock %}

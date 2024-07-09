@@ -11,7 +11,7 @@
                 "type": "update",
                 "id": "{{ line.id }}"
                 }'
-    >
+>
     <div class="card-header text-center">
         <h5 style="display: block;">{{ line.display_title }}</h5>
     </div>
@@ -19,7 +19,6 @@
         <p> {{ line.fields.model_extra.move_list_rel.val|length }} items </p>
         <p> {{ line.display_description }}</p>
         <div class="row">
-            {% if line.vars.button_view %}
                 <div class="col">
                     <button
                             type="button"
@@ -36,8 +35,6 @@
                         }' class="btn btn-light col-12">View
                     </button>
                 </div>
-            {% endif %}
-            {% if line.vars.button_update %}
                 <div class="col">
                     <button
                             type="button"
@@ -53,12 +50,12 @@
                             "class_key": "{{ line.class_key }}",
                             "ui_key": "{{ line.ui_key }}"
                         }'
-                            value="{{ line.id }}" class="btn btn-secondary col-12">Process
+                            value="{{ line.id }}" class="btn btn-secondary col-12">Start
                     </button>
                 </div>
-            {% endif %}
         </div>
     </div>
 </div>
+
 {% endautoescape %}
 {% endblock %}

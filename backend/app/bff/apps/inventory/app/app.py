@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 from enum import Enum
 from typing import Annotated, Optional
@@ -102,7 +103,24 @@ class InventoryAPP:
             lines=cls.lines.lines
         )
         return await self.websocket.send_text(template)
-
+    async def search_move_by_barcode(self, message: Message):
+        adapter = self.websocket.scope['env']['move'].adapter
+        moves = await adapter.get_moves_by_barcode(message.barcode)
+        cls = await ClassView(
+            self.websocket, 'move',
+            key=self.key,
+            params={'search': message.barcode},
+            force_init=True
+        )
+        cls.lines.line_header.me
+        template = self._render(
+            block_name='as_list',
+            title='Search Orders',
+            template='orders',
+            ui_key=f'order_type--{message.id}',
+            lines=cls.lines.lines
+        )
+        return await self.websocket.send_text(template)
     def __init__(self, websocket: WebSocket, user: CurrentUser, key: str):
         self.key = key
         self.websocket = websocket
@@ -199,12 +217,13 @@ class InventoryAPP:
         )
         template = self._render(
             block_name='as_list',
-            title='List Moves',
             template='moves',
             ui_key=f'order--{message.id}',
-            lines=cls.lines.lines
+            lines=cls.lines.lines,
+            title=cls.lines.lines[0].fields.order_id.val.get('title') if cls.lines.lines else 'No items'
         )
         return await self.websocket.send_text(template)
+
     async def main_page(self, message: dict = None):
         """ Отдает главную страницу c OrderType"""
         cls = await ClassView(

@@ -83,3 +83,6 @@ class MoveConfirmScheme(ActionBaseSchame):
 
     class Config:
         extra = 'allow'
+
+class GetMovesByBarcode(BasicModel):
+    barcode: str
