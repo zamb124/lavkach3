@@ -112,7 +112,6 @@ class InventoryAPP:
             params={'search': message.barcode},
             force_init=True
         )
-        cls.lines.line_header.me
         template = self._render(
             block_name='as_list',
             title='Search Orders',
@@ -205,22 +204,37 @@ class InventoryAPP:
 
     async def get_moves_by_order_id(self, message: Message):
         """Отдает список перемещений по типу"""
-        cls = await ClassView(
+        move_cls = await ClassView(
             self.websocket, 'move',
             key=self.key,
             params={'order_id__in': [message.id]},
+            join_fields=['product_id'],              # Нам нуно достать product_id ради ссылки на картинку
+            vars={
+                'button_update': False,
+                'button_view': True
+            },
+        )
+        move_cls_task = asyncio.create_task(move_cls.init())
+        order_cls = await ClassView(
+            self.websocket, 'order',
+            key=self.key,
+            params={'id__in': [message.id]},
             vars={
                 'button_update': False,
                 'button_view': True
             },
             force_init=True
         )
-        template = self._render(
+        order_cls_task = asyncio.create_task(order_cls.init())
+        await asyncio.gather(move_cls_task, order_cls_task)
+        template = render_block(
+            environment=environment,
+            template_name=f'inventory/app/moves.html',
             block_name='as_list',
-            template='moves',
-            ui_key=f'order--{message.id}',
-            lines=cls.lines.lines,
-            title=cls.lines.lines[0].fields.order_id.val.get('title') if cls.lines.lines else 'No items'
+            key=self.key,
+            title=order_cls.lines.lines[0].display_title,
+            ui_key=order_cls.lines.lines[0].ui_key,
+            lines=move_cls.lines.lines,
         )
         return await self.websocket.send_text(template)
 

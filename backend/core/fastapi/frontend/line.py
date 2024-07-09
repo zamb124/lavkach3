@@ -301,7 +301,7 @@ class Lines(BaseModel):
                     await col.lines.fill_lines(data=col.val, join_related=False)
             self.lines.append(line_copied)
 
-        if join_related:
+        if join_related or join_fields:
             missing_fields = defaultdict(list)
             for _line in self.lines:
                 """Достаем все релейтед обьекты у которых модуль отличается"""
@@ -320,7 +320,7 @@ class Lines(BaseModel):
                 miss_value_str = ''
                 _corutine_data = None
                 if isinstance(_vals, list):
-                    miss_value_str = ','.join([i for i in _vals if i])
+                    miss_value_str = ','.join([i for i in set(_vals) if i])
                 if miss_value_str:
                     qp = {'id__in': miss_value_str}
                     _corutine_data = asyncio.create_task(self.cls.env[_fields[0].model_name].adapter.list(params=qp))

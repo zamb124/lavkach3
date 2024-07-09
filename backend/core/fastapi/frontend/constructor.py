@@ -94,7 +94,7 @@ class ClassView(AsyncObj):
     }                      # Переменные если нужно передать контекст
     model: Model  # Модель данных
     params: Optional[QueryParams] | dict | None      # Параметры на вхрде
-    join_related: Optional[bool] = True              # Джойнить рилейшен столбцы
+    join_related: Optional[bool] | None = None       # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []                 # Список присоединяемых полей, если пусто, значит все
     lines: Lines                                     # Список обьектов
     action_line: Optional[Line] = None               # Если конструктор выступает в роли Экшена
@@ -110,7 +110,7 @@ class ClassView(AsyncObj):
                         model: str | Model = None,
                         params: QueryParams | dict | None = None,
                         exclude: list = [],
-                        join_related: bool = True,
+                        join_related: bool = False,
                         join_fields: list | None = None,
                         sort: list | None = None,
                         force_init: bool = False,
