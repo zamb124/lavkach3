@@ -10,24 +10,7 @@
             <p class="card-text text-muted text-center">{{ line.fields.product_id.val.description }}</p>
             <div class="flex-grow">
 
-                {% if active_suggest %}
-                    {% if active_suggest.type == 'in_product' %}
-                        <span class="badge bg-success-subtle text-success badge-border">Scan the product</span>
-                    {% elif active_suggest.type == 'in_quantity' %}
-                        <span class="badge bg-warning-subtle  badge-border col-12 fs-6" style="border-radius: 15px">Enter the quantity</span>
 
-                    {% elif active_suggest.type == 'in_location' %}
-                        <div class="badge badge bg-primary-subtle fs-6 col-12"
-                             style="border-radius: 15px; margin-bottom: 15px; min-height: 35px"> Scan the destination
-                            location
-                        </div>
-                    {% elif active_suggest.type == 'out_location' %}
-                        <div class="badge badge bg-primary-subtle fs-6 col-12"
-                             style="border-radius: 15px; margin-bottom: 15px; min-height: 35px"> Scan the source
-                            location
-                        </div>
-                    {% endif %}
-                {% endif %}
             </div>
             <div class="avatar-sm mx-auto">
                 <div class="row">
@@ -61,20 +44,43 @@
             padding: 2px;
         }
     </style>
+    {% if active_suggest %}
+        {% if active_suggest.type == 'in_product' %}
+            <span class="badge bg-success-subtle text-success badge-border" style="border-radius: 15px; min-height: 10vh;align-content: center;">Scan the product</span>
+        {% elif active_suggest.type == 'in_quantity' %}
+            <span class="badge bg-warning-subtle  badge-border col-12 fs-6" style="border-radius: 15px; min-height: 10vh;align-content: center;">Enter the quantity</span>
+
+        {% elif active_suggest.type == 'in_location' %}
+            <div class="badge badge bg-primary-subtle fs-6 col-12"
+                 style="border-radius: 15px; min-height: 10vh;align-content: center;"> Scan the destination
+                location
+            </div>
+        {% elif active_suggest.type == 'out_location' %}
+            <div class="badge badge bg-primary-subtle fs-6 col-12"
+                 style="border-radius: 15px; min-height: 10vh;align-content: center;"> Scan the source
+                location
+            </div>
+        {% endif %}
+    {% endif %}
     <div class="sticky-lg-bottom fixed-bottom container">
-        <div class="card">
+        <div class="card" style="background-color: var(--vz-border-color)">
             {% if active_suggest %}
                 <div class="row">
-                <div class="col-2">
-                </div>
-                    <div class="col-6">
+
+                    <div class="col-8">
                         {% if active_suggest.type == 'in_product' %}
                             <i class="ri-qr-code-fill"></i>
                         {% elif active_suggest.type  == 'in_quantity' %}
-                            <div class="input-step step-warning col-12 form-control text-center">
-                                <button type="button" class="minus" style="width: 50px; border-radius: 15px;margin-top: 8px;height: 40px">–</button>
-                                <input type="number" class="product-quantity" value="4" min="0" max="100" readonly="">
-                                <button type="button" class="plus" style="width: 50px; border-radius: 15px;margin-top: 8px;height: 40px">+</button>
+                            <div class="input-step step-soft-warning col-12 form-control text-center"
+                                 style="border-radius: 15px">
+                                <button type="button" class="minus"
+                                        style="width: 60px; border-radius: 15px;margin-top: 8px;height: 40px">–
+                                </button>
+                                <input type="number" class="product-quantity" value="1" min="0" max="100" readonly=""
+                                       style="width: 100px">
+                                <button type="button" class="plus"
+                                        style="width: 60px; border-radius: 15px;margin-top: 8px;height: 40px">+
+                                </button>
                             </div>
                         {% elif active_suggest.type  == 'in_location' %}
                             <i class="ri-download-fill"></i>
@@ -82,7 +88,9 @@
 
                     </div>
                     <div class="col-4">
-                        <button type="button" class="btn btn-secondary waves-effect waves-light col-12" style="height: 40px;margin-top: 10px;right: 10px;">GO</button>
+                        <button type="button" class="btn btn-soft-success waves-effect waves-light col-12"
+                                style="height: 60px;right: 10px;"><i class="ri-arrow-right-line fs-1"></i>
+                        </button>
                     </div>
 
                 </div>
