@@ -1,5 +1,6 @@
 {% block as_card %}
 {% autoescape false %}
+
 <div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}" lsn="{{ line.lsn }}"
      hx-trigger="backend_update"
      hx-disinherit="*"

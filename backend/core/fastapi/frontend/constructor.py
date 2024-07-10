@@ -154,6 +154,7 @@ class ClassView(AsyncObj):
             class_key=self.key,
             cls=self,
             vars=self.vars,
+            join_fields=self.join_fields,
         )
         line_header = await self._get_line(
             schema=self.model.schemas.get,

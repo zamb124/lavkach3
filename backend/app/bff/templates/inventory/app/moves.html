@@ -1,23 +1,48 @@
 {% block as_list %}
 {% autoescape false %}
-<h5 id="app_title" style="display: block;">{{ title }}</h5>
-<div class="app" id="{{ key }}" ui_key="{{ ui_key }}">
-    {% for line in lines %}
+<h5 id="app_title" style="display: block;">{{ order.display_title }}</h5>
+<div class="app" id="{{ key }}" ui_key="{{ order.ui_key }}">
+    {% for line in moves %}
         {% include "inventory/app/move.html" %}
     {% endfor %}
-<div class="row sticky-bottom">
-    <div class="card ">
-        <div class="card-body">
-            <div class="row">
-            <div class="col-12">
-                <button
-                        class="btn btn-secondary content col-12"
-                        ws-send="{{ ui_key }}"
-                        type="button">Start order</button>
-            </div>
+    <div class="row sticky-bottom">
+        <div class="card ">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        {% if not app.user.user_id|string in order.fields.user_ids.val %}
+                            <button
+                                    class="btn btn-secondary content col-12"
+                                    ws-send
+                                    name="start_order"
+                                    hx-vals='{
+                            "model": "{{ order.model_name }}",
+                            "mode": "order_start",
+                            "key": "{{ order.class_key }}",
+                            "type": "action",
+                            "id": "{{ order.id }}"
+                        }'
+                                    type="button">Start order
+                            </button>
+                        {% else %}
+                            <button
+                                    class="btn btn-success content col-12"
+                                    ws-send
+                                    name="start_order"
+                                    hx-vals='{
+                            "model": "{{ order.model_name }}",
+                            "mode": "order_finish",
+                            "key": "{{ order.class_key }}",
+                            "type": "action",
+                            "id": "{{ order.id }}"
+                        }'
+                                    type="button">Finish order
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     {% endautoescape %}

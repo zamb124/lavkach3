@@ -1,6 +1,7 @@
 import logging
 import logging
 import uuid
+from sqlalchemy import select
 from typing import Any, Optional, List
 from starlette.requests import Request
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -374,12 +375,15 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
 
 
     @permit('get_moves_by_barcode')
-    async def get_moves_by_barcode(self, barcode: str):
+    async def get_moves_by_barcode(self, barcode: str, order_id: uuid.UUID) -> List[ModelType]:
         """
             Если прикрепился пользователь, то значит, что необходимо создать саджесты для выполнения
         """
-        move = await self.get(move_id)
-        await move.create_suggests()
-        move.user_id = user_id
-        await self.session.commit()
-        return move
+        query = select(self.model)
+        product_obj = await self.env['product'].adapter.product_by_barcode(barcode)
+        if order_id:
+            query = query.where(self.model.order_id == order_id)
+        query = query.where(self.model.product_id == product_obj.id)
+        executed_data = await self.session.execute(query)
+        move_entities = executed_data.scalars().all()
+        return move_entities

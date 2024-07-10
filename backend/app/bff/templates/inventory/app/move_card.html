@@ -1,0 +1,44 @@
+{% block as_card_processing %}
+{% autoescape false %}
+<h5 id="app_title" style="display: block;">{{ line.display_title }}</h5>
+<div class="app" id="{{ key }}" ui_key="{{ line.ui_key }}">
+
+    <div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}" lsn="{{ line.lsn }}">
+        <img class="card-img-top img-fluid" style="height: 200px" src="{{ line.fields.product_id.val.image_url }}"
+             alt="Card image cap">
+        <div class="card-body">
+            <h4 class="card-title mb-2 text-center">{{ line.fields.product_id.val.title }}</h4>
+            <p class="card-text text-muted text-center">{{ line.fields.product_id.val.description }}</p>
+        {% if active_suggest %}
+            {% if active_suggest.type == 'in_product'%}
+                <div class="badge bg-info fs-6 col-12" style="border-radius: 15px; margin-bottom: 15px"> Scan the product</div>
+            {% elif active_suggest.type == 'in_quantity' %}
+                <div class="badge bg-info fs-6 col-12" style="border-radius: 15px; margin-bottom: 15px"> Enter the quantity</div>
+            {% elif active_suggest.type == 'in_location' %}
+                <div class="badge bg-info fs-6 col-12" style="border-radius: 15px; margin-bottom: 15px"> Scan the destination location</div>
+            {% elif active_suggest.type == 'out_location' %}
+                <div class="badge bg-info fs-6 col-12" style="border-radius: 15px; margin-bottom: 15px"> Scan the source location</div>
+            {% endif%}
+        {% endif %}
+            <div class="avatar-sm mx-auto">
+                <div class="row">
+                    {% for suggest in line.fields.suggest_list_rel.val|sort(attribute='priority') %}
+                        <div class="col-3">
+                            <div class="avatar-title bg--subtle text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %} fs-17 rounded">
+                                {% if suggest.type == 'in_product' %}
+                                    <i class="ri-qr-code-fill"></i>
+                                {% elif suggest.type == 'in_quantity' %}
+                                    <i class="las la-sort-numeric-down"></i>
+                                {% elif suggest.type == 'in_location' %}
+                                    <i class="ri-download-fill"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endautoescape %}
+{% endblock %}

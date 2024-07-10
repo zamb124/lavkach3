@@ -40,3 +40,17 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
     @permit('order_move_counstructor')
     async def move_counstructor(self, order_id: uuid.UUID, moves: list) -> None:
         return await super(OrderService, self).delete(id)
+
+    @permit('assign_order')
+    async def assign_order(self, order_id: uuid.UUID, user_id: uuid.UUID = None) -> ModelType:
+        order_entity = await self.get(order_id)
+        if user_id:
+            order_entity.user_ids.append(user_id)
+        else:
+            order_entity.user_ids.append(self.user.user_id)
+        await self.session.commit()
+        await self.session.refresh(order_entity)
+        await order_entity.notify('update')
+        return order_entity
+
+

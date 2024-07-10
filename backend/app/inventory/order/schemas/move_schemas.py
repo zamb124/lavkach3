@@ -86,3 +86,4 @@ class MoveConfirmScheme(ActionBaseSchame):
 
 class GetMovesByBarcode(BasicModel):
     barcode: str
+    order_id: Optional[UUID4]

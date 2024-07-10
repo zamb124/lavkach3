@@ -79,3 +79,8 @@ class OrderFilter(BaseFilter):
 
 class OrderListSchema(GenericListSchema):
     data: Optional[List[OrderScheme]]
+
+
+class AssignUser(BasicModel):
+    order_id: UUID = Field(title='Order', model='order')
+    user_id: Optional[UUID] = None

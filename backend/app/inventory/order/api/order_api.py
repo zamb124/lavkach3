@@ -12,6 +12,7 @@ from app.inventory.order.schemas import (
     OrderListSchema,
     OrderFilter,
 )
+from app.inventory.order.schemas.order_schemas import AssignUser
 from app.inventory.order.services import OrderService
 
 order_router = APIRouter(
@@ -48,3 +49,7 @@ async def order_update(order_id: uuid.UUID, schema: OrderUpdateScheme, service: 
 @order_router.delete("/{order_id}")
 async def order_delete(order_id: uuid.UUID, service: OrderService = Depends()):
     await service.delete(id=order_id)
+
+@order_router.post("/assign_order",response_model=OrderScheme)
+async def assign_order(schema: AssignUser, service: OrderService = Depends()):
+    return await service.assign_order(order_id=schema.order_id, user_id=schema.user_id)

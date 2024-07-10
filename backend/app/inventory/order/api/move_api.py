@@ -53,6 +53,6 @@ async def move_delete(move_id: uuid.UUID, service: MoveService = Depends()):
 async def action_move_confirm(schema: MoveConfirmScheme, service: MoveService = Depends()):
     return await service.confirm(moves=schema.ids)
 
-@move_router.post("/get_moves_by_barcode")
+@move_router.post("/get_moves_by_barcode", response_model=list[MoveScheme])
 async def get_moves_by_barcode(schema: GetMovesByBarcode, service: MoveService = Depends()):
-    return await service.get_moves_by_barcode(barcode=schema.barcode)
+    return await service.get_moves_by_barcode(barcode=schema.barcode, order_id=schema.order_id)

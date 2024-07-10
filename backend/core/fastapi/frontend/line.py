@@ -272,7 +272,7 @@ class Lines(BaseModel):
             join_related: bool = False,
             join_fields: list = [],
     ) -> None:
-
+        join_fields = join_fields or self.join_fields
         assert self.line_header, 'Line header is not set'
         for n, row in enumerate(data):
             line_copied = self.line_header.line_copy(_type=LineType.LINE)

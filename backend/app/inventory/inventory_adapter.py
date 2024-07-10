@@ -1,4 +1,5 @@
 import json
+from uuid import UUID
 
 from app.inventory.inventory_config import config
 from app.inventory.order.schemas import SuggestConfirmScheme
@@ -52,10 +53,26 @@ class InventoryAdapter(BaseAdapter):
         return responce.json()
 
     @action(model='move', multiple=False, permits=[])
-    async def get_moves_by_barcode(self, barcode: str):
+    async def get_moves_by_barcode(self, barcode: str, order_id: UUID):
         path = f'/api/inventory/move/get_moves_by_barcode'
         payload = {
-            'barcode': barcode
+            'barcode': barcode,
+            'order_id': order_id.__str__()
+        }
+        responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()
+
+    @action(model='order', multiple=False, permits=[])
+    async def assign_order(self, order_id, user_id: UUID):
+        """Назначение пользователя на заказ, если не указан, то возьется из запроса"""
+        if isinstance(user_id, UUID):
+            user_id = user_id.__str__()
+        if isinstance(order_id, UUID):
+            order_id = order_id.__str__()
+        path = f'/api/inventory/order/assign_order'
+        payload = {
+            'order_id': order_id,
+            'user_id': user_id if user_id else None
         }
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()

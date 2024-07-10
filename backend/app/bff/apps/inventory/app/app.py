@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, WebSocketException
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from jinja2_fragments import render_block
-from pydantic import BaseModel
+from pydantic import BaseModel, UUID4
 from starlette import status
 from starlette.responses import RedirectResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -51,13 +51,14 @@ class MessageType(str, Enum):
     BARCODE: str = 'barcode'
     BACK: str = 'back'
     UPDATE: str = 'update'
+    ACTION: str = 'action'
 
 
 class Message(BaseModel):
     HEADERS: dict
     type: MessageType = MessageType.MODEL
     model: Optional[str] = None
-    id: Optional[str] = None
+    id: Optional[UUID4] = None
     barcode: Optional[str] = None
     mode: Optional[str] = None
 
@@ -68,6 +69,7 @@ class Message(BaseModel):
 class InventoryAPP:
     class_key: str
     user: CurrentUser
+    store_id = str
     history: list = []
     websocket: WebSocket
     permissions: dict = {}
@@ -81,6 +83,10 @@ class InventoryAPP:
         None: 'common_scan_method',
         'order_type': 'search_order_by_barcode',
         'order': 'search_move_by_barcode'
+    }
+    actions: dict = {
+        'order_start': 'action_order_start',
+        'order_finish': 'action_order_finish',
     }
     model_templates: dict = {
         'order': {
@@ -103,23 +109,42 @@ class InventoryAPP:
             lines=cls.lines.lines
         )
         return await self.websocket.send_text(template)
+
+    async def action_order_start(self, message: Message):
+        adapter = self.websocket.scope['env']['order'].adapter
+        order = await adapter.assign_order(order_id=message.id, user_id=self.user.user_id)
+        return await self.get_moves_by_order_id(message)
+
     async def search_move_by_barcode(self, message: Message):
         adapter = self.websocket.scope['env']['move'].adapter
-        moves = await adapter.get_moves_by_barcode(message.barcode)
+        moves = await adapter.get_moves_by_barcode(barcode=message.barcode,  order_id=message.id)
         cls = await ClassView(
             self.websocket, 'move',
             key=self.key,
-            params={'search': message.barcode},
-            force_init=True
+            join_fields=['product_id'],
+            force_init=False
         )
-        template = self._render(
-            block_name='as_list',
-            title='Search Orders',
-            template='orders',
-            ui_key=f'order_type--{message.id}',
-            lines=cls.lines.lines
-        )
-        return await self.websocket.send_text(template)
+        await cls.lines.fill_lines(data=moves)
+        if len(cls.lines.lines) > 1:
+            return await self.websocket.send_text(cls.as_card_kanban)
+        else:
+            line = cls.lines.lines[0]
+            active_suggest = None
+            for suggest in sorted(line.fields.suggest_list_rel.val, key=lambda x: x['priority']):
+                if suggest['status'] != 'done':
+                    active_suggest = suggest
+                    break
+            template = render_block(
+                environment=environment,
+                template_name=f'inventory/app/move_card.html',
+                block_name='as_card_processing',
+                key=line.key,
+                title=line.display_title,
+                ui_key=line.ui_key,
+                line=line,
+                active_suggest=active_suggest,
+            )
+            return await self.websocket.send_text(template)
     def __init__(self, websocket: WebSocket, user: CurrentUser, key: str):
         self.key = key
         self.websocket = websocket
@@ -130,6 +155,7 @@ class InventoryAPP:
             environment=environment,
             template_name=f'inventory/app/{template}.html',
             block_name=block_name,
+            app=self,
             key=self.key,
             title=title,
             ui_key=ui_key,
@@ -157,6 +183,10 @@ class InventoryAPP:
                 message.model_extra['scan-form-id'], message.model_extra['scan-form-barcode']
             scan_method = self.scan_methods.get(message.model)
             await getattr(self, scan_method)(message)
+        elif message.type == MessageType.ACTION:
+            action = self.actions.get(message.mode)
+            await getattr(self, action)(message)
+
         elif message.type == MessageType.UPDATE:
             model_tempate = self.model_templates[message.model][message.mode]
             cls = await ClassView(
@@ -186,7 +216,7 @@ class InventoryAPP:
         cls = await ClassView(
             self.websocket, 'order',
             key=self.key,
-            params={'order_type_id__in': [message.id]},
+            params={'order_type_id__in': [message.id], 'store_id__in': [self.user.store_id]},
             vars={
                 'button_update': False,
                 'button_view': True
@@ -231,10 +261,10 @@ class InventoryAPP:
             environment=environment,
             template_name=f'inventory/app/moves.html',
             block_name='as_list',
+            app=self,
             key=self.key,
-            title=order_cls.lines.lines[0].display_title,
-            ui_key=order_cls.lines.lines[0].ui_key,
-            lines=move_cls.lines.lines,
+            order=order_cls.lines.lines[0],
+            moves=move_cls.lines.lines,
         )
         return await self.websocket.send_text(template)
 
