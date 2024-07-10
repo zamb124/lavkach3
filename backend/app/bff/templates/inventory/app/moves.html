@@ -5,7 +5,7 @@
     {% for line in moves %}
         {% include "inventory/app/move.html" %}
     {% endfor %}
-    <div class="row sticky-bottom">
+    <div class="sticky-lg-bottom fixed-bottom">
         <div class="card ">
             <div class="card-body">
                 <div class="row">
@@ -26,7 +26,7 @@
                             </button>
                         {% else %}
                             <button
-                                    class="btn btn-success content col-12"
+                                    class="btn btn-soft-success content col-12"
                                     ws-send
                                     name="start_order"
                                     hx-vals='{
@@ -44,8 +44,6 @@
             </div>
         </div>
     </div>
-
-    {% endautoescape %}
-
-
+</div>
+{% endautoescape %}
 {% endblock %}

@@ -2,24 +2,33 @@
 {% autoescape false %}
 <h5 id="app_title" style="display: block;">{{ line.display_title }}</h5>
 <div class="app" id="{{ key }}" ui_key="{{ line.ui_key }}">
-
     <div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}" lsn="{{ line.lsn }}">
         <img class="card-img-top img-fluid" style="height: 200px" src="{{ line.fields.product_id.val.image_url }}"
              alt="Card image cap">
-        <div class="card-body">
+        <div class="card-body text-muted">
             <h4 class="card-title mb-2 text-center">{{ line.fields.product_id.val.title }}</h4>
             <p class="card-text text-muted text-center">{{ line.fields.product_id.val.description }}</p>
-        {% if active_suggest %}
-            {% if active_suggest.type == 'in_product'%}
-                <div class="badge bg-info fs-6 col-12" style="border-radius: 15px; margin-bottom: 15px"> Scan the product</div>
-            {% elif active_suggest.type == 'in_quantity' %}
-                <div class="badge bg-info fs-6 col-12" style="border-radius: 15px; margin-bottom: 15px"> Enter the quantity</div>
-            {% elif active_suggest.type == 'in_location' %}
-                <div class="badge bg-info fs-6 col-12" style="border-radius: 15px; margin-bottom: 15px"> Scan the destination location</div>
-            {% elif active_suggest.type == 'out_location' %}
-                <div class="badge bg-info fs-6 col-12" style="border-radius: 15px; margin-bottom: 15px"> Scan the source location</div>
-            {% endif%}
-        {% endif %}
+            <div class="flex-grow">
+
+                {% if active_suggest %}
+                    {% if active_suggest.type == 'in_product' %}
+                        <span class="badge bg-success-subtle text-success badge-border">Scan the product</span>
+                    {% elif active_suggest.type == 'in_quantity' %}
+                        <span class="badge bg-warning-subtle  badge-border col-12 fs-6" style="border-radius: 15px">Enter the quantity</span>
+
+                    {% elif active_suggest.type == 'in_location' %}
+                        <div class="badge badge bg-primary-subtle fs-6 col-12"
+                             style="border-radius: 15px; margin-bottom: 15px; min-height: 35px"> Scan the destination
+                            location
+                        </div>
+                    {% elif active_suggest.type == 'out_location' %}
+                        <div class="badge badge bg-primary-subtle fs-6 col-12"
+                             style="border-radius: 15px; margin-bottom: 15px; min-height: 35px"> Scan the source
+                            location
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
             <div class="avatar-sm mx-auto">
                 <div class="row">
                     {% for suggest in line.fields.suggest_list_rel.val|sort(attribute='priority') %}
@@ -39,6 +48,71 @@
             </div>
         </div>
     </div>
+    <style>
+        .input-step {
+            border: 1px solid var(--vz-input-border-custom);
+            display: -webkit-inline-box;
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+            overflow: visible;
+            height: 60px;
+            border-radius: var(--vz-border-radius);
+            background: var(--vz-input-bg-custom);
+            padding: 2px;
+        }
+    </style>
+    <div class="sticky-lg-bottom fixed-bottom container">
+        <div class="card">
+            {% if active_suggest %}
+                <div class="row">
+                <div class="col-2">
+                </div>
+                    <div class="col-6">
+                        {% if active_suggest.type == 'in_product' %}
+                            <i class="ri-qr-code-fill"></i>
+                        {% elif active_suggest.type  == 'in_quantity' %}
+                            <div class="input-step step-warning col-12 form-control text-center">
+                                <button type="button" class="minus" style="width: 50px; border-radius: 15px;margin-top: 8px;height: 40px">–</button>
+                                <input type="number" class="product-quantity" value="4" min="0" max="100" readonly="">
+                                <button type="button" class="plus" style="width: 50px; border-radius: 15px;margin-top: 8px;height: 40px">+</button>
+                            </div>
+                        {% elif active_suggest.type  == 'in_location' %}
+                            <i class="ri-download-fill"></i>
+                        {% endif %}
+
+                    </div>
+                    <div class="col-4">
+                        <button type="button" class="btn btn-secondary waves-effect waves-light col-12" style="height: 40px;margin-top: 10px;right: 10px;">GO</button>
+                    </div>
+
+                </div>
+
+                </div>
+            {% endif %}
+    </div>
+    <script>
+        function isData() {
+            var t = document.getElementsByClassName("plus"), e = document.getElementsByClassName("minus"),
+                n = document.getElementsByClassName("product");
+            t && Array.from(t).forEach(function (t) {
+                t.addEventListener("click", function (e) {
+                    parseInt(t.previousElementSibling.value) < e.target.previousElementSibling.getAttribute("max") && (e.target.previousElementSibling.value++, n) && Array.from(n).forEach(function (t) {
+                        updateQuantity(e.target)
+                    })
+                })
+            }), e && Array.from(e).forEach(function (t) {
+                t.addEventListener("click", function (e) {
+                    parseInt(t.nextElementSibling.value) > e.target.nextElementSibling.getAttribute("min") && (e.target.nextElementSibling.value--, n) && Array.from(n).forEach(function (t) {
+                        updateQuantity(e.target)
+                    })
+                })
+            })
+        }
+
+        isData();
+    </script>
 </div>
+
+
 {% endautoescape %}
 {% endblock %}

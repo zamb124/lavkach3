@@ -8867,7 +8867,7 @@ div.code-toolbar > .toolbar button:hover {
   display: -ms-inline-flexbox;
   display: inline-flex;
   overflow: visible;
-  height: 37.5px;
+  height: 60px;
   border-radius: var(--vz-border-radius);
   background: var(--vz-input-bg-custom);
   padding: 4px;

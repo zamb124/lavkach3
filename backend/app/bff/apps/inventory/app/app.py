@@ -116,8 +116,9 @@ class InventoryAPP:
         return await self.get_moves_by_order_id(message)
 
     async def search_move_by_barcode(self, message: Message):
-        adapter = self.websocket.scope['env']['move'].adapter
-        moves = await adapter.get_moves_by_barcode(barcode=message.barcode,  order_id=message.id)
+        move_adapter = self.websocket.scope['env']['move'].adapter
+        suggest_adapter = self.websocket.scope['env']['move'].adapter
+        moves = await move_adapter.get_moves_by_barcode(barcode=message.barcode,  order_id=message.id)
         cls = await ClassView(
             self.websocket, 'move',
             key=self.key,
@@ -138,7 +139,7 @@ class InventoryAPP:
                 environment=environment,
                 template_name=f'inventory/app/move_card.html',
                 block_name='as_card_processing',
-                key=line.key,
+                key=self.key,
                 title=line.display_title,
                 ui_key=line.ui_key,
                 line=line,
