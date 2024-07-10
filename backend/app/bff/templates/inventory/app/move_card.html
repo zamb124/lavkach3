@@ -14,16 +14,13 @@
             <div class="row">
                 <div class="col-10">
                     {% for suggest in line.fields.suggest_list_rel.val|sort(attribute='priority') %}
-                        <div class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %} fs-17 rounded text-nowrap">
+                        <div class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %} fs-14 rounded text-nowrap">
                             {% if suggest.type == 'in_product' %}
-                                <i class="ri-qr-code-fill"><span
-                                        class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %}"> {{ line.fields.product_id.val.title}}</span></i>
+                                <i class="ri-qr-code-fill"> {{ line.fields.product_id.val.title}}</i>
                             {% elif suggest.type == 'in_quantity' %}
-                                <i class="ri-numbers-line"><span
-                                        class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %}"> {{ line.fields.quantity.val}}</span></i>
+                                <i class="ri-numbers-line"> {{ line.fields.quantity.val}}</i>
                             {% elif suggest.type == 'in_location' %}
-                                <i class="ri-download-fill"><span
-                                        class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %} "> {{ line.fields.location_dest_id.val.title}}</span></i>
+                                <i class="ri-download-fill"> {{ line.fields.location_dest_id.val.title}}</i>
                             {% endif %}
                         </div>
                     {% endfor %}
