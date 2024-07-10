@@ -16,11 +16,11 @@
                     {% for suggest in line.fields.suggest_list_rel.val|sort(attribute='priority') %}
                         <div class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %} fs-14 rounded text-nowrap">
                             {% if suggest.type == 'in_product' %}
-                                <i class="ri-qr-code-fill"> {{ line.fields.product_id.val.title}}</i>
+                                <i class="ri-qr-code-fill"> </i>{{ line.fields.product_id.val.title}}
                             {% elif suggest.type == 'in_quantity' %}
-                                <i class="ri-numbers-line"> {{ line.fields.quantity.val}}</i>
+                                <i class="ri-numbers-line"> </i>{{ line.fields.quantity.val}}
                             {% elif suggest.type == 'in_location' %}
-                                <i class="ri-download-fill"> {{ line.fields.location_dest_id.val.title}}</i>
+                                <i class="ri-download-fill"> </i>{{ line.fields.location_dest_id.val.title}}
                             {% endif %}
                         </div>
                     {% endfor %}
