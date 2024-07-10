@@ -9,25 +9,26 @@
             <h4 class="card-title mb-2 text-center">{{ line.fields.product_id.val.title }}</h4>
             <p class="card-text text-muted text-center">{{ line.fields.product_id.val.description }}</p>
             <div class="flex-grow">
-
-
             </div>
-            <div class="avatar-sm mx-auto">
-                <div class="row">
+            <div class="card">
+            <div class="row">
+                <div class="col-10">
                     {% for suggest in line.fields.suggest_list_rel.val|sort(attribute='priority') %}
-                        <div class="col-3">
-                            <div class="avatar-title bg--subtle text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %} fs-17 rounded">
-                                {% if suggest.type == 'in_product' %}
-                                    <i class="ri-qr-code-fill"></i>
-                                {% elif suggest.type == 'in_quantity' %}
-                                    <i class="las la-sort-numeric-down"></i>
-                                {% elif suggest.type == 'in_location' %}
-                                    <i class="ri-download-fill"></i>
-                                {% endif %}
-                            </div>
+                        <div class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %} fs-17 rounded text-nowrap">
+                            {% if suggest.type == 'in_product' %}
+                                <i class="ri-qr-code-fill"><span
+                                        class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %}"> {{ line.fields.product_id.val.title}}</span></i>
+                            {% elif suggest.type == 'in_quantity' %}
+                                <i class="ri-numbers-line"><span
+                                        class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %}"> {{ line.fields.quantity.val}}</span></i>
+                            {% elif suggest.type == 'in_location' %}
+                                <i class="ri-download-fill"><span
+                                        class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %} "> {{ line.fields.location_dest_id.val.title}}</span></i>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>
+            </div>
             </div>
         </div>
     </div>
@@ -46,9 +47,11 @@
     </style>
     {% if active_suggest %}
         {% if active_suggest.type == 'in_product' %}
-            <span class="badge bg-success-subtle text-success badge-border" style="border-radius: 15px; min-height: 10vh;align-content: center;">Scan the product</span>
+            <span class="badge bg-success-subtle text-success badge-border"
+                  style="border-radius: 15px; min-height: 10vh;align-content: center;">Scan the product</span>
         {% elif active_suggest.type == 'in_quantity' %}
-            <span class="badge bg-warning-subtle  badge-border col-12 fs-6" style="border-radius: 15px; min-height: 10vh;align-content: center;">Enter the quantity</span>
+            <span class="badge bg-warning-subtle  badge-border col-12 fs-6"
+                  style="border-radius: 15px; min-height: 10vh;align-content: center;">Enter the quantity</span>
 
         {% elif active_suggest.type == 'in_location' %}
             <div class="badge badge bg-primary-subtle fs-6 col-12"
@@ -76,7 +79,7 @@
                                 <button type="button" class="minus"
                                         style="width: 60px; border-radius: 15px;margin-top: 8px;height: 40px">–
                                 </button>
-                                <input type="number" class="product-quantity" value="1" min="0" max="100" readonly=""
+                                <input type="number" class="product-quantity" value="1" min="0" max="100"
                                        style="width: 100px">
                                 <button type="button" class="plus"
                                         style="width: 60px; border-radius: 15px;margin-top: 8px;height: 40px">+

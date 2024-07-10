@@ -122,7 +122,7 @@ class InventoryAPP:
         cls = await ClassView(
             self.websocket, 'move',
             key=self.key,
-            join_fields=['product_id'],
+            join_fields=['product_id', 'location_dest_id','location_src_id'],
             force_init=False
         )
         await cls.lines.fill_lines(data=moves)
