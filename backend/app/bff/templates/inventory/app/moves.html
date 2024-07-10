@@ -6,7 +6,7 @@
         {% include "inventory/app/move.html" %}
     {% endfor %}
     <div class="sticky-lg-bottom fixed-bottom">
-        <div class="card ">
+        <div class="card "style="background-color: var(--vz-border-color)">
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">
@@ -36,7 +36,7 @@
                             "type": "action",
                             "id": "{{ order.id }}"
                         }'
-                                    type="button">Finish order
+                                    type="button" style="height: 60px;right: 10px;">FINISH ORDER
                             </button>
                         {% endif %}
                     </div>
