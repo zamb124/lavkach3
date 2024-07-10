@@ -18,7 +18,7 @@
                             {% if suggest.type == 'in_product' %}
                                 <i class="ri-qr-code-fill"> </i>{{ line.fields.product_id.val.title}}
                             {% elif suggest.type == 'in_quantity' %}
-                                <i class="ri-numbers-line"> </i>{{ line.fields.quantity.val}}
+                                <i class="ri-numbers-line "> </i><span class="align-middle">{{ line.fields.quantity.val}}</span>
                             {% elif suggest.type == 'in_location' %}
                                 <i class="ri-download-fill"> </i>{{ line.fields.location_dest_id.val.title}}
                             {% endif %}
@@ -66,7 +66,6 @@
         <div class="card" style="background-color: var(--vz-border-color)">
             {% if active_suggest %}
                 <div class="row">
-
                     <div class="col-8">
                         {% if active_suggest.type == 'in_product' %}
                             <i class="ri-qr-code-fill"></i>
@@ -88,7 +87,8 @@
 
                     </div>
                     <div class="col-4">
-                        <button type="button" class="btn btn-soft-success waves-effect waves-light col-12"
+                        <button type="button"
+                                class="btn btn-soft-success waves-effect waves-light col-12"
                                 style="height: 60px;"><i class="ri-arrow-right-line fs-1"></i>
                         </button>
                     </div>
