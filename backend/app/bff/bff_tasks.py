@@ -1,17 +1,18 @@
-from app.bff.bff_config import config
-from app.bff.tkq import broker
-
-from core.helpers.cache import Cache, CacheStrategy
-
 import logging
+
 from fastapi_restful.tasks import repeat_every
 from httpx import AsyncClient as asyncclient
+
+from app.bff.bff_config import config
+from app.bff.tkq import broker
 from core.env import Env, domains
+from core.helpers.cache import Cache, CacheStrategy
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 cursors = {}
+
 
 @broker.task
 async def remove_expired_tokens_celery():
@@ -47,6 +48,7 @@ async def remove_expired_tokens_celery():
                         logger.info(f'Service: {model.domain.name} and Model: {model.name} is cached')
                     else:
                         break
+
 
 @repeat_every(seconds=350, logger=logger)
 async def remove_expired_tokens() -> None:

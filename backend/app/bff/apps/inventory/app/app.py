@@ -1,5 +1,6 @@
 import asyncio
 import uuid
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import Annotated, Optional
 
@@ -36,9 +37,23 @@ async def get_token(websocket: WebSocket):
     return user
 
 
-users: dict = {
+users: dict[str, 'InventoryAPP'] = {
 
 }
+kill_task = None
+
+async  def kill_sessions():
+    while True:
+        to_del = []
+        for user_id, app in users.items():
+            if app.last_activity < datetime.now() - timedelta(seconds=30):
+                await app.websocket.close()
+                to_del.append(user_id)
+        for i in to_del:
+            users.pop(i, None)
+        await asyncio.sleep(30)
+
+
 
 
 def _get_key() -> str:
@@ -74,6 +89,7 @@ class InventoryAPP:
     websocket: WebSocket
     permissions: dict = {}
     current_page: str
+    last_activity: datetime = datetime.now()
     pages: dict = {
         'order_type': 'get_orders_by_order_type',
         'order': 'get_moves_by_order_id',
@@ -93,6 +109,11 @@ class InventoryAPP:
             'as_card': 'inventory/app/order.html'
         }
     }
+    def __aexit__(self, exc_type, exc_val, exc_tb):
+        a=1
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        a=1
 
     async def search_order_by_barcode(self, message: Message):
         cls = await ClassView(
@@ -173,6 +194,7 @@ class InventoryAPP:
 
     async def dispatch_message(self, message: dict | Message, is_back: bool = False):
         """Маршрутизирует сообщение """
+        self.last_activity = datetime.now()
         if isinstance(message, dict):
             message = Message(**message)
         if message.type != MessageType.BACK and not is_back:
@@ -282,23 +304,34 @@ class InventoryAPP:
         await cls.init()
         return await self.websocket.send_text(cls.as_card_kanban)
 
+task = None
 
 @inventory_app.websocket("")
 async def connect(websocket: WebSocket, user: Annotated[CurrentUser, Depends(get_token)]):
     """
             API получение сообщений
         """
+    global kill_task
     if not user.user_id:  # type: ignore
         raise WebSocketException(code=status.HTTP_401_UNAUTHORIZED)
     try:
         app = users.get(user.user_id)  # type: ignore
         await websocket.accept()
         if not app:
-            app = InventoryAPP(websocket=websocket, user=user, key=websocket.query_params.get('key'))
+            app = InventoryAPP(
+                websocket=websocket,
+                user=user,
+                key=websocket.query_params.get('key')
+            )
         else:
             app.websocket = websocket
             app.key = websocket.query_params.get('key')
         users[user.user_id] = app
+        if kill_task is not None:
+            if kill_task.done():
+                kill_task = asyncio.create_task(kill_sessions(),  name='kill_sessions')
+        else:
+            kill_task = asyncio.create_task(kill_sessions(),  name='kill_sessions')
         await app.go_to_last()
         while True:
             message = await app.websocket.receive_json()
@@ -308,6 +341,9 @@ async def connect(websocket: WebSocket, user: Annotated[CurrentUser, Depends(get
     except WebSocketDisconnect:
         app.websocket = None
         app.key = None
+
+    except Exception as ex:
+        a=1
 
 
 async def dispatch_message(message: dict):

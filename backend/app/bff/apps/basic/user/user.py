@@ -31,8 +31,12 @@ async def company_change(request: Request, company_id: uuid.UUID):
 
 @user_router.get("/login", responses={"404": {"model": ExceptionResponseSchema}}, )
 async def login(request: Request, response: Response):
-    return templates.TemplateResponse(request, 'basic/login-full.html',
-                                      context={'next': request.query_params.get('next')})
+    try:
+        referer = request.headers.get('referer').split('next=')[-1]
+    except Exception:
+        referer = None
+    next = request.query_params.get('next') or referer
+    return templates.TemplateResponse(request, 'basic/login-full.html',context={'next': next})
 
 
 class LoginSchema(BaseModel):
