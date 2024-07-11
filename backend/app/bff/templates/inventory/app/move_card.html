@@ -44,7 +44,7 @@
     </style>
     {% if active_suggest %}
         {% if active_suggest.type == 'in_product' %}
-            <span class="badge bg-success-subtle text-success badge-border"
+            <span class="badge bg-success-subtle text-success badge-border  col-12 fs-6"
                   style="border-radius: 15px; min-height: 10vh;align-content: center;margin-bottom: 10px;">Scan the product</span>
         {% elif active_suggest.type == 'in_quantity' %}
             <span class="badge bg-warning-subtle  badge-border col-12 fs-6"
@@ -82,7 +82,7 @@
                                 </button>
                             </div>
                         {% elif active_suggest.type  == 'in_location' %}
-                            <img src="/static/images/barcode-wight.svg" width="250px" height="50px" alt="card img">
+                            <img src="/static/images/barcode-wight.svg" width="250px" height="60px" alt="card img">
                         {% endif %}
 
                     </div>

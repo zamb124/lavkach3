@@ -5,7 +5,7 @@ from fastapi.exceptions import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 from app.inventory.order.enums.exceptions_suggest_enums import SuggestErrors
-from app.inventory.order.enums.order_enum import SuggestStatus, SuggestType
+from app.inventory.order.enums.order_enum import SuggestStatus, SuggestType, MoveStatus
 from app.inventory.order.models.order_models import Suggest
 from app.inventory.order.schemas.suggest_schemas import SuggestCreateScheme, SuggestUpdateScheme, SuggestFilter
 from core.exceptions.module import ModuleException
@@ -37,6 +37,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
     async def suggest_confirm(self, suggest_ids: List[uuid.UUID], value: Any, commit: bool = True) -> Optional[ModelType]:
         suggest_entities = await self.list({'id__in': suggest_ids}, 999)
         for suggest_entity in suggest_entities:
+            is_last = True
             if suggest_entity.status == SuggestStatus.DONE:
                 raise ModuleException(
                     status_code=406,
@@ -80,6 +81,14 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                     enum=SuggestErrors.SUGGEST_TYPE_NOT_FOUND,
                 )
             suggest_entity.user_id = self.user.user_id
+        # Проверяем не последний ли это саджест, если последний окаем Мув
+            move = await self.env['move'].service.get(suggest_entity.move_id)
+
+            for suggest in move.suggest_list_rel:
+                if suggest.id != suggest_entity.id and suggest.status != SuggestStatus.DONE:
+                    is_last = False
+            if is_last:
+                move.status = MoveStatus.DONE
         if commit:
             try:
                 await self.session.commit()

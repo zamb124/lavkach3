@@ -53,13 +53,12 @@ class Line(BaseModel):
         """Сгенерировать ключ обьекта для UI"""
         return f'{self.model_name}--{self.id}'
 
-    @timed
     def _change_assign_line(self) -> None:
         """Присвоение нового обьекта Line'у"""
         for _, field in self.fields:  # type: ignore
             field.line = self
 
-    @timed
+
     def line_copy(self, _type: LineType | None = None) -> 'Line':
         """Метод копирования лайна"""
         new_line = self.copy(deep=True)
@@ -243,7 +242,7 @@ class Lines(BaseModel):
     def __deepcopy__(self, memodict={}) -> 'Lines':
         return self
 
-    @timed
+
     async def get_data(
             self,
             params: QueryParams | dict | None = None,
@@ -265,7 +264,7 @@ class Lines(BaseModel):
                 data = resp_data['data']
         await self.fill_lines(data, join_related, join_fields)
 
-    @timed
+
     async def fill_lines(
             self,
             data: list,

@@ -160,6 +160,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 order_type_entity = await order_type_service.get(parent.order_type_id)
             elif isinstance(parent, OrderType):
                 order_type_entity = parent
+            elif isinstance(parent, OrderType):
+                order_type_entity = parent
             """Проверяем, что мув может быть создан согласно праавилам в Order type """
 
 

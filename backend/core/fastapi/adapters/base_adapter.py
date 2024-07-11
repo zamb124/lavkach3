@@ -41,7 +41,6 @@ class Client(httpx.AsyncClient):
             raise HTTPException(responce.status_code, detail=responce.json().get('detail'))
         return responce
 
-    @timed
     async def get(self, url, *, params, kwargs=None):
         logger.info('Adapter %s %s', url, params)
         responce = await self.request('GET', url=url, params=params)

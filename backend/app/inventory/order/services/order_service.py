@@ -53,4 +53,19 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         await order_entity.notify('update')
         return order_entity
 
+    @permit('order_start')
+    async def order_start(self, order_id: uuid.UUID, user_id: uuid.UUID = None) -> ModelType:
+        order_entity = await self.get(order_id)
+        for move in order_entity.move_list_rel:
+            await self.env['move'].service._confirm(move)
+        if user_id:
+            order_entity.user_ids.append(user_id)
+        else:
+            order_entity.user_ids.append(self.user.user_id)
+        await self.session.commit()
+        await self.session.refresh(order_entity)
+        await order_entity.notify('update')
+        for move in order_entity.move_list_rel:
+            await self.session.refresh(move)
+        return order_entity
 

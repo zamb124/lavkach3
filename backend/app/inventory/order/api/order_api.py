@@ -50,6 +50,12 @@ async def order_update(order_id: uuid.UUID, schema: OrderUpdateScheme, service: 
 async def order_delete(order_id: uuid.UUID, service: OrderService = Depends()):
     await service.delete(id=order_id)
 
-@order_router.post("/assign_order",response_model=OrderScheme)
+
+@order_router.post("/assign_order", response_model=OrderScheme)
 async def assign_order(schema: AssignUser, service: OrderService = Depends()):
     return await service.assign_order(order_id=schema.order_id, user_id=schema.user_id)
+
+
+@order_router.post("/order_start", response_model=OrderScheme)
+async def order_start(schema: AssignUser, service: OrderService = Depends()):
+    return await service.order_start(order_id=schema.order_id, user_id=schema.user_id)
