@@ -138,7 +138,7 @@ class InventoryAPP:
                 active_suggest = suggest
                 break
         if active_suggest:
-            message.id = active_suggest['id']
+            message.id = active_suggest['id']#
             message.value = message.barcode
             await self.action_suggest_done(message)
     async def action_suggest_done(self, message: Message| dict):
