@@ -46,7 +46,7 @@ async  def kill_sessions():
     while True:
         to_del = []
         for user_id, app in users.items():
-            if app.last_activity < datetime.now() - timedelta(seconds=30):
+            if app.last_activity < datetime.now() - timedelta(seconds=1000):
                 await app.websocket.close()
                 to_del.append(user_id)
         for i in to_del:
@@ -338,12 +338,11 @@ async def connect(websocket: WebSocket, user: Annotated[CurrentUser, Depends(get
             await app.dispatch_message(message)
 
 
-    except WebSocketDisconnect:
-        app.websocket = None
-        app.key = None
+    except WebSocketDisconnect as ex:
+        raise WebSocketDisconnect
 
     except Exception as ex:
-        a=1
+        raise WebSocketDisconnect
 
 
 async def dispatch_message(message: dict):
