@@ -47,7 +47,9 @@ class InventoryAdapter(BaseAdapter):
         return responce.json()
 
     @action(model='suggest',schema=SuggestConfirmScheme, multiple=True, permits=[])
-    async def action_suggest_confirm(self, schema: SuggestConfirmScheme):
+    async def action_suggest_confirm(self, schema: SuggestConfirmScheme | dict):
+        if isinstance(schema, dict):
+            schema = SuggestConfirmScheme(**schema)
         path = f'/api/inventory/suggest/confirm'
         responce = await self.client.post(self.host + path, json=schema.model_dump_json(), params={})
         return responce.json()

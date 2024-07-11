@@ -76,6 +76,7 @@ class Message(BaseModel):
     id: Optional[UUID4] = None
     barcode: Optional[str] = None
     mode: Optional[str] = None
+    value: Optional[str] = None
 
     class Config:
         extra = 'allow'
@@ -98,22 +99,20 @@ class InventoryAPP:
     scan_methods: dict = {
         None: 'common_scan_method',
         'order_type': 'search_order_by_barcode',
-        'order': 'search_move_by_barcode'
+        'order': 'search_move_by_barcode',
+        'move': 'suggest_scan_method'
     }
     actions: dict = {
         'order_start': 'action_order_start',
         'order_finish': 'action_order_finish',
+        'suggest_done': 'action_suggest_done'
     }
     model_templates: dict = {
         'order': {
             'as_card': 'inventory/app/order.html'
         }
     }
-    def __aexit__(self, exc_type, exc_val, exc_tb):
-        a=1
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        a=1
 
     async def search_order_by_barcode(self, message: Message):
         cls = await ClassView(
@@ -130,23 +129,46 @@ class InventoryAPP:
             lines=cls.lines.lines
         )
         return await self.websocket.send_text(template)
+    async def suggest_scan_method(self, message: Message):
+        adapter = self.websocket.scope['env']['move'].adapter
+        move = await adapter.get(message.id)
+        active_suggest = None
+        for suggest in sorted(move['suggest_list_rel'], key=lambda x: x['priority']):
+            if suggest['status'] != 'done':
+                active_suggest = suggest
+                break
+        if active_suggest:
+            message.id = active_suggest['id']
+            message.value = message.barcode
+            await self.action_suggest_done(message)
+    async def action_suggest_done(self, message: Message| dict):
+        adapter = self.websocket.scope['env']['suggest'].adapter
+        res = await adapter.action_suggest_confirm({
+            'ids': [message.id],
+            'value': message.value,
+        })
+        return self.get_move_card(res['move_id'])
 
     async def action_order_start(self, message: Message):
         adapter = self.websocket.scope['env']['order'].adapter
         order = await adapter.assign_order(order_id=message.id, user_id=self.user.user_id)
         return await self.get_moves_by_order_id(message)
 
-    async def search_move_by_barcode(self, message: Message):
-        move_adapter = self.websocket.scope['env']['move'].adapter
-        suggest_adapter = self.websocket.scope['env']['move'].adapter
-        moves = await move_adapter.get_moves_by_barcode(barcode=message.barcode,  order_id=message.id)
+    async def get_move_card(self, move: dict | UUID4 | str):
+        params = None
+        if isinstance(move, uuid.UUID) or isinstance(move, str):
+            params = {'id__in': [move]}
+            data = None
+        else:
+            data = [move]
         cls = await ClassView(
             self.websocket, 'move',
             key=self.key,
-            join_fields=['product_id', 'location_dest_id','location_src_id'],
+            params=params,
+            join_fields=['product_id', 'location_dest_id', 'location_src_id'],
             force_init=False
         )
-        await cls.lines.fill_lines(data=moves)
+        await cls.init(data=data)
         if len(cls.lines.lines) > 1:
             return await self.websocket.send_text(cls.as_card_kanban)
         else:
@@ -167,6 +189,10 @@ class InventoryAPP:
                 active_suggest=active_suggest,
             )
             return await self.websocket.send_text(template)
+    async def search_move_by_barcode(self, message: Message):
+        move_adapter = self.websocket.scope['env']['move'].adapter
+        moves = await move_adapter.get_moves_by_barcode(barcode=message.barcode,  order_id=message.id)
+        return await self.get_move_card(moves[0])
     def __init__(self, websocket: WebSocket, user: CurrentUser, key: str):
         self.key = key
         self.websocket = websocket

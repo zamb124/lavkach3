@@ -52,9 +52,9 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                         message=str(e)
                     )
                 val_s_cleaned = float(suggest_entity.value)
-                if val_in_cleaned == val_s_cleaned:
-                    suggest_entity.result_value = value
-                    suggest_entity.status = SuggestStatus.DONE
+                #TODO: Здесь нужно вставить проверки на overdelivery, ZERO CONDITION и т.д.
+                suggest_entity.result_value = str(val_in_cleaned) # Перекладываем в str тк поле универсальное str
+                suggest_entity.status = SuggestStatus.DONE
             elif suggest_entity.type == SuggestType.IN_PRODUCT:
                 product_obj = await self.env['product'].adapter.product_by_barcode(value)
                 if product_obj:
@@ -71,6 +71,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                     )
                 location_entity = await self.env['location'].service.list(_filter={'id__in': [val_in_cleaned]})
                 if location_entity:
+                    #TODO: Здесь нужно вставить проверки на проверку подходящего места назначения
                     suggest_entity.result_value = value
                     suggest_entity.status = SuggestStatus.DONE
             else:

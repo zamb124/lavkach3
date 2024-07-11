@@ -227,27 +227,27 @@
 </div>
 <!-- Begin page -->
 <div id="layout-wrapper">
-{% if not is_app %}
-    <div hx-get="/bff/topbar" hx-trigger="load"></div>
+    {% if not is_app %}
+        <div hx-get="/bff/topbar" hx-trigger="load"></div>
 
-    <div hx-get="/bff/sidebar" hx-trigger="load"></div>
-{% endif %}
-<div id="errors"></div>
+        <div hx-get="/bff/sidebar" hx-trigger="load"></div>
+    {% endif %}
+    <div id="errors"></div>
     <div id="htmx_content">
         {% block content %}
             <!--<div hx-get="/" hx-trigger="load"></div>-->
         {% endblock %}
     </div>
-{% if not is_app %}
-    <div hx-get="/bff/footer" hx-trigger="load">
-        {% block footer %}
+    {% if not is_app %}
+        <div hx-get="/bff/footer" hx-trigger="load">
+            {% block footer %}
 
-        {% endblock footer %}
+            {% endblock footer %}
 
 
-        <div id="trash"></div>
-    </div>
-{% endif %}
+            <div id="trash"></div>
+        </div>
+    {% endif %}
 
     {% block extra_content %}
     {% endblock extra_content %}
@@ -430,7 +430,7 @@
                 } else if (evt.detail.xhr.status === 401 && !window.location.pathname.includes('login')) {
                     // Запрещено
 
-                    window.history.pushState('Login', 'Login', '/basic/user/login' + "?next="+window.location.pathname);
+                    window.history.pushState('Login', 'Login', '/basic/user/login' + "?next=" + window.location.pathname);
                     htmx.ajax('GET', '/basic/user/login', {
                         target: '#htmx_content', headers: {
                             'HX-Replace-Url': 'true'
@@ -574,30 +574,42 @@
     }, 2000)
 </script>
 <script>
-function barcodeScanEvent(e){
-    try  {
-        var app = document.getElementsByClassName('app')
-        var app = app[0]
-    } catch  {
-        console.log('app not defined')
-    }
-    var ui_key = app.attributes.ui_key.nodeValue
-    var model = ui_key.split('--')[0]
-    var id = ui_key.split('--')[1]
-    try {
-        var scan_form  = document.getElementById('scan-form')
-    } catch   {
-        console.log('barcode_input not defined')
-    }
+    function barcodeScanEvent(e) {
+        try {
+            if (barcodes.includes(e)) {
 
-    var scan_form_id = document.getElementById('scan-form-id')
-    var scan_form_model = document.getElementById('scan-form-model')
-    var scan_form_barcode = document.getElementById('scan-form-barcode')
-    scan_form_model.value = model
-    scan_form_id.value  = id
-    scan_form_barcode.value  = e
-    htmx.trigger(scan_form, 'scan')
-}
+                var coountInput = document.getElementsByClassName('product-quantity')[0]
+                var units = coountInput.value.replace(/\d/g, '');
+                coountInput.value = parseInt(coountInput.value) + 1 + units;
+                return false
+            }
+        } catch {
+            console.log('product-quantity not defined')
+        }
+        try {
+            var app = document.getElementsByClassName('app')
+            var app = app[0]
+        } catch {
+            console.log('app not defined')
+        }
+        var ui_key = app.attributes.ui_key.nodeValue
+        var model = ui_key.split('--')[0]
+        var id = ui_key.split('--')[1]
+        try {
+            var scan_form = document.getElementById('scan-form')
+        } catch {
+            console.log('barcode_input not defined')
+        }
+
+        var scan_form_id = document.getElementById('scan-form-id')
+        var scan_form_model = document.getElementById('scan-form-model')
+        var scan_form_barcode = document.getElementById('scan-form-barcode')
+        debugger
+        scan_form_model.value = model
+        scan_form_id.value = id
+        scan_form_barcode.value = e
+        htmx.trigger(scan_form, 'scan')
+    }
 </script>
 
 

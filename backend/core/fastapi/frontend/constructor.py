@@ -174,7 +174,7 @@ class ClassView(AsyncObj):
         if force_init:
             await self.init()
 
-    async def init(self, params: dict | None = None, join_related: bool = False) -> None:
+    async def init(self, params: dict | None = None, join_related: bool = False, data: list = None,) -> None:
         """Майнинг данных по params"""
 
         await self.lines.get_data(
@@ -182,6 +182,7 @@ class ClassView(AsyncObj):
             model=self.model,
             schema=self.model.schemas.get,
             params=params or self.params,
+            data=data,
             join_related=join_related or self.join_related,
             join_fields=self.join_fields,
         )
