@@ -257,8 +257,8 @@ class InventoryAPP:
         self.last_activity = datetime.now()
         if isinstance(message, dict):
             message = Message(**message)
-        if message.type != MessageType.BACK and not is_back:
-            self.history.append(message)
+        # if message.type != MessageType.BACK and not is_back:
+        #     self.history.append(message)
         if message.type == MessageType.BACK:
             await self.go_to_last()
         elif message.type == MessageType.BARCODE:
@@ -290,6 +290,9 @@ class InventoryAPP:
             )
             return await self.websocket.send_text(template)
         else:
+            if message.type != MessageType.BACK and not is_back:
+                 self.history.append(message)
+
             next_page = self.pages.get(message.model)
             await getattr(self, next_page)(message)
 
