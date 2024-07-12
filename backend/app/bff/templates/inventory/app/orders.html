@@ -2,7 +2,7 @@
 {% autoescape false %}
 <h5 id="app_title" style="display: block;">{{ title }}</h5>
 <div class="app" id="{{ key }}" ui_key="{{ ui_key }}">
-    {% for line in lines %}
+    {% for order in orders %}
         {% include "inventory/app/order.html"%}
     {% endfor %}
 

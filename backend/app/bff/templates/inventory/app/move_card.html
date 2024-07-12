@@ -1,26 +1,26 @@
 {% block as_card_processing %}
 {% autoescape false %}
-<h5 id="app_title" style="display: block;">{{ line.display_title }}</h5>
-<div class="app" id="{{ key }}" ui_key="{{ line.ui_key }}">
-    <div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}" lsn="{{ line.lsn }}">
-        <img class="card-img-top img-fluid" style="height: 200px" src="{{ line.fields.product_id.val.image_url }}"
+<h5 id="app_title" style="display: block;">{{ move.title }}</h5>
+<div class="app" id="{{ key }}" ui_key="move--{{ move.id }}">
+    <div class="card" id="{{ move.id }}" ui_key="move--{{ move.id }}" lsn="{{ move.lsn }}">
+        <img class="card-img-top img-fluid" style="height: 200px" src="{{ move.product.image_url }}"
              alt="Card image cap">
         <div class="card-body text-muted">
-            <h4 class="card-title mb-2 text-center">{{ line.fields.product_id.val.title }}</h4>
-            <p class="card-text text-muted text-center">{{ line.fields.product_id.val.description }}</p>
+            <h4 class="card-title mb-2 text-center">{{ move.product.title }}</h4>
+            <p class="card-text text-muted text-center">{{ move.product.description }}</p>
             <div class="flex-grow">
             </div>
             <div class="card">
             <div class="row">
                 <div class="col-10">
-                    {% for suggest in line.fields.suggest_list_rel.val|sort(attribute='priority') %}
+                    {% for suggest in move.suggest_list_rel|sort(attribute='priority') %}
                         <div class="text-{% if suggest.status == 'done' %}success{% else %}warning{% endif %} fs-14 rounded text-nowrap">
                             {% if suggest.type == 'in_product' %}
-                                <i class="ri-qr-code-fill"> </i>{{ line.fields.product_id.val.title}}
+                                <i class="ri-qr-code-fill"> </i>{{ move.product.title }}
                             {% elif suggest.type == 'in_quantity' %}
-                                <i class="ri-numbers-line "> </i><span class="align-middle">{{ line.fields.quantity.val}}</span>
+                                <i class="ri-numbers-line "> </i><span class="align-middle">{{ move.quantity}}</span>
                             {% elif suggest.type == 'in_location' %}
-                                <i class="ri-download-fill"> </i>{{ line.fields.location_dest_id.val.title}}
+                                <i class="ri-download-fill"> </i>{{ move.location_dest.title}}
                             {% endif %}
                         </div>
                     {% endfor %}
@@ -97,7 +97,7 @@
                                     "model": "suggest",
                                     "mode": "suggest_done",
                                     "id": "{{ active_suggest.id }}",
-                                    "key": "{{ line.key }}"
+                                    "key": "{{ move.key }}"
 
                                 }'
                                 style="height: 60px;"><i class="ri-arrow-right-line fs-1"></i>
@@ -112,7 +112,7 @@
     <script>
         {% if active_suggest %}
             var barcodes = [];
-            {% for barcode in line.fields.product_id.val.barcode_list %}
+            {% for barcode in move.product.barcode_list %}
                 barcodes.push("{{ barcode }}")
             {% endfor %}
         {% endif %}
@@ -137,7 +137,5 @@
         isData();
     </script>
 </div>
-
-
 {% endautoescape %}
 {% endblock %}

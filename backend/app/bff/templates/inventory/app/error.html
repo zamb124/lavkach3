@@ -1,0 +1,12 @@
+{% block error %}
+    <div id="error" class="error">
+        <script>
+            var myToast = Toastify({
+                text: "{{ error }}",
+                duration: 3000,
+                backgroundColor: "red",
+            })
+            myToast.showToast();
+        </script>
+    </div>
+{% endblock %}

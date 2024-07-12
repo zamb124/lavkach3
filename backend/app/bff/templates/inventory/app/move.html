@@ -1,26 +1,26 @@
 {% block as_card %}
 {% autoescape false %}
 
-<div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}" lsn="{{ line.lsn }}"
+<div class="card" id="{{ move.id }}" ui_key="move--{{ move.id }}" lsn="{{ move.lsn }}"
      hx-trigger="backend_update"
      hx-disinherit="*"
      ws-send
      hx-vals='{
-                "model": "{{ line.model_name }}",
+                "model": "move",
                 "mode": "as_card",
-                "key": "{{ line.class_key }}",
+                "key": "{{ key }}",
                 "type": "update",
-                "id": "{{ line.id }}"
+                "id": "{{ move.id }}"
                 }'
 >
     <div class="row g-0">
         <div class="col-4">
-            <img class="rounded-start img-fluid h-100 object-fit-cover" src="{{ line.fields.product_id.val.image_url }}"
+            <img class="rounded-start img-fluid h-100 object-fit-cover" src="{{ move.product.image_url }}"
                  alt="Card image">
         </div>
         <div class="col-8">
             <div class="card-header">
-                <h5 class="card-title mb-0">{{ line.fields.product_id.val.title }}</h5>
+                <h5 class="card-title mb-0">{{ move.product.title }}</h5>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -28,7 +28,7 @@
                         Qyantity:
                     </div>
                     <div class="col-6">
-                        {{ line.fields.quantity.val }}
+                        {{ move.quantity }}
                     </div>
                 </div>
             </div>

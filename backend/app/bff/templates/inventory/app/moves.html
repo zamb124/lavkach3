@@ -1,8 +1,8 @@
 {% block as_list %}
 {% autoescape false %}
-<h5 id="app_title" style="display: block;">{{ order.display_title }}</h5>
-<div class="app" id="{{ key }}" ui_key="{{ order.ui_key }}">
-    {% for line in moves %}
+<h5 id="app_title" style="display: block;">{{ title }}</h5>
+<div class="app" id="{{ key }}" ui_key="order--{{ order.id }}">
+    {% for move in moves %}
         {% include "inventory/app/move.html" %}
     {% endfor %}
     <div class="sticky-lg-bottom fixed-bottom">
@@ -10,35 +10,35 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">
-                        {% if not app.user.user_id|string in order.fields.user_ids.val %}
+                    {% if order.status == "confirmed" %}
                             <button
                                     class="btn btn-secondary content col-12"
                                     ws-send
                                     name="start_order"
                                     hx-vals='{
-                            "model": "{{ order.model_name }}",
+                            "model": "order",
                             "mode": "order_start",
-                            "key": "{{ order.class_key }}",
+                            "key": "{{ key }}",
                             "type": "action",
                             "id": "{{ order.id }}"
                         }'
-                                    type="button">Start order
+                            style="height: 60px;right: 10px;" type="button">Start order
                             </button>
-                        {% else %}
+                    {% elif order.status ==  "assigned" %}
                             <button
                                     class="btn btn-soft-success content col-12"
                                     ws-send
                                     name="start_order"
                                     hx-vals='{
-                            "model": "{{ order.model_name }}",
+                            "model": "order",
                             "mode": "order_finish",
-                            "key": "{{ order.class_key }}",
+                            "key": "{{ key }}",
                             "type": "action",
                             "id": "{{ order.id }}"
                         }'
                                     type="button" style="height: 60px;right: 10px;">FINISH ORDER
                             </button>
-                        {% endif %}
+                    {% endif %}
                     </div>
                 </div>
             </div>

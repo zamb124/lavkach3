@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Annotated, Optional
-
+import traceback
 from fastapi import APIRouter, Depends, WebSocketException
 from fastapi import Request
 from fastapi.responses import HTMLResponse
@@ -15,6 +15,7 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from app.bff.template_spec import environment
 from app.bff.template_spec import templates
+from core.env import Env
 from core.fastapi.frontend.constructor import ClassView
 from core.fastapi.middlewares import AuthBackend
 from core.fastapi.schemas import CurrentUser
@@ -42,7 +43,8 @@ users: dict[str, 'InventoryAPP'] = {
 }
 kill_task = None
 
-async  def kill_sessions():
+
+async def kill_sessions():
     while True:
         to_del = []
         for user_id, app in users.items():
@@ -52,8 +54,6 @@ async  def kill_sessions():
         for i in to_del:
             users.pop(i, None)
         await asyncio.sleep(30)
-
-
 
 
 def _get_key() -> str:
@@ -88,6 +88,7 @@ class InventoryAPP:
     store_id = str
     history: list = []
     websocket: WebSocket
+    env: Env
     permissions: dict = {}
     current_page: str
     last_activity: datetime = datetime.now()
@@ -113,22 +114,29 @@ class InventoryAPP:
         }
     }
 
-
-    async def search_order_by_barcode(self, message: Message):
-        cls = await ClassView(
-            self.websocket, 'order',
-            key=self.key,
-            params={'search': message.barcode},
-            force_init=True
+    async def send_error(self, msg: str):
+        template = render_block(
+            environment=environment,
+            template_name=f'inventory/app/error.html',
+            block_name='error',
+            error=msg
         )
-        template = self._render(
+        await self.websocket.send_text(template)
+    async def search_order_by_barcode(self, message: Message):
+        order_adapter = self.env['order'].adapter
+        order_list = await order_adapter.list(params={'search': message.barcode})
+        orders = order_list['data']
+        template = render_block(
+            environment=environment,
             block_name='as_list',
             title='Search Orders',
-            template='orders',
+            key=self.key,
+            template_name='/inventory/app/orders.html',
             ui_key=f'order_type--{message.id}',
-            lines=cls.lines.lines
+            lines=orders
         )
         return await self.websocket.send_text(template)
+
     async def suggest_scan_method(self, message: Message):
         adapter = self.websocket.scope['env']['move'].adapter
         move = await adapter.get(message.id)
@@ -140,87 +148,89 @@ class InventoryAPP:
         if active_suggest:
             message.id = active_suggest['id']#
             message.value = message.barcode
-            await self.action_suggest_done(message)
-    async def action_suggest_done(self, message: Message | dict):
+            return await self.action_suggest_done(message, barcode=message.barcode)
+        else:
+            return await self.send_error(f'No active suggestion')
+    async def action_suggest_done(self, message: Message | dict, barcode: str = None):
         adapter = self.websocket.scope['env']['suggest'].adapter
-        res = await adapter.action_suggest_confirm({
+        res: list = await adapter.action_suggest_confirm({
             'ids': [message.id],
             'value': message.value,
         })
-        return self.get_move_card(res['move_id'])
+        move = res[0]['move_id']
+        if res[0]['status'] == 'done':
+            move = await self.env['move'].adapter.get(res[0]['move_id'])
+            suggests_not_done = [i for i in move['suggest_list_rel'] if i['status'] != 'done']
+            if not suggests_not_done:
+                return await self.get_moves_by_order_id(order_id=move['order_id'])
+        return await self.get_move_card(move=move, barcode=barcode)
 
     async def action_order_start(self, message: Message):
         adapter = self.websocket.scope['env']['order'].adapter
         order = await adapter.order_start(order_id=message.id, user_id=self.user.user_id)
         order = await adapter.assign_order(order_id=message.id, user_id=self.user.user_id)
-        return await self.get_moves_by_order_id(message)
+        return await self.get_moves_by_order_id(order_id=message.id)
 
     async def action_order_finish(self, message: Message):
         adapter = self.websocket.scope['env']['order'].adapter
         order = await adapter.assign_order(order_id=message.id, user_id=self.user.user_id)
-        return await self.get_moves_by_order_id(message)
+        return await self.get_moves_by_order_id(order)
 
     async def get_move_card(self, move: dict | UUID4 | str, barcode: str = None):
         params = None
         if isinstance(move, uuid.UUID) or isinstance(move, str):
-            params = {'id__in': [move]}
-            data = None
-        else:
-            data = [move]
-        cls = await ClassView(
-            self.websocket, 'move',
+            move = await self.env['move'].adapter.get(move)
+
+        product = await self.env['product'].adapter.get(move['product_id'])
+        move['product'] = product
+        locations = await self.env['location'].adapter.list(params={'id__in': [move['location_dest_id'], move['location_src_id']]})
+        locations_map = {i['id']: i for i in locations['data']}
+        move['location_dest'] = locations_map.get(move['location_dest_id'])
+        move['location_src'] = locations_map.get(move['location_src_id'])
+        active_suggest = None
+        if barcode:
+            # Если был сосканирован баркод
+            in_product_suggest = [
+                i for i in
+                move['suggest_list_rel']
+                if i['type'] == 'in_product' and i['status'] != 'done']
+            if in_product_suggest:
+                adapter = self.websocket.scope['env']['suggest'].adapter
+                res = await adapter.action_suggest_confirm({
+                    'ids': [in_product_suggest[0]['id']],
+                    'value': barcode,
+                })
+                in_product_suggest[0]['status'] = res[0]['status']
+                in_product_suggest[0]['result_value'] = res[0]['result_value']
+        for suggest in sorted(move['suggest_list_rel'], key=lambda x: x['priority']):
+            if suggest['status'] != 'done':
+                active_suggest = suggest
+                break
+        template = render_block(
+            environment=environment,
+            template_name=f'inventory/app/move_card.html',
+            block_name='as_card_processing',
             key=self.key,
-            params=params,
-            join_fields=['product_id', 'location_dest_id', 'location_src_id'],
-            force_init=False
+            move=move,
+            active_suggest=active_suggest,
         )
-        await cls.init(data=data)
-        if len(cls.lines.lines) > 1:
-            return await self.websocket.send_text(cls.as_card_kanban)
-        else:
-            line = cls.lines.lines[0]
-            active_suggest = None
-            if barcode:
-                # Если был сосканирован баркод
-                in_product_suggest = [
-                    i for i in
-                    line.fields.suggest_list_rel.val
-                    if i['type'] == 'in_product' and i['status'] != 'done']
-                if in_product_suggest:
-                    adapter = self.websocket.scope['env']['suggest'].adapter
-                    res = await adapter.action_suggest_confirm({
-                        'ids': [in_product_suggest[0]['id']],
-                        'value': barcode,
-                    })
-                    in_product_suggest[0]['status'] = res[0]['status']
-                    in_product_suggest[0]['result_value'] = res[0]['result_value']
-            for suggest in sorted(line.fields.suggest_list_rel.val, key=lambda x: x['priority']):
-                if suggest['status'] != 'done':
-                    active_suggest = suggest
-                    break
-            template = render_block(
-                environment=environment,
-                template_name=f'inventory/app/move_card.html',
-                block_name='as_card_processing',
-                key=self.key,
-                title=line.display_title,
-                ui_key=line.ui_key,
-                line=line,
-                active_suggest=active_suggest,
-            )
-            return await self.websocket.send_text(template)
+        return await self.websocket.send_text(template)
+
     async def search_move_by_barcode(self, message: Message):
         move_adapter = self.websocket.scope['env']['move'].adapter
-        moves = await move_adapter.get_moves_by_barcode(barcode=message.barcode,  order_id=message.id)
-        is_done = [i for i in moves[0]['suggest_list_rel'] if i['status'] != 'done']
-        if not is_done:
-            message.id = moves[0]['order_id']
-            return await self.get_moves_by_order_id(message)
-        return await self.get_move_card(moves[0], message.barcode)
+        moves = await move_adapter.get_moves_by_barcode(barcode=message.barcode, order_id=message.id)
+        if len(moves) > 1:
+            ... # TODO: Если 2 ?
+        elif len(moves) == 1:
+            return await self.get_move_card(moves[0], message.barcode)
+        else:
+            ...
+
     def __init__(self, websocket: WebSocket, user: CurrentUser, key: str):
         self.key = key
         self.websocket = websocket
         self.user = user
+        self.env = websocket.scope['env']
 
     def _render(self, block_name: str, title: str, template: str, ui_key: str, lines: list):
         return render_block(
@@ -282,69 +292,64 @@ class InventoryAPP:
         else:
             next_page = self.pages.get(message.model)
             await getattr(self, next_page)(message)
-        ...
 
-    async def get_orders_by_order_type(self, message: Message):
-        """Отдает список перемещений по типу"""
-        cls = await ClassView(
-            self.websocket, 'order',
-            key=self.key,
-            params={'order_type_id__in': [message.id], 'store_id__in': [self.user.store_id]},
-            vars={
-                'button_update': False,
-                'button_view': True
-            },
-            force_init=True
-        )
-        template = self._render(
+    async def get_orders_by_order_type(self, order_type_id: UUID4 | str | Message):
+        if isinstance(order_type_id, Message):
+            order_type_id = order_type_id.id
+        order_adapter = self.env['order'].adapter
+        order_list = await order_adapter.list(params={
+            'order_type_id__in': [order_type_id],
+            'status__in': {'confirmed', 'assigned'}
+        })
+        orders = order_list['data']
+        template = render_block(
+            environment=environment,
             block_name='as_list',
-            title='List Orders',
-            template='orders',
-            ui_key=f'order_type--{message.id}',
-            lines=cls.lines.lines
+            title='Orders',
+            key=self.key,
+            template_name='/inventory/app/orders.html',
+            ui_key=f'order_type--{order_type_id}',
+            orders=orders
         )
         return await self.websocket.send_text(template)
 
-    async def get_moves_by_order_id(self, message: Message):
+    async def get_moves_by_order_id(self, order_id: UUID4 | dict | Message):
         """Отдает список перемещений по типу"""
-        move_cls = await ClassView(
-            self.websocket, 'move',
-            key=self.key,
-            params={'order_id__in': [message.id]},
-            join_fields=['product_id'],              # Нам нуно достать product_id ради ссылки на картинку
-            vars={
-                'button_update': False,
-                'button_view': True
-            },
-        )
-        move_cls_task = asyncio.create_task(move_cls.init())
-        order_cls = await ClassView(
-            self.websocket, 'order',
-            key=self.key,
-            params={'id__in': [message.id]},
-            vars={
-                'button_update': False,
-                'button_view': True
-            },
-            force_init=True
-        )
-        order_cls_task = asyncio.create_task(order_cls.init())
-        await asyncio.gather(move_cls_task, order_cls_task)
+        if isinstance(order_id, dict):
+            order = order_id
+            moves = order_id['move_list_rel']
+
+        elif isinstance(order_id, Message):
+            moves_list = await self.env['move'].adapter.list(params={'order_id__in': [order_id.id]})
+            order = await self.env['order'].adapter.get(order_id.id)
+            moves = moves_list['data']
+        else:
+            moves_list = await self.env['move'].adapter.list(params={'order_id__in': [order_id]})
+            order = await self.env['order'].adapter.get(order_id)
+            moves = moves_list['data']
+        products_list = await self.env['product'].adapter.list(
+            params={
+                'product_id__in': [i['product_id'] for i in moves]
+            })
+        products_map = {i['id']: i for i in products_list['data']}
+        for move in moves:
+            move['product'] = products_map.get(move['product_id'], None)
         template = render_block(
             environment=environment,
             template_name=f'inventory/app/moves.html',
             block_name='as_list',
             app=self,
             key=self.key,
-            order=order_cls.lines.lines[0],
-            moves=move_cls.lines.lines,
+            order=order,
+            moves=moves,
         )
         return await self.websocket.send_text(template)
 
     async def main_page(self, message: dict = None):
         """ Отдает главную страницу c OrderType"""
         cls = await ClassView(
-            self.websocket, 'order_type',
+            self.websocket,
+            'order_type',
             key=self.key,
             vars={
                 'button_update': False,
@@ -355,7 +360,9 @@ class InventoryAPP:
         self.history = []
         return await self.websocket.send_text(cls.as_card_kanban)
 
+
 task = None
+
 
 @inventory_app.websocket("")
 async def connect(websocket: WebSocket, user: Annotated[CurrentUser, Depends(get_token)]):
@@ -380,15 +387,25 @@ async def connect(websocket: WebSocket, user: Annotated[CurrentUser, Depends(get
         users[user.user_id] = app
         if kill_task is not None:
             if kill_task.done():
-                kill_task = asyncio.create_task(kill_sessions(),  name='kill_sessions')
+                kill_task = asyncio.create_task(kill_sessions(), name='kill_sessions')
         else:
-            kill_task = asyncio.create_task(kill_sessions(),  name='kill_sessions')
+            kill_task = asyncio.create_task(kill_sessions(), name='kill_sessions')
         await app.go_to_last()
         while True:
             message = await app.websocket.receive_json()
-            await app.dispatch_message(message)
-
-
+            try:
+                await app.dispatch_message(message)
+            except Exception as ex:
+                print(traceback.format_exc())
+                if len(app.history) > 1:
+                    app.history.pop(-1)
+                template = render_block(
+                    environment=environment,
+                    template_name=f'inventory/app/error.html',
+                    block_name='error',
+                    error=f'{ex.detail["code"]} - {ex.detail["msg"]}'
+                )
+                await app.websocket.send_text(template)
     except WebSocketDisconnect as ex:
         raise WebSocketDisconnect
 

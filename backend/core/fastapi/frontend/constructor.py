@@ -135,10 +135,7 @@ class ClassView(AsyncObj):
         self.env = request.scope['env']
         self.key = key or _get_key()
         self.exclude = exclude or []
-        if params:
-            self.params = params
-        else:
-            self.params = request.query_params
+        self.params = params or {}
         self.join_related = join_related
         self.join_fields = join_fields or []
         if sort:

@@ -1,56 +1,50 @@
 {% block as_card %}
 {% autoescape false %}
-<div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}" lsn="{{ line.lsn }}"
+<div class="card" id="{{ order.id }}" ui_key="order--{{ order.id }}" lsn="{{ order.lsn }}"
      hx-trigger="backend_update"
      hx-disinherit="*"
      ws-send
      hx-vals='{
-                "model": "{{ line.model_name }}",
+                "model": "order",
                 "mode": "as_card",
-                "key": "{{ line.class_key }}",
+                "key": "{{ key }}",
                 "type": "update",
-                "id": "{{ line.id }}"
+                "id": "{{ order.id }}"
                 }'
 >
     <div class="card-header text-center">
-        <h5 style="display: block;">{{ line.display_title }}</h5>
+        <h5 style="display: block;">{{ order.title }}</h5>
     </div>
     <div class="card-body text-muted text-center">
-        <p> {{ line.fields.model_extra.move_list_rel.val|length }} items </p>
-        <p> {{ line.display_description }}</p>
+        <p> {{ order.move_list_rel|length }} items </p>
+        <p> {{ order.description or '' }}</p>
         <div class="row">
                 <div class="col">
                     <button
                             type="button"
                             ws-send
-                            hx-include="this"
                             hx-vals='{
-                            "model": "{{ line.model_name }}",
+                            "model": "order",
                             "method": "get",
                             "type": "model",
-                            "id": "{{ line.id or "" }}",
-                            "title": "{{ line.display_title }}",
-                            "class_key": "{{ line.class_key }}",
-                            "ui_key": "{{ line.ui_key }}"
+                            "id": "{{ order.id }}",
+                            "title": "{{ order.title }}"
                         }' class="btn btn-light col-12">View
                     </button>
                 </div>
                 <div class="col">
                     <button
-                            type="button"
-                            name="{{ line.key }}"
-                            type="button"
+                            class="btn btn-secondary content col-12"
                             ws-send
-                            hx-ext="json-enc"
+                            name="start_order"
                             hx-vals='{
-                            "model": "{{ line.model_name }}",
-                            "method": "update",
-                            "id": "{{ line.id or "" }}",
-                            "key": "{{ line.key }}",
-                            "class_key": "{{ line.class_key }}",
-                            "ui_key": "{{ line.ui_key }}"
-                        }'
-                            value="{{ line.id }}" class="btn btn-soft-success waves-effect waves-light col-12">Start
+                                "model": "order",
+                                "mode": "order_start",
+                                "key": "{{ key }}",
+                                "type": "action",
+                                "id": "{{ order.id }}"
+                            }'
+                            type="button">Start order
                     </button>
                 </div>
         </div>

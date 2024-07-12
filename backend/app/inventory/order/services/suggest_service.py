@@ -52,7 +52,6 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                         enum=SuggestErrors.SUGGEST_INVALID_VALUE,
                         message=str(e)
                     )
-                val_s_cleaned = float(suggest_entity.value)
                 #TODO: Здесь нужно вставить проверки на overdelivery, ZERO CONDITION и т.д.
                 suggest_entity.result_value = str(val_in_cleaned) # Перекладываем в str тк поле универсальное str
                 suggest_entity.status = SuggestStatus.DONE
@@ -81,9 +80,8 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                     enum=SuggestErrors.SUGGEST_TYPE_NOT_FOUND,
                 )
             suggest_entity.user_id = self.user.user_id
-        # Проверяем не последний ли это саджест, если последний окаем Мув
+        # КОСТЫЛЬ: Проверяем не последний ли это саджест, если последний окаем Мув
             move = await self.env['move'].service.get(suggest_entity.move_id)
-
             for suggest in move.suggest_list_rel:
                 if suggest.id != suggest_entity.id and suggest.status != SuggestStatus.DONE:
                     is_last = False
