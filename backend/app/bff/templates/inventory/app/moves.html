@@ -1,6 +1,7 @@
 {% block as_list %}
 {% autoescape false %}
-<h5 id="app_title" style="display: block;">{{ title }}</h5>
+<h5 id="app_title" style="display: block;">{{ order.number }}</h5>
+<p class="text-muted">{{ order.order_type_rel.title }}</p>
 <div class="app" id="{{ key }}" ui_key="order--{{ order.id }}">
     {% for move in moves %}
         {% include "inventory/app/move.html" %}
