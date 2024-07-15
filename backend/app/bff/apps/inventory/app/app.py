@@ -271,22 +271,15 @@ class InventoryAPP:
 
         elif message.type == MessageType.UPDATE:
             model_tempate = self.model_templates[message.model][message.mode]
-            cls = await ClassView(
-                self.websocket, message.model,
-                key=self.key,
-                params={'id__in': message.id},
-                force_init=True
-            )
-            line = cls.lines.lines[0]
-            template = render_block(
-                environment=environment,
-                template_name=f'inventory/app/{message.model}.html',
-                block_name=message.mode,
-                key=line.key,
-                title=line.display_title,
-                ui_key=line.ui_key,
-                line=line,
-            )
+            if message.model == 'order':
+                order = await self.env['order'].adapter.get(message.id)
+                template = render_block(
+                    environment=environment,
+                    template_name=f'inventory/app/{message.model}.html',
+                    block_name=message.mode,
+                    key=self.key,
+                    order=order
+                )
             return await self.websocket.send_text(template)
         else:
             if message.type != MessageType.BACK and not is_back:
