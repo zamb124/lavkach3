@@ -1,3 +1,4 @@
+import json
 from typing import Any, Dict, Annotated
 from uuid import UUID
 
@@ -148,3 +149,11 @@ class TypePhone(PhoneNumber):
             'title': 'TypePhone',
             'example': '449534771093'
         }
+
+
+class UUIDEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, UUID):
+            # if the obj is uuid, we simply return the value of uuid
+            return obj.__str__()
+        return json.JSONEncoder.default(self, obj)

@@ -5,6 +5,7 @@ from app.inventory.inventory_config import config
 from app.inventory.order.schemas import SuggestConfirmScheme
 from core.fastapi.adapters import BaseAdapter
 from core.fastapi.adapters.action_decorator import action
+from core.types import UUIDEncoder
 
 
 class InventoryAdapter(BaseAdapter):
@@ -68,7 +69,7 @@ class InventoryAdapter(BaseAdapter):
     async def order_start(self, payload: dict, **kwargs):
         """Назначение пользователя на заказ, если не указан, то возьется из запроса"""
         if isinstance(payload, dict):
-            payload = json.dumps(payload)
+            payload = json.dumps(payload, cls=UUIDEncoder)
         path = f'/api/inventory/order/order_start'
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()

@@ -32,7 +32,7 @@ class LoginResponseSchema(BasicModel):
         orm_model = User
         service = 'app.basic.user.services.UserService'
 
-class UserBaseScheme(BaseModel):
+class UserBaseScheme(BasicModel):
     vars: Optional[dict] = {}
     email: str = Field(title="Email")
     locale: Optional[TypeLocale] = Field(default='en_US', title='Locale', table=True, form=True, model='locale')
