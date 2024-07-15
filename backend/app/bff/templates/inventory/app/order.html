@@ -20,7 +20,7 @@
         <p> {{ order.description or '' }}</p>
         <div class="row">
                 <div class="col">
-                    {% if order.status == 'assigned' %}
+
                     <button
                             type="button"
                             ws-send
@@ -30,14 +30,15 @@
                             "type": "model",
                             "id": "{{ order.id }}",
                             "title": "{{ order.title }}"
-                        }' class="btn btn-light col-12">View
+                        }' {% if not  order.status == 'assigned' %} disabled {% endif %}
+                            class="btn btn-light col-12">View
                     </button>
-                    {% endif %}
                 </div>
                 <div class="col">
-                    {% if order.status != 'assigned' %}
+
                     <button
                             class="btn btn-secondary content col-12"
+                            {% if not order.status != 'assigned' %} disabled {% endif %}
                             ws-send
                             name="start_order"
                             hx-vals='{
@@ -49,7 +50,6 @@
                             }'
                             type="button">Start order
                     </button>
-                    {% endif %}
                 </div>
         </div>
     </div>
