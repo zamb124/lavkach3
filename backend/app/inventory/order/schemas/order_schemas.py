@@ -6,7 +6,7 @@ from typing import Optional, List
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, computed_field
 from pydantic.types import UUID4
-from core.schemas.basic_schemes import BasicField as Field
+from core.schemas.basic_schemes import BasicField as Field, ActionBaseSchame
 
 from app.inventory.order.enums.order_enum import OrderStatus
 from app.inventory.order.models import Order
@@ -81,6 +81,5 @@ class OrderListSchema(GenericListSchema):
     data: Optional[List[OrderScheme]]
 
 
-class AssignUser(BasicModel):
-    order_id: UUID = Field(title='Order', model='order')
-    user_id: Optional[UUID] = None
+class AssignUser(ActionBaseSchame):
+    user_id: Optional[UUID] = Field(default=None, title='User')

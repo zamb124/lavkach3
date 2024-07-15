@@ -65,17 +65,11 @@ class InventoryAdapter(BaseAdapter):
         return responce.json()
 
     @action(model='order', multiple=False, permits=[])
-    async def order_start(self, order_id, user_id: UUID):
+    async def order_start(self, payload: dict, **kwargs):
         """Назначение пользователя на заказ, если не указан, то возьется из запроса"""
-        if isinstance(user_id, UUID):
-            user_id = user_id.__str__()
-        if isinstance(order_id, UUID):
-            order_id = order_id.__str__()
+        if isinstance(payload, dict):
+            payload = json.dumps(payload)
         path = f'/api/inventory/order/order_start'
-        payload = {
-            'order_id': order_id,
-            'user_id': user_id if user_id else None
-        }
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()
 

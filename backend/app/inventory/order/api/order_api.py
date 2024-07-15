@@ -56,6 +56,6 @@ async def assign_order(schema: AssignUser, service: OrderService = Depends()):
     return await service.assign_order(order_id=schema.order_id, user_id=schema.user_id)
 
 
-@order_router.post("/order_start", response_model=OrderScheme)
+@order_router.post("/order_start", response_model=list[OrderScheme])
 async def order_start(schema: AssignUser, service: OrderService = Depends()):
-    return await service.order_start(order_id=schema.order_id, user_id=schema.user_id)
+    return await service.order_start(ids=schema.ids, user_id=schema.user_id)

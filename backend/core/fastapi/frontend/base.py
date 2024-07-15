@@ -245,7 +245,7 @@ async def action(request: Request, schema: ActionSchema):
                 result += res
     elif schema.method == 'update':
         res = await func(payload=schema.model_dump_json())
-        return cls.send_message(res['detail'])
+        return cls.send_message(message=f'Action {schema.action} done')
     elif schema.method == 'get':
         action_schema = cls.actions[schema.action]['schema']
         return await cls.get_action(action=schema.action, ids=schema.ids, schema=action_schema)

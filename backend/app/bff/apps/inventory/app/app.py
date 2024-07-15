@@ -167,8 +167,7 @@ class InventoryAPP:
 
     async def action_order_start(self, message: Message):
         adapter = self.websocket.scope['env']['order'].adapter
-        order = await adapter.order_start(order_id=message.id, user_id=self.user.user_id)
-        order = await adapter.assign_order(order_id=message.id, user_id=self.user.user_id)
+        await adapter.order_start(payload={'ids': [message.id], 'user_id':self.user.user_id})
         return await self.get_moves_by_order_id(order_id=message.id)
 
     async def action_order_finish(self, message: Message):
