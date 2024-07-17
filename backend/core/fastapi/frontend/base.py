@@ -177,6 +177,7 @@ async def line(request: Request, schema: LineSchema):
         lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
         return lines[0].get_delete
     elif schema.method == Method.DELETE_DELETE:
+        await cls.lines.delete_lines(ids=[schema.id])
         """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
     elif schema.method == Method.SAVE:
         """Сохранение записи при измененнии"""
