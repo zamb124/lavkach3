@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from starlette.types import ASGIApp, Receive, Scope, Send
+from taskiq import SimpleRetryMiddleware
 
 from core.db.session import set_session_context, reset_session_context, session
 
@@ -20,3 +21,5 @@ class SQLAlchemyMiddleware:
         finally:
             await session.remove()
             reset_session_context(context=context)
+
+SimpleRetryMiddleware

@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import uuid
 from typing import Any, Optional, List
@@ -7,8 +8,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.inventory.order.enums.order_enum import OrderStatus
 from app.inventory.order.models.order_models import Order
 from app.inventory.order.schemas.order_schemas import OrderCreateScheme, OrderUpdateScheme, OrderFilter
+from core.helpers.broker.tkq import broker
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
+
+
+@broker.task
+async def print_foo(foo: str = None) -> None:
+    env = broker.state.data['env'].get_env()
+    adapter = env['order'].adapter
+    service = env['order'].service
+    some_order = await service.list({'lsn__gt': 0})
+    order = await adapter.get(some_order[0].id)
+    await asyncio.sleep(3)
+    print(foo)
 
 
 class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, OrderFilter]):
@@ -20,7 +33,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         return await super(OrderService, self).update(id, obj)
 
     @permit('order_list')
-    async def list(self, _filter: FilterSchemaType, size: int):
+    async def list(self, _filter: FilterSchemaType, size: int = 100):
         return await super(OrderService, self).list(_filter, size)
 
     @permit('order_create')
@@ -31,12 +44,12 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         obj.number = datetime.datetime.now(datetime.UTC).strftime('%y%m%d%H%m%S')
         obj.created_by = self.user.user_id
         obj.edited_by = self.user.user_id
+        await print_foo.kiq('sd')
         return await super(OrderService, self).create(obj)
 
     @permit('order_delete')
     async def delete(self, id: Any) -> None:
         return await super(OrderService, self).delete(id)
-
 
     @permit('order_move_counstructor')
     async def move_counstructor(self, order_id: uuid.UUID, moves: list) -> None:
@@ -74,4 +87,5 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
                 await self.session.refresh(move)
             res.append(order_entity)
         return res
+
 

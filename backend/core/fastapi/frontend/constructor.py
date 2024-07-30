@@ -106,7 +106,7 @@ class ClassView(AsyncObj):
     is_rel: bool = False                             # True, если
 
     async def __ainit__(self,
-                        request,
+                        request: Request = None,
                         model: str | Model = None,
                         params: QueryParams | dict | None = None,
                         exclude: list = [],

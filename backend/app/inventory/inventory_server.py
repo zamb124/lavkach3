@@ -1,7 +1,5 @@
-from contextlib import asynccontextmanager
 from typing import List
 
-import taskiq_fastapi
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,7 +7,6 @@ from fastapi.responses import JSONResponse
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
-from app.inventory.inventory_config import config as app_config
 from app.inventory.inventory_router import inventory_router
 from core.db_config import config
 from core.env import Env, domains
@@ -20,7 +17,6 @@ from core.fastapi.middlewares import (
     AuthBackend,
     SQLAlchemyMiddleware,
 )
-from core.helpers.broker import broker
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
 
@@ -34,10 +30,15 @@ class EnvMidlleWare:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        if scope['type'] in  ("http", "websocket"):
+        if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
-            scope['env'] = Env(domains, conn, broker)
+            scope['env'] = Env(domains, conn)
         await self.app(scope, receive, send)
+
+    @classmethod
+    async def get_env(cls, request: Request, scope: Scope) -> Env:
+        return Env(domains, HTTPConnection(scope))
+
 
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(inventory_router)
@@ -69,7 +70,6 @@ def on_auth_error(request: Request, exc: Exception):
 def make_middleware() -> List[Middleware]:
     middleware = [
         Middleware(EnvMidlleWare),
-
         Middleware(
             CORSMiddleware,
             allow_origins=["*"],
@@ -90,20 +90,9 @@ def make_middleware() -> List[Middleware]:
 def init_cache() -> None:
     Cache.init(backend=RedisBackend(), key_maker=CustomKeyMaker())
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-        Старт сервера
-    """
-    await broker.startup()
-    yield
-    """
-            Выключение сервера
-    """
-    await broker.shutdown()
+
 def create_app() -> FastAPI:
     app_ = FastAPI(
-        lifespan=lifespan,
         title="Hide",
         description="Hide API",
         version="1.0.0",
@@ -119,4 +108,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-taskiq_fastapi.init(broker, app_config.BROKER_PATH)

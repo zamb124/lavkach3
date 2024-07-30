@@ -29,7 +29,7 @@ before_fields = ['role_ids', 'company_ids', 'is_admin', 'store_id']
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+from types import FunctionType
 
 @dataclass
 class Model:
@@ -160,8 +160,9 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         if not isinstance(_filter, BaseFilter):
             if isinstance(_filter, dict):
                 _filter = self.env[self.model.__tablename__].schemas.filter(**_filter)
-        if self.model.__tablename__ not in ('company', 'user', 'bus'):
-            setattr(_filter, 'company_id__in', [self.user.company_id])
+        if not self.user.company_id is False:
+            if self.model.__tablename__ not in ('company', 'user', 'bus'):
+                setattr(_filter, 'company_id__in', [self.user.company_id])
         query_filter = _filter.filter(select(self.model)).limit(size)  # type: ignore
         if getattr(_filter, 'order_by'):
             query_filter = _filter.sort(query_filter)  # type: ignore
@@ -331,3 +332,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
     async def delete(self, id: Any) -> bool:
         res = await self._delete(id)
         return res
+
+    @classmethod
+    def init(cls, request: Request):
+        return cls(request)

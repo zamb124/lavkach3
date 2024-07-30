@@ -17,8 +17,9 @@ class AuthBackend(AuthenticationBackend):
     async def authenticate(self, conn: HTTPConnection) -> Tuple[bool, Optional[CurrentUser]]:
         current_user = CurrentUser()
         authorization: str = conn.headers.get("Authorization") or conn.cookies.get('token')
-        if authorization == app_config.INTERCO_TOKEN:
-            current_user = CurrentUser(id=uuid4(), is_admin=True)
+        if app_config.INTERCO_TOKEN in authorization:
+            current_user = CurrentUser(user_id=uuid4(), is_admin=True)
+            return True, current_user
         if not authorization:
             return False, current_user
         if not authorization:

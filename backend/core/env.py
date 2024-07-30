@@ -10,6 +10,7 @@ from taskiq import AsyncBroker
 from app.basic import __domain__ as basic_domain
 from app.inventory import __domain__ as inventory_domain
 from app.bus import __domain__ as bus_domain
+from core.db.session import set_session_context
 from core.db_config import config
 from core.fastapi.adapters.action_decorator import actions
 from httpx import AsyncClient as asyncclient, request
@@ -65,7 +66,7 @@ class Model:  # type: ignore
     @property
     def adapter(self):
         return self._adapter(
-            self.domain._env.request,
+            conn=self.domain._env.request,
             domain=self.domain,
             model=self,
             env=self.domain._env
@@ -158,11 +159,13 @@ class Env:
         return env
 
     @classmethod
-    async def get_env(self):
+    def get_env(cls):
         """
             Создает env путем ,без авторизации суперюзера
         """
-        client = asyncclient()
+        session_id = str(uuid.uuid4())
+        set_session_context(session_id=session_id) # Делаем сессию для env, если она без реквеста
+        client = asyncclient(headers={'Authorization': f'Bearer {config.INTERCO_TOKEN}'})
         env = Env(domains, client)
         user = CurrentUser(id=uuid.uuid4(), is_admin=True)
         setattr(client, 'user', user)

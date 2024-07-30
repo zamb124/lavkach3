@@ -16,12 +16,12 @@ cursors = {}
 
 @broker.task
 async def send_message(message):
-    env = await Env.get_env()
+    env = Env.get_env()
     bs = env['bus'].service
     #filter = BusFilter(status__in=[BusStatus.NEW, BusStatus.ERROR])
     #messages = await bs.list(_filter=filter)
     active_connections = ws_manager.active_connections
-    conn_to_delete  = []
+    conn_to_delete = []
     for _, connection in active_connections.items():
         if connection.user.company_id.__str__() == message.get('company_id'):
             try:

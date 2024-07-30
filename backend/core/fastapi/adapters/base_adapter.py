@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import httpx
 import redis.exceptions
 from fastapi import HTTPException
+from httpx import AsyncClient
 from starlette.datastructures import QueryParams
 from starlette.requests import Request, HTTPConnection
 import json as _json
@@ -86,7 +87,11 @@ class BaseAdapter:
     port: str
 
     def __init__(self, conn: HTTPConnection, domain: 'Domain', model: 'Model', env: 'Env'):
+
+
         self.model = model
+        if isinstance(conn, AsyncClient):
+            a=1
         self.domain = domain
         self.host = f"{self.protocol}://{self.host}:{self.port}"
         self.env = env

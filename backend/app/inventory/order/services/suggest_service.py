@@ -87,6 +87,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                     is_last = False
             if is_last:
                 move.status = MoveStatus.DONE
+                await self.env['move'].service.set_done(move.id)
         if commit:
             try:
                 await self.session.commit()

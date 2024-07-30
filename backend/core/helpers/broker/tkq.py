@@ -1,19 +1,40 @@
-import taskiq_fastapi
-from taskiq import InMemoryBroker
-from core.service_config import config
-#from taskiq_nats import NatsBroker
-from taskiq_redis import RedisAsyncResultBackend
+from contextvars import ContextVar
+from uuid import uuid4
 
-#from fastapi_app.settings import settings
+from taskiq import SimpleRetryMiddleware, TaskiqMiddleware
+from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend
 
-# broker = NatsBroker(
-#     settings.nats_urls.split(","),
-#     queue="fastapi_app_queue",
-# ).with_result_backend(
-#     RedisAsyncResultBackend(settings.redis_url),
-# )
-#
-# # Actually, you can remove this line and test agains real
-# # broker. Which is more preferable in some cases.
+from core.helpers.broker.initializator import init
 
-broker = InMemoryBroker()
+
+class TaskSession(TaskiqMiddleware):
+    """Middleware to add retries."""
+
+    def __init__(self,) -> None:
+        ...
+
+    def pre_execute(
+            self,
+            message: "TaskiqMessage",
+    ) -> "Union[TaskiqMessage, Coroutine[Any, Any, TaskiqMessage]]":
+        a=1
+        return message
+
+
+
+redis_async_result = RedisAsyncResultBackend(
+    redis_url="rediss://default:AVNS_w6X_JVOCj6vbTjwIowO@redis-do-user-15109425-0.c.db.ondigitalocean.com:25061",
+    result_ex_time=1000,  # Сколько хранить результаты в секундах
+    ssl_cert_reqs=None,
+    socket_timeout=360
+)
+
+# Or you can use PubSubBroker if you need broadcasting
+broker = ListQueueBroker(
+    url="rediss://default:AVNS_w6X_JVOCj6vbTjwIowO@redis-do-user-15109425-0.c.db.ondigitalocean.com:25061",
+    ssl_cert_reqs=None,
+    socket_timeout=360
+).with_result_backend(redis_async_result).with_middlewares(SimpleRetryMiddleware(default_retry_count=3)).with_middlewares(TaskSession())
+init(broker, 'core.env:Env')
+
+

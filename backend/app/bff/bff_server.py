@@ -15,7 +15,7 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.bff.bff_router import bff_router
 from app.bff.bff_tasks import remove_expired_tokens
-from app.bff.tkq import broker
+from core.helpers.broker import broker
 from core.db_config import config
 from core.env import Env, domains
 from core.exceptions import CustomException
@@ -23,7 +23,7 @@ from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
     AuthenticationMiddleware,
     AuthBffBackend,
-    SQLAlchemyMiddleware,
+    SQLAlchemyMiddleware, AuthBackend,
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
@@ -71,7 +71,7 @@ class EnvMidlleWare:
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
         if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
-            scope['env'] = Env(domains, conn)
+            scope['env'] = Env(domains, conn, broker=broker)
         await self.app(scope, receive, send)
 
 
@@ -115,7 +115,7 @@ def make_middleware() -> List[Middleware]:
         ),
         Middleware(
             AuthenticationMiddleware,
-            backend=AuthBffBackend(),
+            backend=AuthBackend(),
             on_error=on_auth_error,
         ),
         Middleware(SQLAlchemyMiddleware),

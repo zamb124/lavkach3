@@ -1,19 +1,18 @@
 import logging
 import logging
 import uuid
-from sqlalchemy import select
 from typing import Any, Optional, List
-from starlette.requests import Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.exceptions import HTTPException
 
+from sqlalchemy import select
+from starlette.exceptions import HTTPException
+from starlette.requests import Request
 from app.inventory.location.enums import VirtualLocationClass
 from app.inventory.order.enums.exceptions_move_enums import MoveErrors
 from app.inventory.order.models.order_models import Move, MoveType, Order, OrderType, MoveStatus, \
     SuggestType
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
-from app.inventory.tkq import broker
+#from app.inventory.order.services.move_tkq import move_set_done
 from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
@@ -35,11 +34,12 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         DONE:       мув завершен (terminal)
         CANCELED:   мув отменен (terminal)
     """
+
     def __init__(self, request: Request):
         super(MoveService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme)
 
     @permit('move_edit')
-    async def update(self, id: Any, obj: UpdateSchemaType, commit:bool =True) -> Optional[ModelType]:
+    async def update(self, id: Any, obj: UpdateSchemaType, commit: bool = True) -> Optional[ModelType]:
         return await super(MoveService, self).update(id, obj, commit)
 
     @permit('move_list')
@@ -64,16 +64,16 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                     "priority": 1,
                     "type": SuggestType.IN_LOCATION,
                     "value": f'{location_src.id}',
-                   # "user_id": self.user.user_id
+                    # "user_id": self.user.user_id
                 }, commit=False)
-            """Ввод Партии""" #TODO:  пока хз как праильное
+            """Ввод Партии"""  # TODO:  пока хз как праильное
             """Далее саджест на идентификацию товара"""
             await suggest_service.create(obj={
                 "move_id": move.id,
                 "priority": 2,
                 "type": SuggestType.IN_PRODUCT,
                 "value": f'{move.product_id}',
-               # "user_id": self.user.user_id
+                # "user_id": self.user.user_id
             }, commit=False)
             """Далее саджест ввода количества"""
             await suggest_service.create(obj={
@@ -81,16 +81,16 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "priority": 3,
                 "type": SuggestType.IN_QUANTITY,
                 "value": f'{move.quantity}',
-               # "user_id": self.user.user_id
+                # "user_id": self.user.user_id
             }, commit=False)
-            """Далее саджест на ввод срока годности"""  #TODO:  пока хз как праильное
+            """Далее саджест на ввод срока годности"""  # TODO:  пока хз как праильное
             """Далее саджест идентификации локации назначения"""
             await suggest_service.create(obj={
                 "move_id": move.id,
                 "priority": 4,
                 "type": SuggestType.IN_LOCATION,
-                "value":f'{location_dest.id}',
-               # "user_id": self.user.user_id
+                "value": f'{location_dest.id}',
+                # "user_id": self.user.user_id
             }, commit=False)
             # Итого простой кейс, отсканировал локацию-источник, отсканировал товар, отсканировал локацию-назначения
 
@@ -105,7 +105,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         await self.session.commit()
         return move
 
-    async def confirm(self, moves: List[uuid.UUID] | List[Move], parent: Order | Move | None = None, user_id: uuid.UUID = None):
+    async def confirm(self, moves: List[uuid.UUID] | List[Move], parent: Order | Move | None = None,
+                      user_id: uuid.UUID = None):
         user_id = user_id or self.user.user_id
         for m in moves:
             move = await self._confirm(m, parent, user_id)
@@ -152,7 +153,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
 
             assert move.product_id, 'Product is required if Move Type is  Product'
             if not move.order_type_id:
-                order_type_entity = order_type_service.get_by_attrs(**obj.model_dump()) #TODO: его надо реализовать
+                order_type_entity = order_type_service.get_by_attrs(**obj.model_dump())  # TODO: его надо реализовать
             elif move.order_type_id:
                 order_type_entity = await order_type_service.get(move.order_type_id)
             elif isinstance(parent, Order):
@@ -164,7 +165,6 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             elif isinstance(parent, OrderType):
                 order_type_entity = parent
             """Проверяем, что мув может быть создан согласно праавилам в Order type """
-
 
             location_class_src_ids = list(
                 set(order_type_entity.allowed_location_class_src_ids) -
@@ -180,7 +180,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             )
             if move.location_src_id:
                 """Если мы указали локацию, то нас уже не интересуют правила из OrderType"""
-                location_class_src_ids, location_type_src_ids,  location_src_ids = [], [], [move.location_src_id,]
+                location_class_src_ids, location_type_src_ids, location_src_ids = [], [], [move.location_src_id, ]
 
             available_src_quants = await quant_service.get_available_quants(
                 product_id=move.product_id,
@@ -217,9 +217,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                         "incoming_quantity": 0.0,
                         "uom_id": move.uom_id,
                     }, commit=False)
-                    available_src_quants = [quant_src_entity,]
+                    available_src_quants = [quant_src_entity, ]
                     break
-
 
             if available_src_quants:
                 """Если кванты нашлись"""
@@ -241,7 +240,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                             self.session.add(quant_src_entity)
                             break
                     else:
-                        pass#TODO: единицы измерения
+                        pass  # TODO: единицы измерения
                 if remainder:
                     if remainder == move.quantity:
                         "Если не нашли свободного количества вообще"
@@ -256,7 +255,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                                     self.session.add(quant_src_entity)
                                     break
                             else:
-                                ... #TODO: единицы измерения
+                                ...  # TODO: единицы измерения
                     else:
                         "Если квант нашелся, но на частичное количество уменьшаем количество в муве тк 1 мув = 1квант"
                         logger.warning(f'The number in the move has been reduced')
@@ -264,16 +263,15 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             if not quant_src_entity:
                 raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
 
-            move.quant_src_id =      quant_src_entity.id
-            move.location_src_id =   quant_src_entity.location_id
-            move.lot_id =            quant_src_entity.lot_id
-            move.partner_id =        quant_src_entity.partner_id
+            move.quant_src_id = quant_src_entity.id
+            move.location_src_id = quant_src_entity.location_id
+            move.lot_id = quant_src_entity.lot_id
+            move.partner_id = quant_src_entity.partner_id
 
             """ ПОИСК КВАНТА/ЛОКАЦИИ НАЗНАЧЕНИЯ """
 
             """ Если у муве насильно указали location_dest_id"""
             """ Нужно проверить, что данная локация подходит под правила OrderType и правила самой выбранной локации"""
-
 
             location_class_dest_ids = list(
                 set(order_type_entity.allowed_location_class_dest_ids) -
@@ -296,7 +294,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 product_id=move.product_id,
                 store_id=move.store_id,
                 id=move.quant_dest_id,
-                exclude_id=quant_src_entity.id, # Исключаем из возможного поиска квант источника, ибо нехер
+                exclude_id=quant_src_entity.id,  # Исключаем из возможного поиска квант источника, ибо нехер
                 location_class_ids=location_class_dest_ids,
                 location_ids=location_dest_ids,
                 location_type_ids=location_type_dest_ids,
@@ -338,8 +336,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             if not quant_dest_entity:
                 raise ModuleException(status_code=406, enum=MoveErrors.DEST_QUANT_ERROR)
 
-            move.quant_dest_id =      quant_dest_entity.id
-            move.location_dest_id =   quant_dest_entity.location_id
+            move.quant_dest_id = quant_dest_entity.id
+            move.location_dest_id = quant_dest_entity.location_id
             move.status = MoveStatus.CONFIRMED
             if quant_src_entity == quant_dest_entity:
                 raise ModuleException(status_code=406, enum=MoveErrors.EQUAL_QUANT_ERROR)
@@ -354,9 +352,20 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 quant_dest_entity.move_ids = [move.id]
             else:
                 quant_dest_entity.move_ids.append(move.id)
-        #TODO: это надо убрать в отдельный вызов
+        # TODO: это надо убрать в отдельный вызов
         await self.create_suggests(move)
         return move
+
+    async def set_done(self, move_id: uuid.UUID, sync=False):
+        """
+            Метод пытается завершить мув, если все саджесты закончены
+        """
+        a=1
+        if not sync:
+            await move_set_done.kiq(move_id)
+
+        return True
+
     @permit('move_create')
     async def create(self, obj: CreateSchemaType, parent: Order | Move | None = None, commit=True) -> ModelType:
         obj.created_by = self.user.user_id
@@ -371,11 +380,9 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
         return await super(MoveService, self).delete(id)
 
-
     @permit('move_move_counstructor')
     async def move_counstructor(self, move_id: uuid.UUID, moves: list) -> None:
         return await super(MoveService, self).delete(id)
-
 
     @permit('get_moves_by_barcode')
     async def get_moves_by_barcode(self, barcode: str, order_id: uuid.UUID) -> List[ModelType]:
