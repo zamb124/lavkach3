@@ -35,10 +35,6 @@ class EnvMidlleWare:
             scope['env'] = Env(domains, conn)
         await self.app(scope, receive, send)
 
-    @classmethod
-    async def get_env(cls, request: Request, scope: Scope) -> Env:
-        return Env(domains, HTTPConnection(scope))
-
 
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(inventory_router)

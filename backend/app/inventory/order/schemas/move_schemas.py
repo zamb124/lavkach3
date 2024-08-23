@@ -15,7 +15,7 @@ from core.schemas.timestamps import TimeStampScheme
 
 
 class MoveBaseScheme(BasicModel):
-    type: MoveType = Field(title='Move Type', table=True)
+    type: MoveType = Field(title='Move Type', table=True, readonly=True)
     order_id: Optional[UUID4] = Field(default=None, title='Order ID', model='order')
     order_type_id: UUID4 = Field(title='Order type', model='order_type', table=True)
     store_id: UUID4 = Field(title='Store', table=True, form=True, model='store')

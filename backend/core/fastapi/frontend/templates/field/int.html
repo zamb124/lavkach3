@@ -4,7 +4,6 @@
             class="int form-control"
             name="{{ field.key }}"
             {% if field.update.readonly %}readonly{% endif %}
-
             placeholder="Enter {{ field.title }}"
             {% if field.is_required %} required {% endif %}
             value="{{ field.val }}"
