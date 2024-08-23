@@ -55,7 +55,7 @@
                     </thead>
                     <tbody id="{{ 'tbody-table' ~'--'~ cls.key }}">
                     {% if cls.lines %}
-                        {% if method in ('update', 'create') %}
+                        {% if  method in ('update', 'create') %}
                             {{ cls.lines.as_table_update }}
                         {% else %}
                             {{ cls.lines.as_table_get}}
