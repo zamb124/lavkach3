@@ -4,8 +4,8 @@ from typing import Optional, Any
 from jinja2_fragments import render_block
 from pydantic import BaseModel
 
-from core.fastapi.frontend.enviroment import environment
-from core.fastapi.frontend.types import ViewVars, MethodType
+from core.frontend.enviroment import environment
+from core.frontend.types import ViewVars, MethodType
 
 
 class FieldFields:

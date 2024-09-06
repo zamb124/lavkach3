@@ -1,10 +1,10 @@
-from fastapi import Request, APIRouter, Depends
+from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
 from app.bff.template_spec import templates
 from app.bff.utills import BasePermit
-from core.fastapi.frontend.constructor import ClassView
+from core.frontend.constructor import ClassView
 
 move_router = APIRouter()
 

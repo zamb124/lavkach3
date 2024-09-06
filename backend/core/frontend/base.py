@@ -4,11 +4,11 @@ from typing import Optional, Any, Callable
 from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, field_validator, UUID4, model_validator
+from pydantic import BaseModel, UUID4, model_validator
 from starlette.responses import JSONResponse
 
-from core.fastapi.frontend.constructor import ClassView
-from core.fastapi.frontend.utils import clean_filter
+from core.frontend.constructor import ClassView
+from core.frontend.utils import clean_filter
 
 
 class Method(str, Enum):

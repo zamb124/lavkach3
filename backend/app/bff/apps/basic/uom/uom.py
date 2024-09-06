@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 
 from app.bff.template_spec import templates
 from app.bff.utills import BasePermit
-from core.fastapi.frontend.constructor import ClassView
+from core.frontend.constructor import ClassView
 
 uom_router = APIRouter()
 from fastapi import Depends

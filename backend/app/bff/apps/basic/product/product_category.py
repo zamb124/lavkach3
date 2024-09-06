@@ -1,10 +1,10 @@
-from fastapi import Request, Depends, APIRouter
+from fastapi import Depends, APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
 from app.bff.template_spec import templates
 from app.bff.utills import BasePermit
-from core.fastapi.frontend.constructor import ClassView
+from core.frontend.constructor import ClassView
 
 product_category_router = APIRouter()
 

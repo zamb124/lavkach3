@@ -16,7 +16,7 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 from app.bff.template_spec import environment
 from app.bff.template_spec import templates
 from core.env import Env
-from core.fastapi.frontend.constructor import ClassView
+from core.frontend.constructor import ClassView
 from core.fastapi.middlewares import AuthBackend
 from core.fastapi.schemas import CurrentUser
 

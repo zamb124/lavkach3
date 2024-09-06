@@ -12,11 +12,11 @@ from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
 from core.env import Model
-from core.fastapi.frontend.enviroment import passed_classes, readonly_fields, hidden_fields, table_fields, \
+from core.frontend.enviroment import passed_classes, readonly_fields, hidden_fields, table_fields, \
     reserved_fields, environment
-from core.fastapi.frontend.field import Field, Fields
-from core.fastapi.frontend.line import Line, Lines
-from core.fastapi.frontend.types import LineType, ViewVars, MethodType
+from core.frontend.field import Field, Fields
+from core.frontend.line import Line, Lines
+from core.frontend.types import LineType, ViewVars, MethodType
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import ActionBaseSchame, BasicField
 

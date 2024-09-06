@@ -103,7 +103,7 @@ alembic revision --autogenerate -m "init"
 ``` bash
 cp migrations/testing_migrate.py migrations/versions/testing_migrate.py
 ```
-так же заменить в  тестовой миграции на id говой миграции:
+так же заменить в  тестовой миграции на id начальной миграции:
 - down_revision = '6ea1b38aba41' 
 - depends_on = '6ea1b38aba41' 
 
@@ -135,4 +135,10 @@ uvicorn app.bus.bus_server:app --port 8099 --lifespan on
 Сервис управление материалами и товарами обьекта
 ```bash
 uvicorn app.inventory.inventory_server:app --port 8002
+```
+
+### Сервис BFF
+Фронтэнд для всех сервисов
+```bash
+uvicorn app.bff.bff_server:app --port 8003 --lifespan on
 ```

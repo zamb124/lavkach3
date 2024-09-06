@@ -1,6 +1,6 @@
 from enum import Enum
 
-from core.fastapi.frontend.enums import TextColorEnum
+from core.frontend.enums import TextColorEnum
 from . import BaseEnum
 
 
