@@ -1,4 +1,4 @@
-# Redli - a humane alternative to redis-cli
+# SUKA - Платформа для управления предприятием
 
 
 
@@ -39,3 +39,100 @@
 - model_scope_2
 
   - ...
+
+# Настройка проекта локально
+
+Запуск Базы данных
+```bash
+version: "3.12"
+services:
+  db:
+    image: postgres:15
+    container_name: db_app
+    command: -p 5433
+    expose:
+      - 5433
+    env_file:
+      - .env-docker
+    ports:
+      - 5433:5433
+```
+Зависимости:
+```bash
+pip install -r requirements.txt
+```
+
+### .env
+- Нужо добать файл .env в корень проекта
+```.env
+DB_HOST=XXX
+DB_PORT=XXX
+DB_NAME=XXX
+DB_USER=XXX
+DB_PASS=XXX
+POSTGRES_DB=XXX
+POSTGRES_USER=XXX
+POSTGRES_PASSWORD=XXX
+ENV=local
+DEBUG=True
+JWT_SECRET_KEY=SECRET
+JWT_ALGORITHM=HS256
+SENTRY_SDN=None
+REDIS_HOST=XXX
+REDIS_PORT=XXX
+REDIS_PASSWORD=XXX
+REDIS_SSL=True
+SMTP_USER=XXX
+SMTP_PASSWORD=XXXXXXXXX
+BASIC_DOMAIN=127.0.0.1
+BUS_DOMAIN=127.0.0.1
+SUPERUSER_EMAIL=XXX
+SUPERUSER_PASSWORD=XXX
+```
+
+### Миграции
+- Запуск миграций
+``` bash
+cd backend
+alembic init alembic
+mkdir alembic/versions
+alembic revision --autogenerate -m "init"
+```
+Если нужно накатить тестовые данные, то нужно запустить
+
+``` bash
+cp migrations/testing_migrate.py migrations/versions/testing_migrate.py
+```
+так же заменить в  тестовой миграции на id говой миграции:
+- down_revision = '6ea1b38aba41' 
+- depends_on = '6ea1b38aba41' 
+
+После этого 
+```bash
+alembic upgrade head
+```
+
+## Запуск самих сервисов
+### Сервис BASIC
+Сервис отвечающий за мастер данные 
+```bash
+uvicorn app.basic.basic_server:app --port 8001
+```
+
+### Сервис JOBS
+Сервис отвечающий за разбор задач в очередях 
+```bash
+taskiq worker core.helpers.broker.tkq:broker
+```
+
+### Сервис BUS
+Сервис отвечающий за отправку сообщений с пользователями
+```bash
+uvicorn app.bus.bus_server:app --port 8099 --lifespan on
+```
+
+### Сервис INVENTORY
+Сервис управление материалами и товарами обьекта
+```bash
+uvicorn app.inventory.inventory_server:app --port 8002
+```
