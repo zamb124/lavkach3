@@ -161,33 +161,34 @@ async def line(request: Request, schema: LineSchema):
      Универсальный запрос, который отдает/изменяет обьект
     """
     cls = await ClassView(request, model=schema.model, key=schema.key)
-    if schema.method == Method.UPDATE:
-        """Отдать обьект на редактирование, в зависимости от mode (tr/div)"""
-        lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
-        return getattr(lines[0], f'as_{schema.mode}_update')
-    elif schema.method == Method.GET:
-        """Отдать обьект на чтение, в зависимости от mode (tr/div)"""
-        lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
-        return getattr(lines[0], f'as_{schema.mode}_get')
-    elif schema.method == Method.CREATE:
-        """Отдать обьект на создание, в зависимости от mode (tr/div)"""
-        return cls.lines.line_new.as_tr_create
-    elif schema.method == Method.DELETE:
-        """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
-        lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
-        return lines[0].get_delete
-    elif schema.method == Method.DELETE_DELETE:
-        await cls.lines.delete_lines(ids=[schema.id])
-        """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
-    elif schema.method == Method.SAVE:
-        """Сохранение записи при измененнии"""
-        data = clean_filter(schema.model_extra, schema.key)
-        await cls.lines.update_lines(id=schema.id, data=data)
-    elif schema.method == Method.SAVE_CREATE:
-        """Сохранение записи при создании"""
-        data = clean_filter(schema.model_extra, schema.key)
-        lines = await cls.lines.create_lines(data)
-        return lines[0].as_div_update
+    match schema.method:
+        case Method.UPDATE:
+            """Отдать обьект на редактирование, в зависимости от mode (tr/div)"""
+            lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+            return getattr(lines[0], f'as_{schema.mode}_update')
+        case Method.GET:
+            """Отдать обьект на чтение, в зависимости от mode (tr/div)"""
+            lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+            return getattr(lines[0], f'as_{schema.mode}_get')
+        case Method.CREATE:
+            """Отдать обьект на создание, в зависимости от mode (tr/div)"""
+            return cls.lines.line_new.as_tr_create
+        case Method.DELETE:
+            """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
+            lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
+            return lines[0].get_delete
+        case Method.DELETE_DELETE:
+            await cls.lines.delete_lines(ids=[schema.id])
+            """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
+        case Method.SAVE:
+            """Сохранение записи при измененнии"""
+            data = clean_filter(schema.model_extra, schema.key)
+            await cls.lines.update_lines(id=schema.id, data=data)
+        case Method.SAVE_CREATE:
+            """Сохранение записи при создании"""
+            data = clean_filter(schema.model_extra, schema.key)
+            lines = await cls.lines.create_lines(data)
+            return lines[0].as_div_update
 
 
 class ModalSchema(BaseSchema):

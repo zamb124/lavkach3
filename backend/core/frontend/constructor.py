@@ -279,14 +279,14 @@ class ClassView(AsyncObj):
         """
             Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
-        fielinfo = schema.model_fields[field_name]
-        res = ''
-        enums: list = []
-        lines = None
-        class_types = get_types(fielinfo.annotation, [])
-        model: Model | None  = None
-        model_name = self.model.name
-        is_filter = True if issubclass(schema, BaseFilter) else False  # type: ignore
+        fielinfo: FieldInfo       = schema.model_fields[field_name]
+        res: str                  = ''
+        enums: list               = []
+        lines: list[Lines] | None = None
+        class_types: list         = get_types(fielinfo.annotation, [])
+        model: Model | None       = None
+        model_name: str           = self.model.name
+        is_filter: bool           = True if issubclass(schema, BaseFilter) else False  # type: ignore
         if fielinfo.json_schema_extra:
             if fielinfo.json_schema_extra.get('model'):  # type: ignore
                 model_name = fielinfo.json_schema_extra.get('model')  # type: ignore
@@ -299,7 +299,7 @@ class ClassView(AsyncObj):
                 break
             elif issubclass(c, enum.Enum):# type: ignore
                 res += 'enum'
-                enums = c# type: ignore
+                enums = c    # type: ignore
             elif issubclass(c, BaseModel):# type: ignore
                 try:
                     model_name = c.Config.orm_model.__tablename__   # type: ignore

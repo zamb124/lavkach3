@@ -8,8 +8,8 @@ from pydantic_settings import BaseSettings
 BaseConfig.arbitrary_types_allowed = True
 logging.basicConfig(level=logging.INFO)
 
-
 load_dotenv()
+
 
 class Config(BaseSettings):
     BROKER_PATH: str = 'false'
@@ -53,6 +53,8 @@ class Config(BaseSettings):
     BUS_HOST: str = os.environ.get('BUS_HOST') or '127.0.0.1'
     BUS_PORT: str = os.environ.get('BUS_PORT') or '8099'
     INTERCO_TOKEN: str = os.environ.get('INTERCO_TOKEN') or 'netu'
+
+
 class DevelopmentConfig(Config):
     ...
 
@@ -63,6 +65,7 @@ class LocalConfig(Config):
 
 class ProductionConfig(Config):
     ...
+
 
 class ModuleEnv:
     ...
@@ -78,6 +81,7 @@ def my_import(name):
         mod = getattr(mod, comp)
     return mod
 
+
 def get_config():
     env = os.getenv("ENV", "local")
     for name, value in os.environ.items():
@@ -89,5 +93,6 @@ def get_config():
         "prod": ProductionConfig(),
     }
     return config_type[env]
+
 
 config: Config = get_config()

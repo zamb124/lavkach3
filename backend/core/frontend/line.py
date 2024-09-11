@@ -119,7 +119,7 @@ class Line(BaseModel):
     @property
     def as_tr_get(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.render(block_name='as_tr_get', method=MethodType.GET)
+        return self.render(block_name='as_tr', method=MethodType.GET)
 
     @property
     def as_tr_header(self) -> str:
@@ -129,7 +129,7 @@ class Line(BaseModel):
     @property
     def as_tr_update(self) -> str:
         """Отобразить обьект как строку таблицы на редактирование"""
-        return self.render(block_name='as_tr_update', method=MethodType.UPDATE)
+        return self.render(block_name='as_tr', method=MethodType.UPDATE)
 
     @property
     def as_tr_create(self) -> str:

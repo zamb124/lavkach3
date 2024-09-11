@@ -11,7 +11,6 @@ class MethodType(str, Enum):
     DELETE = 'delete'
 
 
-
 class LineType(str, Enum):
     """
         Тип Лайна
@@ -39,4 +38,3 @@ class ViewVars(BaseModel):
     table: bool = False  # Учавствует ли поле при построении таблицы
     filter: Optional[dict] = None  # Учавствует ли поле, если это фильтр
     description: Optional[str] = None  # Описание поля в UI
-

@@ -23,10 +23,10 @@ class Fields(BaseModel):
 class Field(BaseModel, FieldFields):
     """
         Описание поля
-        as_form - виджет поля как редактируемого
-        as_view - виджет поля как просмотра
-        as_table_form - виджет как таблица (доступен только для list_rel) полей
-        as_table - виджет как таблица (доступен только для list_rel) полей
+        - as_update - виджет поля как редактируемого
+        - as_get - виджет поля как просмотра
+        - as_table_update - виджет как таблица (доступен только для list_rel) полей
+        - as_table_get - виджет как таблица (доступен только для list_rel) полей
     """
     field_name: str                    # Системное имя поля
     type: str                          # Тип поля (srt, ins, rel, list_rel ... )
@@ -53,6 +53,7 @@ class Field(BaseModel, FieldFields):
         return f'{self.line.key}--{self.field_name}'
 
     def render(self, block_name: str, type: str = '', backdrop: list = []) -> str:
+        """Метод рендера шаблона"""
         type = type or self.type
         rendered_html = render_block(
             environment=environment,
@@ -65,9 +66,7 @@ class Field(BaseModel, FieldFields):
 
     @property
     def label(self) -> str:
-        """
-            Отдать Label for шаблон для поля
-        """
+        """Отдать Label for шаблон для поля"""
         return render_block(
             environment=environment,
             template_name=f'field/label.html',
@@ -77,23 +76,17 @@ class Field(BaseModel, FieldFields):
 
     @property
     def as_update(self) -> str:
-        """
-            Отобразить поле с возможностью редактирования
-        """
+        """Отобразить поле с возможностью редактирования"""
         return self.render(block_name='as_update')
 
     @property
     def as_get(self) -> str:
-        """
-            Отобразить поле только на чтение
-        """
+        """Отобразить поле только на чтение"""
         return self.render(block_name='as_get')
 
     @property
     def as_table_get(self) -> str:
-        """
-            Отобразить поле как Таблицу (Если поле является list_rel)
-        """
+        """Отобразить поле как Таблицу (Если поле является list_rel)"""
         return render_block(
             environment=environment,
             template_name=f'cls/table.html',
@@ -104,9 +97,7 @@ class Field(BaseModel, FieldFields):
 
     @property
     def as_table_update(self) -> str:
-        """
-            Отобразить поле как Таблицу на редактирование (Если поле является list_rel)
-        """
+        """Отобразить поле как Таблицу на редактирование (Если поле является list_rel)"""
         block_name = 'as_table'
         return render_block(
             environment=environment,
@@ -117,9 +108,7 @@ class Field(BaseModel, FieldFields):
         )
 
     def filter_as_string(self) -> str:
-        """
-            Костыльная утилита, что бы в js передать фильтр
-        """
+        """Костыльная утилита, что бы в js передать фильтр"""
         filter = ''
         if self.update.filter:
             filter += '{'
