@@ -9,13 +9,13 @@ class StoreEnum(BaseEnum):
 
 
 class MoveStatus(str, Enum):
-    CREATED: str = 'created'
-    CONFIRMED: str = 'confirmed'
-    WAITING: str = 'waiting'
-    ASSIGNED: str = 'assigned'
-    PROCESSING: str = 'processing'
-    DONE: str = 'done'
-    CANCELED: str = 'canceled'
+    CREATED: str = 'created'       # Мув создан, но не подтвержден
+    CONFIRMED: str = 'confirmed'   # Мув пдтвержден и нужные кванты найдены и зарезервированы
+    WAITING: str = 'waiting'       # Ожидает назначения оператора
+    ASSIGNED: str = 'assigned'     # Оператор найден и назначен
+    PROCESSING: str = 'processing' # Оператор начал действия
+    DONE: str = 'done'             # Оператор завершил действия
+    CANCELED: str = 'canceled'     # Отменен, кванты при этом разрезерируются
 
 
 move_color_map = {

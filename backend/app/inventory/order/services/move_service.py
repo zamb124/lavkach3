@@ -13,6 +13,7 @@ from app.inventory.order.models.order_models import Move, MoveType, Order, Order
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
 #from app.inventory.order.services.move_tkq import move_set_done
+from core.helpers.broker.tkq import broker
 from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
@@ -360,11 +361,11 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         """
             Метод пытается завершить мув, если все саджесты закончены
         """
-        a=1
         if not sync:
             await move_set_done.kiq(move_id)
 
         return True
+    broker.register_task(set_done)
 
     @permit('move_create')
     async def create(self, obj: CreateSchemaType, parent: Order | Move | None = None, commit=True) -> ModelType:

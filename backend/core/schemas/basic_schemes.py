@@ -3,7 +3,7 @@ from typing import Optional, List, Any
 
 from pydantic import BaseModel, UUID4, Field, AliasPath, AliasChoices, types
 from pydantic.config import JsonDict
-from pydantic.fields import _EmptyKwargs
+from pydantic.fields import _EmptyKwargs, computed_field
 from pydantic_core import PydanticUndefined
 from enum import Enum
 from core.schemas.list_schema import GenericListSchema

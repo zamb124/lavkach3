@@ -11,7 +11,7 @@ from app.inventory.order.schemas.suggest_schemas import SuggestCreateScheme, Sug
 from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-
+from core.helpers.broker.tkq import broker
 
 class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateScheme, SuggestFilter]):
     def __init__(self, request: Request):
@@ -87,7 +87,11 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                     is_last = False
             if is_last:
                 move.status = MoveStatus.DONE
-                await self.env['move'].service.set_done(move.id)
+                #await self.env['move'].service.set_done.kiq(move_id=move.id)
+                task__set_done = broker.register_task(self.env['move'].service.set_done)
+                task = await task__set_done.kiq(move_id=move.id)
+                task_result = await task.wait_result()
+                a=1
         if commit:
             try:
                 await self.session.commit()

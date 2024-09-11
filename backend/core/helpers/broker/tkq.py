@@ -6,7 +6,6 @@ from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend
 
 from core.helpers.broker.initializator import init
 
-
 class TaskSession(TaskiqMiddleware):
     """Middleware to add retries."""
 
