@@ -236,6 +236,7 @@
 
             .loader {
                 display: none;
+                z-index: -999999;
                 top: 50%;
                 left: 50%;
                 position: absolute;
@@ -314,7 +315,7 @@
     {% block right_sidebar %}
         {% include "partials/customizer.html" %}
     {% endblock right_sidebar %}
-    <div class="loader">
+    <div class="loader" style="z-index: 999">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"
              width="200" height="200"
              style="shape-rendering: auto; display: block; background: transparent;"
@@ -432,7 +433,6 @@
                 if(spinBloker) {
                     spinBloker.remove()
                 }
-                hideModals()
             }
         </script>
         <script>
