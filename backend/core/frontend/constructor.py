@@ -25,12 +25,12 @@ class AsyncObj:
     """
             Обертка что бы класс конструктор собирался Асинхронно
     """
-
     def __init__(self, *args, **kwargs):
         """
         Standard constructor used for arguments pass
         Do not override. Use __ainit__ instead
         """
+
         self.__storedargs = args, kwargs
         self.async_initialized = False
 
@@ -50,6 +50,7 @@ class AsyncObj:
 
     def __init_subclass__(cls, **kwargs):
         assert asyncio.iscoroutinefunction(cls.__ainit__)  # __ainit__ must be async
+
 
     @property
     def async_state(self):
@@ -104,6 +105,18 @@ class ClassView(AsyncObj):
     key: str                                         # Ключ конструктора
     actions: dict                                    # Доступные Методы модели
     is_rel: bool = False                             # True, если
+    __state = 0                                      # счетчик итераций
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        """Если использовать конструктор как итератор, то он будет возвращать строки"""
+        self.__state += 1
+        try:
+            return self.lines.lines[self.__state]
+        except IndexError:
+            raise StopIteration
 
     async def __ainit__(self,
                         request: Request = None,
@@ -340,7 +353,7 @@ class ClassView(AsyncObj):
         return field
 
     async def _get_schema_fields(self, line: Line, schema: BaseModel, **kwargs) -> Fields:
-        """Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2"""
+        """Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2 - а зачем?"""
         fields: list[tuple[str, Field]] = []
         field_class = Fields()
         exclude = kwargs.get('exclude') or self.exclude or []

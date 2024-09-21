@@ -4,7 +4,6 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, field_validator
 from pydantic.types import UUID
 
-from app.basic.company.schemas import CompanyScheme
 from app.basic.store.models.store_models import Store
 from app.basic.store.models.store_models import StoreType
 from core.schemas import BaseFilter
@@ -45,7 +44,6 @@ class StoreScheme(StoreCreateScheme, TimeStampScheme):
     company_id: UUID = Field(title='Company ID', model='company')
     lsn: int
     id: UUID
-    company_rel: Optional[CompanyScheme] = Field(table=True, form=True, title='Company')
 
 
 

@@ -9,7 +9,8 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.inventory.inventory_router import inventory_router
 from core.db_config import config
-from core.env import Env, domains
+from core.env import Env
+from app.inventory import __domain__ as inventory_domain
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -32,7 +33,7 @@ class EnvMidlleWare:
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
         if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
-            scope['env'] = Env(domains, conn)
+            scope['env'] = Env([inventory_domain], conn)
         await self.app(scope, receive, send)
 
 

@@ -22,5 +22,5 @@ class Store(Base, AllMixin):
     external_number: Mapped[Optional[str]] = mapped_column(unique=True)
     address: Mapped[str]
     source: Mapped[str] = mapped_column(default=StoreType.INTERNAL)
-    store_user_list_rel: Mapped[list['User']] = relationship(lazy='selectin', back_populates="store_rel")
-    company_rel: Mapped['Company'] = relationship(lazy='immediate', back_populates="store_list_rel")
+
+

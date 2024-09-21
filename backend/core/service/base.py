@@ -156,7 +156,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
         return entity
 
-    async def _list(self, _filter: FilterSchemaType | dict, size: int):
+    async def _list(self, _filter: FilterSchemaType | dict, size: int = 100):
         if not isinstance(_filter, BaseFilter):
             if isinstance(_filter, dict):
                 _filter = self.env[self.model.__tablename__].schemas.filter(**_filter)

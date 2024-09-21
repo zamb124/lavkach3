@@ -1,14 +1,14 @@
 import logging
 import os
 
-from dotenv import load_dotenv
+
 from pydantic import BaseConfig
 from pydantic_settings import BaseSettings
 
 BaseConfig.arbitrary_types_allowed = True
 logging.basicConfig(level=logging.INFO)
 
-load_dotenv()
+
 
 class Config(BaseSettings):
     APP_HOST: str = os.environ.get("APP_HOST") or 'localhost'

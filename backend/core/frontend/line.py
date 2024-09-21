@@ -258,9 +258,13 @@ class Lines(BaseModel):
         if join_fields:
             self.join_fields = join_fields or []
         if not data:
-            async with self.cls.model.adapter as a:  # type: ignore
-                resp_data = await a.list(params=params)
-                data = resp_data['data']
+            if not self.cls.model.adapter.domain.domain_type == 'INTERNAL':
+                async with self.cls.model.adapter as a:  # type: ignore
+                    resp_data = await a.list(params=params)
+                    data = resp_data['data']
+            else:
+                data_obj = await self.cls.model.service.list(_filter=params)
+                data = [i.__dict__ for i in data_obj]
         await self.fill_lines(data, join_related, join_fields)
 
 
@@ -285,7 +289,9 @@ class Lines(BaseModel):
                 col.val = row[col.field_name]
                 col.line = line_copied
                 if col.type in ('date', 'datetime'):
-                    if col.val:
+                    if isinstance(col.val, datetime.datetime):
+                        pass
+                    elif isinstance(col.val, str):
                         col.val = datetime.datetime.fromisoformat(col.val)
                 elif col.type == 'id':
                     if not col.val:

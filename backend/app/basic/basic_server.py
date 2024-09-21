@@ -10,7 +10,8 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.basic.basic_router import basic_router
 from core.db_config import config
-from core.env import Env, domains
+from core.env import Env
+from app.basic import __domain__ as domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -109,8 +110,8 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
         description="Hide API",
         version="1.0.0",
-        docs_url=None if config.ENV == "production" else "/api/basic/docs",
-        redoc_url=None if config.ENV == "production" else "/api/basic/dredoc",
+        # docs_url=None if config.ENV == "production" else "/api/basic/docs",
+        # redoc_url=None if config.ENV == "production" else "/api/basic/dredoc",
         dependencies=[Depends(Logging)],
         middleware=make_middleware(),
     )

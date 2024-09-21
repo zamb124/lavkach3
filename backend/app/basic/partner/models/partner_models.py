@@ -24,7 +24,7 @@ class PartnerType(str, Enum):
     CONTACT: str = 'contact'
     SUBPARTNER: str = 'subpartner'
     INTERCOMPANY: str = 'intercompany'
-    STORE: str = 'store'
+    STORE: str = 'project'
     USER: str = 'user'
 
 class Partner(Base,AllMixin):

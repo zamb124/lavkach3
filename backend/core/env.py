@@ -7,9 +7,7 @@ from httpx import AsyncClient
 from starlette.requests import HTTPConnection, Request
 from taskiq import AsyncBroker
 
-from app.basic import __domain__ as basic_domain
-from app.inventory import __domain__ as inventory_domain
-from app.bus import __domain__ as bus_domain
+
 from core.db.session import set_session_context
 from core.db_config import config
 from core.fastapi.adapters.action_decorator import actions
@@ -23,7 +21,7 @@ if TYPE_CHECKING:
     from core.fastapi.adapters import BaseAdapter
     from core.service.base import Model, BaseService
     from core.db import Base
-
+from .core_apps.base import __domain__ as base_domain
 
 class DeleteSchema(BaseModel):
     delete_id: uuid.UUID
@@ -83,10 +81,13 @@ class Domain:
     name: str
     models: dict[str, Model]
     _env: 'Env'
+    domain_type: str
     _adapter: 'BaseAdapter' = None
 
-    def __init__(self, domain: dict):
+
+    def __init__(self, domain: dict, domain_type='EXTERNAL'):
         self.name = domain['name']
+        self.domain_type = domain_type
         self._adapter = domain.get('adapter', None)
         models = {}
         for name, value in domain.items():
@@ -107,22 +108,24 @@ class Domain:
     def __getitem__(self, item: str):
         return self.models[item]
 
-
-domains = [
-    Domain(basic_domain),
-    Domain(inventory_domain),
-    Domain(bus_domain)
-]
-
+base_domains = [base_domain]
 
 class Env:
     domains: dict[str, Domain]
     request: HTTPConnection
     broker: AsyncBroker
 
-    def __init__(self, domains: list, conn: HTTPConnection | AsyncClient | Request, broker: AsyncBroker | None = None):
-        _domains = {}
-        for d in domains:
+    def __init__(self, domains: list | dict, conn: HTTPConnection | AsyncClient | Request, broker: AsyncBroker | None = None):
+        _domains: dict = {}
+        if isinstance(domains, dict):
+            domains = [domains]
+        for d in domains+base_domains:
+            domain_type: str = 'EXTERNAL'
+            if isinstance(d, tuple):
+                domain_type = d[1]
+                d = d[0]
+            if isinstance(d, dict):
+                d = Domain(d, domain_type)
             d._env = self
             _domains.update({d.name: d})
         self.request = conn  # type: ignore

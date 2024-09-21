@@ -7,8 +7,9 @@ from pydantic_settings import BaseSettings
 
 BaseConfig.arbitrary_types_allowed = True
 logging.basicConfig(level=logging.INFO)
-
-load_dotenv()
+cwd = os.getcwd()
+env_path = os.path.join(cwd, os.environ.get('DOTENV_PATH') or '.env')
+load_dotenv(env_path)
 
 
 class Config(BaseSettings):

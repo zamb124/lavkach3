@@ -143,7 +143,7 @@ export default function Mousewheel({
       swiper.slidePrev();
       emit('scroll', newEvent.raw);
     }
-    // If you got here is because an animation has been triggered so store the current time
+    // If you got here is because an animation has been triggered so project the current time
     lastScrollTime = new window.Date().getTime();
     // Return false as a default
     return false;
@@ -217,7 +217,7 @@ export default function Mousewheel({
 
       // Keep the most recent events
       if (recentWheelEvents.length >= 2) {
-        recentWheelEvents.shift(); // only store the last N events
+        recentWheelEvents.shift(); // only project the last N events
       }
 
       const prevEvent = recentWheelEvents.length ? recentWheelEvents[recentWheelEvents.length - 1] : undefined;
@@ -291,7 +291,7 @@ export default function Mousewheel({
           clearTimeout(timeout);
           timeout = undefined;
           if (recentWheelEvents.length >= 15) {
-            recentWheelEvents.shift(); // only store the last N events
+            recentWheelEvents.shift(); // only project the last N events
           }
 
           const prevEvent = recentWheelEvents.length ? recentWheelEvents[recentWheelEvents.length - 1] : undefined;

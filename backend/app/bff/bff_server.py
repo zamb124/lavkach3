@@ -14,10 +14,12 @@ from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.bff.bff_router import bff_router
-from app.bff.bff_tasks import remove_expired_tokens
+#from app.bff.bff_tasks import remove_expired_tokens
 from core.helpers.broker import broker
 from core.db_config import config
-from core.env import Env, domains
+from core.env import Env
+from app.basic import __domain__ as basic_domain
+from app.inventory import __domain__ as inventory_domain
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -71,7 +73,7 @@ class EnvMidlleWare:
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
         if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
-            scope['env'] = Env(domains, conn, broker=broker)
+            scope['env'] = Env([inventory_domain, basic_domain], conn, broker=broker)
         await self.app(scope, receive, send)
 
 
@@ -137,7 +139,7 @@ async def lifespan(app: FastAPI):
     """
         Старт сервера
     """
-    await remove_expired_tokens()
+    #await remove_expired_tokens()
     await broker.startup()
     yield
     """

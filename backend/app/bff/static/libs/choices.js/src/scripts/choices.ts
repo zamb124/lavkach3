@@ -871,7 +871,7 @@ class Choices implements Choices {
     const activeItems = this._store.activeItems || [];
     this.itemList.clear();
 
-    // Create a fragment to store our list items
+    // Create a fragment to project our list items
     // (so we don't have to update the DOM for each item)
     const itemListFragment = this._createItemsFragment(activeItems);
 
@@ -920,7 +920,7 @@ class Choices implements Choices {
     fragment: DocumentFragment = document.createDocumentFragment(),
     withinGroup = false,
   ): DocumentFragment {
-    // Create a fragment to store our list items (so we don't have to update the DOM for each item)
+    // Create a fragment to project our list items (so we don't have to update the DOM for each item)
     const { renderSelectedChoices, searchResultLimit, renderChoiceLimit } =
       this.config;
     const filter = this._isSearching ? sortByScore : this.config.sorter;

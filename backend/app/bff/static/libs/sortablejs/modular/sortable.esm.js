@@ -1654,7 +1654,7 @@ Sortable.prototype =
             }
           }
 
-          target = parent; // store last element
+          target = parent; // project last element
         }
         /* jshint boss:true */
         while (parent = parent.parentNode);

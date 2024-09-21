@@ -6,7 +6,7 @@ from pydantic.config import JsonDict
 from pydantic.fields import _EmptyKwargs, computed_field
 from pydantic_core import PydanticUndefined
 from enum import Enum
-from core.schemas.list_schema import GenericListSchema
+from ..schemas.list_schema import GenericListSchema
 
 
 class BasicModel(BaseModel):

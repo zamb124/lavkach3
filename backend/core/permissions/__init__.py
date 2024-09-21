@@ -1,1 +1,1 @@
-from .permissions import permit, permits
+from .permissions import permit, permits, Permissions

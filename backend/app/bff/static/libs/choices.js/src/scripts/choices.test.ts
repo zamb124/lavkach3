@@ -312,7 +312,7 @@ describe('choices', () => {
           expect(createInputSpy.called).to.equal(true);
         });
 
-        it('subscribes to store with render method', () => {
+        it('subscribes to project with render method', () => {
           expect(storeSubscribeSpy.called).to.equal(true);
           expect(storeSubscribeSpy.lastCall.args[0]).to.equal(instance._render);
         });
@@ -390,7 +390,7 @@ describe('choices', () => {
           );
         });
 
-        it('clears store', () => {
+        it('clears project', () => {
           expect(clearStoreSpy.called).to.equal(true);
         });
 
@@ -996,7 +996,7 @@ describe('choices', () => {
         expect(output).to.eql(instance);
       });
 
-      it('highlights each item in store', () => {
+      it('highlights each item in project', () => {
         expect(highlightItemStub.callCount).to.equal(items.length);
         expect(highlightItemStub.firstCall.args[0]).to.equal(items[0]);
         expect(highlightItemStub.lastCall.args[0]).to.equal(items[1]);
@@ -1036,7 +1036,7 @@ describe('choices', () => {
         expect(output).to.eql(instance);
       });
 
-      it('unhighlights each item in store', () => {
+      it('unhighlights each item in project', () => {
         expect(unhighlightItemStub.callCount).to.equal(items.length);
         expect(unhighlightItemStub.firstCall.args[0]).to.equal(items[0]);
         expect(unhighlightItemStub.lastCall.args[0]).to.equal(items[1]);
@@ -1455,7 +1455,7 @@ describe('choices', () => {
         instance._removeItem.reset();
       });
 
-      it('removes each active item in store with matching value', () => {
+      it('removes each active item in project with matching value', () => {
         expect(removeItemStub.callCount).to.equal(2);
         expect(removeItemStub.firstCall.args[0]).to.equal(items[1]);
         expect(removeItemStub.secondCall.args[0]).to.equal(items[2]);
@@ -1496,7 +1496,7 @@ describe('choices', () => {
           output = instance.removeActiveItems();
         });
 
-        it('removes all active items in store', () => {
+        it('removes all active items in project', () => {
           expect(removeItemStub.callCount).to.equal(items.length);
           expect(removeItemStub.firstCall.args[0]).to.equal(items[0]);
           expect(removeItemStub.secondCall.args[0]).to.equal(items[1]);
@@ -1511,7 +1511,7 @@ describe('choices', () => {
           output = instance.removeActiveItems(idToExclude);
         });
 
-        it('removes all active items in store with id that does match excludedId', () => {
+        it('removes all active items in project with id that does match excludedId', () => {
           expect(removeItemStub.callCount).to.equal(2);
           expect(removeItemStub.firstCall.args[0]).to.equal(items[0]);
           expect(removeItemStub.secondCall.args[0]).to.equal(items[2]);
@@ -1562,7 +1562,7 @@ describe('choices', () => {
           expect(output).to.eql(instance);
         });
 
-        it('removes each highlighted item in store', () => {
+        it('removes each highlighted item in project', () => {
           expect(removeItemStub.callCount).to.equal(2);
         });
       });
@@ -2289,7 +2289,7 @@ describe('choices', () => {
           customProperties: {},
         };
 
-        it('dispatches a REMOVE_ITEM action to the store', () => {
+        it('dispatches a REMOVE_ITEM action to the project', () => {
           instance._removeItem(item);
 
           expect(instance._store.dispatch).to.have.been.calledWith(

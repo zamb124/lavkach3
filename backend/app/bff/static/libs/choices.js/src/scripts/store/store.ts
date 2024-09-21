@@ -18,63 +18,63 @@ export default class Store {
   }
 
   /**
-   * Subscribe store to function call (wrapped Redux method)
+   * Subscribe project to function call (wrapped Redux method)
    */
   subscribe(onChange: () => void): void {
     this._store.subscribe(onChange);
   }
 
   /**
-   * Dispatch event to store (wrapped Redux method)
+   * Dispatch event to project (wrapped Redux method)
    */
   dispatch(action: AnyAction): void {
     this._store.dispatch(action);
   }
 
   /**
-   * Get store object (wrapping Redux method)
+   * Get project object (wrapping Redux method)
    */
   get state(): State {
     return this._store.getState();
   }
 
   /**
-   * Get items from store
+   * Get items from project
    */
   get items(): Item[] {
     return this.state.items;
   }
 
   /**
-   * Get active items from store
+   * Get active items from project
    */
   get activeItems(): Item[] {
     return this.items.filter((item) => item.active === true);
   }
 
   /**
-   * Get highlighted items from store
+   * Get highlighted items from project
    */
   get highlightedActiveItems(): Item[] {
     return this.items.filter((item) => item.active && item.highlighted);
   }
 
   /**
-   * Get choices from store
+   * Get choices from project
    */
   get choices(): Choice[] {
     return this.state.choices;
   }
 
   /**
-   * Get active choices from store
+   * Get active choices from project
    */
   get activeChoices(): Choice[] {
     return this.choices.filter((choice) => choice.active === true);
   }
 
   /**
-   * Get selectable choices from store
+   * Get selectable choices from project
    */
   get selectableChoices(): Choice[] {
     return this.choices.filter((choice) => choice.disabled !== true);
@@ -90,7 +90,7 @@ export default class Store {
   }
 
   /**
-   * Get placeholder choice from store
+   * Get placeholder choice from project
    */
   get placeholderChoice(): Choice | undefined {
     return [...this.choices]
@@ -99,14 +99,14 @@ export default class Store {
   }
 
   /**
-   * Get groups from store
+   * Get groups from project
    */
   get groups(): Group[] {
     return this.state.groups;
   }
 
   /**
-   * Get active groups from store
+   * Get active groups from project
    */
   get activeGroups(): Group[] {
     const { groups, choices } = this;
@@ -122,7 +122,7 @@ export default class Store {
   }
 
   /**
-   * Get loading state from store
+   * Get loading state from project
    */
   isLoading(): boolean {
     return this.state.loading;

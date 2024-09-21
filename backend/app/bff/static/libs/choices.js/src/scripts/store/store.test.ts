@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import Store from './store';
 
-describe('reducers/store', () => {
+describe('reducers/project', () => {
   let instance;
   let subscribeStub;
   let dispatchStub;
@@ -22,7 +22,7 @@ describe('reducers/store', () => {
   });
 
   describe('constructor', () => {
-    it('creates redux store', () => {
+    it('creates redux project', () => {
       expect(instance._store).to.contain.keys([
         'subscribe',
         'dispatch',
@@ -60,7 +60,7 @@ describe('reducers/store', () => {
     });
   });
 
-  describe('store selectors', () => {
+  describe('project selectors', () => {
     let state;
 
     beforeEach(() => {

@@ -75,10 +75,10 @@ class BasicAdapter(BaseAdapter):
         responce = await self.client.get(self.host + path, params=None)
         return responce.json()
 
-    @action(model='store', multiple=False, permits=[])
+    @action(model='project', multiple=False, permits=[])
     async def action_assign_store(self, payload: dict | str):
         """Метод прикрепления к складу """
-        path = f'/api/basic/store/assign_store'
+        path = f'/api/basic/project/assign_store'
         if isinstance(payload, str):
             payload = json.loads(payload)
         responce = await self.client.post(self.host + path, json=payload, params={})

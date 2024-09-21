@@ -7,39 +7,39 @@ export default class Store {
     _store: IStore;
     constructor();
     /**
-     * Subscribe store to function call (wrapped Redux method)
+     * Subscribe project to function call (wrapped Redux method)
      */
     subscribe(onChange: () => void): void;
     /**
-     * Dispatch event to store (wrapped Redux method)
+     * Dispatch event to project (wrapped Redux method)
      */
     dispatch(action: AnyAction): void;
     /**
-     * Get store object (wrapping Redux method)
+     * Get project object (wrapping Redux method)
      */
     get state(): State;
     /**
-     * Get items from store
+     * Get items from project
      */
     get items(): Item[];
     /**
-     * Get active items from store
+     * Get active items from project
      */
     get activeItems(): Item[];
     /**
-     * Get highlighted items from store
+     * Get highlighted items from project
      */
     get highlightedActiveItems(): Item[];
     /**
-     * Get choices from store
+     * Get choices from project
      */
     get choices(): Choice[];
     /**
-     * Get active choices from store
+     * Get active choices from project
      */
     get activeChoices(): Choice[];
     /**
-     * Get selectable choices from store
+     * Get selectable choices from project
      */
     get selectableChoices(): Choice[];
     /**
@@ -47,19 +47,19 @@ export default class Store {
      */
     get searchableChoices(): Choice[];
     /**
-     * Get placeholder choice from store
+     * Get placeholder choice from project
      */
     get placeholderChoice(): Choice | undefined;
     /**
-     * Get groups from store
+     * Get groups from project
      */
     get groups(): Group[];
     /**
-     * Get active groups from store
+     * Get active groups from project
      */
     get activeGroups(): Group[];
     /**
-     * Get loading state from store
+     * Get loading state from project
      */
     isLoading(): boolean;
     /**
@@ -71,4 +71,4 @@ export default class Store {
      */
     getGroupById(id: number): Group | undefined;
 }
-//# sourceMappingURL=store.d.ts.map
+//# sourceMappingURL=project.d.ts.map

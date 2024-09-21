@@ -11,7 +11,7 @@ from core.types import TypeLocale
 
 class CurrentUser(BaseModel):
     user_id: Optional[UUID4] = None
-    company_ids: Optional[List[UUID4]] = None
+    company_ids: Optional[List[UUID4]] = []
     company_id: Optional[UUID4] = False
     store_id: Optional[UUID4] = False
     role_ids: Optional[List[str]] = []

@@ -180,7 +180,7 @@ class MoveLog(Base, AllMixin):
     __tablename__ = "move_log"
     lsn_seq = Sequence(f'move_log_lsn_seq')
     product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.product.id")
-    store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.store.id")
+    store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.project.id")
     location_class: Mapped[LocationClass] = mapped_column(index=True)
     location_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('location_type.id', ondelete='SET NULL'), index=True)
     location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"), index=True)

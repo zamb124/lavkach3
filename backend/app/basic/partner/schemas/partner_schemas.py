@@ -4,7 +4,6 @@ from typing import Optional
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
 
-from app.basic.company.schemas.company_schemas import CompanyScheme
 from app.basic.partner.models.partner_models import PartnerType, Partner
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel
@@ -74,4 +73,4 @@ class PartnerFilter(BaseFilter):
 
 
 class PartnerListSchema(GenericListSchema):
-    data: Optional[List[CompanyScheme]]
+    data: Optional[List[UUID4]]
