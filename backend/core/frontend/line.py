@@ -316,7 +316,7 @@ class Lines:
         await self.fill_lines(self.data, self.join_related, self.join_fields)
 
 
-    @timed
+
     async def fill_lines(
             self,
             data: dict,

@@ -30,16 +30,16 @@ fileConfig(config.config_file_name)
 
 from core.db_config import config
 from app.inventory.quant.models import *
-from app.basic.company.models import *
+from core.core_apps.base.company.models import *
 from app.basic.product.models import *
 from app.basic.store.models import *
-from app.basic.user.models import *
+from core.core_apps.base.user.models import *
 from app.basic.partner.models import *
 from app.basic.uom.models import *
 from app.inventory.location.models import *
 from app.inventory.order.models import *
 from app.inventory.product_storage.models import *
-from app.bus.bus.models.bus_models import *
+from core.core_apps.bus.bus.models.bus_models import *
 
 target_metadata = Base.metadata
 

@@ -1,9 +1,9 @@
 from alembic import op
 import sqlalchemy as sa
 from uuid import uuid4
-from app.basic.company.models.company_models import Company
-from app.basic.user.models.user_models import User
-from app.basic.user.models.role_models import Role
+from core.core_apps.base.company.models.company_models import Company
+from core.core_apps.base.user.models.user_models import User
+from core.core_apps.base.user.models.role_models import Role
 from app.basic.store.models.store_models import Store
 from app.basic.product.models.product_models import Product, ProductCategory
 

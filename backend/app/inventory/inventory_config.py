@@ -16,11 +16,17 @@ class Config(CoreConfig):
     BROKER_PATH: str = 'app.inventory.inventory_server:app'
     APP_HOST: str = os.environ.get("INVENTORY_HOST") or os.environ.get("APP_HOST") or '127.0.0.1'
     APP_PORT: int = os.environ.get("INVENTORY_PORT") or os.environ.get("APP_PORT") or '8002'
-    APP_PROTOCOL: str = os.environ.get('INVENTORY_PROTOCOL') or os.environ.get('APP_PROTOCOL') or 'http'
+    APP_PROTOCOL: str = os.environ.get('INVENTORY_PROTOCOL') or os.environ.get(
+        'APP_PROTOCOL') or 'http'
 
 
 class DevelopmentConfig(Config):
     ...
+
+
+class DockerConfig(Config):
+    APP_HOST: str = 'inventory_app'
+    APP_PORT: int = '80'
 
 
 class LocalConfig(Config):
@@ -40,6 +46,7 @@ def get_config():
     config_type = {
         "dev": DevelopmentConfig(),
         "local": LocalConfig(),
+        "docker": DockerConfig(),
         "prod": ProductionConfig(),
     }
     return config_type[env]

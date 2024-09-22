@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class Client(httpx.AsyncClient):
-    @timed
+
     async def request(self, method: str, url: str, json=None, params=None, timeout=None):
         if isinstance(json, str):
             json = _json.loads(json)
@@ -44,7 +44,14 @@ class Client(httpx.AsyncClient):
 
     async def get(self, url, *, params, kwargs=None):
         logger.info('Adapter %s %s', url, params)
-        responce = await self.request('GET', url=url, params=params)
+        try:
+            responce = await self.request('GET', url=url, params=params)
+        except Exception as ex:
+            logger.error(f'URL: {url}\n PARAMS: {str(params)}')
+            logger.error(f'REQUEST OBJ: {self.request}\n SELF: {self}')
+            logger.error(str(ex))
+            print(f'URL: {url}\n PARAMS: {str(params)}')
+            raise ex
         return responce
 
     async def post(self, url, json, *, params, kwargs=None):
@@ -90,8 +97,6 @@ class BaseAdapter:
 
 
         self.model = model
-        if isinstance(conn, AsyncClient):
-            a=1
         self.domain = domain
         self.host = f"{self.protocol}://{self.host}:{self.port}"
         self.env = env

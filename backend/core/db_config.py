@@ -59,6 +59,9 @@ class Config(BaseSettings):
 class DevelopmentConfig(Config):
     ...
 
+class DockerConfig(Config):
+    BUS_HOST: str = 'bus_app'
+    BUS_PORT: str = '80'
 
 class LocalConfig(Config):
     ...
@@ -91,6 +94,7 @@ def get_config():
     config_type = {
         "dev": DevelopmentConfig(),
         "local": LocalConfig(),
+        "docker": DockerConfig(),
         "prod": ProductionConfig(),
     }
     return config_type[env]

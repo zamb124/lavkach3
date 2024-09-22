@@ -91,6 +91,7 @@
             .choices__list--dropdown {
                 border-radius: 15px !important;
                 width: max-content;
+                z-index: 35 !important;
             }
 
             .choices__inner {
@@ -436,6 +437,7 @@
         <script src="{{ url_for('static' ,path='js/ws.js') }}"></script>
         <script src="{{ url_for('static' ,path='js/json-enc.js') }}"></script>
         <script type="text/javascript">
+        htmx.config.globalViewTransitions = true;
             function spinner_show() {
                 var body = document.body
                 var spinBloker = document.createElement('div')

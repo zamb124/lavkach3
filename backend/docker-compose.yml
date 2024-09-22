@@ -22,6 +22,45 @@ services:
     ports:
       - 5371:5371
 
+  base-app:
+    build:
+      context: .
+    env_file:
+      - .env-docker
+    container_name: base_app
+    command: gunicorn core.core_apps.base.base_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
+    ports:
+      - 8888:80
+    depends_on:
+      - db
+      - redis
+  bus-app:
+    build:
+      context: .
+    env_file:
+      - .env-docker
+    container_name: bus_app
+    command: gunicorn core.core_apps.bus.bus_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
+    ports:
+      - 8099:80
+    depends_on:
+      - base-app
+      - db
+      - redis
+
+  jobs-app:
+    build:
+      context: .
+    env_file:
+      - .env-docker
+    container_name: jobs_app
+    command: taskiq worker core.helpers.broker.tkq:broker
+    depends_on:
+      - base-app
+      - db
+      - redis
+
+
   basic-app:
     build:
       context: .
@@ -34,6 +73,7 @@ services:
     depends_on:
       - db
       - redis
+      - bus-app
 
   inventory-app:
     build:
@@ -48,6 +88,7 @@ services:
       - basic-app
       - db
       - redis
+      - bus-app
 
   bff-app:
     build:
@@ -63,17 +104,6 @@ services:
       - inventory-app
       - db
       - redis
-
-  terminal-app:
-    build:
-      context: .
-    env_file:
-      - .env-docker
-    container_name: terminal_app
-    command: gunicorn app.terminal.server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
-    ports:
-      - 8004:80
-    depends_on:
-      - db
-      - redis
+      - bus-app
+      - base-app
 

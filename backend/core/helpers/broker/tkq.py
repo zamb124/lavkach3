@@ -16,7 +16,6 @@ class TaskSession(TaskiqMiddleware):
             self,
             message: "TaskiqMessage",
     ) -> "Union[TaskiqMessage, Coroutine[Any, Any, TaskiqMessage]]":
-        a=1
         return message
 
 
