@@ -77,7 +77,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
                 raise PasswordDoesNotMatchException
         else:
             result_user = await self.session.execute(
-                select(User).where(User.id == user.user_id)
+                select(User).where(User.id == user.id)
             )
             user = result_user.scalars().first()
         # Получаем пермишены

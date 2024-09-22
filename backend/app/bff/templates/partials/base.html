@@ -88,7 +88,6 @@
             }
 
 
-
             .choices__list--dropdown {
                 border-radius: 15px !important;
                 width: max-content;
@@ -101,6 +100,7 @@
             .is-disabled .choices__inner {
                 border: 0;
             }
+
             .choices.is-disabled .choices__inner, .choices.is-disabled .choices__input {
                 background-color: var(--vz-tertiary-bg);
             }
@@ -274,6 +274,14 @@
                     transform: rotate(360deg);
                 }
             }
+            .tost{
+                border-radius: 15px;
+            }
+            .toastify {
+
+    border-radius: 15px;
+}
+
         </style>
     {% endblock css %}
 </head>
@@ -673,6 +681,10 @@
                                 htmx.trigger(el, 'backend_update')
                                 var myToast = Toastify({
                                     text: message.message,
+                                    duration: 3000,
+                                    style: {
+                                        className: "tost",
+                                    },
                                 })
                                 myToast.showToast();
                             }
@@ -725,6 +737,7 @@
                         main()
                     }, 3000)
                 }
+                spinner_destroy()
             })
             var body_init = null
             htmx.on('htmx:xhr:loadstart', (e) => {

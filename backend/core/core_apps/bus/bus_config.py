@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from pydantic import BaseConfig
 
-from core.service_config import Config as CoreConfig
+from ...service_config import Config as CoreConfig
 
 BaseConfig.arbitrary_types_allowed = True
 logging.basicConfig(level=logging.INFO)

@@ -4,8 +4,8 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID
 
-from app.bus.bus.enums import BusStatus
-from app.bus.bus.models.bus_models import Bus
+from ...bus.enums import BusStatus
+from ....bus.bus.models.bus_models import Bus
 from core.helpers.cache import CacheTag
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel

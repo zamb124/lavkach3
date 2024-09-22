@@ -1,10 +1,10 @@
 from typing import Any, Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession
+
 from starlette.requests import Request
-from app.bus.bus.models.bus_models import Bus
-from app.bus.bus.shemas.bus_schemas import BusCreateScheme, BusUpdateScheme, BusFilter
-from core.permissions import permit
+from ...bus.models.bus_models import Bus
+from ...bus.shemas.bus_schemas import BusCreateScheme, BusUpdateScheme, BusFilter
+from .....permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
 
@@ -22,7 +22,7 @@ class BusService(BaseService[Bus, BusCreateScheme, BusUpdateScheme, BusFilter]):
 
     @permit('bus_create')
     async def create(self, obj: CreateSchemaType) -> ModelType:
-        from app.bus.bus_tasks import send_message
+        from ...bus_tasks import send_message
         bus_entity = await super(BusService, self).create(obj)
         send_message = await send_message.kiq({
             'bus_id': bus_entity.id,

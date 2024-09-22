@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from core.service.base import Model, BaseService
     from core.db import Base
 from .core_apps.base import __domain__ as base_domain
+from .core_apps.bus import __domain__ as bus_domain
 
 class DeleteSchema(BaseModel):
     delete_id: uuid.UUID
@@ -108,7 +109,7 @@ class Domain:
     def __getitem__(self, item: str):
         return self.models[item]
 
-base_domains = [base_domain]
+core_domains = [base_domain, bus_domain]
 
 class Env:
     domains: dict[str, Domain]
@@ -119,7 +120,7 @@ class Env:
         _domains: dict = {}
         if isinstance(domains, dict):
             domains = [domains]
-        for d in domains+base_domains:
+        for d in domains+core_domains:
             domain_type: str = 'EXTERNAL'
             if isinstance(d, tuple):
                 domain_type = d[1]
@@ -150,12 +151,12 @@ class Env:
             "password": config.SUPERUSER_PASSWORD
         }
         responce = await client.post(
-            url=f'http://{config.BASIC_HOST}:{config.BASIC_PORT}/api/basic/user/login',
+            url=f'http://{config.BASE_HOST}:{config.BASE_PORT}/api/base/user/login',
             json=body
         )
         data = responce.json()
         client = asyncclient(headers={'Authorization': data['token']})
-        env = Env(domains, client)
+        env = Env(core_domains, client)
         user = CurrentUser(id=uuid.uuid4(), is_admin=True)
         setattr(client, 'user', user)
         setattr(client, 'scope', {'env': env})
@@ -169,7 +170,7 @@ class Env:
         session_id = str(uuid.uuid4())
         set_session_context(session_id=session_id) # Делаем сессию для env, если она без реквеста
         client = asyncclient(headers={'Authorization': f'Bearer {config.INTERCO_TOKEN}'})
-        env = Env(domains, client)
+        env = Env(core_domains, client)
         user = CurrentUser(id=uuid.uuid4(), is_admin=True)
         setattr(client, 'user', user)
         setattr(client, 'scope', {'env': env})

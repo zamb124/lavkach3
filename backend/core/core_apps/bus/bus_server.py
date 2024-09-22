@@ -8,21 +8,22 @@ from fastapi.responses import JSONResponse
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
-from app.bus.bus_tasks import start_processing_messages
-from app.bus.tkq import broker
-from app.bus.bus_router import bus_router
-from core.db_config import config
-from core.env import Env, domains
-from core.exceptions import CustomException
-from core.fastapi.dependencies import Logging
-from core.fastapi.middlewares import (
+from .bus_tasks import start_processing_messages
+from .tkq import broker
+from .bus_router import bus_router
+from ...db_config import config
+from ...env import Env
+from ...exceptions import CustomException
+from ...fastapi.dependencies import Logging
+from ...fastapi.middlewares import (
     AuthenticationMiddleware,
     AuthBackend,
     SQLAlchemyMiddleware,
 )
-from core.helpers.cache import Cache, CustomKeyMaker
-from core.helpers.cache import RedisBackend
-
+from ...helpers.cache import Cache, CustomKeyMaker
+from ...helpers.cache import RedisBackend
+from . import __domain__ as bus_domain
+domains = [bus_domain]
 
 class EnvMidlleWare:
     """

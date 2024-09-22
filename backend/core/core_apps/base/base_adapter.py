@@ -26,8 +26,8 @@ class BaseAdapter(BaseAdapter):
     async def user_company_change(self, user_id, company_id):
         path = '/api/base/user/company_change'
         body = {
-            'user_id': user_id,
-            'company_id': company_id
+            'user_id': user_id.__str__(),
+            'company_id': company_id.__str__()
         }
         responce = await self.client.post(self.host + path, json=body, params=None)
         return responce.json()

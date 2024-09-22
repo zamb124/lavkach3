@@ -3,13 +3,13 @@ import uuid
 
 from fastapi_filter import FilterDepends
 
-from app.bus.bus.shemas.bus_schemas import (
+from ...bus.shemas.bus_schemas import (
     BusScheme,
     BusCreateScheme,
     BusUpdateScheme,
     BusListSchema, BusFilter
 )
-from app.bus.bus.services import BusService
+from ...bus.services import BusService
 from core.fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,

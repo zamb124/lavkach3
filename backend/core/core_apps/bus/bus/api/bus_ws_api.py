@@ -9,7 +9,7 @@ from fastapi import (
     WebSocketException,
 )
 
-from app.bus.bus.managers import ws_manager
+from ...bus.managers import ws_manager
 from core.fastapi.middlewares import AuthBackend
 
 ws_router = APIRouter()

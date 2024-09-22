@@ -99,3 +99,9 @@ async def refresh_token(service: UserService = Depends()):
                  dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def permissions(user_id: uuid.UUID, service: UserService = Depends()):
     return await service.permissions(user_id=user_id)
+
+
+@user_router.post("/company_change",response_model=LoginResponseSchema)
+async def company_change(schema: ChangeCompanyScheme, service: UserService = Depends()):
+    user = await service.company_change(obj=schema)
+    return await service.login(user=user)

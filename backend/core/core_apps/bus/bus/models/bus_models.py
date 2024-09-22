@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Uuid, Sequence, Enum, ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped
 
-from app.bus.bus.enums import BusStatus
+from ...bus.enums import BusStatus
 from core.db import Base
 from core.db.mixins import AllMixin
 from core.helpers.cache import CacheTag

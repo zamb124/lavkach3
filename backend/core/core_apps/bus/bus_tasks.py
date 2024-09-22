@@ -2,10 +2,10 @@ import logging
 
 from fastapi_restful.tasks import repeat_every
 
-from app.bus.bus import BusFilter
-from app.bus.bus.enums import BusStatus
-from app.bus.bus.managers import ws_manager
-from app.bus.tkq import broker
+from .bus import BusFilter
+from .bus.enums import BusStatus
+from .bus.managers import ws_manager
+from .tkq import broker
 from core.env import Env
 from core.helpers.cache import CacheTag
 
