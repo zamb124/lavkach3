@@ -14,7 +14,7 @@ class MovePermit(BasePermit):
 @move_router.get("", response_class=HTMLResponse, dependencies=[Depends(MovePermit)])
 async def move(request: Request):
     """Список перемещений"""
-    cls = await ClassView(request, 'move')
+    cls = ClassView(request, 'move')
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template, context={'cls': cls})
 

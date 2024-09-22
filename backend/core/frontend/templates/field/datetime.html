@@ -1,7 +1,8 @@
 {% block as_update %}
     <input class="datetime form-control" type="text"
            name="{{ field.key }}"
-            {% if field.required %} aria-required="true" {% endif %}
+            {% if field.update.required %} aria-required="true" {% endif %}
+            {% if field.update.readonly %} readonly {% endif %}
            onfocus="(this.type='date')"
            placeholder="{{ field.update.title or field.field_name }}" id="{{ field.field_name }}"
            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">

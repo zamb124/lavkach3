@@ -28,7 +28,7 @@ async def move(request: Request):
     """Список перемещений"""
     if not request.user.user_id:
         return RedirectResponse(f"/basic/user/login?next={request.url.path}")
-    cls = await ClassView(request, 'order_type')
+    cls = ClassView(request, 'order_type')
     template = f'inventory/app/app{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template, context={'cls': cls, 'is_app': True})
 
@@ -342,7 +342,7 @@ class InventoryAPP:
 
     async def main_page(self, message: dict = None):
         """ Отдает главную страницу c OrderType"""
-        cls = await ClassView(
+        cls = ClassView(
             self.websocket,
             'order_type',
             key=self.key,

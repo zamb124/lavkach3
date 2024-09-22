@@ -5,7 +5,7 @@ from jinja2_fragments import render_block
 from pydantic import BaseModel
 
 from core.frontend.enviroment import environment
-from core.frontend.types import ViewVars, MethodType
+from core.frontend.types import MethodType, ViewVars
 
 
 class FieldFields:
@@ -13,14 +13,10 @@ class FieldFields:
     vars: Optional[dict] = None  # Переменные если нужно передать контекст
 
 
-class Fields(BaseModel):
-    """Обертка для удобства, что бы с полями работать как с обьектом"""
-
-    class Config:
-        extra = 'allow'
 
 
-class Field(BaseModel, FieldFields):
+
+class Field:
     """
         Описание поля
         - as_update - виджет поля как редактируемого
@@ -34,18 +30,21 @@ class Field(BaseModel, FieldFields):
     domain_name: str                   # Наименование домена модели
     # widget params
     enums: Optional[Any] = None        # Если поле enum, то тут будет список енумов
-    val: Any = None                    # Значение поля
     sort_idx: int = 0                  # Индекс сортировки поля
     line: Optional[Any] = None         # Обьект, которому принадлежит поле
     lines: Optional[Any] = None        # Если поле list_rel, то субобьекты
-    color_map: Optional[dict] = {}     # Мапа для цветовой палитры
-    color: Optional[Any] = None        # Значение цвета
+
     is_filter: bool = False            # Является ли поле фильтром
     is_reserved: bool = False          # Призна
     # Views vars
     get: ViewVars
     create: ViewVars
     update: ViewVars
+    val: Any
+
+    def __init__(self, *args, **kwargs):
+        self.__dict__.update(kwargs)
+
 
     @property
     def key(self) -> str:
@@ -118,3 +117,26 @@ class Field(BaseModel, FieldFields):
                 filter += f'"{k}":"{v}",'
             filter += '}'
         return filter
+class Fields:
+    """Обертка для удобства, что бы с полями работать как с обьектом"""
+    _fields: list = []
+    __state = 0                                      # счетчик итераций
+
+    def __setattr__(self, key, value):
+        super().__setattr__(key, value)
+
+
+    def __iter__(self):
+        self._fields = [i for i in self.__dict__.values() if isinstance(i, Field)]
+        return self
+
+    def __next__(self):
+        """Если использовать конструктор как итератор, то он будет возвращать строки"""
+        try:
+            field = self._fields[self.__state]
+            self.__state += 1
+            return field
+        except IndexError:
+            self.__state = 0
+            raise StopIteration
+

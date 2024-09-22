@@ -19,7 +19,16 @@ def _crud_filter(fields: 'Fields', method: 'MethodType', display_view: str = 'ta
     """
         Jinja2 флильтр, который фильтрует строки для типа отображений
     """
-    return [v for k, v in fields.model_extra.items() if getattr(getattr(v, method.value), display_view)]
+    res = []
+    for field in fields:
+        if field.field_name == 'id':
+            a=1
+        method_type = getattr(field, method.value)
+        if getattr(method_type, display_view):
+            res.append(field)
+
+    return res
+    #return [v for v in fields if getattr(getattr(v, method.value), display_view)]
 
 
 def table(fields: 'Fields', method: 'MethodType'):

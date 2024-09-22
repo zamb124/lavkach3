@@ -13,7 +13,7 @@ class ProductPermit(BasePermit):
 
 @product_router.get("", response_class=HTMLResponse, dependencies=[Depends(ProductPermit)])
 async def product(request: Request):
-    cls = await ClassView(request,  model='product')
+    cls = ClassView(request,  model='product')
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template, context={'cls': cls})
 

@@ -14,7 +14,7 @@ class UomPermit(BasePermit):
 
 @uom_router.get("", response_class=HTMLResponse, dependencies=[Depends(UomPermit)])
 async def uom(request: Request):
-    cls = await ClassView(request, 'uom')
+    cls = ClassView(request, 'uom')
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template, context={'cls': cls})
 

@@ -243,7 +243,7 @@
                     "id": "{{ line.id }}"
                     }'
     >
-    {% for field_name, field in line.fields if not field.is_reserved and field.type != 'list_rel' %}
+    {% for field in line.fields if not field.is_reserved and field.type != 'list_rel' %}
         {% if loop.length % 3 != 0 and loop.first %}
             <div class="row">
         {% endif %}
@@ -271,7 +271,7 @@
         </div>
     {% endif %}
     {% endfor %}
-    {% for field_name, field in line.fields if not field.is_reserved and field.type == 'list_rel' %}
+    {% for field in line.fields if not field.is_reserved and field.type == 'list_rel' %}
         <div class="row">
         <div class="col">
         <p style="margin-bottom: 0; margin-top: 1rem"

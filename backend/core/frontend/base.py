@@ -49,7 +49,7 @@ async def _filter(request: Request, filschema: FilterSchema):
     """
      Универсальный запрос, который отдает фильтр обьекта по его модулю и модели
     """
-    cls = await ClassView(request, filschema.model, key=filschema.key)
+    cls = ClassView(request, filschema.model, key=filschema.key)
     return cls.as_filter
 
 
@@ -139,7 +139,7 @@ async def table(request: Request, schema: TableSchema):
         if qp:
             qp = {i: v for i, v in qp[0].items() if v}  # type: ignore
 
-    cls = await ClassView(request, model=schema.model, key=schema.key)
+    cls = ClassView(request, model=schema.model, key=schema.key)
     await cls.init(params=qp, join_related=True)
     if request.query_params.get('edit'):
         return cls.as_table_form
@@ -160,7 +160,7 @@ async def line(request: Request, schema: LineSchema):
     """
      Универсальный запрос, который отдает/изменяет обьект
     """
-    cls = await ClassView(request, model=schema.model, key=schema.key)
+    cls = ClassView(request, model=schema.model, key=schema.key)
     match schema.method:
         case Method.UPDATE:
             """Отдать обьект на редактирование, в зависимости от mode (tr/div)"""
@@ -203,7 +203,7 @@ async def modal(request: Request, schema: ModalSchema):
     """
      Универсальный запрос модалки, который отдает форму модели
     """
-    cls = await ClassView(request, schema.model, force_init=False)
+    cls =  ClassView(request, schema.model, force_init=False)
     match schema.method:
         case Method.GET:
             lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
@@ -233,7 +233,7 @@ async def action(request: Request, schema: ActionSchema):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    cls: ClassView = await ClassView(request, schema.model)
+    cls: ClassView = ClassView(request, schema.model)
     func: Callable = getattr(cls.model.adapter, schema.action)
     result = []
     if schema.commit and schema.method == 'update':

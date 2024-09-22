@@ -83,7 +83,7 @@ def get_types(annotation:object, _class: list=[]) -> list[object]:
     return _class
 
 
-class ClassView(AsyncObj):
+class ClassView:
     """
         Классконструктор модели для манипулирование уже их UI HTMX
     """
@@ -118,7 +118,7 @@ class ClassView(AsyncObj):
         except IndexError:
             raise StopIteration
 
-    async def __ainit__(self,
+    def __init__(self,
                         request: Request = None,
                         model: str | Model = None,
                         params: QueryParams | dict | None = None,
@@ -160,29 +160,8 @@ class ClassView(AsyncObj):
             else:
                 self.sort = {}
         self.is_inline = is_inline
-        self.lines = Lines(
-            class_key=self.key,
-            cls=self,
-            vars=self.vars,
-            join_fields=self.join_fields,
-        )
-        line_header = await self._get_line(
-            schema=self.model.schemas.get,
-            type=LineType.HEADER,
-            class_key=self.key,
-            view=self
-        )
-        self.lines.line_header = line_header
-        line_new = self.lines.line_header.line_copy(_type=LineType.NEW)
-        self.lines.line_new = line_new
-        line_filter = await self._get_line(
-            schema=self.model.schemas.filter,
-            type=LineType.FILTER
-        )
-        self.lines.line_filter = line_filter
 
-        if force_init:
-            await self.init()
+        self.lines = Lines(cls=self)
 
     async def init(self, params: dict | None = None, join_related: bool = False, data: list = None,) -> None:
         """Майнинг данных по params"""
@@ -288,14 +267,13 @@ class ClassView(AsyncObj):
             'get': self._get_view_vars_by_fieldinfo(get_fieldinfo),
         }
 
-    async def _get_field(self, line: Line, field_name: str, schema: BaseModel, **kwargs) -> Field:
+    def _get_field(self, lines: Lines, line: Line, field_name: str, schema: BaseModel, **kwargs) -> Field:
         """
             Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
         fielinfo: FieldInfo       = schema.model_fields[field_name]
         res: str                  = ''
         enums: list               = []
-        lines: list[Lines] | None = None
         class_types: list         = get_types(fielinfo.annotation, [])
         model: Model | None       = None
         model_name: str           = self.model.name
@@ -320,10 +298,10 @@ class ClassView(AsyncObj):
                     model_name = c.Config.__name__.lower()          # type: ignore
                 res += 'rel'
                 model = self.env[model_name]
-                submodel = await ClassView(
+                submodel = ClassView(
                     request=self.request,
                     model=model_name,
-                    key=line.class_key,
+                    key=self.key,
                     force_init=False,
                     is_rel=True
                 )  #
@@ -347,12 +325,12 @@ class ClassView(AsyncObj):
             'domain_name': model.domain.name,
             'enums': enums,
             'sort_idx': self.sort.get(field_name, 999),
-            'line': line,
-            'lines': lines
+            'lines': lines,
+            'line': line
         })
         return field
 
-    async def _get_schema_fields(self, line: Line, schema: BaseModel, **kwargs) -> Fields:
+    def _get_schema_fields(self, lines: Lines, line: Line, schema: BaseModel, **kwargs) -> Fields:
         """Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2 - а зачем?"""
         fields: list[tuple[str, Field]] = []
         field_class = Fields()
@@ -375,7 +353,7 @@ class ClassView(AsyncObj):
         for k, v in schema.model_fields.items():
             if k in exclude:
                 continue
-            f = await self._get_field(line=line, field_name=k, schema=schema, **kwargs)
+            f = self._get_field(lines=lines, line=line, field_name=k, schema=schema, **kwargs)
             fields.append((k, f))
             n += 1
         fields = sorted(fields, key=lambda x: x[1].sort_idx)
@@ -390,29 +368,10 @@ class ClassView(AsyncObj):
         fields = kwargs.get('fields')
         vars = kwargs.get('vars') or self.vars
         line = Line(
-            lines=lines or self.lines,
-            type=type,
-            schema=schema,
-            model_name=self.model.name,
-            domain_name=self.model.domain.name,
-            lsn=None,
-            vars=vars,
-            display_title=display_title,
-            company_id=company_id,
-            fields=fields,
-            id=None,
-            actions=self.actions,
-            class_key=key,
-            is_rel=self.is_rel
+            type=LineType.HEADER,
+            lines=self.lines,
+            is_last=False,
         )
-        if not fields:
-            fields = await self._get_schema_fields(
-                line,
-                schema=schema,
-                exclude=kwargs.get('exclude'),
-                type=kwargs.get('type')
-            )
-        line.fields = fields
         return line
 
     @property
@@ -420,7 +379,7 @@ class ClassView(AsyncObj):
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
         return render_block(
             environment=environment, template_name=f'cls/filter.html',
-            block_name='filter', method=MethodType.UPDATE, view=self
+            block_name='filter', method=MethodType.UPDATE, cls=self
         )
 
     @property

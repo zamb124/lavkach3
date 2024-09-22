@@ -161,7 +161,7 @@
             let element = document.getElementById("{{ field.key }}");
             let choices = new Choices(element, {
                 placeholderValue: "Enter {{ field.update.title }}",
-                removeItemButton: true,
+                removeItemButton: false,
                 read_only: true,
 
             });
@@ -226,7 +226,7 @@
                 )
             });
 
-            check_valid()
+            //check_valid()
             element.addEventListener('choice', function (event) {
                 check_valid(event)
             });

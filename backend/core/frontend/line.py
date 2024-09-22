@@ -1,4 +1,5 @@
 import asyncio
+import copy
 import datetime
 import uuid
 from collections import defaultdict
@@ -12,29 +13,54 @@ from starlette.datastructures import QueryParams
 from core.frontend.enviroment import environment
 from core.frontend.exceptions import HTMXException
 from core.frontend.field import Fields
-from core.frontend.types import MethodType
+from core.frontend.types import MethodType, ViewVars
 from core.frontend.types import LineType
+from core.utils import timeit
+from core.utils.timeit import timed
 
 
-class Line(BaseModel):
+class Line:
     """
         Обьект описывающий обьект отданный из другого сервиса или класса с помощью Pydantic модели
     """
-    type: LineType                          # Тип поля СМ LineType
     lines: 'Lines'                          # Список, которому принадлежит строка
-    model_name: str                         # Имя модели
-    domain_name: str                        # Наименование домена модели
-    schema: Any                             # Схема обьекта
-    actions: dict                           # Доступные методы обьекта
-    fields: Optional['Fields'] = None       # Поля обьекта
-    id: Optional[uuid.UUID] = None          # ID обьекта (если есть)
-    lsn: Optional[int] = None               # LSN обьекта (если есть)
-    vars: Optional[dict] = None             # vars обьекта (если есть)
-    company_id: Optional[uuid.UUID] = None  # Компания обьекта (если есть обьект)
-    display_title: Optional[str] = None     # Title (Поле title, или Компьют поле)
+    type: LineType                          # Тип поля СМ LineType
     is_last: bool = False                   # True Если обьект последний в Lines
-    class_key: str                          # Уникальный ключ конструктора
     is_rel: bool = False                    # True если обьек является relation от поля родителя
+    id: Optional[uuid.UUID] = None          # ID обьекта (если есть)
+    fields: Fields                          # Поля обьекта
+
+
+    def __init__(self, lines, type,id=None, is_last=False,**data):
+        self.type = type
+        self.lines = lines
+        self.is_last = is_last
+        self.id = id or uuid.uuid4()
+        if self.type != LineType.FILTER:
+            self.fields = self.lines.cls._get_schema_fields(
+                schema=self.lines.cls.model.schemas.get,
+                lines=self.lines,
+                line=self
+            )
+        if self.type == LineType.FILTER:
+            self.fields = self.lines.cls._get_schema_fields(
+                schema=self.lines.cls.model.schemas.filter,
+                lines=self.lines,
+                line=self
+            )
+
+    @property
+    def model_name(self):
+        return self.lines.model_name
+    @property
+    def domain_name(self):
+        return self.lines.domain_name
+    @property
+    def actions(self):
+        return self.lines.actions
+    @property
+    def class_key(self):
+        return self.lines.cls.key
 
     @property
     def key(self) -> str:
@@ -56,17 +82,6 @@ class Line(BaseModel):
         """Присвоение нового обьекта Line'у"""
         for _, field in self.fields:  # type: ignore
             field.line = self
-
-
-    def line_copy(self, _type: LineType | None = None) -> 'Line':
-        """Метод копирования лайна"""
-        new_line = self.copy(deep=True)
-        if _type:
-            new_line.type = _type
-        new_line._change_assign_line()
-        if _type == LineType.NEW:
-            new_line.id = uuid.uuid4()
-        return new_line
 
     def render(self, block_name: str, method: MethodType = MethodType.GET, last=False) -> str:
         """
@@ -211,23 +226,62 @@ class FilterLine(Line):
     ...
 
 
-class Lines(BaseModel):
+class Lines:
     """Делаем класс похожий на List и уже работаем с ним"""
     parent_field: Optional[Any] = None    # Поле родитель, если класс конструктор это Field другого класса
-    class_key: Optional[str]              # Ключ класса конструктора
     line_header: Optional[Line] = None    # Обьект для заголовка
     line_new: Optional[Line] = None       # Пустой обьект
     line_filter: Optional[Line] = None    # Обьект, описывающий фильтр
     lines: list['Line'] = []              # Список обьектов
-    vars: Optional[dict] = {}             # Произвольный словарь с параметрами
-    params: Optional[dict] = {}           # Параметры на вхрде
-    join_related: Optional[bool] = True   # Джойнить рилейшен столбцы
-    join_fields: Optional[list] = []      # Список присоединяемых полей, если пусто, значит все
-    cls: Any                              # Класс конструктора ClassView
+    cls: Any                             # Класс конструктора ClassView
+    data: dict = {}                       # Данные
+    filter_fields: Optional['Fields'] = None           # Поля обьекта
+    line_fields: Optional['Fields'] = None  # Поля обьекта
 
-    class Config:
-        arbitrary_types_allowed = True
+    def __init__(self, cls):
+        self.cls = cls
+        self.lines = []
+        self.line_header = Line(
+            type=LineType.HEADER,
+            lines=self,
+        )
+        self.line_filter = Line(
+            type=LineType.FILTER,
+            lines=self,
+        )
+        self.line_new = Line(
+            type=LineType.NEW,
+            lines=self,
+        )
 
+
+    @property
+    def actions(self):
+        return self.cls.actions
+    @property
+    def params(self):
+        return self.cls.params
+    @property
+    def join_related(self):
+        return self.cls.join_related
+    @property
+    def join_fields(self):
+        return self.cls.join_fields
+
+    @property
+    def vars(self):
+        return self.cls.vars
+
+    @property
+    def class_key(self) -> str:
+        return self.cls.key
+    @property
+    def domain_name(self) -> str:
+        return self.cls.model.domain.domain_name
+
+    @property
+    def model_name(self) -> str:
+        return self.cls.model_name
     @property
     def key(self) -> str:
         return self.parent_field.key if self.parent_field else self.class_key
@@ -237,9 +291,6 @@ class Lines(BaseModel):
             return False
         else:
             return True
-
-    def __deepcopy__(self, memodict={}) -> 'Lines':
-        return self
 
 
     async def get_data(
@@ -253,10 +304,6 @@ class Lines(BaseModel):
         """Метод собирает данные для конструктора модели"""
         if not params:
             params = self.params
-        if join_related:
-            self.join_related = join_related
-        if join_fields:
-            self.join_fields = join_fields or []
         if not data:
             if not self.cls.model.adapter.domain.domain_type == 'INTERNAL':
                 async with self.cls.model.adapter as a:  # type: ignore
@@ -265,29 +312,30 @@ class Lines(BaseModel):
             else:
                 data_obj = await self.cls.model.service.list(_filter=params)
                 data = [i.__dict__ for i in data_obj]
-        await self.fill_lines(data, join_related, join_fields)
+        self.data = data
+        await self.fill_lines(self.data, self.join_related, self.join_fields)
 
 
+    @timed
     async def fill_lines(
             self,
-            data: list,
+            data: dict,
             join_related: bool = False,
             join_fields: list = [],
     ) -> None:
         join_fields = join_fields or self.join_fields
-        assert self.line_header, 'Line header is not set'
-        for n, row in enumerate(data):
-            line_copied = self.line_header.line_copy(_type=LineType.LINE)
-            line_copied.id = row['id']
-            line_copied.type = LineType.LINE
+        for row in data:
+            line_copied = Line(
+                type=LineType.LINE,
+                lines=self,
+                id=row['id'],
+                is_last=False,
+            )
             line_copied.is_last = False
-            line_copied.display_title = row.get('title')
-            line_copied.company_id = row.get('company_id')
             line_copied.id = row.get('id')
             line_copied.lsn = row.get('lsn')
-            for _, col in line_copied.fields:
+            for col in line_copied.fields:
                 col.val = row[col.field_name]
-                col.line = line_copied
                 if col.type in ('date', 'datetime'):
                     if isinstance(col.val, datetime.datetime):
                         pass
@@ -296,13 +344,10 @@ class Lines(BaseModel):
                 elif col.type == 'id':
                     if not col.val:
                         col.val = []
-                elif col.type == 'enum' and col.color_map and col.val:
-                    color_enum = col.enums(col.val)
-                    col.color = col.color_map.get(color_enum)
                 elif col.type.endswith('list_rel'):
-                    print(f'rel - {col.lines.line_header.model_name}')
                     col.lines.parent_field = col
                     await col.lines.fill_lines(data=col.val, join_related=False)
+                #setattr(line_copied, col.field_name, col.val)
             self.lines.append(line_copied)
 
         if join_related or join_fields:

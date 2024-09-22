@@ -11,7 +11,7 @@ from app.bff.apps.basic.user.user import user_router
 
 basic_router = APIRouter()
 basic_router.include_router(company_router, prefix="/company", tags=["company"])
-basic_router.include_router(store_router, prefix="/project", tags=["project"])
+basic_router.include_router(store_router, prefix="/store", tags=["store"])
 basic_router.include_router(user_router, prefix="/user", tags=["user"])
 basic_router.include_router(product_router, prefix="/product", tags=["product"])
 basic_router.include_router(product_category_router, prefix="/product_category", tags=["product_category"])

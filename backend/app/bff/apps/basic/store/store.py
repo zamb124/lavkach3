@@ -13,7 +13,7 @@ class StorePermit(BasePermit):
 
 @store_router.get("", response_class=HTMLResponse, dependencies=[Depends(StorePermit)])
 async def store(request: Request):
-    cls = await ClassView(request, 'project')
+    cls = ClassView(request, 'store')
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template,  context={'cls': cls})
 

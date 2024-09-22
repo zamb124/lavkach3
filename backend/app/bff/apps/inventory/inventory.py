@@ -20,5 +20,5 @@ class OrderPermit(BasePermit):
 async def order(request: Request):
     """Список складских ордеров"""
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
-    cls = await OrderView(request)
+    cls = OrderView(request)
     return templates.TemplateResponse(request, template, context={'cls': cls})
