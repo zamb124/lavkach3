@@ -314,7 +314,7 @@
     </div>
     <div class="card-body text-muted">
         <div class="row">
-            {% if line.vars.button_view %}
+            {% if line.button_view %}
             <div class="col">
                 <button
                         name="{{ line.key }}"
@@ -334,7 +334,7 @@
                 </button>
             </div>
             {% endif  %}
-            {% if line.vars.button_update%}
+            {% if line.button_update%}
             <div class="col">
                 <button
                         type="button"
