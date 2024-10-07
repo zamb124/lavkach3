@@ -16,9 +16,9 @@ class Method(str, Enum):
     CREATE: str = 'create'  # Дать запись на создание
     UPDATE: str = 'update'  # Дать запись на изменение
     DELETE: str = 'delete'  # Дать запись на удаление
-    SAVE: str = 'save'  # Сохранить изменения
-    SAVE_CREATE: str = 'save_create'  # Сохранить новую запись
-    DELETE_DELETE: str = 'delete_delete'  # Подтвердить удаление записи
+    UPDATE_SAVE: str = 'save'  # Сохранить изменения
+    CREATE_SAVE: str = 'save_create'  # Сохранить новую запись
+    DELETE_SAVE: str = 'delete_delete'  # Подтвердить удаление записи
 
 
 class ExceptionResponseSchema(BaseModel):
@@ -142,7 +142,7 @@ async def table(request: Request, schema: TableSchema):
     cls = ClassView(request, model=schema.model, key=schema.key)
     await cls.init(params=qp, join_related=True)
     if request.query_params.get('edit'):
-        return cls.as_table_form
+        return cls.as_table_update
     else:
         return cls.as_table
 
@@ -177,18 +177,18 @@ async def line(request: Request, schema: LineSchema):
             """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
             lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
             return lines[0].get_delete
-        case Method.DELETE_DELETE:
-            await cls.lines.delete_lines(ids=[schema.id])
-            """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
-        case Method.SAVE:
+        case Method.UPDATE_SAVE:
             """Сохранение записи при измененнии"""
             data = clean_filter(schema.model_extra, schema.key)
             await cls.lines.update_lines(id=schema.id, data=data)
-        case Method.SAVE_CREATE:
+        case Method.CREATE_SAVE:
             """Сохранение записи при создании"""
             data = clean_filter(schema.model_extra, schema.key)
             lines = await cls.lines.create_lines(data)
             return lines[0].as_div_update
+        case Method.DELETE_SAVE:
+            await cls.lines.delete_lines(ids=[schema.id])
+            """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
 
 
 class ModalSchema(BaseSchema):
@@ -203,7 +203,7 @@ async def modal(request: Request, schema: ModalSchema):
     """
      Универсальный запрос модалки, который отдает форму модели
     """
-    cls =  ClassView(request, schema.model, force_init=False)
+    cls = ClassView(request, schema.model, force_init=False)
     match schema.method:
         case Method.GET:
             lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)

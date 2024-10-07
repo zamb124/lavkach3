@@ -87,5 +87,3 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
                 await self.session.refresh(move)
             res.append(order_entity)
         return res
-
-

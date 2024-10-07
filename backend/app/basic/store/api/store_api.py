@@ -35,12 +35,14 @@ async def store_create(schema: StoreCreateScheme, service: StoreService = Depend
 
 
 @store_router.get("/{store_id}")
-async def store_get(store_id: uuid.UUID, service: StoreService = Depends()) -> typing.Union[None, StoreScheme]:
+async def store_get(store_id: uuid.UUID, service: StoreService = Depends()) -> typing.Union[
+    None, StoreScheme]:
     return await service.get(id=store_id)
 
 
 @store_router.put("/{store_id}", response_model=StoreScheme)
-async def store_update(store_id: uuid.UUID, schema: StoreUpdateScheme, service: StoreService = Depends()):
+async def store_update(store_id: uuid.UUID, schema: StoreUpdateScheme,
+                       service: StoreService = Depends()):
     return await service.update(id=store_id, obj=schema)
 
 

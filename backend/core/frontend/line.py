@@ -319,7 +319,7 @@ class Lines:
 
     async def fill_lines(
             self,
-            data: dict,
+            data: list,
             join_related: bool = False,
             join_fields: list = [],
     ) -> None:

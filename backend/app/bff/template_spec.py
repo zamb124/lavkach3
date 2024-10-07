@@ -17,7 +17,7 @@ environment = templates.env
 templates.env.globals['datetime'] = datetime
 templates.env.globals['uuid'] = uuid4
 templates.env.globals['now'] = datetime.date(datetime.now()).isoformat()
-templates.env.globals['ws'] = f"ws://{config.services['bus']['DOMAIN']}:{config.services['bus']['PORT']}/api/bus/ws/bus"
+templates.env.globals['ws'] = f"ws://{config.BUS_HOST}:{config.BUS_PORT}/api/bus/ws/bus"
 
 
 async def internal_error(request: Request, exc: HTTPException):
