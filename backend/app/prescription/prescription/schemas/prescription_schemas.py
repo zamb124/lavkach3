@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, field_validator
 from pydantic.types import UUID
 
 from app.prescription.prescription.models.prescription_models import Prescription
-from app.prescription.prescription.models.prescription_models import PrescriptionType
+from app.prescription.prescription.models.prescription_models import IdentificationType
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
@@ -17,7 +17,7 @@ class PrescriptionBaseScheme(BasicModel):
     title: str = Field(title='Title', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
     address: Optional[str] = Field(title='Address', table=True, form=True)
-    source: Optional[PrescriptionType] = Field(default=PrescriptionType.INTERNAL, title='Source',
+    source: Optional[IdentificationType] = Field(default=IdentificationType.PASSPORT, title='Source',
                                                table=True, form=True)
 
     class Config:
@@ -26,7 +26,7 @@ class PrescriptionBaseScheme(BasicModel):
 
 class PrescriptionUpdateScheme(PrescriptionBaseScheme):
     title: str = Field(title='Title', table=True, form=True)
-    source: Optional[PrescriptionType] = Field(default=None, title='Source', table=True, form=True)
+    source: Optional[IdentificationType] = Field(default=None, title='Source', table=True, form=True)
 
 
 class PrescriptionCreateScheme(PrescriptionBaseScheme):
@@ -42,7 +42,7 @@ class PrescriptionScheme(PrescriptionCreateScheme, TimeStampScheme):
 class PrescriptionFilter(BaseFilter):
     title__ilike: Optional[str] = Field(default=None, title='Title')
     address__ilike: Optional[str] = Field(description="address", default=None, title='Address')
-    source__in: Optional[list[PrescriptionType]] = Field(default=None, title='Source')
+    source__in: Optional[list[IdentificationType]] = Field(default=None, title='Source')
 
     class Config:
         populate_by_name = True
