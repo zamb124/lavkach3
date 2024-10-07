@@ -63,6 +63,10 @@ class Line:
         return self.lines.cls.key
 
     @property
+    def display_title(self):
+        return self.fields.title.val if hasattr(self.fields, 'title') else self.id
+
+    @property
     def key(self) -> str:
         """Проп генерации UI ключа для обьекта"""
         if self.type == LineType.LINE:
