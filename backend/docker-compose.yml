@@ -54,7 +54,7 @@ services:
     env_file:
       - .env-docker
     container_name: jobs_app
-    command: taskiq worker core.helpers.broker.tkq:broker
+    command: taskiq worker core.helpers.broker.tkq:list_brocker --fs-discover --workers 2 --log-level DEBUG
     depends_on:
       - base-app
       - db
