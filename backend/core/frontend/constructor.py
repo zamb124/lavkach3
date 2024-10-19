@@ -13,7 +13,7 @@ from starlette.requests import Request
 
 from core.env import Model
 from core.frontend.enviroment import passed_classes, readonly_fields, hidden_fields, table_fields, \
-    reserved_fields, environment, default_templates
+    reserved_fields, environment
 from core.frontend.field import Field, Fields
 from core.frontend.line import Line, Lines
 from core.frontend.types import LineType, ViewVars, MethodType
@@ -70,8 +70,6 @@ class ClassView:
     actions: dict                                    # Доступные Методы модели
     is_rel: bool = False                             # True, если
     __state = 0                                      # счетчик итераций
-    default_environment: Environment = environment   # Среда для рендеринга по умолчанию
-    enviroment: Environment = None                   # Среда для рендеринга
 
     def __iter__(self):
         return self
