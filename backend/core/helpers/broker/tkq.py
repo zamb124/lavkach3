@@ -3,7 +3,7 @@ from contextvars import ContextVar
 from uuid import uuid4
 
 from taskiq import SimpleRetryMiddleware, TaskiqMiddleware
-from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend
+from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend, PubSubBroker
 
 from core.helpers.broker.initializator import init
 
