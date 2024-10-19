@@ -3,7 +3,7 @@ import enum
 import uuid
 from inspect import isclass
 from typing import Optional, get_args, get_origin
-
+from jinja2 import Environment
 from fastapi_filter.contrib.sqlalchemy import Filter
 from jinja2_fragments import render_block
 from pydantic import BaseModel
@@ -13,7 +13,7 @@ from starlette.requests import Request
 
 from core.env import Model
 from core.frontend.enviroment import passed_classes, readonly_fields, hidden_fields, table_fields, \
-    reserved_fields, environment
+    reserved_fields, environment, default_templates
 from core.frontend.field import Field, Fields
 from core.frontend.line import Line, Lines
 from core.frontend.types import LineType, ViewVars, MethodType
@@ -70,6 +70,8 @@ class ClassView:
     actions: dict                                    # Доступные Методы модели
     is_rel: bool = False                             # True, если
     __state = 0                                      # счетчик итераций
+    default_environment: Environment = environment   # Среда для рендеринга по умолчанию
+    enviroment: Environment = None                   # Среда для рендеринга
 
     def __iter__(self):
         return self
@@ -124,7 +126,6 @@ class ClassView:
             else:
                 self.sort = {}
         self.is_inline = is_inline
-
         self.lines = Lines(cls=self)
 
     async def init(self, params: dict | None = None, join_related: bool = False, data: list = None,) -> None:
@@ -138,6 +139,17 @@ class ClassView:
             data=data,
             join_related=join_related or self.join_related,
             join_fields=self.join_fields,
+        )
+    def render(self, template_name: str, block_name: str, method: MethodType, **kwargs) -> str:
+        """Рендеринг блока"""
+        self.enviroment.list_templates()
+        return render_block(
+            environment=self.default_environment,
+            template_name=template_name,
+            block_name=block_name,
+            method=method,
+            cls=self,
+            **kwargs
         )
 
     def _get_view_vars_by_fieldinfo(self, fielinfo: FieldInfo | None = None) -> ViewVars:

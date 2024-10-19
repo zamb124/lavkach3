@@ -7,6 +7,10 @@ from app.bff.utills import BasePermit
 from core.frontend.constructor import ClassView
 
 move_router = APIRouter()
+class MoveView(ClassView):
+    """Переопределяем модель"""
+    model_name = "order"
+
 
 class MovePermit(BasePermit):
     permits = ['move_list']
@@ -14,7 +18,7 @@ class MovePermit(BasePermit):
 @move_router.get("", response_class=HTMLResponse, dependencies=[Depends(MovePermit)])
 async def move(request: Request):
     """Список перемещений"""
-    cls = ClassView(request, 'move')
+    cls = MoveView(request)
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template, context={'cls': cls})
 
@@ -25,7 +29,7 @@ async def move(request: Request):
     """
         kanban custom view
     """
-    cls = ClassView(request, 'move')
+    cls = MoveView(request)
     view = await cls._get_table()
     template = f'inventory/move/move_list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     return templates.TemplateResponse(request, template, context={'view': view})

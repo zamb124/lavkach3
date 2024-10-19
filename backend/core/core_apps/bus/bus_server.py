@@ -25,18 +25,25 @@ from ...helpers.cache import RedisBackend
 from . import __domain__ as bus_domain
 domains = [bus_domain]
 
+env = None
+
 class EnvMidlleWare:
     """
-    Адартер кладется в request для удобства
+    Адартер кладется в request для удобства обращений к обьектам сервисов
     """
-
     def __init__(self, app: ASGIApp, *args, **kwargs):
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        if scope['type'] in  ("http", "websocket"):
+        global env
+        if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
-            scope['env'] = Env(domains, conn)
+            if not env:
+                env = Env(domains, conn)
+                scope['env'] = env
+            else:
+                scope['env'] = env
+                env.request = conn
         await self.app(scope, receive, send)
 
 

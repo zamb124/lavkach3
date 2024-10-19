@@ -237,7 +237,7 @@ class Lines:
     line_new: Optional[Line] = None       # Пустой обьект
     line_filter: Optional[Line] = None    # Обьект, описывающий фильтр
     lines: list['Line'] = []              # Список обьектов
-    cls: Any                             # Класс конструктора ClassView
+    cls: Any                              # Класс конструктора ClassView
     data: dict = {}                       # Данные
     filter_fields: Optional['Fields'] = None           # Поля обьекта
     line_fields: Optional['Fields'] = None  # Поля обьекта

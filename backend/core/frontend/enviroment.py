@@ -3,15 +3,20 @@ from types import UnionType
 from typing import Annotated, Union
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from typing import TYPE_CHECKING
+
+
 if TYPE_CHECKING:
     from core.frontend.field import Fields, MethodType
 
 path = os.path.dirname(os.path.abspath(__file__))
 
+template_directory = f"{path}/templates/"
+
 environment = Environment(
-    loader=FileSystemLoader(f"{path}/templates/"),
+    loader=FileSystemLoader(template_directory),
     autoescape=select_autoescape(("html", "jinja2"))
 )
+
 
 
 
