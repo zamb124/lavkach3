@@ -425,7 +425,7 @@ class Lines:
                 method_schema_obj = self.cls.model.schemas.update(**raw_line)
             except ValidationError as e:
                 raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
-            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
+            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True, exclude_defaults=True)
             line = await self.cls.model.adapter.update(id=id, json=_json)
             new_data.append(line)
         await self.fill_lines(new_data)

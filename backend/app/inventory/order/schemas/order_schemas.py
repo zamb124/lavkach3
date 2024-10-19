@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, computed_field
@@ -10,13 +10,13 @@ from core.schemas.basic_schemes import BasicField as Field, ActionBaseSchame
 
 from app.inventory.order.enums.order_enum import OrderStatus
 from app.inventory.order.models import Order
-from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme
 from app.inventory.order.schemas.order_type_schemas import OrderTypeScheme
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from core.types import UUID
+from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme,MoveUpdateScheme
 
 
 class OrderBaseScheme(BasicModel):
@@ -38,9 +38,8 @@ class OrderBaseScheme(BasicModel):
         orm_model = Order
         readonly = [('status', '==', 'draft')]            # Переопределяет readonly для всех полей модели для UI
 
-
 class OrderUpdateScheme(OrderBaseScheme):
-    move_list_rel: Optional[list[MoveUpdateScheme]] = Field(default=[], title='Order Movements', form=True)
+    move_list_rel: Optional[list['MoveUpdateScheme']] = Field(default=[], title='Order Movements', form=True)
 
 
 class OrderCreateScheme(OrderBaseScheme):
@@ -58,7 +57,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     edited_by: UUID = Field(title='Edit By', model='user')
     user_ids: Optional[list[UUID]] = Field(default=[], title='Users', model='user')
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True, readonly=True)
-    move_list_rel: Optional[list[MoveScheme]] = Field(default=[], title='Order Movements', form=True)
+    move_list_rel: Optional[list["MoveScheme"]] = Field(default=[], title='Order Movements', form=True)
     @computed_field
     def title(self) -> str:
         return f'{self.order_type_rel.title}: [{self.number}]'

@@ -21,9 +21,8 @@ class BusBaseScheme(BasicModel):
     company_id: UUID = Field(title='Company ID', model='company')
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = Bus
+
 class BusUpdateScheme(BusBaseScheme):
     ...
 

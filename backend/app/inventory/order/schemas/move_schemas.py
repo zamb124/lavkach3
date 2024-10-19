@@ -1,13 +1,15 @@
-from typing import Optional, List
+from __future__ import annotations
+
+from typing import Optional, List, TYPE_CHECKING
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, computed_field
+from pydantic import Field, computed_field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import LocationClass
 from app.inventory.order.enums.order_enum import MoveStatus, MoveType, move_color_map
 from app.inventory.order.models import Move
-from app.inventory.order.schemas.suggest_schemas import SuggestScheme
+from app.inventory.order.schemas.suggest_schemas import SuggestScheme, SuggestCreateScheme, SuggestUpdateScheme
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import ActionBaseSchame, BasicModel
 from core.schemas.list_schema import GenericListSchema
@@ -36,17 +38,15 @@ class MoveBaseScheme(BasicModel):
         extra = 'allow'
         from_attributes = True
         orm_model = Move
-        service = 'app.inventory.order.services.MoveService'
 
 class MoveUpdateScheme(MoveBaseScheme):
+    suggest_list_rel: Optional[list[SuggestUpdateScheme]] = Field(default=[], title='Suggests', form=True)
     ...
-
 
 
 class MoveCreateScheme(MoveBaseScheme):
+    suggest_list_rel: Optional[list[SuggestCreateScheme]] = Field(default=[], title='Suggests', form=True)
     ...
-    #order_type_id: Optional[UUID4] = Field(title='Order type', model='order_type')
-
 
 
 class MoveScheme(MoveCreateScheme, TimeStampScheme):

@@ -1,5 +1,7 @@
+from __future__ import annotations
 from typing import Optional, List
 
+from celery.worker.strategy import default
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, computed_field
 from pydantic.types import UUID4
@@ -7,12 +9,12 @@ from pydantic.types import UUID4
 from app.inventory.order.enums.order_enum import SuggestStatus
 from app.inventory.order.models import Suggest, SuggestType
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import ActionBaseSchame
+from core.schemas.basic_schemes import ActionBaseSchame, BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class SuggestBaseScheme(BaseModel):
+class SuggestBaseScheme(BasicModel):
     move_id: UUID4 = Field(title='Move ID', model='move', readonly=True)
     priority: int = Field(title='Priority', readonly=True)
     type: SuggestType = Field(title='Type', readonly=True, table=True)
@@ -22,11 +24,11 @@ class SuggestBaseScheme(BaseModel):
     status: SuggestStatus = Field(default=SuggestStatus.WAITING, title='Status', readonly=True)
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = Suggest
 
 class SuggestUpdateScheme(SuggestBaseScheme):
+    move_id: Optional[UUID4] = Field(default=None, title='Move ID', model='move', readonly=True)
+    priority: Optional[int] = Field(default=None, title='Priority', readonly=True)
     ...
 
 

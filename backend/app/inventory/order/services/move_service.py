@@ -13,7 +13,7 @@ from app.inventory.order.models.order_models import Move, MoveType, Order, Order
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
 #from app.inventory.order.services.move_tkq import move_set_done
-from core.helpers.broker.tkq import broker
+from core.helpers.broker.tkq import list_brocker
 from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
@@ -140,6 +140,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         """
         if isinstance(move, uuid.UUID):
             move = await self.get(move)
+        if move.status == MoveStatus.CONFIRMED:
+            return move
         if move.status != MoveStatus.CREATED:
             raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
         location_service = self.env['location'].service
@@ -365,7 +367,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             await move_set_done.kiq(move_id)
 
         return True
-    broker.register_task(set_done)
+    list_brocker.register_task(set_done)
 
     @permit('move_create')
     async def create(self, obj: CreateSchemaType, parent: Order | Move | None = None, commit=True) -> ModelType:

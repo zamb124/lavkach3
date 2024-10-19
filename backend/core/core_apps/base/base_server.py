@@ -20,7 +20,7 @@ from core.fastapi.middlewares import (
     AuthBackend,
     SQLAlchemyMiddleware,
 )
-from core.helpers.broker.tkq import broker
+from core.helpers.broker.tkq import list_brocker
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
 
@@ -97,14 +97,14 @@ async def lifespan(app: FastAPI):
     """
         Старт сервера
     """
-    if not broker.is_worker_process:
-        await broker.startup()
+    if not list_brocker.is_worker_process:
+        await list_brocker.startup()
     yield
     """
             Выключение сервера
     """
-    if not broker.is_worker_process:
-        await broker.shutdown()
+    if not list_brocker.is_worker_process:
+        await list_brocker.shutdown()
 
 def create_app() -> FastAPI:
     app_ = FastAPI(

@@ -3,7 +3,7 @@ import logging
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Generic, Optional, Type, TypeVar
+from typing import Any, Generic, Optional, Type, TypeVar, Tuple
 from uuid import uuid4
 from starlette.requests import Request
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -14,9 +14,10 @@ from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.exceptions import HTTPException
 
+from core.db import Base
 from core.db.session import Base, session
 from core.fastapi.middlewares.authentication import CurrentUser
-from core.helpers.broker import broker
+from core.helpers.broker import list_brocker
 from core.helpers.cache import CacheTag
 from core.schemas import BaseFilter
 from core.service_config import config
@@ -233,12 +234,13 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         # self.basecache.set(entity)
         return entity
 
-    async def _update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
-        entity = await self.get(id)
+    async def _update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Row | RowMapping | tuple[Base, list]:
+        entity: Base = await self.get(id)
         if not entity:
             raise HTTPException(status_code=404, detail=f"Not Found with id {id}")
 
-        to_set = []
+        to_set: list = []
+        updated_fields: list = []
         for key, value in obj.__dict__.items():
             if key in obj.model_fields_set:
                 obj_value = getattr(obj, key)
@@ -246,7 +248,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                     for _obj in obj_value:
                         rel_service = self.env[_obj.Config.orm_model.__tablename__].service
                         #rel = rel_service(self.request)
-                        if _obj.id:
+                        if hasattr(_obj, 'id') and getattr(_obj, 'id'):
                             rel_entity = await rel_service.update(id=_obj.id, obj=_obj, commit=False)
                             self.session.add(rel_entity)
                         else:
@@ -259,7 +261,10 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                         value = id
                     to_set.append((key, value))
         for k, v in to_set:
-            setattr(entity, k, v)
+            attr = getattr(entity, k)
+            if not attr == v:
+                setattr(entity, k, v)
+                updated_fields.append(k)
         # entity.mode_list_rel = new_entity.move_list_rel
         try:
             self.session.add(entity)
@@ -277,8 +282,8 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
             await self.session.flush()
-            return await self.get(id)
-        return entity
+            return await self.get(id), updated_fields
+        return entity, updated_fields
 
     async def prepere_bus(self, entity: ModelType, method: str):
         return {
@@ -293,30 +298,17 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             }
         }
 
-    @broker.task
-    async def update_notify(model: str, data: dict):
-
-        client = asyncclient()
-        responce = await client.post(
-            url=f'http://{config.BUS_HOST}:{config.BUS_PORT}/api/bus/bus',
-            json=data,
-            headers={'Authorization': config.INTERCO_TOKEN}
-        )
-        if responce.status_code == 200:
-            logger.info(f'Message sended to bus.bus')
-        else:
-            logger.warning(responce.text)
 
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
-        entity = await self._update(id, obj, commit=commit)
-        message = await entity.notify('update')
+        entity, updated_fields = await self._update(id, obj, commit=commit)
+        if updated_fields:
+            message = asyncio.create_task(entity.notify('update', updated_fields))
         return entity
 
     async def _delete(self, id: Any) -> bool:
         entity = await self.get(id)
         message = await self.prepere_bus(entity, 'delete')
         await self.session.delete(entity)
-        task = await self.update_notify.kiq(self.model.__tablename__, message)
         try:
             await self.session.commit()
         except IntegrityError as e:

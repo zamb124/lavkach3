@@ -10,7 +10,7 @@ from sqlalchemy.orm import registry
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from sqlalchemy.sql.expression import Update, Delete, Insert
-from core.helpers.broker import broker
+from core.helpers.broker import list_brocker
 from core.db_config import config
 from httpx import AsyncClient as asyncclient
 
@@ -67,7 +67,7 @@ class Base(metaclass=DeclarativeMeta):
 
     __init__ = mapper_registry.constructor
 
-    async def prepere_bus(self, entity: object, method: str):
+    async def prepere_bus(self, entity: object, method: str, updated_fields:list):
         return {
             'cache_tag': CacheTag.MODEL,
             'message': f'{self.__tablename__.capitalize()} is {method.capitalize()}',
@@ -77,12 +77,13 @@ class Base(metaclass=DeclarativeMeta):
                 'lsn': entity.lsn,
                 'model': self.__tablename__,
                 'method': method,
+                'updated_fields': updated_fields
             }
         }
 
-    @broker.task
+    @list_brocker.task(queue_name='model')
     async def update_notify(model: str, data: dict):
-
+        print('alalala')
         client = asyncclient()
         responce = await client.post(
             url=f'http://{config.BUS_HOST}:{config.BUS_PORT}/api/bus/bus',
@@ -95,6 +96,7 @@ class Base(metaclass=DeclarativeMeta):
             logger.warning(responce.text)
 
 
-    async def notify(self, method):
-        message = await self.prepere_bus(self, method)
+    async def notify(self, method, updated_fields: list):
+        message = await self.prepere_bus(self, method, updated_fields)
         task = await self.update_notify.kiq(self.__tablename__, message)
+

@@ -8,14 +8,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.inventory.order.enums.order_enum import OrderStatus
 from app.inventory.order.models.order_models import Order
 from app.inventory.order.schemas.order_schemas import OrderCreateScheme, OrderUpdateScheme, OrderFilter
-from core.helpers.broker.tkq import broker
+from core.helpers.broker.tkq import list_brocker
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
 
-@broker.task
+@list_brocker.task
 async def print_foo(foo: str = None) -> None:
-    env = broker.state.data['env'].get_env()
+    env = list_brocker.state.data['env'].get_env()
     adapter = env['order'].adapter
     service = env['order'].service
     some_order = await service.list({'lsn__gt': 0})

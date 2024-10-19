@@ -19,7 +19,6 @@ from core.fastapi.middlewares import (
     AuthBackend,
     SQLAlchemyMiddleware,
 )
-from core.helpers.broker.tkq import broker
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
 
@@ -90,24 +89,10 @@ def make_middleware() -> List[Middleware]:
 def init_cache() -> None:
     Cache.init(backend=RedisBackend(), key_maker=CustomKeyMaker())
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-        Старт сервера
-    """
-    if not broker.is_worker_process:
-        await broker.startup()
-    yield
-    """
-            Выключение сервера
-    """
-    if not broker.is_worker_process:
-        await broker.shutdown()
 
 def create_app() -> FastAPI:
     app_ = FastAPI(
         title="Hide",
-        lifespan=lifespan,
         description="Hide API",
         version="1.0.0",
         # docs_url=None if config.ENV == "production" else "/api/basic/docs",

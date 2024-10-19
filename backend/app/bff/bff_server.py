@@ -15,7 +15,7 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 
 from app.bff.bff_router import bff_router
 #from app.bff.bff_tasks import remove_expired_tokens
-from core.helpers.broker import broker
+from core.helpers.broker import list_brocker
 from core.db_config import config
 from core.env import Env
 from app.basic import __domain__ as basic_domain
@@ -62,19 +62,25 @@ class HTMXMidlleWare:
             )
         await self.app(scope, receive, send)
 
+env = None
 
 class EnvMidlleWare:
     """
     Адартер кладется в request для удобства обращений к обьектам сервисов
     """
-
     def __init__(self, app: ASGIApp, *args, **kwargs):
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        global env
         if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
-            scope['env'] = Env([inventory_domain, basic_domain,prescription_domain], conn, broker=broker)
+            if not env:
+                env = Env([inventory_domain, basic_domain, prescription_domain], conn, broker=list_brocker)
+                scope['env'] = env
+            else:
+                scope['env'] = env
+                env.request = conn
         await self.app(scope, receive, send)
 
 
@@ -135,23 +141,9 @@ def fake_answer_to_everything_ml_model(x: float):
     return x * 42
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-        Старт сервера
-    """
-    #await remove_expired_tokens()
-    await broker.startup()
-    yield
-    """
-            Выключение сервера
-    """
-    await broker.shutdown()
-
 
 def create_app() -> FastAPI:
     app_ = FastAPI(
-        lifespan=lifespan,
         title="Hide",
         description="Hide API",
         version="1.0.0",
@@ -174,4 +166,3 @@ if cf.css_engine == 'tailwind':
     app.mount(f"/static", StaticFiles(directory=f"{path}/tailwind/static"), name="static")
 else:
     app.mount(f"/static", StaticFiles(directory=f"{path}/static"), name="static")
-taskiq_fastapi.init(broker, cf.BROKER_PATH)
