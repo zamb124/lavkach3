@@ -68,7 +68,8 @@ readonly_fields = [
 ]
 hidden_fields = [
     'lsn',
-    'company_id'
+    'company_id',
+    'id'
 ]
 table_fields = [
     'id',

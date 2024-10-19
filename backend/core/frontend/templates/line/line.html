@@ -253,17 +253,9 @@
     <div class="col">
         {{ field.label|safe }}
         {% if method in ('create', 'update') %}
-            {% if field.type == 'list_rel' %}
-                {{ field.as_table_update|safe }}
-            {% else %}
                 {{ field.as_update|safe }}
-            {% endif %}
         {% else %}
-            {% if field.type == 'list_rel' %}
-                {{ field.as_table_view|safe }}
-            {% else %}
                 {{ field.as_get|safe }}
-            {% endif %}
         {% endif %}
 
     </div>

@@ -1,35 +1,31 @@
 {% block as_update %}
-
-        <input
-                class="id form-control"
-                {% if field.update.required %} required {% endif %}
-                {% if field.update.readonly %} readonly {% endif %}
-                {% if field.update.hidden %} hidden{% endif %}
-                name="{{ field.key }}"
-                placeholder="Enter {{ field.title }}"
-                value="{{ field.val if field.val else "" }}"
-        >
+    <input
+            class="id form-control"
+            {% if field.update.required %} required {% endif %}
+            {% if field.update.readonly %} readonly {% endif %}
+            name="{{ field.key }}"
+            placeholder="Enter {{ field.title }}"
+            value="{{ field.val if field.val else "" }}"
+    >
 {% endblock %}
 {% block as_get %}
-
-
     <a class="text-danger form-control " style="background-color: var(--vz-tertiary-bg);"
-           href="#"
-           hx-params="model,method,id,key"
-           hx-trigger="click"
-           hx-target="#htmx_content"
-           hx-swap="beforeend transition:true"
-           hx-ext="json-enc"
-           hx-post="/base/modal"
-           hx-vals='{
+       href="#"
+       hx-params="model,method,id,key"
+       hx-trigger="click"
+       hx-target="#htmx_content"
+       hx-swap="beforeend transition:true"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-vals='{
 "model": "{{ field.model_name }}",
 "method": "get",
 "id": "{{ field.line.id }}",
 "key": "{{ field.key }}"
 }'
-        ><i
-                class="rel ri-links-fill fs-6 text-danger"> </i> {{ field.line.display_title}}
-               </a>
+    ><i
+            class="rel ri-links-fill fs-6 text-danger"> </i> {{ field.line.display_title }}
+    </a>
 
 
 {% endblock %}
