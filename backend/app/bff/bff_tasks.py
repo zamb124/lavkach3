@@ -1,57 +1,58 @@
+import asyncio
 import logging
 
 from fastapi_restful.tasks import repeat_every
-from httpx import AsyncClient as asyncclient
+from pydantic import BaseModel
+from pydantic.v1.schema import schema
 
-from app.bff.bff_config import config
 from app.bff.tkq import broker
-from core.env import Env, domains
-from core.helpers.cache import Cache, CacheStrategy
+from core.env import Env
+from core.frontend.constructor import ClassView
+from core.helpers.cache import CacheTag
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 cursors = {}
 
+@broker.task
+async def import_prepare_data(model: str, data: list, ):
+    env = broker.env
+    model = env[model]
+    import_schema: BaseModel
+    header = list(data[0].keys())
+    errors = []
+    lines: list = []
+    mode = 'create'
+    if 'id' in header:
+        import_schema = model.schemas.update
+        mode = 'update'
+    else:
+        import_schema = model.schemas.create
+    for i, line in enumerate(data):
+        try:
+            line = import_schema(**line)
+        except Exception as ex:
+            logger.error(f'Error in line {i}: {ex}')
+            for er in ex.errors():
+                errors.append({
+                    'line': i+2,
+                    'type': er.get('type'),
+                    'msg': f"{er.get('msg')}: Input value: {er.get('input')}",
+                    'field': str(er.get('loc')[0])
+                })
+            continue
+        lines.append(line.model_dump(mode='json'))
+    return errors, lines, mode
 
 @broker.task
-async def remove_expired_tokens_celery():
-    client = asyncclient()
-    body = {
-        "email": config.SUPERUSER_EMAIL,
-        "password": config.SUPERUSER_PASSWORD
-    }
-
-    responce = await client.post(
-        url=f'http://{config.services["basic"]["DOMAIN"]}:{config.services["basic"]["PORT"]}/api/basic/user/login',
-        json=body
-    )
-    data = responce.json()
-    client = asyncclient(headers={'Authorization': data['token']})
-    env = Env(domains, client)
-    for domain in domains:
-        for model_name, model in domain.models.items():
-            if model.cache_strategy == CacheStrategy.FULL:
-                while True:
-                    cursor = cursors.get(model, 0)
-                    async with model.adapter as a:
-                        data = await a.list(params={'lsn': cursor})
-                    if items := data['data']:
-                        items_for_cache = {i['id']: i for i in items}
-                        for k, v in items_for_cache.items():
-                            await Cache.set_model(module=model.domain.name, model=model.name, key=k, data=v)
-                        new_cursor = data['cursor']
-                        cursors.update({model: new_cursor})
-                        logger.info(f'Service: {model.domain.name} and Model: {model.name} is cached')
-                        if cursor <= new_cursor:
-                            break
-                        logger.info(f'Service: {model.domain.name} and Model: {model.name} is cached')
-                    else:
-                        break
-
-
-@repeat_every(seconds=350, logger=logger)
-async def remove_expired_tokens() -> None:
-    task = await remove_expired_tokens_celery.kiq()
-    res = await task.wait_result()
-    return None
+async def import_save(model: str, data: list):
+    env = broker.env
+    model = env[model]
+    import_schema: BaseModel
+    imported_lines: list = []
+    async with model.adapter as a:
+        for line in data:
+            resp = await a.create(json=line, model=model.name)
+            imported_lines.append(resp)
+    return imported_lines

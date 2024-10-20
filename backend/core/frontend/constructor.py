@@ -1,18 +1,17 @@
-import asyncio
+import enum
 import enum
 import uuid
 from inspect import isclass
 from typing import Optional, get_args, get_origin
-from jinja2 import Environment
+
 from fastapi_filter.contrib.sqlalchemy import Filter
 from jinja2_fragments import render_block
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo, ComputedFieldInfo
-from six import class_types
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
-from core.env import Model
+from core.env import Model, Env
 from core.frontend.enviroment import passed_classes, readonly_fields, hidden_fields, table_fields, \
     reserved_fields, environment
 from core.frontend.field import Field, Fields
@@ -20,8 +19,6 @@ from core.frontend.line import Line, Lines
 from core.frontend.types import LineType, ViewVars, MethodType
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import ActionBaseSchame, BasicField
-
-
 
 
 def _get_key() -> str:
@@ -71,6 +68,7 @@ class ClassView:
     actions: dict                                    # Доступные Методы модели
     is_rel: bool = False                             # True, если
     __state = 0                                      # счетчик итераций
+    errors:list = []                                        # Какие то ошибки, бывает
 
     def __iter__(self):
         return self
@@ -96,6 +94,7 @@ class ClassView:
                         key: str | None = None,
                         is_rel: bool = False,
                         vars: dict | None = None,
+                        env: Env = None,
                         ):
         self.request = request
         if vars:
@@ -110,7 +109,7 @@ class ClassView:
         self.model_name = self.model.name
         self.is_rel = is_rel
         self.actions = self.model.adapter.get_actions()
-        self.env = request.scope['env']
+        self.env = request.scope['env'] if not env else env
         self.key = key or _get_key()
         self.exclude = exclude or []
         self.params = params or {}
@@ -127,13 +126,13 @@ class ClassView:
         self.is_inline = is_inline
         self.lines = Lines(cls=self)
 
-    async def init(self, params: dict | None = None, join_related: bool = False, data: list = None,) -> None:
+    async def init(self, params: dict | None = None, join_related: bool = False, data: list = None,schema: BaseModel = None) -> None:
         """Майнинг данных по params"""
 
         await self.lines.get_data(
             env=self.env,
             model=self.model,
-            schema=self.model.schemas.get,
+            schema=schema if schema else self.model.schemas.get,
             params=params or self.params,
             data=data,
             join_related=join_related or self.join_related,
@@ -141,7 +140,6 @@ class ClassView:
         )
     def render(self, template_name: str, block_name: str, method: MethodType, **kwargs) -> str:
         """Рендеринг блока"""
-        self.enviroment.list_templates()
         return render_block(
             environment=self.default_environment,
             template_name=template_name,
@@ -442,4 +440,19 @@ class ClassView:
             environment=environment,
             template_name=f'cls/action.html',
             block_name='action', cls=self, action=action
+        )
+
+    @property
+    def get_import(self) -> str:
+        """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
+        return render_block(
+            environment=environment, template_name=f'cls/import.html',
+            block_name='import_get', method=MethodType.GET, cls=self
+        )
+    @property
+    def get_import_errors(self) -> str:
+        """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
+        return render_block(
+            environment=environment, template_name=f'cls/import.html',
+            block_name='import_errors', method=MethodType.GET, cls=self
         )

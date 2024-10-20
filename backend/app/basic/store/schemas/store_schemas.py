@@ -16,7 +16,7 @@ class StoreBaseScheme(BasicModel):
     vars: Optional[dict] = None
     title: str = Field(title='Title', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
-    address: Optional[str] = Field(title='Address', table=True, form=True)
+    address: str = Field(title='Address', table=True, form=True)
     source: Optional[StoreType] = Field(default=StoreType.INTERNAL, title='Source', table=True, form=True)
 
 

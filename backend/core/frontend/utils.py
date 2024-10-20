@@ -19,7 +19,7 @@ def clean_filter(qp: QueryParams | dict, _filter: str) -> list:
                 models.update({model: {line_number: {field_name: qp[k]}}})
             else:
                 if not models[model].get(line_number):
-                    models[model] = {line_number: {field_name: qp[k]}}
+                    models[model].update({line_number: {field_name: qp[k]}})
                 else:
                     models[model][line_number].update({field_name: qp[k]})
             keys_to_pop.append(k)

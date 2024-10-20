@@ -1,15 +1,18 @@
 from enum import Enum
 from typing import Optional, Any, Callable
+import io
 
+import openpyxl
 from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, UUID4, model_validator
 from starlette.responses import JSONResponse
 
+from app.bff.bff_tasks import import_prepare_data, import_save
 from core.frontend.constructor import ClassView
 from core.frontend.utils import clean_filter
-
+from fastapi import FastAPI, File, UploadFile
 
 class Method(str, Enum):
     GET: str = 'get'  # Дать запись на чтение
@@ -148,7 +151,7 @@ async def table(request: Request, schema: TableSchema):
 
 
 class LineSchema(BaseSchema):
-    id: Optional[UUID4] = None
+    id: Optional[UUID4 | int] = None
     mode: Optional[str] = 'get'
 
     class Config:
@@ -175,6 +178,9 @@ async def line(request: Request, schema: LineSchema):
             return cls.lines.line_new.as_tr_create
         case Method.DELETE:
             """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
+            if isinstance(schema.id, int):
+                """Если это временная запись, то просто удалить"""
+                return
             lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
             return lines[0].get_delete
         case Method.UPDATE_SAVE:
@@ -253,3 +259,62 @@ async def action(request: Request, schema: ActionSchema):
         return await cls.get_action(action=schema.action, ids=schema.ids, schema=action_schema)
 
     return cls.send_message('Action Done')
+
+class ImportSchema(BaseSchema):
+    class Config:
+        extra = 'allow'
+
+@router.post("/import", response_class=HTMLResponse)
+async def modal(request: Request, schema: ImportSchema = None):
+    """
+     Универсальный запрос модалки, который отдает форму модели
+    """
+    cls = ClassView(request, schema.model, force_init=False)
+    match schema.method:
+        case Method.GET:
+            return cls.get_import
+        case Method.UPDATE_SAVE:
+            data = clean_filter(schema.model_extra, schema.key)
+            lines = await import_save(cls.model_name, data)
+            await cls.init(params={}, data=lines, join_related=True)
+            return cls.as_table
+
+@router.post("/import_upload", response_class=HTMLResponse)
+async def modal(request: Request, file: UploadFile):
+    """
+     Универсальный запрос модалки, который отдает форму модели
+    """
+    model, key = request.query_params.values()
+    cls: ClassView = ClassView(request, model, key=key, force_init=False)
+    format: str = file.filename.split('.')[-1]
+    data: list = []
+    header: list = []
+    import_schema: BaseSchema = cls.model.schemas.create
+    match format:
+        case 'csv':
+            ...
+        case 'xlsx':
+            # Read it, 'f' type is bytes
+            f = await file.read()
+            xlsx = io.BytesIO(f)
+            wb = openpyxl.load_workbook(xlsx)
+            ws = wb[wb.sheetnames[0]]
+
+            for i, cells in enumerate(ws.iter_rows()):
+                if i == 0:
+                   header = [cell.value.lower() for cell in cells]
+                   continue
+                line: dict = {}
+                for col, label in enumerate(header):
+                    line[label] = cells[col].value
+                data.append(line)
+    task = await import_prepare_data.kiq(model=cls.model_name, data=data)
+    task_result = await task.wait_result()
+    cls.errors = task_result.return_value[0]
+    lines = task_result.return_value[1]
+    if task_result.return_value[2] == 'update':
+        import_schema = cls.model.schemas.update
+    await cls.init(data=lines, schema=import_schema)
+    return f"{cls.get_import_errors}\n{cls.as_table_update}"
+
+

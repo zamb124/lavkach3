@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
-
+from .tkq import broker
 from app.bff.bff_router import bff_router
 #from app.bff.bff_tasks import remove_expired_tokens
 from core.helpers.broker import list_brocker
@@ -78,8 +78,10 @@ class EnvMidlleWare:
             if not env:
                 env = Env([inventory_domain, basic_domain, prescription_domain], conn, broker=list_brocker)
                 scope['env'] = env
+                broker.env = env
             else:
                 scope['env'] = env
+                broker.env = env
                 env.request = conn
         await self.app(scope, receive, send)
 
@@ -140,11 +142,23 @@ def init_cache() -> None:
 def fake_answer_to_everything_ml_model(x: float):
     return x * 42
 
-
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+        Старт сервера
+    """
+    setattr(broker, 'env', env)
+    await broker.startup()
+    yield
+    """
+            Выключение сервера
+    """
+    await broker.shutdown()
 
 def create_app() -> FastAPI:
     app_ = FastAPI(
         title="Hide",
+        lifespan=lifespan,
         description="Hide API",
         version="1.0.0",
         docs_url=None if config.ENV == "production" else "/docs",
@@ -160,7 +174,7 @@ def create_app() -> FastAPI:
 
 app = create_app()
 path = os.path.dirname(os.path.abspath(__file__))
-print(path)
+
 add_timing_middleware(app, record=logger.info, prefix="bff", exclude="untimed")
 if cf.css_engine == 'tailwind':
     app.mount(f"/static", StaticFiles(directory=f"{path}/tailwind/static"), name="static")

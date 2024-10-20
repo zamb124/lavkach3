@@ -168,7 +168,7 @@ class BaseAdapter:
             'data': cached_data
         }
 
-    async def create(self, json: dict, model: str | None = None, params=None, id: uuid.UUID | None = None, **kwargs):
+    async def create(self, json: dict, model: str | None = None, params=None):
         path = f'/api/{self.model.domain.name}/{model or self.model.name}'
         responce = await self.client.post(self.host + path, json=json, params=params)
         return await common_exception_handler(responce)

@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from pydantic.types import UUID4
 
 from app.basic.product.models.product_models import ProductCategory
+from core.frontend.enviroment import table
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
@@ -13,7 +14,7 @@ from core.schemas.timestamps import TimeStampScheme
 
 class ProductCategoryBaseScheme(BasicModel):
     vars: Optional[dict] = None
-    title: str = Field(title='Title')
+    title: str = Field(title='Title', table=True)
     external_number: Optional[str] = Field(default=None, title='External ID')
     product_category_ids: Optional[list[UUID4]] = Field(default=[], title="Child categories", model='product_category')
 

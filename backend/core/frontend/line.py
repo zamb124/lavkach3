@@ -4,6 +4,7 @@ import datetime
 import uuid
 from collections import defaultdict
 from typing import Optional, Any
+from uuid import uuid4
 
 from fastapi import HTTPException
 from jinja2_fragments import render_block
@@ -31,14 +32,14 @@ class Line:
     fields: Fields                          # Поля обьекта
 
 
-    def __init__(self, lines, type,id=None, is_last=False,**data):
+    def __init__(self, lines, type,id=None, is_last=False, schema=None, **data):
         self.type = type
         self.lines = lines
         self.is_last = is_last
         self.id = id or uuid.uuid4()
         if self.type != LineType.FILTER:
             self.fields = self.lines.cls._get_schema_fields(
-                schema=self.lines.cls.model.schemas.get,
+                schema=schema if schema else self.lines.cls.model.schemas.get,
                 lines=self.lines,
                 line=self
             )
@@ -303,6 +304,7 @@ class Lines:
             join_related: bool = True,
             join_fields: list | None = None,
             data: list | dict | None = None,
+            schema: BaseModel | None = None,
             **kwargs
     ) -> None:
         """Метод собирает данные для конструктора модели"""
@@ -317,7 +319,7 @@ class Lines:
                 data_obj = await self.cls.model.service.list(_filter=params)
                 data = [i.__dict__ for i in data_obj]
         self.data = data
-        await self.fill_lines(self.data, self.join_related, self.join_fields)
+        await self.fill_lines(self.data, self.join_related, self.join_fields, schema)
 
 
 
@@ -326,20 +328,22 @@ class Lines:
             data: list,
             join_related: bool = False,
             join_fields: list = [],
+            schema: BaseModel | None = None
     ) -> None:
         join_fields = join_fields or self.join_fields
         for row in data:
             line_copied = Line(
                 type=LineType.LINE,
                 lines=self,
-                id=row['id'],
+                id=row.get('id'),
                 is_last=False,
+                schema=schema
             )
             line_copied.is_last = False
-            line_copied.id = row.get('id')
+            line_copied.id = row.get('id', id(line_copied))
             line_copied.lsn = row.get('lsn')
             for col in line_copied.fields:
-                col.val = row[col.field_name]
+                col.val = row.get(col.field_name, None)
                 if col.type in ('date', 'datetime'):
                     if isinstance(col.val, datetime.datetime):
                         pass
@@ -491,4 +495,4 @@ class Lines:
 
     @property
     def as_table_header(self) -> str:
-        return self.line_header.as_tr_header  # type: ignore
+        return self.lines[0].as_tr_header if self.lines else self.line_header.as_tr_header  # type: ignore

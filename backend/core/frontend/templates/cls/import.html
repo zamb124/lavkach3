@@ -1,0 +1,149 @@
+{% block import_get %}
+    {% autoescape false %}
+        <div class="modal" id="{{ 'import_'~cls.key }}" tabindex="-1" style="display: none;"
+             aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="col-6">
+                            <h5 class="modal-title">
+                                {{ method|capitalize }} {{ cls.model_name|capitalize }}
+                                <span>
+                        </span>
+                            </h5>
+                        </div>
+
+                        <div class="bx-pull-right">
+                            <button class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div id="{{ 'modal_body'~ cls.key }}">
+                        <div class="modal-body text-center p-5">
+                            <lord-icon
+                                    src="https://cdn.lordicon.com/yvjimpju.json"
+                                    trigger="loop"
+                                    style="width:150px;height:150px">
+                            </lord-icon>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="card">
+                                        <div class="card-body">
+
+                                            <div class="mb-3">
+                                                <i class="display-4 text-muted ri-upload-cloud-2-fill"></i>
+                                            </div>
+                                            <form id="file"
+                                                  hx-encoding='multipart/form-data'
+                                                  hx-post='/base/import_upload?model={{ cls.model_name }}&key={{ cls.key }}'
+                                            >
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <input class="form-control" type='file'
+                                                               name='file'>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <button class="form-control btn btn-soft-primary">
+                                                            Upload
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+
+                                    </div>
+                                    <ul class="list-unstyled mb-0" id="dropzone-preview">
+                                    </ul>
+
+                                    <!-- end card -->
+                                </div> <!-- end col -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                                type="button"
+                                class="btn btn-secondary"
+                                id="{{ 'submit-'~cls.key }}"
+                                hx-post="/base/import"
+                                hx-target="#{{ 'modal_body'~ cls.key }}"
+                                hx-include="#{{ 'tbody-table' ~'--'~ cls.key }}"
+                                hx-ext="json-enc"
+                                hx-vals='{
+                                "model": "{{ cls.model_name }}",
+                                "method": "save",
+                                "key": "{{ cls.key }}"
+                            }'
+                        >
+                            Commit Import
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <script>
+            var modal = new bootstrap.Modal('#{{ 'import_'~cls.key }}')
+            modal.show()
+        </script>
+        <script>
+            // Modal'ı sürüklenebilir hale getiren JavaScript kodu
+            (function () {
+                var modal = document.getElementById('{{ 'import_'~cls.key }}');
+                var header = modal.querySelector('.modal-header');
+
+                header.onmousedown = function (e) {
+                    var offsetX = e.clientX - modal.getBoundingClientRect().left;
+                    var offsetY = e.clientY - modal.getBoundingClientRect().top;
+
+                    function mouseMoveHandler(e) {
+                        modal.style.position = 'absolute';
+                        modal.style.left = (e.clientX - offsetX) + 'px';
+                        modal.style.top = (e.clientY - offsetY) + 'px';
+                    }
+
+                    function mouseUpHandler() {
+                        document.removeEventListener('mousemove', mouseMoveHandler);
+                        document.removeEventListener('mouseup', mouseUpHandler);
+                    }
+
+                    document.addEventListener('mousemove', mouseMoveHandler);
+                    document.addEventListener('mouseup', mouseUpHandler);
+                };
+            })();
+        </script>
+    {% endautoescape %}
+{% endblock %}
+{% block import_errors %}
+    {% autoescape false %}
+        <div class="card" id="{{ 'import_errors_'~cls.key }}">
+            <div class="card-header" style="padding-bottom: 0px;">
+                <h5 class="form-control bg-danger" style="display: block;">Errors</h5>
+            </div>
+            <div class="card-body text-muted">
+                <table class="table table-nowrap">
+                    <thead>
+                    <tr>
+                        <th scope="col">Line</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Msg</th>
+                        <th scope="col">Field</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for error in cls.errors %}
+                        <tr>
+                            <td><b>{{ error.line }}</b></td>
+                            <td><b>{{ error.type }}</b></td>
+                            <td><b>{{ error.msg }}</b></td>
+                            <td><b>{{ error.field }}</b></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endautoescape %}
+
+{% endblock %}
