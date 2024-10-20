@@ -12,17 +12,19 @@ from ...user.models.role_models import Role
 from ...user.models.user_models import User
 from ...user.schemas.user_schemas import SignUpScheme, ChangeCompanyScheme
 from ...user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme, UserFilter
+from .....db_config import config
 # from app.base.user.services.role_service import RoleService
 from .....exceptions import (
     PasswordDoesNotMatchException,
     DuplicateEmailOrNicknameException,
     UserNotFoundException,
 )
+from .....helpers.cache import CacheTag
 # from core.fastapi.schemas import CurrentUser
 from .....permissions.permissions import permit, permits
-from .....service.base import BaseService, ModelType, FilterSchemaType
+from .....service.base import BaseService, ModelType, FilterSchemaType, logger
 from .....utils.token_helper import TokenHelper
-
+from httpx import AsyncClient as asyncclient
 
 class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilter]):
     def __init__(self, request: Request):
@@ -149,6 +151,23 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             raise HTTPException(status_code=409, detail=f"Dublicate {str(e)}")
         await self.session.commit()
         return login
+    async def send_relogin(self, user_id: UUID):
+        data = {
+            'cache_tag': CacheTag.REFRESH.value,
+            'company_id': self.user.company_id.__str__(),
+            'user_id': self.user.user_id.__str__(),
+            'message': 'relogin',
+        }
+        client = asyncclient()
+        responce = await client.post(
+            url=f'http://{config.BUS_HOST}:{config.BUS_PORT}/api/bus/bus',
+            json=data,
+            headers={'Authorization': config.INTERCO_TOKEN}
+        )
+        if responce.status_code == 200:
+            logger.info(f'Message sended to bus.bus')
+        else:
+            logger.warning(responce.text)
 
     @permit('company_change')
     async def company_change(self, obj: ChangeCompanyScheme, commit=True) -> ModelType:
@@ -157,6 +176,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         self.session.add(user)
         await self.session.commit()
         await self.session.refresh(user)
+        await self.send_relogin(user.id)
         return user
 
     async def permissions(self, user_id: UUID) -> List[str]:

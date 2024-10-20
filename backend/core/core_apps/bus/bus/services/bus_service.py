@@ -29,6 +29,7 @@ class BusService(BaseService[Bus, BusCreateScheme, BusUpdateScheme, BusFilter]):
             'cache_tag': bus_entity.cache_tag,
             'message': bus_entity.message,
             'company_id': bus_entity.company_id,
+            'user_id': bus_entity.user_id,
             'vars': bus_entity.vars,
         })
         return bus_entity

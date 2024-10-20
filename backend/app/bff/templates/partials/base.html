@@ -306,9 +306,7 @@
     {% endblock css %}
 </head>
 
-<body>
-
-
+<body id="body">
 <div id="websocket_bus" hx-ext="ws" ws-connect="{{ ws }}"></div>
 <div class="position-fixed top-0 end-0 p-3">
     <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert"
@@ -719,8 +717,21 @@
                             myToast.showToast();
                         }
                     }
+                } else if (message.tag === 'REFRESH') {
+                    refreshToken()
+                    var table = htmx.find("table")
+                    if (table) {
+                        htmx.trigger(table, 'update')
+                    }
+                    var form = htmx.find("form")
+                    if (form) {
+                        htmx.trigger(form, 'update')
+                    }
+                    var modal = htmx.find("modal")
+                    if (modal) {
+                        htmx.trigger(modal, 'update')
+                    }
                 }
-
             })
 
             function hideModals(modal) {

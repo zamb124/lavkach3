@@ -1,5 +1,6 @@
 from typing import Optional, List
 
+from celery.worker.strategy import default
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field
 from pydantic.types import UUID
@@ -19,6 +20,7 @@ class BusBaseScheme(BasicModel):
     message: str = Field(title='Message')
     status: BusStatus = Field(default=BusStatus.NEW, title='Status')
     company_id: UUID = Field(title='Company ID', model='company')
+    user_id: Optional[UUID] = Field(default=None, title='User ID', model='user')
 
     class Config:
         orm_model = Bus

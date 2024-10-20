@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from sqlalchemy import Uuid, Sequence, Enum, ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped
@@ -16,3 +17,4 @@ class Bus(Base, AllMixin):
     cache_tag: Mapped[CacheTag] = mapped_column(index=True)
     message: Mapped[str]
     status: Mapped[BusStatus] = mapped_column(index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=True)

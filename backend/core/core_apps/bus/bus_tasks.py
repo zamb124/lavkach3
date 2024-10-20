@@ -23,7 +23,17 @@ async def send_message(message):
     active_connections = ws_manager.active_connections
     conn_to_delete = []
     for _, connection in active_connections.items():
-        if connection.user.company_id.__str__() == message.get('company_id'):
+        if connection.user.user_id.__str__() == message.get('user_id'):
+            try:
+                await ws_manager.send_tagged_message(
+                    websocket=connection,
+                    tag=CacheTag(message['cache_tag']),
+                    message=message['message'],
+                    vars=message['vars']
+                )
+            except Exception as e:
+                conn_to_delete.append(_)
+        elif connection.user.company_id.__str__() == message.get('company_id'):
             try:
                 await ws_manager.send_tagged_message(
                     websocket=connection,

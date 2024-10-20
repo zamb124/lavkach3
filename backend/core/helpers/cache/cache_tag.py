@@ -6,6 +6,7 @@ class CacheTag(Enum):
     WS_SESSION = "ws_session"
     MESSAGE = 'message'
     MODEL = 'model'
+    REFRESH = 'refresh'
 
 class CacheStrategy(str, Enum):
     FULL: str = 'FULL'

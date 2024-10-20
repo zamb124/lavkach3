@@ -53,7 +53,7 @@ class Config(BaseSettings):
     BASE_PORT: str = os.environ.get('BASIC_PORT') or '8888'
     BUS_HOST: str = os.environ.get('BUS_HOST') or '127.0.0.1'
     BUS_PORT: str = os.environ.get('BUS_PORT') or '8099'
-    MESSAGE_HOST: str = os.environ.get('MESSAGE_HOST') or '127.0.0.1'
+    MESSAGE_HOST: str = os.environ.get('MESSAGE_HOST') or '127.0.0.5'
     MESSAGE_PORT: str = os.environ.get('MESSAGE_PORT') or '8099'
     INTERCO_TOKEN: str = os.environ.get('INTERCO_TOKEN') or 'netu'
 

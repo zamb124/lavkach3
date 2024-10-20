@@ -1,6 +1,6 @@
 import uuid
 
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel, UUID4, computed_field
 from typing import Optional, List
 from sqlalchemy import select
 from core.db.session import session
@@ -22,6 +22,11 @@ class CurrentUser(BaseModel):
 
     class Config:
         validate_assignment = True
+
+    @computed_field
+    @property
+    def id(self) -> str:
+        return self.user_id
 
     async def get_user_data(self):
         query = select(User).where(User.id == self.id)
