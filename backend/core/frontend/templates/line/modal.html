@@ -1,65 +1,94 @@
 {% block modal %}
-{% autoescape false %}
-<div class="modal" id="{{ 'modal_'~line.class_key }}" tabindex="-1" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
-        <div class="modal-content">
-            <div class="modal-header">
+    {% autoescape false %}
+        <div class="modal" id="{{ 'modal_'~line.class_key }}" tabindex="-1" style="display: none;"
+             aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
+                <div class="modal-content">
+                    <div class="modal-header">
 
-                <div class="col-6">
-                    <h5 class="modal-title">
-                        {{ method|capitalize }} {{ line.model_name|capitalize }}
-                        <span>
+                        <div class="col-6">
+                            <h5 class="modal-title">
+                                {{ method|capitalize }} {{ line.model_name|capitalize }}
+                                <span>
                     {% if method in ('create', 'update') %}
                         {{ line.button_view|safe }}
                     {% else %}
                         {{ line.button_update|safe }}
                     {% endif %}
                         </span>
-                        <span>
+                                <span>
                             {{ line.button_delete|safe }}
                         </span>
-                    <span>
-                        {{ line.button_actions  }}
+                                <span>
+                        {{ line.button_actions }}
                     </span>
 
-                    </h5>
-                </div>
+                            </h5>
+                        </div>
 
-                <div class="bx-pull-right">
-                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="bx-pull-right">
+                            <button class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div id="{{ 'modal_body'~ line.class_key }}">
+                        <div class="modal-body text-center p-5">
+                            <lord-icon
+                                    src="https://cdn.lordicon.com/ghhwiltn.json"
+                                    trigger="loop"
+                                    style="width:150px;height:150px">
+                            </lord-icon>
+                            {% if method in ('create', 'update') %}
+                                {{ line.as_div_update }}
+                            {% else %}
+                                {{ line.as_div_get }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                        {% if method in ('create', 'update') %}
+                            {{ line.button_save }}
+                        {% endif %}
+
+                    </div>
                 </div>
-            </div>
-            <div id="{{ 'modal_body'~ line.class_key }}">
-                <div class="modal-body text-center p-5">
-                    <lord-icon
-                            src="https://cdn.lordicon.com/ghhwiltn.json"
-                            trigger="loop"
-                            style="width:150px;height:150px">
-                    </lord-icon>
-                    {% if method in ('create', 'update') %}
-                        {{ line.as_div_update }}
-                    {% else %}
-                        {{ line.as_div_get }}
-                    {% endif %}
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
-                </button>
-                {% if method in ('create', 'update') %}
-                    {{ line.button_save }}
-                {% endif %}
 
             </div>
         </div>
+        <script>
+            var modal = new bootstrap.Modal('#{{ 'modal_'~line.class_key }}')
+            modal.show()
+        </script>
+        <script>
+    // Modal'ı sürüklenebilir hale getiren JavaScript kodu
+    (function () {
+        var modal = document.getElementById('{{ 'modal_'~line.class_key }}');
+        var header = modal.querySelector('.modal-header');
 
-    </div>
-</div>
-<script>
-    var modal = new bootstrap.Modal('#{{ 'modal_'~line.class_key }}')
-    modal.show()
+        header.onmousedown = function (e) {
+            var offsetX = e.clientX - modal.getBoundingClientRect().left;
+            var offsetY = e.clientY - modal.getBoundingClientRect().top;
+
+            function mouseMoveHandler(e) {
+                modal.style.position = 'absolute';
+                modal.style.left = (e.clientX - offsetX) + 'px';
+                modal.style.top = (e.clientY - offsetY) + 'px';
+            }
+
+            function mouseUpHandler() {
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            }
+
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        };
+    })();
 </script>
-{% endautoescape %}
+    {% endautoescape %}
 {% endblock %}
 
 {% block delete %}
@@ -76,10 +105,14 @@
                     <div class="mt-4">
                         <h4 class="mb-3" style="padding-bottom: 0">Are you sure you want to
                             delete {{ line.model_name|capitalize }} -> {{ line.display_title }}</h4>
-                        <p class="text-muted mb-1 text-center" style="padding-top: 0"> With id {{ line.id }} </p>
-                        <p class="text-muted mb-10"> The record will be permanently deleted, did you really think? </p>
+                        <p class="text-muted mb-1 text-center" style="padding-top: 0"> With
+                            id {{ line.id }} </p>
+                        <p class="text-muted mb-10"> The record will be permanently deleted, did you
+                            really think? </p>
                         <div class="hstack gap-2 justify-content-center">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                Close
+                            </button>
                             <button type="button"
                                     hx-trigger="click"
                                     hx-post="/base/line"
