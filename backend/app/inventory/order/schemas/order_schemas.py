@@ -38,6 +38,8 @@ class OrderBaseScheme(BasicModel):
         orm_model = Order
         readonly = [('status', '==', 'draft')]            # Переопределяет readonly для всех полей модели для UI
 
+
+
 class OrderUpdateScheme(OrderBaseScheme):
     move_list_rel: Optional[list['MoveUpdateScheme']] = Field(default=[], title='Order Movements', form=True)
 
@@ -58,6 +60,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     user_ids: Optional[list[UUID]] = Field(default=[], title='Users', model='user')
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True, readonly=True)
     move_list_rel: Optional[list["MoveScheme"]] = Field(default=[], title='Order Movements', form=True)
+
     @computed_field
     def title(self) -> str:
         return f'{self.order_type_rel.title}: [{self.number}]'

@@ -7,7 +7,8 @@ from jinja2 import Environment
 from fastapi_filter.contrib.sqlalchemy import Filter
 from jinja2_fragments import render_block
 from pydantic import BaseModel
-from pydantic.fields import FieldInfo
+from pydantic.fields import FieldInfo, ComputedFieldInfo
+from six import class_types
 from starlette.datastructures import QueryParams
 from starlette.requests import Request
 
@@ -245,10 +246,13 @@ class ClassView:
         """
             Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
-        fielinfo: FieldInfo       = schema.model_fields[field_name]
+        fielinfo: FieldInfo       = (schema.model_fields | schema.model_computed_fields)[field_name]
         res: str                  = ''
         enums: list               = []
-        class_types: list         = get_types(fielinfo.annotation, [])
+        if not isinstance(fielinfo, ComputedFieldInfo):
+            class_types: list         = get_types(fielinfo.annotation, [])
+        else:
+            class_types: list = [str]
         model: Model | None       = None
         model_name: str           = self.model.name
         is_filter: bool           = True if issubclass(schema, BaseFilter) else False  # type: ignore
@@ -324,7 +328,7 @@ class ClassView:
                     exclude_add.append(f)
             exclude = set(exclude_add) | set(exclude)
         n = 0
-        for k, v in schema.model_fields.items():
+        for k, v in (schema.model_fields | schema.model_computed_fields).items():
             if k in exclude:
                 continue
             f = self._get_field(lines=lines, line=line, field_name=k, schema=schema, **kwargs)
