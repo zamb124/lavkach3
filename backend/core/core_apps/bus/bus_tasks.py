@@ -1,6 +1,7 @@
 import logging
 
 from fastapi_restful.tasks import repeat_every
+from starlette.websockets import WebSocketDisconnect
 
 from .bus import BusFilter
 from .bus.enums import BusStatus

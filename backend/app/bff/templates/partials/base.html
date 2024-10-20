@@ -249,6 +249,11 @@
                 border-bottom-right-radius: 20px;
             }
 
+            .modal-backdrop.show {
+                background-color: rgba(5, 4, 4, 0.5);
+                --vz-backdrop-opacity: 0.5;
+                animation: ani 10.5s forwards;
+            }
 
             select option[selected] {
                 background-color: var(--vz-form-valid-border-color)
@@ -719,18 +724,9 @@
                     }
                 } else if (message.tag === 'REFRESH') {
                     refreshToken()
-                    var table = htmx.find("table")
-                    if (table) {
-                        htmx.trigger(table, 'update')
-                    }
-                    var form = htmx.find("form")
-                    if (form) {
-                        htmx.trigger(form, 'update')
-                    }
-                    var modal = htmx.find("modal")
-                    if (modal) {
-                        htmx.trigger(modal, 'update')
-                    }
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000)
                 }
             })
 

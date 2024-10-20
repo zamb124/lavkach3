@@ -5,13 +5,13 @@ from pydantic import BaseModel, Field, UUID4
 
 from ....base.company.models.company_models import Company
 from .....schemas import BaseFilter
-from .....schemas.basic_schemes import BaseModel
+from .....schemas.basic_schemes import BaseModel, BasicModel
 from .....schemas.list_schema import GenericListSchema
 from .....schemas.timestamps import TimeStampScheme
 from .....types.types import TypeCountry, TypeLocale, TypeCurrency
 
 
-class CompanyBaseScheme(BaseModel):
+class CompanyBaseScheme(BasicModel):
     title: str = Field(title='Title', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
     locale: Optional[TypeLocale] = Field(default='en_US', title='Locale', table=True, form=True, model='locale')
@@ -19,10 +19,7 @@ class CompanyBaseScheme(BaseModel):
     currency: TypeCurrency | str = Field(default='USD', title='Currency', table=True, form=True, model='currency')
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = Company
-        service = 'app.base.company.services.CompanyService'
 
 class CompanyUpdateScheme(CompanyBaseScheme):
     ...
