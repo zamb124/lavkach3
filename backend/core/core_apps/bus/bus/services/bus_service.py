@@ -5,7 +5,8 @@ from starlette.requests import Request
 from ...bus.models.bus_models import Bus
 from ...bus.shemas.bus_schemas import BusCreateScheme, BusUpdateScheme, BusFilter
 from .....permissions import permit
-from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
+from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, \
+    CreateSchemaType, logger
 
 
 class BusService(BaseService[Bus, BusCreateScheme, BusUpdateScheme, BusFilter]):
@@ -24,6 +25,7 @@ class BusService(BaseService[Bus, BusCreateScheme, BusUpdateScheme, BusFilter]):
     async def create(self, obj: CreateSchemaType) -> ModelType:
         from ...bus_tasks import send_message
         bus_entity = await super(BusService, self).create(obj)
+        logger.info(f'send_message\n {obj.model_dump(mode="json")}')
         send_message = await send_message.kiq({
             'bus_id': bus_entity.id,
             'cache_tag': bus_entity.cache_tag,

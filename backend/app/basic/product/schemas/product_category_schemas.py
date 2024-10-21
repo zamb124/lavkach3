@@ -19,10 +19,7 @@ class ProductCategoryBaseScheme(BasicModel):
     product_category_ids: Optional[list[UUID4]] = Field(default=[], title="Child categories", model='product_category')
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = ProductCategory
-        service = 'app.basic.product.services.ProductCategoryService'
 
 
 class ProductCategoryUpdateScheme(ProductCategoryBaseScheme):

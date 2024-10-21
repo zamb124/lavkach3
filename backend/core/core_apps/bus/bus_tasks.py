@@ -23,6 +23,7 @@ async def send_message(message):
     #messages = await bs.list(_filter=filter)
     active_connections = ws_manager.active_connections
     conn_to_delete = []
+    sended = False
     for _, connection in active_connections.items():
         if connection.user.user_id.__str__() == message.get('user_id'):
             try:
@@ -32,6 +33,7 @@ async def send_message(message):
                     message=message['message'],
                     vars=message['vars']
                 )
+                sended=True
             except Exception as e:
                 conn_to_delete.append(_)
         elif connection.user.company_id.__str__() == message.get('company_id'):
@@ -42,8 +44,11 @@ async def send_message(message):
                     message=message['message'],
                     vars=message['vars']
                 )
+                sended = True
             except Exception as e:
                 conn_to_delete.append(_)
+    if not sended:
+        logger.warning(f"Message not sended: {message}")
     for con in conn_to_delete:
         ws_manager.active_connections.pop(con)
     bs_entity = await bs.get(message['bus_id'])
