@@ -17,6 +17,7 @@ ws_router = APIRouter()
 
 
 async def get_token(websocket: WebSocket):
+    logger.warning(websocket.headers)
     _, user = await AuthBackend().authenticate(websocket)
     return user
 
