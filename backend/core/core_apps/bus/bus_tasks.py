@@ -22,6 +22,7 @@ async def send_message(message):
     #filter = BusFilter(status__in=[BusStatus.NEW, BusStatus.ERROR])
     #messages = await bs.list(_filter=filter)
     active_connections = ws_manager.active_connections
+    logger.info(f"Active connections: {active_connections}")
     conn_to_delete = []
     sended = False
     for _, connection in active_connections.items():
