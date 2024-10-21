@@ -128,12 +128,11 @@ class ClassView:
 
     async def init(self, params: dict | None = None, join_related: bool = False, data: list = None,schema: BaseModel = None) -> None:
         """Майнинг данных по params"""
-
         await self.lines.get_data(
             env=self.env,
             model=self.model,
             schema=schema if schema else self.model.schemas.get,
-            params=params or self.params,
+            params=params,
             data=data,
             join_related=join_related or self.join_related,
             join_fields=self.join_fields,

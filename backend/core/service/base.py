@@ -260,6 +260,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                     if key == 'id':
                         value = id
                     to_set.append((key, value))
+        await self.session.refresh(entity)
         for k, v in to_set:
             attr = getattr(entity, k)
             if not attr == v:
