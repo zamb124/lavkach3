@@ -308,6 +308,8 @@ async def modal(request: Request, file: UploadFile):
                 for col, label in enumerate(header):
                     line[label] = cells[col].value
                 data.append(line)
+    if not data:
+        return f"{cls.send_message(message=f'No data in file')} {cls.get_import}"
     task = await import_prepare_data.kiq(model=cls.model_name, data=data)
     task_result = await task.wait_result()
     cls.errors = task_result.return_value[0]
