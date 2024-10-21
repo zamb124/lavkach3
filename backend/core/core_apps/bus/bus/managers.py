@@ -1,11 +1,12 @@
+import logging
 from datetime import datetime
 
 from fastapi import WebSocket
 
-from core.core_apps.bus.bus_tasks import logger
 from core.helpers.cache import CacheTag
 from core.helpers.cache.cache_manager import Cache
-
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class ConnectionManager:
     cache: Cache
