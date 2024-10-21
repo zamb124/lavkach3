@@ -35,6 +35,7 @@ async def send_message(message):
                 )
                 sended=True
             except Exception as e:
+                logger.error(str(e))
                 conn_to_delete.append(_)
         elif connection.user.company_id.__str__() == message.get('company_id'):
             try:
@@ -46,6 +47,7 @@ async def send_message(message):
                 )
                 sended = True
             except Exception as e:
+                logger.error(str(e))
                 conn_to_delete.append(_)
     if not sended:
         logger.warning(f"Message not sended: {message}")
