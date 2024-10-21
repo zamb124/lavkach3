@@ -49,6 +49,8 @@ async def send_message(message):
                 conn_to_delete.append(_)
     if not sended:
         logger.warning(f"Message not sended: {message}")
+    else:
+        logger.info(f"Message sended: {message}")
     for con in conn_to_delete:
         ws_manager.active_connections.pop(con)
     bs_entity = await bs.get(message['bus_id'])
