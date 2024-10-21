@@ -11,6 +11,7 @@ from fastapi import (
 
 from ...bus.managers import ws_manager
 from core.fastapi.middlewares import AuthBackend
+from ...bus_tasks import logger
 
 ws_router = APIRouter()
 
@@ -37,6 +38,7 @@ async def websocket_endpoint(websocket: WebSocket, user: Annotated[str, Depends(
                 {"message": message},
                 user.user_id,  # type: ignore
             )
-    except WebSocketDisconnect:
+    except WebSocketDisconnect as ex:
+        logger.error(f"websocket disconnected: {user.nickname} {str(ex)}")
         await ws_manager.disconnect(session_key)
 
