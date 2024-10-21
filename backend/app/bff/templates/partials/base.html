@@ -670,6 +670,11 @@
             //        console.log(event, elt, data);
             //    }
             //};
+            htmx.on('htmx:wsConfigReceive', (e) => {
+                console.log('wsConfigReceive')
+                console.log(e);
+                e.detail.headers["Authorization"] = getCookieValue('token')
+            })
             htmx.on('htmx:wsConfigSend', (e) => {
                 console.log('wsConfigSend')
                 console.log(e);

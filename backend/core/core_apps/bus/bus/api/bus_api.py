@@ -52,3 +52,8 @@ async def bus_update(bus_id: uuid.UUID, schema: BusUpdateScheme, service: BusSer
 @bus_router.delete("/{bus_id}")
 async def bus_delete(bus_id: uuid.UUID, service: BusService = Depends()):
     await service.delete(id=bus_id)
+
+@bus_router.get("/utils/active_connections")
+async def get_active_connections(service: BusService = Depends()):
+    res = await service.get_active_connections()
+    return res

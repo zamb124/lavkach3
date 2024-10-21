@@ -1,7 +1,8 @@
 from typing import Any, Optional
 
-
 from starlette.requests import Request
+
+from ..managers import ws_manager
 from ...bus.models.bus_models import Bus
 from ...bus.shemas.bus_schemas import BusCreateScheme, BusUpdateScheme, BusFilter
 from .....permissions import permit
@@ -11,7 +12,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 class BusService(BaseService[Bus, BusCreateScheme, BusUpdateScheme, BusFilter]):
     def __init__(self, request: Request):
-        super(BusService, self).__init__(request, Bus,BusCreateScheme, BusUpdateScheme)
+        super(BusService, self).__init__(request, Bus, BusCreateScheme, BusUpdateScheme)
 
     @permit('bus_edit')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
@@ -39,3 +40,15 @@ class BusService(BaseService[Bus, BusCreateScheme, BusUpdateScheme, BusFilter]):
     @permit('bus_delete')
     async def delete(self, id: Any) -> None:
         return await super(BusService, self).delete(id)
+
+    async def get_active_connections(self):
+        return [
+            {
+                'key': k,
+                'user_id': v.user.user_id,
+                'company_id': v.user.company_id,
+                'nickname': v.user.nickname,
+            }
+            for k, v in
+            ws_manager.active_connections.items()
+        ]
