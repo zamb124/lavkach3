@@ -2,6 +2,7 @@ from datetime import datetime
 
 from fastapi import WebSocket
 
+from core.core_apps.bus.bus_tasks import logger
 from core.helpers.cache import CacheTag
 from core.helpers.cache.cache_manager import Cache
 
@@ -26,6 +27,7 @@ class ConnectionManager:
             if key.startswith(f'{CacheTag.WS_SESSION.value}:{session_key}')
         ]
         for key_to_del in keys_to_delete:
+            logger.warning(f"Disconnecting {key_to_del}")
             self.active_connections.pop(key_to_del)
 
     async def send_personal_message(self, message: str, user_id: str, message_type='other'):
