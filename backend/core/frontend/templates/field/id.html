@@ -9,14 +9,14 @@
     >
 {% endblock %}
 {% block as_get %}
-    <a class="text-danger form-control"
+    <a class="text-danger form-control disabled"
        href="#"
        hx-params="model,method,id,key"
        hx-trigger="click"
        hx-target="#htmx_content"
        hx-swap="beforeend transition:true"
        hx-ext="json-enc"
-       disabled="1"
+       disabled
        hx-post="/base/modal"
        hx-vals='{
 "model": "{{ field.model_name }}",

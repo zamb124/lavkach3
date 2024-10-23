@@ -15,8 +15,9 @@
 "id": "{{ line.id or "" }}",
 "key": "{{ line.key }}"
 }'
-       class="btn btn-soft-success">
-        <i class="ri-file-fill h4"></i>
+       class="btn btn-soft-success inline">
+        <iconify-icon icon="solar:document-bold" class="fs-10"></iconify-icon>
+
     </a>
 {% endblock %}
 
@@ -59,7 +60,7 @@
 "id": "{{ line.id }}",
 "key": "{{ line.class_key }}"
 }'
-            class="btn btn-soft-primary">
+            class="btn btn-soft-primary inline">
         <iconify-icon icon="solar:document-add-bold" class="fs-10"></iconify-icon>
 
     </button>
@@ -150,7 +151,7 @@
                 data-bs-toggle="tooltip"
                 data-bs-html="true"
                 title="{{ field.get.description or field.get.title }}">
-            {{ field.get.title or field.field_name }}
+            <p>{{ field.get.title or field.field_name }}</p>
         </td>
     {% endfor %}
 
@@ -205,7 +206,8 @@
                 {% endif %}>
         </div>
         <div>
-            <ul class="list-inline text-center position-relative">
+            <ul class="list-inline text-center position-relative" style="
+    margin-bottom: 0px;>
                 {% if line.type == 'new' %}
                 {% else %}
                     <li class="list-inline-item edit" title="Edit">
@@ -265,7 +267,10 @@
     {% endif %}
     {% endfor %}
     {% for field in line.fields if not field.is_reserved and field.type == 'list_rel' %}
-        <div class="row">
+        <div class="row" style="padding-right: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    margin-left: 0px;">
         <div class="col">
         <p style="margin-bottom: 0; margin-top: 1rem"
            class="sort text-uppercase text-muted text-start"

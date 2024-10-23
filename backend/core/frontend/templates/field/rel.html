@@ -1,5 +1,5 @@
 {% block as_get %}
-        <a class="text-danger form-control"
+        <a class="text-danger form-control disabled "
            href="#"
            hx-include="none"
            hx-trigger="click"
@@ -36,6 +36,7 @@
                 placeholderValue: "Enter {{ field.update.title }}",
                 removeItemButton: true,
             });
+            choices.containerInner.element.classList.add('form-control');
             {% if field.update.readonly %}
                 choices.disable()
             {% endif %}

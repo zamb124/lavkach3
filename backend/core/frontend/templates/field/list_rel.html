@@ -18,6 +18,7 @@
             let choices = new Choices(element);
              choices.containerInner.element.classList.add('form-control');
             choices.disable()
+            choices.containerInner.element.classList.add('disabled');
         })();
     </script>
 {% endblock %}
@@ -42,6 +43,7 @@
                 removeItemButton: true
             });
             choices.containerInner.element.classList.add('form-control');
+
             function check_valid(event) {
                 if (element.required) {
                     if (event) {

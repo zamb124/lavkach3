@@ -16,15 +16,15 @@
                 <thead class="text-muted table-light">
                 <tr class="placeholder-lg placeholder-glow">
                     {% for i in range(8) %}
-                        <th><span class="placeholder col-12"></span></th>
+                        <th><span class="placeholder col-12 form-control"></span></th>
                     {% endfor %}
                 </tr>
                 </thead>
                 <tbody>
-                {% for i in range(8) %}
+                {% for i in range(15) %}
                     <tr class="placeholder-glow">
                         {% for i in range(8) %}
-                            <td><span class="placeholder col-12"></span></td>
+                            <td> <button class="form-control"><span class="placeholder col-12 form-control"></span></button></td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
@@ -40,8 +40,8 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive scrollable-dropdown" style="width: auto; min-height: 400px; white-space: nowrap;" data-show-columns="true">
-                <table class="table table-hover table-striped" id="{{ 'table' ~'--'~ cls.key }}" style="vertical-align: middle;">
-                    <thead class="text-muted table-light" style="position: sticky; top: 0px">
+                <table class="table table-hover" id="{{ 'table' ~'--'~ cls.key }}" style="vertical-align: middle;">
+                    <thead class="text-muted" style="position: sticky; top: 0px">
                     <tr class="text-uppercase fs-13" style="text-align: center">
                         <th scope="col" >
                             <div class="form-check">
@@ -49,8 +49,9 @@
                                        value="option">
                             </div>
                         </th>
+
                         {{ cls.lines.as_table_header }}
-                        <th style="min-width: 14rem">Active</th>
+                        <th style="min-width: 8rem"><p>Active</p></th>
                     </tr>
                     </thead>
                     <tbody id="{{ 'tbody-table' ~'--'~ cls.key }}">
@@ -65,7 +66,7 @@
                     </tbody>
                 {% if not method == 'get' %}
                 <tr>
-                        <td style="border-width: 0; background-color: var(--vz-secondary-bg) !important;">
+                        <td style="border-width: 0; background-color: var(--bs-border-color) !important;">
                             <a
                                hx-boost="true"
                                id="{{ cls.field_name~'--create' }}"

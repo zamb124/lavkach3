@@ -19,6 +19,9 @@
                 placeholderValue: "Enter {{ field.update.title or field.field_name }}",
                 removeItemButton: true
             });
+            {% if field.update.readonly %}
+                choices.disable()
+            {% endif %}
             choices.containerInner.element.classList.add('form-control');
             {% if not field.is_filter %}
             function check_valid() {
@@ -97,7 +100,7 @@
 {% endblock %}
 
 {% block as_get %}
-        <div class="text-start form-control" style="background-color: var(--vz-tertiary-bg); min-height: 40px" id="{{ field.key }}">
+        <div class="text-start form-control disabled" style="min-height: 37px" id="{{ field.key }}">
         </div>
     <script>
         (async function () {

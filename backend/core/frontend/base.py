@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, UUID4, model_validator
 from starlette.responses import JSONResponse
 
-from app.bff.bff_tasks import import_prepare_data, import_save
+from app.front.front_tasks import import_prepare_data, import_save
 from core.frontend.constructor import ClassView
 from core.frontend.utils import clean_filter
 from fastapi import FastAPI, File, UploadFile

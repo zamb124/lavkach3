@@ -145,7 +145,7 @@
     </script>
 {% endblock %}
 {% block as_get %}
-    <select class="uuid form-control is-valid text-start "
+    <select class="uuid form-control is-valid text-start disabled"
             id="{{ field.key }}"
             {% if field.update.readonly %}readonly {% endif %}
             {% if field.update.hidden  %}hidden {% endif %}
@@ -167,6 +167,7 @@
 
             });
             choices.containerInner.element.classList.add('form-control');
+            choices.containerInner.element.classList.add('disabled');
             choices.disable()
 
             async function searchChoices(value) {

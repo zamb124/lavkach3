@@ -10,6 +10,7 @@ from app.inventory.location.enums import LocationClass
 from app.inventory.order.enums.order_enum import MoveStatus, MoveType, move_color_map
 from app.inventory.order.models import Move
 from app.inventory.order.schemas.suggest_schemas import SuggestScheme, SuggestCreateScheme, SuggestUpdateScheme
+from core.frontend.enviroment import readonly_fields
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import ActionBaseSchame, BasicModel
 from core.schemas.list_schema import GenericListSchema
@@ -32,7 +33,7 @@ class MoveBaseScheme(BasicModel):
     uom_id: Optional[UUID4] = Field(default=None, title='Uom', table=True, model='uom')
     quant_src_id: Optional[UUID4] = Field(default=None, title='Quant source', table=True, model='quant')
     quant_dest_id: Optional[UUID4] = Field(default=None, title='Quant dest', table=True, model='quant')
-    status: MoveStatus = Field(title='Status', table=True, color_map=move_color_map)
+    status: MoveStatus = Field(title='Status', table=True, readonly=True, color_map=move_color_map)
 
     class Config:
         extra = 'allow'
