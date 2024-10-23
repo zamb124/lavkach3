@@ -90,13 +90,13 @@ services:
       - redis
       - bus-app
 
-  bff-app:
+  front-app:
     build:
       context: .
     env_file:
       - .env-docker
-    container_name: bff_app
-    command: gunicorn app.bff.bff_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
+    container_name: front_app
+    command: gunicorn app.front.front_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
     ports:
       - 80:80
     depends_on:

@@ -1,5 +1,5 @@
 {% block as_update %}
-    <select class="list-uuid form-control is-valid"
+    <select class="list-uuid"
             id="{{ field.key }}"
             {% if field.update.required and not field.is_filter %} required {% endif %}
             {% if field.update.readonly %} readonly {% endif %}
@@ -15,11 +15,11 @@
         (async function () {
             let element = document.getElementById("{{ field.key }}");
             let choices = new Choices(element, {
-
                 placeholder: true,
                 placeholderValue: "Enter {{ field.update.title or field.field_name }}",
                 removeItemButton: true
             });
+            choices.containerInner.element.classList.add('form-control');
             {% if not field.is_filter %}
             function check_valid() {
                 if (element.required) {

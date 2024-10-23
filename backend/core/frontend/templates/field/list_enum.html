@@ -19,6 +19,7 @@
                 multiple: true,
                 removeItemButton: true,
             });
+            choices.containerInner.element.classList.add('form-control');
             {% if not field.is_filter %}
             function check_valid() {
                 if (element.required) {
@@ -51,6 +52,7 @@
             let choices = new Choices(element, {
                 multiple: true,
             });
+            choices.containerInner.element.classList.add('form-control');
             choices.disable()
         })();
     </script>

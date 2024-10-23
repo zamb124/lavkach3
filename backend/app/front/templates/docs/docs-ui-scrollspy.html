@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-bs-theme="light" data-color-theme="Blue_Theme" data-layout="vertical" data-boxed-layout="boxed">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon icon-->
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+
+  <!-- Core Css -->
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+
+  <title>MatDash Bootstrap Admin</title>
+
+  <link rel="stylesheet" href="../assets/libs/prismjs/themes/prism-okaidia.min.css" />
+</head>
+
+<body class="link-sidebar">
+
+  <!-- ============================================================== -->
+  <!-- Main wrapper - style you can find in pages.scss -->
+  <!-- ============================================================== -->
+  <div id="main-wrapper">
+    <!-- ============================================================== -->
+    <!-- End Topbar header -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Left Sidebar - style you can find in sidebar.scss  -->
+    <!-- ============================================================== -->
+    <!--Desktop view sidebar menu-->
+    <aside class="left-sidebar with-vertical">
+      <!-- Sidebar scroll-->
+      <!-- ============================================================== -->
+      <!-- Logo -->
+      <!-- ============================================================== -->
+      <div class="navbar-brand brand-logo d-flex align-items-center justify-content-between px-4">
+        <a href="../main/index.html" class="text-nowrap logo-img">
+          <img src="../assets/images/logos/logo.svg" alt="Logo-Dark" />
+        </a>
+        <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
+          <i class="ti ti-x"></i>
+        </a>
+      </div>
+      <!-- ============================================================== -->
+      <!-- End Logo -->
+      <!-- ============================================================== -->
+      <div class="scroll-sidebar" style="height: calc(100vh - 100px)" data-simplebar>
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav">
+          <ul id="sidebarnav" class="sidebar-menu mt-4">
+            <nav class="nav nav-pills flex-column sidebar-nav">
+              <ul class="list-unstyled">
+                <!--Getting Started-->
+                <li class="nav-small-cap">
+                  <span class="hide-menu">Getting Started</span>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/index.html">
+                    <iconify-icon icon="solar:home-2-linear"></iconify-icon>
+                    Introduction
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-structure.html">
+                    <iconify-icon icon="solar:inbox-archive-line-duotone"></iconify-icon> Package Structure
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-start.html"><iconify-icon icon="solar:bookmark-square-minimalistic-line-duotone"></iconify-icon> Quick Start</a>
+                </li>
+                <!--CUSTOMIZATION-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap">
+                  <span class="hide-menu">Customization</span>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-layout.html"><iconify-icon icon="solar:layers-line-duotone"></iconify-icon> Layout Options</a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-change-logo.html"><iconify-icon icon="solar:album-line-duotone"></iconify-icon> Change Logo</a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-changes-skin-color.html"><iconify-icon icon="solar:waterdrops-line-duotone"></iconify-icon> Global Skin Color</a>
+                </li>
+                <!--Theme UI-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap mt-4">
+                  <span class="hide-menu">Theme UI</span>
+                </li>
+                <li class="sidebar-item position-relative">
+                  <a class="sidebar-link has-arrow d-flex align-items-center" href="javascript:void(0)" aria-expanded="false"><iconify-icon icon="solar:settings-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Settings</span>
+                  </a>
+                  <!--sub-menu items-->
+                  <ul aria-expanded="false" class="collapse first-level list-unstyled">
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-color.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Color </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-typography.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Typography </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-icon.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Icons </span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--UI COMPONENTS-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap mt-4">
+                  <span class="hide-menu">Ui Components</span>
+                </li>
+                <li class="sidebar-item position-relative">
+                  <a class="sidebar-link has-arrow d-flex align-items-center" href="javascript:void(0)" aria-expanded="false"><iconify-icon icon="solar:widget-2-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Bootstrap</span>
+                  </a>
+                  <!--sub-menu items-->
+                  <ul aria-expanded="false" class="collapse first-level list-unstyled">
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-buttons.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Buttons </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-modals.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Modals </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-tabs.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Tabs </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-tooltip-popover.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Tooltip & Popover </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-notification.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Notifications </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-progressbar.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Progressbar </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-typography.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Typography </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-bootstrapui.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Bootstrap UI </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-breadcrumb.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Breadcrumbs </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-listmedia.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> List Media </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-grid.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Grids </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-carousel.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Carousel </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-scrollspy.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Scrollspy </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-toasts.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Toasts </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-spinner.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Spinner </span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--Support-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap mt-4">
+                  <span class="hide-menu">Support</span>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-change-log.html"><iconify-icon icon="solar:notification-unread-lines-linear"></iconify-icon>Changelog</a>
+                </li>
+              </ul>
+            </nav>
+          </ul>
+        </nav>
+        <!-- End Sidebar navigation -->
+      </div>
+      <!-- End Sidebar scroll-->
+    </aside>
+
+    <!-- ============================================================== -->
+    <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+      <!-- ============================================================== -->
+      <!-- Topbar header - style you can find in pages.scss -->
+      <!-- ============================================================== -->
+      <header class="topbar position-relative">
+        <div class="navbar navbar-header bg-white d-flex align-items-center justify-content-between p-3 fixed-top">
+          <!-- ============================================================== -->
+          <!-- Toggle which is visible on mobile only -->
+          <!-- ============================================================== -->
+          <!-- Logo icon -->
+          <a href="index.html">
+            <b class="logo-icon d-xl-none d-block">
+              <!-- Dark Logo icon -->
+              <img src="../assets/images/logos/logo.svg" alt="homepage" class="dark-logo" />
+            </b>
+            <!--End Logo icon -->
+          </a>
+          <div class="d-flex align-items-center">
+            <!---Mobile view canvas button--->
+            <a class="fs-8 text-muted d-xl-none d-block sidebartoggler" href="javascript:void(0)" role="button">
+              <i class="ti ti-menu-2"></i>
+            </a>
+          </div>
+        </div>
+      </header>
+      <!-- ============================================================== -->
+      <!-- Page wrapper  -->
+      <!-- ============================================================== -->
+      <div class="body-wrapper" data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-smooth-scroll="true" tabindex="0">
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+          <!-- ============================================================== -->
+          <!-- Start Page Content -->
+          <!-- ============================================================== -->
+          <div class="d-sm-flex align-items-center justify-content-between">
+            <h4 class="mb-4 pb-2 fs-5">Scrollspy</h3>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">Scrollspy with Navbar</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4">
+                  <nav id="navbar-example2" class="navbar navbar-light px-3">
+                    <a class="navbar-brand" href="#">
+                      <img src="../assets/images/logos/favicon.png">
+                    </a>
+                    <ul class="nav nav-pills">
+                      <li class="nav-item">
+                        <a class="nav-link active" href="#fat">@fat</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#mdo">@mdo</a>
+                      </li>
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Dropdown</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li>
+                            <a class="dropdown-item" href="#one">one</a>
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="#two">two</a>
+                          </li>
+                          <li>
+                            <hr class="dropdown-divider">
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="#three">three</a>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </nav>
+                  <div class="
+                          position-relative
+                          mt-3
+                          p-3
+                          border
+                          overflow-auto
+                        " style="height: 200px" data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-offset="0" tabindex="0">
+                    <h4 id="fat">@fat</h4>
+                    <p>
+                      farm-to-table bicycle rights whatever. Anim keffiyeh
+                      carles cardigan. Velit seitan mcsweeney's photo
+                      booth 3 wolf moon irure. Cosby sweater lomo jean
+                      shorts, williamsburg hoodie minim qui you probably
+                      haven't heard of them et cardigan trust fund culpa
+                      biodiesel wes anderson aesthetic. Nihil tattooed
+                      accusamus, cred irony biodiesel keffiyeh artisan
+                      ullamco consequat.
+                    </p>
+                    <h4 id="mdo">@mdo</h4>
+                    <p>
+                      Veniam marfa mustache skateboard, adipisicing fugiat
+                      velit pitchfork beard. Freegan beard aliqua
+                      cupidatat mcsweeney's vero. Cupidatat four loko
+                      nisi, ea helvetica nulla carles. Tattooed cosby
+                      sweater food truck, mcsweeney's quis non freegan
+                      vinyl. Lo-fi wes anderson +1 sartorial. Carles non
+                      aesthetic exercitation quis gentrify. Brooklyn
+                      adipisicing craft beer vice keytar deserunt.
+                    </p>
+                    <h4 id="one">one</h4>
+                    <p>
+                      Occaecat commodo aliqua delectus. Fap craft beer
+                      deserunt skateboard ea. Lomo bicycle rights
+                      adipisicing banh mi, velit ea sunt next level
+                      locavore single-origin coffee in magna veniam. High
+                      life id vinyl, echo park consequat quis aliquip banh
+                      mi pitchfork. Vero VHS est adipisicing. Consectetur
+                      nisi DIY minim messenger bag. Cred ex in,
+                      sustainable delectus consectetur fanny pack iphone.
+                    </p>
+                    <h4 id="two">two</h4>
+                    <p>
+                      In incididunt echo park, officia deserunt
+                      mcsweeney's proident master cleanse thundercats
+                      sapiente veniam. Excepteur VHS elit, proident
+                      shoreditch +1 biodiesel laborum craft beer.
+                      Single-origin coffee wayfarers irure four loko,
+                      cupidatat terry richardson master cleanse. Assumenda
+                      you probably haven't heard of them art party fanny
+                      pack, tattooed nulla cardigan tempor ad. Proident
+                      wolf nesciunt sartorial keffiyeh eu banh mi
+                      sustainable. Elit wolf voluptate, lo-fi ea portland
+                      before they sold out four loko. Locavore enim
+                      nostrud mlkshk brooklyn nesciunt.
+                    </p>
+                    <h4 id="three">three</h4>
+                    <p>
+                      Ad leggings keytar, brunch id art party dolor
+                      labore. Pitchfork yr enim lo-fi before they sold out
+                      qui. Tumblr farm-to-table bicycle rights whatever.
+                      Anim keffiyeh carles cardigan. Velit seitan
+                      mcsweeney's photo booth 3 wolf moon irure. Cosby
+                      sweater lomo jean shorts, williamsburg hoodie minim
+                      qui you probably haven't heard of them et cardigan
+                      trust fund culpa biodiesel wes anderson aesthetic.
+                      Nihil tattooed accusamus, cred irony biodiesel
+                      keffiyeh artisan ullamco consequat.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+
+              <pre class="mt-0">                                      <code class="language-html" style="height: 300px;">
+  &#x3C;nav id=&#x22;navbar-example2&#x22; class=&#x22;navbar navbar-light px-3&#x22;&#x3E; &#x3C;a class=&#x22;navbar-brand&#x22; href=&#x22;#&#x22;&#x3E; &#x3C;img src=&#x22;../assets/images/logos/favicon.png&#x22; /&#x3E; &#x3C;/a&#x3E;
+      &#x3C;ul class=&#x22;nav nav-pills&#x22;&#x3E;
+          &#x3C;li class=&#x22;nav-item&#x22;&#x3E; &#x3C;a class=&#x22;nav-link&#x22; href=&#x22;#fat&#x22;&#x3E;@fat&#x3C;/a&#x3E; &#x3C;/li&#x3E;
+          &#x3C;li class=&#x22;nav-item&#x22;&#x3E; &#x3C;a class=&#x22;nav-link&#x22; href=&#x22;#mdo&#x22;&#x3E;@mdo&#x3C;/a&#x3E; &#x3C;/li&#x3E;
+          &#x3C;li class=&#x22;nav-item dropdown&#x22;&#x3E; &#x3C;a class=&#x22;nav-link dropdown-toggle&#x22; data-bs-toggle=&#x22;dropdown&#x22; href=&#x22;#&#x22; role=&#x22;button&#x22; aria-expanded=&#x22;false&#x22;&#x3E;Dropdown&#x3C;/a&#x3E;
+              &#x3C;ul class=&#x22;dropdown-menu dropdown-menu-end&#x22;&#x3E;
+                  &#x3C;li&#x3E;&#x3C;a class=&#x22;dropdown-item&#x22; href=&#x22;#one&#x22;&#x3E;one&#x3C;/a&#x3E;&#x3C;/li&#x3E;
+                  &#x3C;li&#x3E;&#x3C;a class=&#x22;dropdown-item&#x22; href=&#x22;#two&#x22;&#x3E;two&#x3C;/a&#x3E;&#x3C;/li&#x3E;
+                  &#x3C;li&#x3E;
+                      &#x3C;hr class=&#x22;dropdown-divider&#x22;&#x3E;
+                  &#x3C;/li&#x3E;
+                  &#x3C;li&#x3E;&#x3C;a class=&#x22;dropdown-item&#x22; href=&#x22;#three&#x22;&#x3E;three&#x3C;/a&#x3E;&#x3C;/li&#x3E;
+              &#x3C;/ul&#x3E;
+          &#x3C;/li&#x3E;
+      &#x3C;/ul&#x3E;
+  &#x3C;/nav&#x3E;
+  &#x3C;div class=&#x22;position-relative mt-3 p-3 border overflow-auto&#x22; style=&#x22;height: 200px;&#x22; data-bs-spy=&#x22;scroll&#x22; data-bs-target=&#x22;#navbar-example2&#x22; data-bs-offset=&#x22;0&#x22; tabindex=&#x22;0&#x22;&#x3E;
+      &#x3C;h4 id=&#x22;fat&#x22;&#x3E;@fat&#x3C;/h4&#x3E;
+      &#x3C;p&#x3E;farm-to-table bicycle rights whatever. Anim keffiyeh carles cardigan. Velit seitan mcsweeney&#x27;s photo booth 3 wolf moon irure. Cosby sweater lomo jean shorts, williamsburg hoodie minim qui you probably haven&#x27;t heard of them et cardigan trust fund culpa biodiesel wes anderson aesthetic. Nihil tattooed accusamus, cred irony biodiesel keffiyeh artisan ullamco consequat.&#x3C;/p&#x3E;
+      &#x3C;h4 id=&#x22;mdo&#x22;&#x3E;@mdo&#x3C;/h4&#x3E;
+      &#x3C;p&#x3E;Veniam marfa mustache skateboard, adipisicing fugiat velit pitchfork beard. Freegan beard aliqua cupidatat mcsweeney&#x27;s vero. Cupidatat four loko nisi, ea helvetica nulla carles. Tattooed cosby sweater food truck, mcsweeney&#x27;s quis non freegan vinyl. Lo-fi wes anderson +1 sartorial. Carles non aesthetic exercitation quis gentrify. Brooklyn adipisicing craft beer vice keytar deserunt.&#x3C;/p&#x3E;
+      &#x3C;h4 id=&#x22;one&#x22;&#x3E;one&#x3C;/h4&#x3E;
+      &#x3C;p&#x3E;Occaecat commodo aliqua delectus. Fap craft beer deserunt skateboard ea. Lomo bicycle rights adipisicing banh mi, velit ea sunt next level locavore single-origin coffee in magna veniam. High life id vinyl, echo park consequat quis aliquip banh mi pitchfork. Vero VHS est adipisicing. Consectetur nisi DIY minim messenger bag. Cred ex in, sustainable delectus consectetur fanny pack iphone.&#x3C;/p&#x3E;
+      &#x3C;h4 id=&#x22;two&#x22;&#x3E;two&#x3C;/h4&#x3E;
+      &#x3C;p&#x3E;In incididunt echo park, officia deserunt mcsweeney&#x27;s proident master cleanse thundercats sapiente veniam. Excepteur VHS elit, proident shoreditch +1 biodiesel laborum craft beer. Single-origin coffee wayfarers irure four loko, cupidatat terry richardson master cleanse. Assumenda you probably haven&#x27;t heard of them art party fanny pack, tattooed nulla cardigan tempor ad. Proident wolf nesciunt sartorial keffiyeh eu banh mi sustainable. Elit wolf voluptate, lo-fi ea portland before they sold out four loko. Locavore enim nostrud mlkshk brooklyn nesciunt.&#x3C;/p&#x3E;
+      &#x3C;h4 id=&#x22;three&#x22;&#x3E;three&#x3C;/h4&#x3E;
+      &#x3C;p&#x3E;Ad leggings keytar, brunch id art party dolor labore. Pitchfork yr enim lo-fi before they sold out qui. Tumblr farm-to-table bicycle rights whatever. Anim keffiyeh carles cardigan. Velit seitan mcsweeney&#x27;s photo booth 3 wolf moon irure. Cosby sweater lomo jean shorts, williamsburg hoodie minim qui you probably haven&#x27;t heard of them et cardigan trust fund culpa biodiesel wes anderson aesthetic. Nihil tattooed accusamus, cred irony biodiesel keffiyeh artisan ullamco consequat.&#x3C;/p&#x3E;
+  &#x3C;/div&#x3E;
+                                        </code>
+                                      </pre>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">Scollspy with Nested Nav</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4">
+                  <div class="row">
+                    <div class="col-4">
+                      <nav id="navbar-example3" class="navbar navbar-light">
+                        <nav class="nav nav-pills flex-column">
+                          <a class="nav-link active" href="#item-1">Item 1</a>
+                          <nav class="nav nav-pills flex-column">
+                            <a class="nav-link ms-3 my-1" href="#item-1-1">Item 1-1</a>
+                            <a class="nav-link ms-3 my-1" href="#item-1-2">Item 1-2</a>
+                          </nav>
+                          <a class="nav-link" href="#item-2">Item 2</a>
+                          <a class="nav-link" href="#item-3">Item 3</a>
+                          <nav class="nav nav-pills flex-column">
+                            <a class="nav-link ms-3 my-1" href="#item-3-1">Item 3-1</a>
+                            <a class="nav-link ms-3 my-1" href="#item-3-2">Item 3-2</a>
+                          </nav>
+                        </nav>
+                      </nav>
+                    </div>
+                    <div class="col-8">
+                      <div class="
+                              position-relative
+                              mt-3
+                              p-3
+                              border
+                              overflow-auto
+                            " style="height: 300px" data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-offset="0" tabindex="0">
+                        <h4 id="item-1">Item 1</h4>
+                        <p>
+                          farm-to-table bicycle rights whatever. Anim
+                          keffiyeh carles cardigan. Velit seitan
+                          mcsweeney's photo booth 3 wolf moon irure. Cosby
+                          sweater lomo jean shorts, williamsburg hoodie
+                          minim qui you probably haven't heard of them et
+                          cardigan trust fund culpa biodiesel wes anderson
+                          aesthetic. Nihil tattooed accusamus, cred irony
+                          biodiesel keffiyeh artisan ullamco consequat.
+                        </p>
+                        <h5 id="item-1-1">Item 1-1</h5>
+                        <p>
+                          Veniam marfa mustache skateboard, adipisicing
+                          fugiat velit pitchfork beard. Freegan beard
+                          aliqua cupidatat mcsweeney's vero. Cupidatat
+                          four loko nisi, ea helvetica nulla carles.
+                          Tattooed cosby sweater food truck, mcsweeney's
+                          quis non freegan vinyl. Lo-fi wes anderson +1
+                          sartorial. Carles non aesthetic exercitation
+                          quis gentrify. Brooklyn adipisicing craft beer
+                          vice keytar deserunt.
+                        </p>
+                        <h5 id="item-1-2">Item 1-1</h5>
+                        <p>
+                          Occaecat commodo aliqua delectus. Fap craft beer
+                          deserunt skateboard ea. Lomo bicycle rights
+                          adipisicing banh mi, velit ea sunt next level
+                          locavore single-origin coffee in magna veniam.
+                          High life id vinyl, echo park consequat quis
+                          aliquip banh mi pitchfork. Vero VHS est
+                          adipisicing. Consectetur nisi DIY minim
+                          messenger bag. Cred ex in, sustainable delectus
+                          consectetur fanny pack iphone.
+                        </p>
+                        <h4 id="item-2">Item 2</h4>
+                        <p>
+                          In incididunt echo park, officia deserunt
+                          mcsweeney's proident master cleanse thundercats
+                          sapiente veniam. Excepteur VHS elit, proident
+                          shoreditch +1 biodiesel laborum craft beer.
+                          Single-origin coffee wayfarers irure four loko,
+                          cupidatat terry richardson master cleanse.
+                          Assumenda you probably haven't heard of them art
+                          party fanny pack, tattooed nulla cardigan tempor
+                          ad. Proident wolf nesciunt sartorial keffiyeh eu
+                          banh mi sustainable. Elit wolf voluptate, lo-fi
+                          ea portland before they sold out four loko.
+                          Locavore enim nostrud mlkshk brooklyn nesciunt.
+                        </p>
+                        <h4 id="item-3">Item 3</h4>
+                        <p>
+                          Ad leggings keytar, brunch id art party dolor
+                          labore. Pitchfork yr enim lo-fi before they sold
+                          out qui. Tumblr farm-to-table bicycle rights
+                          whatever. Anim keffiyeh carles cardigan. Velit
+                          seitan mcsweeney's photo booth 3 wolf moon
+                          irure. Cosby sweater lomo jean shorts,
+                          williamsburg hoodie minim qui you probably
+                          haven't heard of them et cardigan trust fund
+                          culpa biodiesel wes anderson aesthetic. Nihil
+                          tattooed accusamus, cred irony biodiesel
+                          keffiyeh artisan ullamco consequat.
+                        </p>
+                        <h5 id="item-3-1">Item 3-1</h5>
+                        <p>
+                          Ad leggings keytar, brunch id art party dolor
+                          labore. Pitchfork yr enim lo-fi before they sold
+                          out qui. Tumblr farm-to-table bicycle rights
+                          whatever. Anim keffiyeh carles cardigan. Velit
+                          seitan mcsweeney's photo booth 3 wolf moon
+                          irure. Cosby sweater lomo jean shorts,
+                          williamsburg hoodie minim qui you probably
+                          haven't heard of them et cardigan trust fund
+                          culpa biodiesel wes anderson aesthetic. Nihil
+                          tattooed accusamus, cred irony biodiesel
+                          keffiyeh artisan ullamco consequat.
+                        </p>
+                        <h5 id="item-3-2">Item 3-2</h5>
+                        <p>
+                          Ad leggings keytar, brunch id art party dolor
+                          labore. Pitchfork yr enim lo-fi before they sold
+                          out qui. Tumblr farm-to-table bicycle rights
+                          whatever. Anim keffiyeh carles cardigan. Velit
+                          seitan mcsweeney's photo booth 3 wolf moon
+                          irure. Cosby sweater lomo jean shorts,
+                          williamsburg hoodie minim qui you probably
+                          haven't heard of them et cardigan trust fund
+                          culpa biodiesel wes anderson aesthetic. Nihil
+                          tattooed accusamus, cred irony biodiesel
+                          keffiyeh artisan ullamco consequat.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+
+              <pre class="mt-0">                                      <code class="language-html" style="height: 300px;">
+  &#x3C;div class=&#x22;row&#x22;&#x3E;
+      &#x3C;div class=&#x22;col-4&#x22;&#x3E;
+          &#x3C;nav id=&#x22;navbar-example3&#x22; class=&#x22;navbar navbar-light&#x22;&#x3E;
+              &#x3C;nav class=&#x22;nav nav-pills flex-column&#x22;&#x3E; &#x3C;a class=&#x22;nav-link&#x22; href=&#x22;#item-1&#x22;&#x3E;Item 1&#x3C;/a&#x3E;
+                  &#x3C;nav class=&#x22;nav nav-pills flex-column&#x22;&#x3E; &#x3C;a class=&#x22;nav-link ms-3 my-1&#x22; href=&#x22;#item-1-1&#x22;&#x3E;Item 1-1&#x3C;/a&#x3E; &#x3C;a class=&#x22;nav-link ms-3 my-1&#x22; href=&#x22;#item-1-2&#x22;&#x3E;Item 1-2&#x3C;/a&#x3E; &#x3C;/nav&#x3E; &#x3C;a class=&#x22;nav-link&#x22; href=&#x22;#item-2&#x22;&#x3E;Item 2&#x3C;/a&#x3E; &#x3C;a class=&#x22;nav-link&#x22; href=&#x22;#item-3&#x22;&#x3E;Item 3&#x3C;/a&#x3E;
+                  &#x3C;nav class=&#x22;nav nav-pills flex-column&#x22;&#x3E; &#x3C;a class=&#x22;nav-link ms-3 my-1&#x22; href=&#x22;#item-3-1&#x22;&#x3E;Item 3-1&#x3C;/a&#x3E; &#x3C;a class=&#x22;nav-link ms-3 my-1&#x22; href=&#x22;#item-3-2&#x22;&#x3E;Item 3-2&#x3C;/a&#x3E; &#x3C;/nav&#x3E;
+              &#x3C;/nav&#x3E;
+          &#x3C;/nav&#x3E;
+      &#x3C;/div&#x3E;
+      &#x3C;div class=&#x22;col-8&#x22;&#x3E;
+          &#x3C;div class=&#x22;position-relative mt-3 p-3 border overflow-auto&#x22; style=&#x22;height: 300px;&#x22; data-bs-spy=&#x22;scroll&#x22; data-bs-target=&#x22;#navbar-example3&#x22; data-bs-offset=&#x22;0&#x22; tabindex=&#x22;0&#x22;&#x3E;
+              &#x3C;h4 id=&#x22;item-1&#x22;&#x3E;Item 1&#x3C;/h4&#x3E;
+              &#x3C;p&#x3E;farm-to-table bicycle rights whatever. Anim keffiyeh carles cardigan. Velit seitan mcsweeney&#x27;s photo booth 3 wolf moon irure. Cosby sweater lomo jean shorts, williamsburg hoodie minim qui you probably haven&#x27;t heard of them et cardigan trust fund culpa biodiesel wes anderson aesthetic. Nihil tattooed accusamus, cred irony biodiesel keffiyeh artisan ullamco consequat.&#x3C;/p&#x3E;
+              &#x3C;h5 id=&#x22;item-1-1&#x22;&#x3E;Item 1-1&#x3C;/h5&#x3E;
+              &#x3C;p&#x3E;Veniam marfa mustache skateboard, adipisicing fugiat velit pitchfork beard. Freegan beard aliqua cupidatat mcsweeney&#x27;s vero. Cupidatat four loko nisi, ea helvetica nulla carles. Tattooed cosby sweater food truck, mcsweeney&#x27;s quis non freegan vinyl. Lo-fi wes anderson +1 sartorial. Carles non aesthetic exercitation quis gentrify. Brooklyn adipisicing craft beer vice keytar deserunt.&#x3C;/p&#x3E;
+              &#x3C;h5 id=&#x22;item-1-2&#x22;&#x3E;Item 1-1&#x3C;/h5&#x3E;
+              &#x3C;p&#x3E;Occaecat commodo aliqua delectus. Fap craft beer deserunt skateboard ea. Lomo bicycle rights adipisicing banh mi, velit ea sunt next level locavore single-origin coffee in magna veniam. High life id vinyl, echo park consequat quis aliquip banh mi pitchfork. Vero VHS est adipisicing. Consectetur nisi DIY minim messenger bag. Cred ex in, sustainable delectus consectetur fanny pack iphone.&#x3C;/p&#x3E;
+              &#x3C;h4 id=&#x22;item-2&#x22;&#x3E;Item 2&#x3C;/h4&#x3E;
+              &#x3C;p&#x3E;In incididunt echo park, officia deserunt mcsweeney&#x27;s proident master cleanse thundercats sapiente veniam. Excepteur VHS elit, proident shoreditch +1 biodiesel laborum craft beer. Single-origin coffee wayfarers irure four loko, cupidatat terry richardson master cleanse. Assumenda you probably haven&#x27;t heard of them art party fanny pack, tattooed nulla cardigan tempor ad. Proident wolf nesciunt sartorial keffiyeh eu banh mi sustainable. Elit wolf voluptate, lo-fi ea portland before they sold out four loko. Locavore enim nostrud mlkshk brooklyn nesciunt.&#x3C;/p&#x3E;
+              &#x3C;h4 id=&#x22;item-3&#x22;&#x3E;Item 3&#x3C;/h4&#x3E;
+              &#x3C;p&#x3E;Ad leggings keytar, brunch id art party dolor labore. Pitchfork yr enim lo-fi before they sold out qui. Tumblr farm-to-table bicycle rights whatever. Anim keffiyeh carles cardigan. Velit seitan mcsweeney&#x27;s photo booth 3 wolf moon irure. Cosby sweater lomo jean shorts, williamsburg hoodie minim qui you probably haven&#x27;t heard of them et cardigan trust fund culpa biodiesel wes anderson aesthetic. Nihil tattooed accusamus, cred irony biodiesel keffiyeh artisan ullamco consequat.&#x3C;/p&#x3E;
+              &#x3C;h5 id=&#x22;item-3-1&#x22;&#x3E;Item 3-1&#x3C;/h5&#x3E;
+              &#x3C;p&#x3E;Ad leggings keytar, brunch id art party dolor labore. Pitchfork yr enim lo-fi before they sold out qui. Tumblr farm-to-table bicycle rights whatever. Anim keffiyeh carles cardigan. Velit seitan mcsweeney&#x27;s photo booth 3 wolf moon irure. Cosby sweater lomo jean shorts, williamsburg hoodie minim qui you probably haven&#x27;t heard of them et cardigan trust fund culpa biodiesel wes anderson aesthetic. Nihil tattooed accusamus, cred irony biodiesel keffiyeh artisan ullamco consequat.&#x3C;/p&#x3E;
+              &#x3C;h5 id=&#x22;item-3-2&#x22;&#x3E;Item 3-2&#x3C;/h5&#x3E;
+              &#x3C;p&#x3E;Ad leggings keytar, brunch id art party dolor labore. Pitchfork yr enim lo-fi before they sold out qui. Tumblr farm-to-table bicycle rights whatever. Anim keffiyeh carles cardigan. Velit seitan mcsweeney&#x27;s photo booth 3 wolf moon irure. Cosby sweater lomo jean shorts, williamsburg hoodie minim qui you probably haven&#x27;t heard of them et cardigan trust fund culpa biodiesel wes anderson aesthetic. Nihil tattooed accusamus, cred irony biodiesel keffiyeh artisan ullamco consequat.&#x3C;/p&#x3E;
+          &#x3C;/div&#x3E;
+      &#x3C;/div&#x3E;
+  &#x3C;/div&#x3E;
+                                      </code>
+                                    </pre>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">Scrollspy with List-group</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4">
+                  <div class="row">
+                    <div class="col-4">
+                      <div id="list-example" class="list-group">
+                        <a class="list-group-item list-group-item-action active" href="#list-item-1">Item 1</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-2">Item 2</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-3">Item 3</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-4">Item 4</a>
+                      </div>
+                    </div>
+                    <div class="col-8">
+                      <div class="position-relative p-3 border overflow-auto" style="height: 200px" data-bs-spy="scroll" data-bs-target="#list-example" data-bs-offset="0" tabindex="0">
+                        <h4 id="list-item-1">Item 1</h4>
+                        <p>
+                          Ex consequat commodo adipisicing exercitation
+                          aute excepteur occaecat ullamco duis aliqua id
+                          magna ullamco eu. Do aute ipsum ipsum ullamco
+                          cillum consectetur ut et aute consectetur
+                          labore. Fugiat laborum incididunt tempor eu
+                          consequat enim dolore proident. Qui laborum do
+                          non excepteur nulla magna eiusmod consectetur
+                          in. Aliqua et aliqua officia quis et incididunt
+                          voluptate non anim reprehenderit adipisicing
+                          dolore ut consequat deserunt mollit dolore.
+                          Aliquip nulla enim veniam non fugiat id
+                          cupidatat nulla elit cupidatat commodo velit ut
+                          eiusmod cupidatat elit dolore.
+                        </p>
+                        <h4 id="list-item-2">Item 2</h4>
+                        <p>
+                          Quis magna Lorem anim amet ipsum do mollit sit
+                          cillum voluptate ex nulla tempor. Laborum
+                          consequat non elit enim exercitation cillum
+                          aliqua consequat id aliqua. Esse ex consectetur
+                          mollit voluptate est in duis laboris ad sit
+                          ipsum anim Lorem. Incididunt veniam velit elit
+                          elit veniam Lorem aliqua quis ullamco deserunt
+                          sit enim elit aliqua esse irure. Laborum nisi
+                          sit est tempor laborum mollit labore officia
+                          laborum excepteur commodo non commodo dolor
+                          excepteur commodo. Ipsum fugiat ex est
+                          consectetur ipsum commodo tempor sunt in
+                          proident.
+                        </p>
+                        <h4 id="list-item-3">Item 3</h4>
+                        <p>
+                          Quis anim sit do amet fugiat dolor velit sit ea
+                          ea do reprehenderit culpa duis. Nostrud aliqua
+                          ipsum fugiat minim proident occaecat excepteur
+                          aliquip culpa aute tempor reprehenderit.
+                          Deserunt tempor mollit elit ex pariatur dolore
+                          velit fugiat mollit culpa irure ullamco est ex
+                          ullamco excepteur.
+                        </p>
+                        <h4 id="list-item-4">Item 4</h4>
+                        <p>
+                          Quis anim sit do amet fugiat dolor velit sit ea
+                          ea do reprehenderit culpa duis. Nostrud aliqua
+                          ipsum fugiat minim proident occaecat excepteur
+                          aliquip culpa aute tempor reprehenderit.
+                          Deserunt tempor mollit elit ex pariatur dolore
+                          velit fugiat mollit culpa irure ullamco est ex
+                          ullamco excepteur.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+
+              <pre class="mt-0">                                      <code class="language-html" style="height: 300px;">
+  &#x3C;div class=&#x22;row&#x22;&#x3E;
+      &#x3C;div class=&#x22;col-4&#x22;&#x3E;
+          &#x3C;div id=&#x22;list-example&#x22; class=&#x22;list-group&#x22;&#x3E;
+              &#x3C;a class=&#x22;list-group-item list-group-item-action&#x22; href=&#x22;#list-item-1&#x22;&#x3E;Item 1&#x3C;/a&#x3E;
+              &#x3C;a class=&#x22;list-group-item list-group-item-action&#x22; href=&#x22;#list-item-2&#x22;&#x3E;Item 2&#x3C;/a&#x3E;
+              &#x3C;a class=&#x22;list-group-item list-group-item-action&#x22; href=&#x22;#list-item-3&#x22;&#x3E;Item 3&#x3C;/a&#x3E;
+              &#x3C;a class=&#x22;list-group-item list-group-item-action&#x22; href=&#x22;#list-item-4&#x22;&#x3E;Item 4&#x3C;/a&#x3E;
+          &#x3C;/div&#x3E;
+      &#x3C;/div&#x3E;
+      &#x3C;div class=&#x22;col-8&#x22;&#x3E;
+          &#x3C;div class=&#x22;position-relative p-3 border overflow-auto&#x22; style=&#x22;height: 200px;&#x22; data-bs-spy=&#x22;scroll&#x22; data-bs-target=&#x22;#list-example&#x22; data-bs-offset=&#x22;0&#x22; class=&#x22;scrollspy-example&#x22; tabindex=&#x22;0&#x22;&#x3E;
+              &#x3C;h4 id=&#x22;list-item-1&#x22;&#x3E;Item 1&#x3C;/h4&#x3E;
+              &#x3C;p&#x3E;Ex consequat commodo adipisicing exercitation aute excepteur occaecat ullamco duis aliqua id magna ullamco eu. Do aute ipsum ipsum ullamco cillum consectetur ut et aute consectetur labore. Fugiat laborum incididunt tempor eu consequat enim dolore proident. Qui laborum do non excepteur nulla magna eiusmod consectetur in. Aliqua et aliqua officia quis et incididunt voluptate non anim reprehenderit adipisicing dolore ut consequat deserunt mollit dolore. Aliquip nulla enim veniam non fugiat id cupidatat nulla elit cupidatat commodo velit ut eiusmod cupidatat elit dolore.&#x3C;/p&#x3E;
+              &#x3C;h4 id=&#x22;list-item-2&#x22;&#x3E;Item 2&#x3C;/h4&#x3E;
+              &#x3C;p&#x3E;Quis magna Lorem anim amet ipsum do mollit sit cillum voluptate ex nulla tempor. Laborum consequat non elit enim exercitation cillum aliqua consequat id aliqua. Esse ex consectetur mollit voluptate est in duis laboris ad sit ipsum anim Lorem. Incididunt veniam velit elit elit veniam Lorem aliqua quis ullamco deserunt sit enim elit aliqua esse irure. Laborum nisi sit est tempor laborum mollit labore officia laborum excepteur commodo non commodo dolor excepteur commodo. Ipsum fugiat ex est consectetur ipsum commodo tempor sunt in proident.&#x3C;/p&#x3E;
+              &#x3C;h4 id=&#x22;list-item-3&#x22;&#x3E;Item 3&#x3C;/h4&#x3E;
+              &#x3C;p&#x3E;Quis anim sit do amet fugiat dolor velit sit ea ea do reprehenderit culpa duis. Nostrud aliqua ipsum fugiat minim proident occaecat excepteur aliquip culpa aute tempor reprehenderit. Deserunt tempor mollit elit ex pariatur dolore velit fugiat mollit culpa irure ullamco est ex ullamco excepteur.&#x3C;/p&#x3E;
+              &#x3C;h4 id=&#x22;list-item-4&#x22;&#x3E;Item 4&#x3C;/h4&#x3E;
+              &#x3C;p&#x3E;Quis anim sit do amet fugiat dolor velit sit ea ea do reprehenderit culpa duis. Nostrud aliqua ipsum fugiat minim proident occaecat excepteur aliquip culpa aute tempor reprehenderit. Deserunt tempor mollit elit ex pariatur dolore velit fugiat mollit culpa irure ullamco est ex ullamco excepteur.&#x3C;/p&#x3E;
+          &#x3C;/div&#x3E;
+      &#x3C;/div&#x3E;
+  &#x3C;/div&#x3E;
+                                        </code>
+                                      </pre>
+            </div>
+          </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Container fluid  -->
+        <!-- ============================================================== -->
+      </div>
+      <!-- ============================================================== -->
+      <!-- End Page wrapper  -->
+      <!-- ============================================================== -->
+    </div>
+  </div>
+  <div class="dark-transparent sidebartoggler"></div>
+  <!-- ============================================================== -->
+  <!-- End Wrapper -->
+  <!-- ============================================================== -->
+  <!-- End Page -->
+  <!-- ============================================================== -->
+  <!-- All Jquery -->
+  <!-- ============================================================== -->
+  <script src="../assets/libs/simplebar/dist/simplebar.min.js"></script>
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  function handleSidebar() {
+    document.querySelectorAll(".sidebartoggler").forEach(function (element) {
+      element.addEventListener("click", function () {
+        document.querySelectorAll(".sidebartoggler").forEach(function (el) {
+          el.checked = true;
+        });
+        document
+          .getElementById("main-wrapper")
+          .classList.toggle("show-sidebar");
+        document.querySelectorAll(".sidebarmenu").forEach(function (el) {
+          el.classList.toggle("close");
+        });
+        var dataTheme = document.body.getAttribute("data-sidebartype");
+        if (dataTheme === "full") {
+          document.body.setAttribute("data-sidebartype", "mini-sidebar");
+        } else {
+          document.body.setAttribute("data-sidebartype", "full");
+        }
+      });
+    });
+  }
+
+  handleSidebar();
+
+  function findMatchingElement() {
+    var currentUrl = window.location.href;
+    var anchors = document.querySelectorAll("#sidebarnav a");
+    for (var i = 0; i < anchors.length; i++) {
+      if (anchors[i].href === currentUrl) {
+        return anchors[i];
+      }
+    }
+
+    return null; // Return null if no matching element is found
+  }
+  var elements = findMatchingElement();
+
+  // Do something with the matching element
+  if (elements) {
+    elements.classList.add("active");
+  }
+
+  document
+    .querySelectorAll("ul#sidebarnav ul li a.active")
+    .forEach(function (link) {
+      link.closest("ul").classList.add("in");
+      link.closest("ul").parentElement.classList.add("selected");
+    });
+
+  document.querySelectorAll("#sidebarnav li").forEach(function (li) {
+    const isActive = li.classList.contains("selected");
+    if (isActive) {
+      const anchor = li.querySelector("a");
+      if (anchor) {
+        anchor.classList.add("active");
+      }
+    }
+  });
+
+  document.querySelectorAll("#sidebarnav a").forEach(function (link) {
+    link.addEventListener("click", function (e) {
+      const isActive = this.classList.contains("active");
+      const parentUl = this.closest("ul");
+      if (!isActive) {
+        // hide any open menus and remove all other classes
+        parentUl.querySelectorAll("ul").forEach(function (submenu) {
+          submenu.classList.remove("in");
+        });
+        parentUl.querySelectorAll("a").forEach(function (navLink) {
+          navLink.classList.remove("active");
+        });
+
+        // open our new menu and add the open class
+        const submenu = this.nextElementSibling;
+        if (submenu) {
+          submenu.classList.add("in");
+        }
+
+        this.classList.add("active");
+      } else {
+        this.classList.remove("active");
+        parentUl.classList.remove("active");
+        const submenu = this.nextElementSibling;
+        if (submenu) {
+          submenu.classList.remove("in");
+        }
+      }
+    });
+  });
+</script>
+
+
+  <!-- solar icons -->
+  <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+  <script src="../assets/libs/prismjs/prism.js"></script>
+  <!-- End JS -->
+</body>
+
+</html>

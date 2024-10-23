@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-bs-theme="light" data-color-theme="Blue_Theme" data-layout="vertical" data-boxed-layout="boxed">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon icon-->
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+
+  <!-- Core Css -->
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+
+  <title>MatDash Bootstrap Admin</title>
+
+  <link rel="stylesheet" href="../assets/libs/prismjs/themes/prism-okaidia.min.css" />
+</head>
+
+<body class="link-sidebar">
+
+  <!-- ============================================================== -->
+  <!-- Main wrapper - style you can find in pages.scss -->
+  <!-- ============================================================== -->
+  <div id="main-wrapper">
+    <!-- ============================================================== -->
+    <!-- End Topbar header -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Left Sidebar - style you can find in sidebar.scss  -->
+    <!-- ============================================================== -->
+    <!--Desktop view sidebar menu-->
+    <aside class="left-sidebar with-vertical">
+      <!-- Sidebar scroll-->
+      <!-- ============================================================== -->
+      <!-- Logo -->
+      <!-- ============================================================== -->
+      <div class="navbar-brand brand-logo d-flex align-items-center justify-content-between px-4">
+        <a href="../main/index.html" class="text-nowrap logo-img">
+          <img src="../assets/images/logos/logo.svg" alt="Logo-Dark" />
+        </a>
+        <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
+          <i class="ti ti-x"></i>
+        </a>
+      </div>
+      <!-- ============================================================== -->
+      <!-- End Logo -->
+      <!-- ============================================================== -->
+      <div class="scroll-sidebar" style="height: calc(100vh - 100px)" data-simplebar>
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav">
+          <ul id="sidebarnav" class="sidebar-menu mt-4">
+            <nav class="nav nav-pills flex-column sidebar-nav">
+              <ul class="list-unstyled">
+                <!--Getting Started-->
+                <li class="nav-small-cap">
+                  <span class="hide-menu">Getting Started</span>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/index.html">
+                    <iconify-icon icon="solar:home-2-linear"></iconify-icon>
+                    Introduction
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-structure.html">
+                    <iconify-icon icon="solar:inbox-archive-line-duotone"></iconify-icon> Package Structure
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-start.html"><iconify-icon icon="solar:bookmark-square-minimalistic-line-duotone"></iconify-icon> Quick Start</a>
+                </li>
+                <!--CUSTOMIZATION-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap">
+                  <span class="hide-menu">Customization</span>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-layout.html"><iconify-icon icon="solar:layers-line-duotone"></iconify-icon> Layout Options</a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-change-logo.html"><iconify-icon icon="solar:album-line-duotone"></iconify-icon> Change Logo</a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-changes-skin-color.html"><iconify-icon icon="solar:waterdrops-line-duotone"></iconify-icon> Global Skin Color</a>
+                </li>
+                <!--Theme UI-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap mt-4">
+                  <span class="hide-menu">Theme UI</span>
+                </li>
+                <li class="sidebar-item position-relative">
+                  <a class="sidebar-link has-arrow d-flex align-items-center" href="javascript:void(0)" aria-expanded="false"><iconify-icon icon="solar:settings-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Settings</span>
+                  </a>
+                  <!--sub-menu items-->
+                  <ul aria-expanded="false" class="collapse first-level list-unstyled">
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-color.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Color </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-typography.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Typography </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-icon.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Icons </span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--UI COMPONENTS-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap mt-4">
+                  <span class="hide-menu">Ui Components</span>
+                </li>
+                <li class="sidebar-item position-relative">
+                  <a class="sidebar-link has-arrow d-flex align-items-center" href="javascript:void(0)" aria-expanded="false"><iconify-icon icon="solar:widget-2-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Bootstrap</span>
+                  </a>
+                  <!--sub-menu items-->
+                  <ul aria-expanded="false" class="collapse first-level list-unstyled">
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-buttons.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Buttons </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-modals.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Modals </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-tabs.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Tabs </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-tooltip-popover.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Tooltip & Popover </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-notification.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Notifications </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-progressbar.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Progressbar </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-typography.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Typography </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-bootstrapui.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Bootstrap UI </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-breadcrumb.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Breadcrumbs </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-listmedia.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> List Media </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-grid.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Grids </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-carousel.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Carousel </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-scrollspy.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Scrollspy </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-toasts.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Toasts </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-spinner.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Spinner </span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--Support-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap mt-4">
+                  <span class="hide-menu">Support</span>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-change-log.html"><iconify-icon icon="solar:notification-unread-lines-linear"></iconify-icon>Changelog</a>
+                </li>
+              </ul>
+            </nav>
+          </ul>
+        </nav>
+        <!-- End Sidebar navigation -->
+      </div>
+      <!-- End Sidebar scroll-->
+    </aside>
+
+    <!-- ============================================================== -->
+    <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+      <!-- ============================================================== -->
+      <!-- Topbar header - style you can find in pages.scss -->
+      <!-- ============================================================== -->
+      <header class="topbar position-relative">
+        <div class="navbar navbar-header bg-white d-flex align-items-center justify-content-between p-3 fixed-top">
+          <!-- ============================================================== -->
+          <!-- Toggle which is visible on mobile only -->
+          <!-- ============================================================== -->
+          <!-- Logo icon -->
+          <a href="index.html">
+            <b class="logo-icon d-xl-none d-block">
+              <!-- Dark Logo icon -->
+              <img src="../assets/images/logos/logo.svg" alt="homepage" class="dark-logo" />
+            </b>
+            <!--End Logo icon -->
+          </a>
+          <div class="d-flex align-items-center">
+            <!---Mobile view canvas button--->
+            <a class="fs-8 text-muted d-xl-none d-block sidebartoggler" href="javascript:void(0)" role="button">
+              <i class="ti ti-menu-2"></i>
+            </a>
+          </div>
+        </div>
+      </header>
+      <!-- ============================================================== -->
+      <!-- Page wrapper  -->
+      <!-- ============================================================== -->
+      <div class="body-wrapper" data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-smooth-scroll="true" tabindex="0">
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+          <!-- ============================================================== -->
+          <!-- Start Page Content -->
+          <!-- ============================================================== -->
+          <div class="d-sm-flex align-items-center justify-content-between">
+            <h4 class="mb-4 pb-2 fs-5">Carousel</h3>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">Bootstrap Carousel</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4 text-center">
+                  <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                      <div class="carousel-item">
+                        <img src="../assets/images/blog/blog-img1.jpg" class="d-block w-100" alt="...">
+                      </div>
+                      <div class="carousel-item active">
+                        <img src="../assets/images/blog/blog-img2.jpg" class="d-block w-100" alt="...">
+                      </div>
+                      <div class="carousel-item">
+                        <img src="../assets/images/blog/blog-img3.jpg" class="d-block w-100" alt="...">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+
+              <pre class="mt-0">                                        <code class="language-html">
+  &#x3C;div id=&#x22;carouselExampleSlidesOnly&#x22; class=&#x22;carousel slide&#x22; data-bs-ride=&#x22;carousel&#x22;&#x3E;
+    &#x3C;div class=&#x22;carousel-inner&#x22;&#x3E;
+      &#x3C;div class=&#x22;carousel-item&#x22;&#x3E;
+        &#x3C;img src=&#x22;../assets/images/blog/blog-img1.jpg&#x22; class=&#x22;d-block w-100&#x22; alt=&#x22;...&#x22;&#x3E;
+      &#x3C;/div&#x3E;
+      &#x3C;div class=&#x22;carousel-item active&#x22;&#x3E;
+        &#x3C;img src=&#x22;../assets/images/blog/blog-img2.jpg&#x22; class=&#x22;d-block w-100&#x22; alt=&#x22;...&#x22;&#x3E;
+      &#x3C;/div&#x3E;
+      &#x3C;div class=&#x22;carousel-item&#x22;&#x3E;
+        &#x3C;img src=&#x22;../assets/images/blog/blog-img3.jpg&#x22; class=&#x22;d-block w-100&#x22; alt=&#x22;...&#x22;&#x3E;
+      &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E;
+  &#x3C;/div&#x3E;
+                                      </code>
+                                  </pre>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">With Indicators & Captions</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4 text-center">
+                  <div id="carouselExampleCaptions" class="carousel slide carousel-dark" data-bs-ride="carousel">
+                    <ol class="carousel-indicators">
+                      <li data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true"></li>
+                      <li data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" class=""></li>
+                      <li data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" class=""></li>
+                    </ol>
+                    <div class="carousel-inner">
+                      <div class="carousel-item carousel-item-next carousel-item-start">
+                        <img src="../assets/images/blog/blog-img1.jpg" class="d-block w-100" alt="...">
+                        <div class="carousel-caption d-none d-md-block">
+                          <h5>First slide label</h5>
+                          <p>
+                            Nulla vitae elit libero, a pharetra augue
+                            mollis interdum.
+                          </p>
+                        </div>
+                      </div>
+                      <div class="carousel-item">
+                        <img src="../assets/images/blog/blog-img2.jpg" class="d-block w-100" alt="...">
+                        <div class="carousel-caption d-none d-md-block">
+                          <h5>Second slide label</h5>
+                          <p>
+                            Lorem ipsum dolor sit amet, consectetur
+                            adipiscing elit.
+                          </p>
+                        </div>
+                      </div>
+                      <div class="carousel-item active carousel-item-start">
+                        <img src="../assets/images/blog/blog-img3.jpg" class="d-block w-100" alt="...">
+                        <div class="carousel-caption d-none d-md-block">
+                          <h5>Third slide label</h5>
+                          <p>
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+
+              <pre class="mt-0">                                      <code class="language-html" style="height: 300px;">
+  &#x3C;div id=&#x22;carouselExampleCaptions&#x22; class=&#x22;carousel slide carousel-dark&#x22; data-bs-ride=&#x22;carousel&#x22;&#x3E;
+    &#x3C;ol class=&#x22;carousel-indicators&#x22;&#x3E;
+      &#x3C;li data-bs-target=&#x22;#carouselExampleCaptions&#x22; data-bs-slide-to=&#x22;0&#x22; class=&#x22;active&#x22; aria-current=&#x22;true&#x22;&#x3E;&#x3C;/li&#x3E;
+      &#x3C;li data-bs-target=&#x22;#carouselExampleCaptions&#x22; data-bs-slide-to=&#x22;1&#x22; class=&#x22;&#x22;&#x3E;&#x3C;/li&#x3E;
+      &#x3C;li data-bs-target=&#x22;#carouselExampleCaptions&#x22; data-bs-slide-to=&#x22;2&#x22; class=&#x22;&#x22;&#x3E;&#x3C;/li&#x3E;
+    &#x3C;/ol&#x3E;
+    &#x3C;div class=&#x22;carousel-inner&#x22;&#x3E;
+      &#x3C;div class=&#x22;carousel-item carousel-item-next carousel-item-start&#x22;&#x3E;
+        &#x3C;img src=&#x22;../assets/images/blog/blog-img1.jpg&#x22; class=&#x22;d-block w-100&#x22; alt=&#x22;...&#x22;&#x3E;
+        &#x3C;div class=&#x22;carousel-caption d-none d-md-block&#x22;&#x3E;
+          &#x3C;h5&#x3E;First slide label&#x3C;/h5&#x3E;
+          &#x3C;p&#x3E;
+            Nulla vitae elit libero, a pharetra augue
+            mollis interdum.
+          &#x3C;/p&#x3E;
+        &#x3C;/div&#x3E;
+      &#x3C;/div&#x3E;
+      &#x3C;div class=&#x22;carousel-item&#x22;&#x3E;
+        &#x3C;img src=&#x22;../assets/images/blog/blog-img2.jpg&#x22; class=&#x22;d-block w-100&#x22; alt=&#x22;...&#x22;&#x3E;
+        &#x3C;div class=&#x22;carousel-caption d-none d-md-block&#x22;&#x3E;
+          &#x3C;h5&#x3E;Second slide label&#x3C;/h5&#x3E;
+          &#x3C;p&#x3E;
+            Lorem ipsum dolor sit amet, consectetur
+            adipiscing elit.
+          &#x3C;/p&#x3E;
+        &#x3C;/div&#x3E;
+      &#x3C;/div&#x3E;
+      &#x3C;div class=&#x22;carousel-item active carousel-item-start&#x22;&#x3E;
+        &#x3C;img src=&#x22;../assets/images/blog/blog-img3.jpg&#x22; class=&#x22;d-block w-100&#x22; alt=&#x22;...&#x22;&#x3E;
+        &#x3C;div class=&#x22;carousel-caption d-none d-md-block&#x22;&#x3E;
+          &#x3C;h5&#x3E;Third slide label&#x3C;/h5&#x3E;
+          &#x3C;p&#x3E;
+            Praesent commodo cursus magna, vel scelerisque
+            nisl consectetur.
+          &#x3C;/p&#x3E;
+        &#x3C;/div&#x3E;
+      &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E;
+    &#x3C;a class=&#x22;carousel-control-prev&#x22; href=&#x22;#carouselExampleCaptions&#x22; role=&#x22;button&#x22; data-bs-slide=&#x22;prev&#x22;&#x3E;
+      &#x3C;span class=&#x22;carousel-control-prev-icon&#x22; aria-hidden=&#x22;true&#x22;&#x3E;&#x3C;/span&#x3E;
+      &#x3C;span class=&#x22;visually-hidden&#x22;&#x3E;Previous&#x3C;/span&#x3E;
+    &#x3C;/a&#x3E;
+    &#x3C;a class=&#x22;carousel-control-next&#x22; href=&#x22;#carouselExampleCaptions&#x22; role=&#x22;button&#x22; data-bs-slide=&#x22;next&#x22;&#x3E;
+      &#x3C;span class=&#x22;carousel-control-next-icon&#x22; aria-hidden=&#x22;true&#x22;&#x3E;&#x3C;/span&#x3E;
+      &#x3C;span class=&#x22;visually-hidden&#x22;&#x3E;Next&#x3C;/span&#x3E;
+    &#x3C;/a&#x3E;
+  &#x3C;/div&#x3E;
+                                          </code>
+                                        </pre>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">With Individual Interval</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4 text-center">
+                  <div id="carouselExampleInterval" class="carousel slide carousel-dark" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                      <div class="carousel-item active" data-bs-interval="10000">
+                        <img src="../assets/images/blog/blog-img1.jpg" class="d-block w-100" alt="...">
+                      </div>
+                      <div class="carousel-item" data-bs-interval="2000">
+                        <img src="../assets/images/blog/blog-img2.jpg" class="d-block w-100" alt="...">
+                      </div>
+                      <div class="carousel-item">
+                        <img src="../assets/images/blog/blog-img3.jpg" class="d-block w-100" alt="...">
+                      </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselExampleInterval" role="button" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleInterval" role="button" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+
+              <pre class="mt-0">                                      <code class="language-html" style="height: 300px;">
+  &#x3C;div id=&#x22;carouselExampleInterval&#x22; class=&#x22;carousel slide carousel-dark&#x22; data-bs-ride=&#x22;carousel&#x22;&#x3E;
+    &#x3C;div class=&#x22;carousel-inner&#x22;&#x3E;
+      &#x3C;div class=&#x22;carousel-item active&#x22; data-bs-interval=&#x22;10000&#x22;&#x3E;
+        &#x3C;img src=&#x22;../assets/images/blog/blog-img1.jpg&#x22; class=&#x22;d-block w-100&#x22; alt=&#x22;...&#x22;&#x3E;
+      &#x3C;/div&#x3E;
+      &#x3C;div class=&#x22;carousel-item&#x22; data-bs-interval=&#x22;2000&#x22;&#x3E;
+        &#x3C;img src=&#x22;../assets/images/blog/blog-img2.jpg&#x22; class=&#x22;d-block w-100&#x22; alt=&#x22;...&#x22;&#x3E;
+      &#x3C;/div&#x3E;
+      &#x3C;div class=&#x22;carousel-item&#x22;&#x3E;
+        &#x3C;img src=&#x22;../assets/images/blog/blog-img3.jpg&#x22; class=&#x22;d-block w-100&#x22; alt=&#x22;...&#x22;&#x3E;
+      &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E;
+    &#x3C;a class=&#x22;carousel-control-prev&#x22; href=&#x22;#carouselExampleInterval&#x22; role=&#x22;button&#x22; data-bs-slide=&#x22;prev&#x22;&#x3E;
+      &#x3C;span class=&#x22;carousel-control-prev-icon&#x22; aria-hidden=&#x22;true&#x22;&#x3E;&#x3C;/span&#x3E;
+      &#x3C;span class=&#x22;visually-hidden&#x22;&#x3E;Previous&#x3C;/span&#x3E;
+    &#x3C;/a&#x3E;
+    &#x3C;a class=&#x22;carousel-control-next&#x22; href=&#x22;#carouselExampleInterval&#x22; role=&#x22;button&#x22; data-bs-slide=&#x22;next&#x22;&#x3E;
+      &#x3C;span class=&#x22;carousel-control-next-icon&#x22; aria-hidden=&#x22;true&#x22;&#x3E;&#x3C;/span&#x3E;
+      &#x3C;span class=&#x22;visually-hidden&#x22;&#x3E;Next&#x3C;/span&#x3E;
+    &#x3C;/a&#x3E;
+  &#x3C;/div&#x3E;
+                                        </code>
+                                      </pre>
+            </div>
+          </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Container fluid  -->
+        <!-- ============================================================== -->
+      </div>
+      <!-- ============================================================== -->
+      <!-- End Page wrapper  -->
+      <!-- ============================================================== -->
+    </div>
+  </div>
+  <div class="dark-transparent sidebartoggler"></div>
+  <!-- ============================================================== -->
+  <!-- End Wrapper -->
+  <!-- ============================================================== -->
+  <!-- End Page -->
+  <!-- ============================================================== -->
+  <!-- All Jquery -->
+  <!-- ============================================================== -->
+  <script src="../assets/libs/simplebar/dist/simplebar.min.js"></script>
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  function handleSidebar() {
+    document.querySelectorAll(".sidebartoggler").forEach(function (element) {
+      element.addEventListener("click", function () {
+        document.querySelectorAll(".sidebartoggler").forEach(function (el) {
+          el.checked = true;
+        });
+        document
+          .getElementById("main-wrapper")
+          .classList.toggle("show-sidebar");
+        document.querySelectorAll(".sidebarmenu").forEach(function (el) {
+          el.classList.toggle("close");
+        });
+        var dataTheme = document.body.getAttribute("data-sidebartype");
+        if (dataTheme === "full") {
+          document.body.setAttribute("data-sidebartype", "mini-sidebar");
+        } else {
+          document.body.setAttribute("data-sidebartype", "full");
+        }
+      });
+    });
+  }
+
+  handleSidebar();
+
+  function findMatchingElement() {
+    var currentUrl = window.location.href;
+    var anchors = document.querySelectorAll("#sidebarnav a");
+    for (var i = 0; i < anchors.length; i++) {
+      if (anchors[i].href === currentUrl) {
+        return anchors[i];
+      }
+    }
+
+    return null; // Return null if no matching element is found
+  }
+  var elements = findMatchingElement();
+
+  // Do something with the matching element
+  if (elements) {
+    elements.classList.add("active");
+  }
+
+  document
+    .querySelectorAll("ul#sidebarnav ul li a.active")
+    .forEach(function (link) {
+      link.closest("ul").classList.add("in");
+      link.closest("ul").parentElement.classList.add("selected");
+    });
+
+  document.querySelectorAll("#sidebarnav li").forEach(function (li) {
+    const isActive = li.classList.contains("selected");
+    if (isActive) {
+      const anchor = li.querySelector("a");
+      if (anchor) {
+        anchor.classList.add("active");
+      }
+    }
+  });
+
+  document.querySelectorAll("#sidebarnav a").forEach(function (link) {
+    link.addEventListener("click", function (e) {
+      const isActive = this.classList.contains("active");
+      const parentUl = this.closest("ul");
+      if (!isActive) {
+        // hide any open menus and remove all other classes
+        parentUl.querySelectorAll("ul").forEach(function (submenu) {
+          submenu.classList.remove("in");
+        });
+        parentUl.querySelectorAll("a").forEach(function (navLink) {
+          navLink.classList.remove("active");
+        });
+
+        // open our new menu and add the open class
+        const submenu = this.nextElementSibling;
+        if (submenu) {
+          submenu.classList.add("in");
+        }
+
+        this.classList.add("active");
+      } else {
+        this.classList.remove("active");
+        parentUl.classList.remove("active");
+        const submenu = this.nextElementSibling;
+        if (submenu) {
+          submenu.classList.remove("in");
+        }
+      }
+    });
+  });
+</script>
+
+
+  <!-- solar icons -->
+  <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+  <script src="../assets/libs/prismjs/prism.js"></script>
+  <!-- End JS -->
+</body>
+
+</html>

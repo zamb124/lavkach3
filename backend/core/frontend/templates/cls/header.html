@@ -1,54 +1,56 @@
 {% block widget %}
-     {% autoescape false %}
-<div class="card">
-    <div class="card-header">
-        <div class="d-flex align-items-center flex-wrap gap-2">
-            <div class="flex-grow-1">
-                {{ cls.lines.line_new.button_create }}
-            </div>
-            <div class="flex-shrink-0">
-                <div class="hstack text-nowrap gap-2">
+    {% autoescape false %}
+        <div class="card card-body py-3">
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <div class="d-sm-flex align-items-center justify-space-between">
+                        <span>{{ cls.lines.line_new.button_create }}</span>
+                        <h4 class="card-title" style="padding-left: 20px">{{ cls.model.name|capitalize }} </h4>
+                        <div class="col">
 
-
-
-                </div>
-            </div>
-            <div class="flex-shrink-0">
-                <div class="hstack text-nowrap gap-2">
-                    <button class="btn btn-soft-danger" id="remove-actions"
-                            onClick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i>
-                    </button>
-
-                    <button class="btn btn-secondary collapsed" data-bs-toggle="collapse" data-bs-target="{{ '#filter' ~'--'~ cls.key }}"><i
-                            class="ri-filter-2-line me-1 align-bottom"></i> Filters
-                    </button>
-                    <button id="{{ 'filter' ~'--'~ cls.key }}"
-                            hx-ext="json-enc"
-                            hx-post="/base/import"
-                            hx-trigger="click"
-                            hx-target="#htmx_content"
-                            hx-swap="beforeend transition:true"
-                            hx-vals='{
+                            </div>
+                        <nav aria-label="breadcrumb" class="ms-auto">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item d-flex align-items-center">
+                                    <a class="text-muted text-decoration-none d-flex"
+                                       href="/"
+                                       id="{{ 'filter' ~'--'~ cls.key }}"
+                                       hx-ext="json-enc"
+                                       hx-post="/base/import"
+                                       hx-trigger="click"
+                                       hx-target="#htmx_content"
+                                       hx-swap="beforeend transition:true"
+                                       hx-vals='{
                             "model": "{{ cls.model.name }}",
                             "key": "{{ cls.key }}",
                             "method": "get"
                           }'
-                            class="btn btn-soft-success">Import
-                    </button>
-                    <button type="button" id="dropdownMenuLink1" data-bs-toggle="dropdown"
-                            aria-expanded="false" class="btn btn-soft-info"><i
-                            class="ri-more-2-fill"></i></button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink1">
-                        <li><a class="dropdown-item" href="#">Action 1</a></li>
-                        <li><a class="dropdown-item" href="#">Action 2</a></li>
-                        <li><a class="dropdown-item" href="#">Action 3</a></li>
-                        <li><a class="dropdown-item" href="#">Action 4</a></li>
-                    </ul>
+                                    >
+                                        <iconify-icon icon="solar:file-send-bold" class="fs-10"></iconify-icon>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item d-flex align-items-center">
+                                    <a class="text-muted text-decoration-none d-flex"
+                                       data-bs-toggle="collapse"
+                                       data-bs-target="{{ '#filter' ~'--'~ cls.key }}"
+                                       href="#"
+                                    >
+                                        <iconify-icon icon="solar:filter-bold-duotone"
+                                                      class="fs-10"></iconify-icon>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item" aria-current="page">
+                        <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
+                          Shop list
+                        </span>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-        {% endautoescape %}
+
+    {% endautoescape %}
 {% endblock %}
 

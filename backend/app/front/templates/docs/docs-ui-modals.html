@@ -1,0 +1,2376 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-bs-theme="light" data-color-theme="Blue_Theme" data-layout="vertical" data-boxed-layout="boxed">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon icon-->
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+
+  <!-- Core Css -->
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+
+  <title>MatDash Bootstrap Admin</title>
+
+  <link rel="stylesheet" href="../assets/libs/prismjs/themes/prism-okaidia.min.css" />
+</head>
+
+<body class="link-sidebar">
+
+  <!-- ============================================================== -->
+  <!-- Main wrapper - style you can find in pages.scss -->
+  <!-- ============================================================== -->
+  <div id="main-wrapper">
+    <!-- ============================================================== -->
+    <!-- End Topbar header -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- Left Sidebar - style you can find in sidebar.scss  -->
+    <!-- ============================================================== -->
+    <!--Desktop view sidebar menu-->
+    <aside class="left-sidebar with-vertical">
+      <!-- Sidebar scroll-->
+      <!-- ============================================================== -->
+      <!-- Logo -->
+      <!-- ============================================================== -->
+      <div class="navbar-brand brand-logo d-flex align-items-center justify-content-between px-4">
+        <a href="../main/index.html" class="text-nowrap logo-img">
+          <img src="../assets/images/logos/logo.svg" alt="Logo-Dark" />
+        </a>
+        <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
+          <i class="ti ti-x"></i>
+        </a>
+      </div>
+      <!-- ============================================================== -->
+      <!-- End Logo -->
+      <!-- ============================================================== -->
+      <div class="scroll-sidebar" style="height: calc(100vh - 100px)" data-simplebar>
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav">
+          <ul id="sidebarnav" class="sidebar-menu mt-4">
+            <nav class="nav nav-pills flex-column sidebar-nav">
+              <ul class="list-unstyled">
+                <!--Getting Started-->
+                <li class="nav-small-cap">
+                  <span class="hide-menu">Getting Started</span>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/index.html">
+                    <iconify-icon icon="solar:home-2-linear"></iconify-icon>
+                    Introduction
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-structure.html">
+                    <iconify-icon icon="solar:inbox-archive-line-duotone"></iconify-icon> Package Structure
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-start.html"><iconify-icon icon="solar:bookmark-square-minimalistic-line-duotone"></iconify-icon> Quick Start</a>
+                </li>
+                <!--CUSTOMIZATION-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap">
+                  <span class="hide-menu">Customization</span>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-layout.html"><iconify-icon icon="solar:layers-line-duotone"></iconify-icon> Layout Options</a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-change-logo.html"><iconify-icon icon="solar:album-line-duotone"></iconify-icon> Change Logo</a>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-changes-skin-color.html"><iconify-icon icon="solar:waterdrops-line-duotone"></iconify-icon> Global Skin Color</a>
+                </li>
+                <!--Theme UI-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap mt-4">
+                  <span class="hide-menu">Theme UI</span>
+                </li>
+                <li class="sidebar-item position-relative">
+                  <a class="sidebar-link has-arrow d-flex align-items-center" href="javascript:void(0)" aria-expanded="false"><iconify-icon icon="solar:settings-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Settings</span>
+                  </a>
+                  <!--sub-menu items-->
+                  <ul aria-expanded="false" class="collapse first-level list-unstyled">
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-color.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Color </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-typography.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Typography </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-icon.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Icons </span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--UI COMPONENTS-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap mt-4">
+                  <span class="hide-menu">Ui Components</span>
+                </li>
+                <li class="sidebar-item position-relative">
+                  <a class="sidebar-link has-arrow d-flex align-items-center" href="javascript:void(0)" aria-expanded="false"><iconify-icon icon="solar:widget-2-line-duotone"></iconify-icon>
+                    <span class="hide-menu">Bootstrap</span>
+                  </a>
+                  <!--sub-menu items-->
+                  <ul aria-expanded="false" class="collapse first-level list-unstyled">
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-buttons.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Buttons </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-modals.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Modals </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-tabs.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Tabs </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-tooltip-popover.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Tooltip & Popover </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-notification.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Notifications </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-progressbar.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Progressbar </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-typography.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Typography </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-bootstrapui.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Bootstrap UI </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-breadcrumb.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Breadcrumbs </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-listmedia.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> List Media </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-grid.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Grids </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-carousel.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Carousel </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-scrollspy.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Scrollspy </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-toasts.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Toasts </span>
+                      </a>
+                    </li>
+                    <li class="sidebar-item mb-0">
+                      <a href="../docs/docs-ui-spinner.html" class="sidebar-link">
+                        <span class="icon-small"></span>
+                        <span class="hide-menu fs-3"> Spinner </span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--Support-->
+                <li>
+                  <span class="sidebar-divider lg"></span>
+                </li>
+                <li class="nav-small-cap mt-4">
+                  <span class="hide-menu">Support</span>
+                </li>
+                <li class="sidebar-item">
+                  <a class="sidebar-link d-flex align-items-center" href="../docs/docs-change-log.html"><iconify-icon icon="solar:notification-unread-lines-linear"></iconify-icon>Changelog</a>
+                </li>
+              </ul>
+            </nav>
+          </ul>
+        </nav>
+        <!-- End Sidebar navigation -->
+      </div>
+      <!-- End Sidebar scroll-->
+    </aside>
+
+    <!-- ============================================================== -->
+    <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+    <!-- ============================================================== -->
+    <div class="page-wrapper">
+      <!-- ============================================================== -->
+      <!-- Topbar header - style you can find in pages.scss -->
+      <!-- ============================================================== -->
+      <header class="topbar position-relative">
+        <div class="navbar navbar-header bg-white d-flex align-items-center justify-content-between p-3 fixed-top">
+          <!-- ============================================================== -->
+          <!-- Toggle which is visible on mobile only -->
+          <!-- ============================================================== -->
+          <!-- Logo icon -->
+          <a href="index.html">
+            <b class="logo-icon d-xl-none d-block">
+              <!-- Dark Logo icon -->
+              <img src="../assets/images/logos/logo.svg" alt="homepage" class="dark-logo" />
+            </b>
+            <!--End Logo icon -->
+          </a>
+          <div class="d-flex align-items-center">
+            <!---Mobile view canvas button--->
+            <a class="fs-8 text-muted d-xl-none d-block sidebartoggler" href="javascript:void(0)" role="button">
+              <i class="ti ti-menu-2"></i>
+            </a>
+          </div>
+        </div>
+      </header>
+      <!-- ============================================================== -->
+      <!-- Page wrapper  -->
+      <!-- ============================================================== -->
+      <div class="body-wrapper" data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-smooth-scroll="true" tabindex="0">
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+          <!-- ============================================================== -->
+          <!-- Start Page Content -->
+          <!-- ============================================================== -->
+          <div class="d-sm-flex align-items-center justify-content-between">
+            <h4 class="mb-4 pb-2 fs-5">Modals</h3>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">Bootstrap Modals</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4 text-center">
+                  <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="myModalLabel">
+                            Modal Heading
+                          </h4>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <h6>Text in a modal</h6>
+                          <p>
+                            Duis mollis, est non commodo luctus, nisi erat
+                            porttitor ligula.
+                          </p>
+
+                          <h6>
+                            Overflowing text to show scroll behavior
+                          </h6>
+                          <p>
+                            Cras mattis consectetur purus sit amet
+                            fermentum. Cras justo odio, dapibus ac
+                            facilisis in, egestas eget quam. Morbi leo
+                            risus, porta ac consectetur ac, vestibulum at
+                            eros.
+                          </p>
+                          <p>
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Vivamus sagittis lacus
+                            vel augue laoreet rutrum faucibus dolor
+                            auctor.
+                          </p>
+                          <p>
+                            Aenean lacinia bibendum nulla sed consectetur.
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Donec sed odio dui. Donec
+                            ullamcorper nulla non metus auctor fringilla.
+                          </p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                            Close
+                          </button>
+                          <button type="button" class="btn btn-primary">
+                            Save changes
+                          </button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <!--  Modal content for the above example -->
+                  <div class="modal fade" id="bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="myLargeModalLabel">
+                            Large modal
+                          </h4>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">...</div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <div class="modal fade" id="bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="mySmallModalLabel">
+                            Small modal
+                          </h4>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">...</div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <!-- Full width modal content -->
+                  <div id="full-width-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="fullWidthModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-fullscreen">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="fullWidthModalLabel">
+                            Modal Heading
+                          </h4>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <h6>Text in a modal</h6>
+                          <p>
+                            Duis mollis, est non commodo luctus, nisi erat
+                            porttitor ligula.
+                          </p>
+
+                          <h6>
+                            Overflowing text to show scroll behavior
+                          </h6>
+                          <p>
+                            Cras mattis consectetur purus sit amet
+                            fermentum. Cras justo odio, dapibus ac
+                            facilisis in, egestas eget quam. Morbi leo
+                            risus, porta ac consectetur ac, vestibulum at
+                            eros.
+                          </p>
+                          <p>
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Vivamus sagittis lacus
+                            vel augue laoreet rutrum faucibus dolor
+                            auctor.
+                          </p>
+                          <p>
+                            Aenean lacinia bibendum nulla sed consectetur.
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Donec sed odio dui. Donec
+                            ullamcorper nulla non metus auctor fringilla.
+                          </p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                            Close
+                          </button>
+                          <button type="button" class="btn btn-primary">
+                            Save changes
+                          </button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <!-- Long Content Scroll Modal -->
+                  <div class="modal fade" id="scrollable-modal" tabindex="-1" role="dialog" aria-labelledby="scrollableModalTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="scrollableModalTitle">
+                            Modal title
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p>
+                            Cras mattis consectetur purus sit amet
+                            fermentum. Cras justo odio, dapibus ac
+                            facilisis in, egestas eget quam. Morbi leo
+                            risus, porta ac consectetur ac, vestibulum at
+                            eros.
+                          </p>
+                          <p>
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Vivamus sagittis lacus
+                            vel augue laoreet rutrum faucibus dolor
+                            auctor.
+                          </p>
+                          <p>
+                            Aenean lacinia bibendum nulla sed consectetur.
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Donec sed odio dui. Donec
+                            ullamcorper nulla non metus auctor fringilla.
+                          </p>
+                          <p>
+                            Cras mattis consectetur purus sit amet
+                            fermentum. Cras justo odio, dapibus ac
+                            facilisis in, egestas eget quam. Morbi leo
+                            risus, porta ac consectetur ac, vestibulum at
+                            eros.
+                          </p>
+                          <p>
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Vivamus sagittis lacus
+                            vel augue laoreet rutrum faucibus dolor
+                            auctor.
+                          </p>
+                          <p>
+                            Aenean lacinia bibendum nulla sed consectetur.
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Donec sed odio dui. Donec
+                            ullamcorper nulla non metus auctor fringilla.
+                          </p>
+                          <p>
+                            Cras mattis consectetur purus sit amet
+                            fermentum. Cras justo odio, dapibus ac
+                            facilisis in, egestas eget quam. Morbi leo
+                            risus, porta ac consectetur ac, vestibulum at
+                            eros.
+                          </p>
+                          <p>
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Vivamus sagittis lacus
+                            vel augue laoreet rutrum faucibus dolor
+                            auctor.
+                          </p>
+                          <p>
+                            Aenean lacinia bibendum nulla sed consectetur.
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Donec sed odio dui. Donec
+                            ullamcorper nulla non metus auctor fringilla.
+                          </p>
+                          <p>
+                            Cras mattis consectetur purus sit amet
+                            fermentum. Cras justo odio, dapibus ac
+                            facilisis in, egestas eget quam. Morbi leo
+                            risus, porta ac consectetur ac, vestibulum at
+                            eros.
+                          </p>
+                          <p>
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Vivamus sagittis lacus
+                            vel augue laoreet rutrum faucibus dolor
+                            auctor.
+                          </p>
+                          <p>
+                            Aenean lacinia bibendum nulla sed consectetur.
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Donec sed odio dui. Donec
+                            ullamcorper nulla non metus auctor fringilla.
+                          </p>
+                          <p>
+                            Cras mattis consectetur purus sit amet
+                            fermentum. Cras justo odio, dapibus ac
+                            facilisis in, egestas eget quam. Morbi leo
+                            risus, porta ac consectetur ac, vestibulum at
+                            eros.
+                          </p>
+                          <p>
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Vivamus sagittis lacus
+                            vel augue laoreet rutrum faucibus dolor
+                            auctor.
+                          </p>
+                          <p>
+                            Aenean lacinia bibendum nulla sed consectetur.
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Donec sed odio dui. Donec
+                            ullamcorper nulla non metus auctor fringilla.
+                          </p>
+                          <p>
+                            Cras mattis consectetur purus sit amet
+                            fermentum. Cras justo odio, dapibus ac
+                            facilisis in, egestas eget quam. Morbi leo
+                            risus, porta ac consectetur ac, vestibulum at
+                            eros.
+                          </p>
+                          <p>
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Vivamus sagittis lacus
+                            vel augue laoreet rutrum faucibus dolor
+                            auctor.
+                          </p>
+                          <p>
+                            Aenean lacinia bibendum nulla sed consectetur.
+                            Praesent commodo cursus magna, vel scelerisque
+                            nisl consectetur et. Donec sed odio dui. Donec
+                            ullamcorper nulla non metus auctor fringilla.
+                          </p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
+                          </button>
+                          <button type="button" class="btn btn-primary">
+                            Save changes
+                          </button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <div class="button-group">
+                    <!-- Standard  modal -->
+                    <button type="button" class="btn mb-1 me-1 btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" fdprocessedid="tml8fm">
+                      Standard Modal
+                    </button>
+                    <!-- Large modal -->
+                    <button type="button" class="btn mb-1 me-1 btn-danger" data-bs-toggle="modal" data-bs-target="#bs-example-modal-lg" fdprocessedid="kklft">
+                      Large modal
+                    </button>
+                    <!-- Small modal -->
+                    <button type="button" class="btn mb-1 me-1 btn-success" data-bs-toggle="modal" data-bs-target="#bs-example-modal-sm" fdprocessedid="zuikg">
+                      Small modal
+                    </button>
+                    <!-- Full width modal -->
+                    <button type="button" class="btn mb-1 me-1 btn-warning" data-bs-toggle="modal" data-bs-target="#full-width-modal" fdprocessedid="j87qu">
+                      Full screen modal
+                    </button>
+                    <button type="button" class="btn mb-1 me-1 btn-secondary" data-bs-toggle="modal" data-bs-target="#scrollable-modal" fdprocessedid="flss0a">
+                      Scrollable modal
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+              <pre class="mt-0">
+                    <code class="language-html" style="height: 300px;">
+      &#x3C;div id=&#x22;myModal&#x22; class=&#x22;modal fade&#x22; tabindex=&#x22;-1&#x22; role=&#x22;dialog&#x22; aria-labelledby=&#x22;myModalLabel&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+          &#x3C;div class=&#x22;modal-dialog&#x22;&#x3E;
+              &#x3C;div class=&#x22;modal-content&#x22;&#x3E;
+                  &#x3C;div class=&#x22;modal-header&#x22;&#x3E;
+                      &#x3C;h4 class=&#x22;modal-title&#x22; id=&#x22;myModalLabel&#x22;&#x3E; Modal Heading &#x3C;/h4&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn-close&#x22; data-bs-dismiss=&#x22;modal&#x22; aria-label=&#x22;Close&#x22;&#x3E;&#x3C;/button&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-body&#x22;&#x3E;
+                      &#x3C;h6&#x3E;Text in a modal&#x3C;/h6&#x3E;
+                      &#x3C;p&#x3E; Duis mollis, est non commodo luctus, nisi erat porttitor ligula. &#x3C;/p&#x3E;
+                      &#x3C;h6&#x3E; Overflowing text to show scroll behavior &#x3C;/h6&#x3E;
+                      &#x3C;p&#x3E; Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. &#x3C;/p&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-footer&#x22;&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-danger&#x22; data-bs-dismiss=&#x22;modal&#x22;&#x3E; Close &#x3C;/button&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-primary&#x22;&#x3E; Save changes &#x3C;/button&#x3E; &#x3C;/div&#x3E;
+              &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+          &#x3C;/div&#x3E; &#x3C;!-- /.modal-dialog --&#x3E;
+      &#x3C;/div&#x3E; &#x3C;!-- /.modal --&#x3E;
+      &#x3C;!--  Modal content for the above example --&#x3E;
+      &#x3C;div class=&#x22;modal fade&#x22; id=&#x22;bs-example-modal-lg&#x22; tabindex=&#x22;-1&#x22; role=&#x22;dialog&#x22; aria-labelledby=&#x22;myLargeModalLabel&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+          &#x3C;div class=&#x22;modal-dialog modal-lg&#x22;&#x3E;
+              &#x3C;div class=&#x22;modal-content&#x22;&#x3E;
+                  &#x3C;div class=&#x22;modal-header&#x22;&#x3E;
+                      &#x3C;h4 class=&#x22;modal-title&#x22; id=&#x22;myLargeModalLabel&#x22;&#x3E; Large modal &#x3C;/h4&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn-close&#x22; data-bs-dismiss=&#x22;modal&#x22; aria-label=&#x22;Close&#x22;&#x3E;&#x3C;/button&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-body&#x22;&#x3E;...&#x3C;/div&#x3E;
+              &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+          &#x3C;/div&#x3E; &#x3C;!-- /.modal-dialog --&#x3E;
+      &#x3C;/div&#x3E; &#x3C;!-- /.modal --&#x3E;
+      &#x3C;div class=&#x22;modal fade&#x22; id=&#x22;bs-example-modal-sm&#x22; tabindex=&#x22;-1&#x22; role=&#x22;dialog&#x22; aria-labelledby=&#x22;mySmallModalLabel&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+          &#x3C;div class=&#x22;modal-dialog modal-sm&#x22;&#x3E;
+              &#x3C;div class=&#x22;modal-content&#x22;&#x3E;
+                  &#x3C;div class=&#x22;modal-header&#x22;&#x3E;
+                      &#x3C;h4 class=&#x22;modal-title&#x22; id=&#x22;mySmallModalLabel&#x22;&#x3E; Small modal &#x3C;/h4&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn-close&#x22; data-bs-dismiss=&#x22;modal&#x22; aria-label=&#x22;Close&#x22;&#x3E;&#x3C;/button&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-body&#x22;&#x3E;...&#x3C;/div&#x3E;
+              &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+          &#x3C;/div&#x3E; &#x3C;!-- /.modal-dialog --&#x3E;
+      &#x3C;/div&#x3E; &#x3C;!-- /.modal --&#x3E;
+      &#x3C;!-- Full width modal content --&#x3E;
+      &#x3C;div id=&#x22;full-width-modal&#x22; class=&#x22;modal fade&#x22; tabindex=&#x22;-1&#x22; role=&#x22;dialog&#x22; aria-labelledby=&#x22;fullWidthModalLabel&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+          &#x3C;div class=&#x22;modal-dialog modal-fullscreen&#x22;&#x3E;
+              &#x3C;div class=&#x22;modal-content&#x22;&#x3E;
+                  &#x3C;div class=&#x22;modal-header&#x22;&#x3E;
+                      &#x3C;h4 class=&#x22;modal-title&#x22; id=&#x22;fullWidthModalLabel&#x22;&#x3E; Modal Heading &#x3C;/h4&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn-close&#x22; data-bs-dismiss=&#x22;modal&#x22; aria-label=&#x22;Close&#x22;&#x3E;&#x3C;/button&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-body&#x22;&#x3E;
+                      &#x3C;h6&#x3E;Text in a modal&#x3C;/h6&#x3E;
+                      &#x3C;p&#x3E; Duis mollis, est non commodo luctus, nisi erat porttitor ligula. &#x3C;/p&#x3E;
+                      &#x3C;h6&#x3E; Overflowing text to show scroll behavior &#x3C;/h6&#x3E;
+                      &#x3C;p&#x3E; Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. &#x3C;/p&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-footer&#x22;&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-danger&#x22; data-bs-dismiss=&#x22;modal&#x22;&#x3E; Close &#x3C;/button&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-primary&#x22;&#x3E; Save changes &#x3C;/button&#x3E; &#x3C;/div&#x3E;
+              &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+          &#x3C;/div&#x3E; &#x3C;!-- /.modal-dialog --&#x3E;
+      &#x3C;/div&#x3E; &#x3C;!-- /.modal --&#x3E;
+      &#x3C;!-- Long Content Scroll Modal --&#x3E;
+      &#x3C;div class=&#x22;modal fade&#x22; id=&#x22;scrollable-modal&#x22; tabindex=&#x22;-1&#x22; role=&#x22;dialog&#x22; aria-labelledby=&#x22;scrollableModalTitle&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+          &#x3C;div class=&#x22;modal-dialog modal-dialog-scrollable&#x22; role=&#x22;document&#x22;&#x3E;
+              &#x3C;div class=&#x22;modal-content&#x22;&#x3E;
+                  &#x3C;div class=&#x22;modal-header&#x22;&#x3E;
+                      &#x3C;h5 class=&#x22;modal-title&#x22; id=&#x22;scrollableModalTitle&#x22;&#x3E; Modal title &#x3C;/h5&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn-close&#x22; data-bs-dismiss=&#x22;modal&#x22; aria-label=&#x22;Close&#x22;&#x3E;&#x3C;/button&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-body&#x22;&#x3E;
+                      &#x3C;p&#x3E; Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. &#x3C;/p&#x3E;
+                      &#x3C;p&#x3E; Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla. &#x3C;/p&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-footer&#x22;&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-secondary&#x22; data-bs-dismiss=&#x22;modal&#x22;&#x3E; Close &#x3C;/button&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-primary&#x22;&#x3E; Save changes &#x3C;/button&#x3E; &#x3C;/div&#x3E;
+              &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+          &#x3C;/div&#x3E; &#x3C;!-- /.modal-dialog --&#x3E;
+      &#x3C;/div&#x3E; &#x3C;!-- /.modal --&#x3E;
+      &#x3C;div class=&#x22;button-group&#x22;&#x3E;
+          &#x3C;!-- Standard  modal --&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn mb-1 me-1 btn-primary&#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#myModal&#x22; fdprocessedid=&#x22;tml8fm&#x22;&#x3E; Standard Modal &#x3C;/button&#x3E; &#x3C;!-- Large modal --&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn mb-1 me-1 btn-danger&#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#bs-example-modal-lg&#x22; fdprocessedid=&#x22;kklft&#x22;&#x3E; Large modal &#x3C;/button&#x3E; &#x3C;!-- Small modal --&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn mb-1 me-1 btn-success&#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#bs-example-modal-sm&#x22; fdprocessedid=&#x22;zuikg&#x22;&#x3E; Small modal &#x3C;/button&#x3E; &#x3C;!-- Full width modal --&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn mb-1 me-1 btn-warning&#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#full-width-modal&#x22; fdprocessedid=&#x22;j87qu&#x22;&#x3E; Full screen modal &#x3C;/button&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn mb-1 me-1 btn-secondary&#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#scrollable-modal&#x22; fdprocessedid=&#x22;flss0a&#x22;&#x3E; Scrollable modal &#x3C;/button&#x3E;
+      &#x3C;/div&#x3E;
+                                      </code>
+                                  </pre>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">Modal with Pages</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4 text-center">
+                  <!-- Signup modal content -->
+                  <div id="signup-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-body">
+                          <div class="text-center mt-2 mb-4">
+                            <a href="index.html" class="text-success">
+                              <span>
+                                <img class="img-fluid" src="../assets/images/logos/favicon.png" alt="matdash-img">
+                              </span>
+                            </a>
+                          </div>
+                          <form class="ps-3 pe-3 text-start" action="#">
+                            <div class="mb-3">
+                              <label for="username">Name</label>
+                              <input class="form-control" type="email" id="username" required="" placeholder="Michael Zenaty">
+                            </div>
+                            <div class="mb-3">
+                              <label for="emailaddress">Email address</label>
+                              <input class="form-control" type="email" id="emailaddress" required="" placeholder="john@deo.com">
+                            </div>
+                            <div class="mb-3">
+                              <label for="password">Password</label>
+                              <input class="form-control" type="password" required="" id="password" placeholder="Enter your password">
+                            </div>
+                            <div class="mb-3">
+                              <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="customCheck1">
+                                <label class="form-check-label" for="customCheck1">I accept
+                                  <a href="#">Terms and Conditions</a>
+                                </label>
+                              </div>
+                            </div>
+                            <div class="mb-3 text-center">
+                              <button class="btn btn-primary" type="submit">
+                                Sign Up Free
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <!-- SignIn modal content -->
+                  <div id="login-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-body">
+                          <div class="text-center mt-2 mb-4">
+                            <a href="index.html" class="text-success">
+                              <span>
+                                <img class="img-fluid" src="../assets/images/logos/favicon.png" alt="matdash-img">
+                              </span>
+                            </a>
+                          </div>
+                          <form action="#" class="ps-3 pe-3 text-start">
+                            <div class="mb-3">
+                              <label for="emailaddress1">Email address</label>
+                              <input class="form-control" type="email" id="emailaddress1" required="" placeholder="john@deo.com">
+                            </div>
+                            <div class="mb-3">
+                              <label for="password1">Password</label>
+                              <input class="form-control" type="password" required="" id="password1" placeholder="Enter your password">
+                            </div>
+                            <div class="mb-3">
+                              <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="customCheck2">
+                                <label class="form-check-label" for="customCheck2">Remember me</label>
+                              </div>
+                            </div>
+                            <div class="mb-3 text-center">
+                              <button class="btn btn-rounded btn-primary" type="submit">
+                                Sign In
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <div class="button-group">
+                    <!-- Custom width modal -->
+                    <button type="button" class="btn mb-1 me-1 btn-success" data-bs-toggle="modal" data-bs-target="#signup-modal" fdprocessedid="mb0mrj">
+                      Sign Up Modal
+                    </button>
+                    <!-- Full width modal -->
+                    <button type="button" class="btn mb-1 me-1 btn-info" data-bs-toggle="modal" data-bs-target="#login-modal" fdprocessedid="8q33om">
+                      Log in Modal
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+              <pre class="mt-0">
+                    <code class="language-html" style="height: 300px;">
+    &#x3C;!-- Signup modal content --&#x3E;
+      &#x3C;div id=&#x22;signup-modal&#x22; class=&#x22;modal fade&#x22; tabindex=&#x22;-1&#x22; role=&#x22;dialog&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+          &#x3C;div class=&#x22;modal-dialog&#x22;&#x3E;
+              &#x3C;div class=&#x22;modal-content&#x22;&#x3E;
+                  &#x3C;div class=&#x22;modal-body&#x22;&#x3E;
+                      &#x3C;div class=&#x22;text-center mt-2 mb-4&#x22;&#x3E; &#x3C;a href=&#x22;index.html&#x22; class=&#x22;text-success&#x22;&#x3E; &#x3C;span&#x3E;&#x3C;img class=&#x22;img-fluid&#x22; src=&#x22;../assets/images/logos/favicon.png&#x22; alt=&#x22;&#x22;&#x3E;&#x3C;/span&#x3E; &#x3C;/a&#x3E; &#x3C;/div&#x3E;
+                      &#x3C;form class=&#x22;ps-3 pe-3 text-start&#x22; action=&#x22;#&#x22;&#x3E;
+                          &#x3C;div class=&#x22;mb-3&#x22;&#x3E; &#x3C;label for=&#x22;username&#x22;&#x3E;Name&#x3C;/label&#x3E; &#x3C;input class=&#x22;form-control&#x22; type=&#x22;email&#x22; id=&#x22;username&#x22; required=&#x22;&#x22; placeholder=&#x22;Michael Zenaty&#x22;&#x3E; &#x3C;/div&#x3E;
+                          &#x3C;div class=&#x22;mb-3&#x22;&#x3E; &#x3C;label for=&#x22;emailaddress&#x22;&#x3E;Email address&#x3C;/label&#x3E; &#x3C;input class=&#x22;form-control&#x22; type=&#x22;email&#x22; id=&#x22;emailaddress&#x22; required=&#x22;&#x22; placeholder=&#x22;john@deo.com&#x22;&#x3E; &#x3C;/div&#x3E;
+                          &#x3C;div class=&#x22;mb-3&#x22;&#x3E; &#x3C;label for=&#x22;password&#x22;&#x3E;Password&#x3C;/label&#x3E; &#x3C;input class=&#x22;form-control&#x22; type=&#x22;password&#x22; required=&#x22;&#x22; id=&#x22;password&#x22; placeholder=&#x22;Enter your password&#x22;&#x3E; &#x3C;/div&#x3E;
+                          &#x3C;div class=&#x22;mb-3&#x22;&#x3E;
+                              &#x3C;div class=&#x22;form-check&#x22;&#x3E; &#x3C;input type=&#x22;checkbox&#x22; class=&#x22;form-check-input&#x22; id=&#x22;customCheck1&#x22;&#x3E; &#x3C;label class=&#x22;form-check-label&#x22; for=&#x22;customCheck1&#x22;&#x3E;I accept &#x3C;a href=&#x22;#&#x22;&#x3E;Terms and Conditions&#x3C;/a&#x3E;&#x3C;/label&#x3E; &#x3C;/div&#x3E;
+                          &#x3C;/div&#x3E;
+                          &#x3C;div class=&#x22;mb-3 text-center&#x22;&#x3E; &#x3C;button class=&#x22;btn btn-primary&#x22; type=&#x22;submit&#x22;&#x3E; Sign Up Free &#x3C;/button&#x3E; &#x3C;/div&#x3E;
+                      &#x3C;/form&#x3E;
+                  &#x3C;/div&#x3E;
+              &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+          &#x3C;/div&#x3E; &#x3C;!-- /.modal-dialog --&#x3E;
+      &#x3C;/div&#x3E; &#x3C;!-- /.modal --&#x3E;
+      &#x3C;!-- SignIn modal content --&#x3E;
+      &#x3C;div id=&#x22;login-modal&#x22; class=&#x22;modal fade&#x22; tabindex=&#x22;-1&#x22; role=&#x22;dialog&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+          &#x3C;div class=&#x22;modal-dialog&#x22;&#x3E;
+              &#x3C;div class=&#x22;modal-content&#x22;&#x3E;
+                  &#x3C;div class=&#x22;modal-body&#x22;&#x3E;
+                      &#x3C;div class=&#x22;text-center mt-2 mb-4&#x22;&#x3E; &#x3C;a href=&#x22;index.html&#x22; class=&#x22;text-success&#x22;&#x3E; &#x3C;span&#x3E;&#x3C;img class=&#x22;img-fluid&#x22; src=&#x22;../assets/images/logos/favicon.png&#x22; alt=&#x22;&#x22;&#x3E;&#x3C;/span&#x3E; &#x3C;/a&#x3E; &#x3C;/div&#x3E;
+                      &#x3C;form action=&#x22;#&#x22; class=&#x22;ps-3 pe-3 text-start&#x22;&#x3E;
+                          &#x3C;div class=&#x22;mb-3&#x22;&#x3E; &#x3C;label for=&#x22;emailaddress1&#x22;&#x3E;Email address&#x3C;/label&#x3E; &#x3C;input class=&#x22;form-control&#x22; type=&#x22;email&#x22; id=&#x22;emailaddress1&#x22; required=&#x22;&#x22; placeholder=&#x22;john@deo.com&#x22;&#x3E; &#x3C;/div&#x3E;
+                          &#x3C;div class=&#x22;mb-3&#x22;&#x3E; &#x3C;label for=&#x22;password1&#x22;&#x3E;Password&#x3C;/label&#x3E; &#x3C;input class=&#x22;form-control&#x22; type=&#x22;password&#x22; required=&#x22;&#x22; id=&#x22;password1&#x22; placeholder=&#x22;Enter your password&#x22;&#x3E; &#x3C;/div&#x3E;
+                          &#x3C;div class=&#x22;mb-3&#x22;&#x3E;
+                              &#x3C;div class=&#x22;form-check&#x22;&#x3E; &#x3C;input type=&#x22;checkbox&#x22; class=&#x22;form-check-input&#x22; id=&#x22;customCheck2&#x22;&#x3E; &#x3C;label class=&#x22;form-check-label&#x22; for=&#x22;customCheck2&#x22;&#x3E;Remember me&#x3C;/label&#x3E; &#x3C;/div&#x3E;
+                          &#x3C;/div&#x3E;
+                          &#x3C;div class=&#x22;mb-3 text-center&#x22;&#x3E; &#x3C;button class=&#x22;btn btn-rounded btn-primary&#x22; type=&#x22;submit&#x22;&#x3E; Sign In &#x3C;/button&#x3E; &#x3C;/div&#x3E;
+                      &#x3C;/form&#x3E;
+                  &#x3C;/div&#x3E;
+              &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+          &#x3C;/div&#x3E; &#x3C;!-- /.modal-dialog --&#x3E;
+      &#x3C;/div&#x3E; &#x3C;!-- /.modal --&#x3E;
+      &#x3C;div class=&#x22;button-group&#x22;&#x3E;
+          &#x3C;!-- Custom width modal --&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn mb-1 me-1 btn-success&#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#signup-modal&#x22; fdprocessedid=&#x22;mb0mrj&#x22;&#x3E; Sign Up Modal &#x3C;/button&#x3E; &#x3C;!-- Full width modal --&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn mb-1 me-1 btn-info&#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#login-modal&#x22; fdprocessedid=&#x22;8q33om&#x22;&#x3E; Log in Modal &#x3C;/button&#x3E;
+      &#x3C;/div&#x3E;
+                                        </code>
+                                    </pre>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">Modal based Alerts</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4 text-center">
+                  <div class="button-group">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-success-subtle
+                            text-success
+                          " data-bs-toggle="modal" data-bs-target="#al-success-alert" fdprocessedid="7ydygv">
+                      Success Alert
+                    </button>
+                    <!-- Vertically centered modal -->
+                    <div class="modal fade" id="al-success-alert" tabindex="-1" aria-labelledby="vertical-center-modal" aria-hidden="true">
+                      <div class="modal-dialog modal-sm">
+                        <div class="
+                                modal-content modal-filled
+                                bg-light-success
+                                text-success
+                              ">
+                          <div class="modal-body p-4">
+                            <div class="text-center text-success">
+                              <i data-feather="check-circle" class="fill-white feather-lg"></i>
+                              <h4 class="mt-2">Well Done!</h4>
+                              <p class="mt-3 text-success-50">
+                                Cras mattis consectetur purus sit amet
+                                fermentum. Cras justo odio, dapibus ac
+                                facilisis in, egestas eget quam.
+                              </p>
+                              <button type="button" class="btn btn-light my-2" data-bs-dismiss="modal">
+                                Continue
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                    </div>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-info-subtle
+                            text-info
+                          " data-bs-toggle="modal" data-bs-target="#al-info-alert" fdprocessedid="3q9ytp">
+                      Info Alert
+                    </button>
+                    <!-- Vertically centered modal -->
+                    <div class="modal fade" id="al-info-alert" tabindex="-1" aria-labelledby="vertical-center-modal" aria-hidden="true">
+                      <div class="modal-dialog modal-sm">
+                        <div class="modal-content modal-filled bg-light-info">
+                          <div class="modal-body p-4">
+                            <div class="text-center text-info">
+                              <i data-feather="info" class="fill-white feather-lg"></i>
+                              <h4 class="mt-2">Heads up!</h4>
+                              <p class="mt-3">
+                                Cras mattis consectetur purus sit amet
+                                fermentum. Cras justo odio, dapibus ac
+                                facilisis in, egestas eget quam.
+                              </p>
+                              <button type="button" class="btn btn-light my-2" data-bs-dismiss="modal">
+                                Continue
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                    </div>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-warning-subtle
+                            text-warning
+                          " data-bs-toggle="modal" data-bs-target="#al-warning-alert" fdprocessedid="8ybi79">
+                      Warning Alert
+                    </button>
+                    <!-- Vertically centered modal -->
+                    <div class="modal fade" id="al-warning-alert" tabindex="-1" aria-labelledby="vertical-center-modal" aria-hidden="true">
+                      <div class="modal-dialog modal-sm">
+                        <div class="
+                                modal-content modal-filled
+                                bg-light-warning
+                              ">
+                          <div class="modal-body p-4">
+                            <div class="text-center text-warning">
+                              <i data-feather="alert-octagon" class="fill-white feather-lg"></i>
+                              <h4 class="mt-2">Incorrect Information</h4>
+                              <p class="mt-3">
+                                Cras mattis consectetur purus sit amet
+                                fermentum.Cras justo odio, dapibus ac
+                                facilisis in, egestas eget quam.
+                              </p>
+                              <button type="button" class="btn btn-light my-2" data-bs-dismiss="modal">
+                                Continue
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                    </div>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-danger-subtle
+                            text-danger
+                          " data-bs-toggle="modal" data-bs-target="#al-danger-alert" fdprocessedid="qhj8ng">
+                      Danger Alert
+                    </button>
+                    <!-- Vertically centered modal -->
+                    <div class="modal fade" id="al-danger-alert" tabindex="-1" aria-labelledby="vertical-center-modal" aria-hidden="true" style="display: none;">
+                      <div class="modal-dialog modal-sm">
+                        <div class="
+                                modal-content modal-filled
+                                bg-light-danger
+                              ">
+                          <div class="modal-body p-4">
+                            <div class="text-center text-danger">
+                              <i data-feather="x-octagon" class="fill-white feather-lg"></i>
+                              <h4 class="mt-2">Oh snap!</h4>
+                              <p class="mt-3">
+                                Cras mattis consectetur purus sit amet
+                                fermentum.Cras justo odio, dapibus ac
+                                facilisis in, egestas eget quam.
+                              </p>
+                              <button type="button" class="btn btn-light my-2" data-bs-dismiss="modal">
+                                Continue
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+              <pre class="mt-0">
+                    <code class="language-html" style="height: 300px;">
+    &#x3C;div class=&#x22;modal fade&#x22; id=&#x22;al-success-alert&#x22; tabindex=&#x22;-1&#x22; aria-labelledby=&#x22;vertical-center-modal&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+        &#x3C;div class=&#x22;modal-dialog modal-sm&#x22;&#x3E;
+            &#x3C;div class=&#x22;modal-content modal-filled bg-light-success text-success&#x22;&#x3E;
+                &#x3C;div class=&#x22;modal-body p-4&#x22;&#x3E;
+                    &#x3C;div class=&#x22;text-center text-success&#x22;&#x3E; &#x3C;i data-feather=&#x22;check-circle&#x22; class=&#x22;fill-white feather-lg&#x22;&#x3E;&#x3C;/i&#x3E;
+                        &#x3C;h4 class=&#x22;mt-2&#x22;&#x3E;Well Done!&#x3C;/h4&#x3E;
+                        &#x3C;p class=&#x22;mt-3 text-success-50&#x22;&#x3E;Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. &#x3C;/p&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-light my-2&#x22; data-bs-dismiss=&#x22;modal&#x22;&#x3E;Continue&#x3C;/button&#x3E;
+                    &#x3C;/div&#x3E;
+                &#x3C;/div&#x3E;
+            &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+        &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E; &#x3C;!-- Button trigger modal --&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn bg-info-subtle text-info   btn-lg px-4 fs-4 &#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#al-info-alert&#x22;&#x3E; Info Alert &#x3C;/button&#x3E; &#x3C;!-- Vertically centered modal --&#x3E;
+    &#x3C;div class=&#x22;modal fade&#x22; id=&#x22;al-info-alert&#x22; tabindex=&#x22;-1&#x22; aria-labelledby=&#x22;vertical-center-modal&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+        &#x3C;div class=&#x22;modal-dialog modal-sm&#x22;&#x3E;
+            &#x3C;div class=&#x22;modal-content modal-filled bg-light-info&#x22;&#x3E;
+                &#x3C;div class=&#x22;modal-body p-4&#x22;&#x3E;
+                    &#x3C;div class=&#x22;text-center text-info&#x22;&#x3E; &#x3C;i data-feather=&#x22;info&#x22; class=&#x22;fill-white feather-lg&#x22;&#x3E;&#x3C;/i&#x3E;
+                        &#x3C;h4 class=&#x22;mt-2&#x22;&#x3E;Heads up!&#x3C;/h4&#x3E;
+                        &#x3C;p class=&#x22;mt-3&#x22;&#x3E;Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. &#x3C;/p&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-light my-2&#x22; data-bs-dismiss=&#x22;modal&#x22;&#x3E;Continue&#x3C;/button&#x3E;
+                    &#x3C;/div&#x3E;
+                &#x3C;/div&#x3E;
+            &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+        &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E; &#x3C;!-- Button trigger modal --&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn bg-warning-subtle text-warning   btn-lg px-4 fs-4 &#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#al-warning-alert&#x22;&#x3E; Warning Alert &#x3C;/button&#x3E; &#x3C;!-- Vertically centered modal --&#x3E;
+    &#x3C;div class=&#x22;modal fade&#x22; id=&#x22;al-warning-alert&#x22; tabindex=&#x22;-1&#x22; aria-labelledby=&#x22;vertical-center-modal&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+        &#x3C;div class=&#x22;modal-dialog modal-sm&#x22;&#x3E;
+            &#x3C;div class=&#x22;modal-content modal-filled bg-light-warning&#x22;&#x3E;
+                &#x3C;div class=&#x22;modal-body p-4&#x22;&#x3E;
+                    &#x3C;div class=&#x22;text-center text-warning&#x22;&#x3E; &#x3C;i data-feather=&#x22;alert-octagon&#x22; class=&#x22;fill-white feather-lg&#x22;&#x3E;&#x3C;/i&#x3E;
+                        &#x3C;h4 class=&#x22;mt-2&#x22;&#x3E;Incorrect Information&#x3C;/h4&#x3E;
+                        &#x3C;p class=&#x22;mt-3&#x22;&#x3E;Cras mattis consectetur purus sit amet fermentum.Cras justo odio, dapibus ac facilisis in, egestas eget quam.&#x3C;/p&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-light my-2&#x22; data-bs-dismiss=&#x22;modal&#x22;&#x3E;Continue&#x3C;/button&#x3E;
+                    &#x3C;/div&#x3E;
+                &#x3C;/div&#x3E;
+            &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+        &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E; &#x3C;!-- Button trigger modal --&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn bg-danger-subtle text-danger   btn-lg px-4 fs-4 &#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#al-danger-alert&#x22;&#x3E; Danger Alert &#x3C;/button&#x3E; &#x3C;!-- Vertically centered modal --&#x3E;
+    &#x3C;div class=&#x22;modal fade&#x22; id=&#x22;al-danger-alert&#x22; tabindex=&#x22;-1&#x22; aria-labelledby=&#x22;vertical-center-modal&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+        &#x3C;div class=&#x22;modal-dialog modal-sm&#x22;&#x3E;
+            &#x3C;div class=&#x22;modal-content modal-filled bg-light-danger&#x22;&#x3E;
+                &#x3C;div class=&#x22;modal-body p-4&#x22;&#x3E;
+                    &#x3C;div class=&#x22;text-center text-danger&#x22;&#x3E; &#x3C;i data-feather=&#x22;x-octagon&#x22; class=&#x22;fill-white feather-lg&#x22;&#x3E;&#x3C;/i&#x3E;
+                        &#x3C;h4 class=&#x22;mt-2&#x22;&#x3E;Oh snap!&#x3C;/h4&#x3E;
+                        &#x3C;p class=&#x22;mt-3&#x22;&#x3E;Cras mattis consectetur purus sit amet fermentum.Cras justo odio, dapibus ac facilisis in, egestas eget quam.&#x3C;/p&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-light my-2&#x22; data-bs-dismiss=&#x22;modal&#x22;&#x3E;Continue&#x3C;/button&#x3E;
+                    &#x3C;/div&#x3E;
+                &#x3C;/div&#x3E;
+            &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+        &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E;
+                                        </code>
+                                    </pre>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">Colored Header Modals</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4 text-center">
+                  <div class="button-group">
+                    <!-- Primary header modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-primary-subtle
+                            text-primary
+                          " data-bs-toggle="modal" data-bs-target="#primary-header-modal" fdprocessedid="vj0v62j">
+                      Primary Header
+                    </button>
+                    <!-- Primary Header Modal -->
+                    <div id="primary-header-modal" class="modal fade" tabindex="-1" aria-labelledby="primary-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  bg-primary
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="primary-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0">Primary Background</h5>
+                            <p>
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p>
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                            <button type="button" class="
+                                    btn bg-primary-subtle
+                                    text-primary
+                                    
+                                  ">
+                              Save changes
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                    <!-- info header modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-info-subtle
+                            text-info
+                          " data-bs-toggle="modal" data-bs-target="#info-header-modal" fdprocessedid="smq8on">
+                      Info Header
+                    </button>
+                    <!-- info Header Modal -->
+                    <div id="info-header-modal" class="modal fade" tabindex="-1" aria-labelledby="info-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  bg-info
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="info-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0">Info Background</h5>
+                            <p>
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p>
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                            <button type="button" class="
+                                    btn bg-info-subtle
+                                    text-info
+                                    
+                                  ">
+                              Save changes
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                    <!-- danger header modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-danger-subtle
+                            text-danger
+                          " data-bs-toggle="modal" data-bs-target="#danger-header-modal" fdprocessedid="vnzjw">
+                      Danger Header
+                    </button>
+                    <!-- danger Header Modal -->
+                    <div id="danger-header-modal" class="modal fade" tabindex="-1" aria-labelledby="danger-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  bg-danger
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="danger-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0">Danger Background</h5>
+                            <p>
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p>
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                            <button type="button" class="
+                                    btn bg-danger-subtle
+                                    text-danger
+                                    
+                                  ">
+                              Save changes
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                    <!-- warning header modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-warning-subtle
+                            text-warning
+                          " data-bs-toggle="modal" data-bs-target="#warning-header-modal" fdprocessedid="l8awt4b">
+                      Warning Header
+                    </button>
+                    <!-- warning Header Modal -->
+                    <div id="warning-header-modal" class="modal fade" tabindex="-1" aria-labelledby="warning-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  bg-warning
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="warning-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0">Warning Background</h5>
+                            <p>
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p>
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                            <button type="button" class="
+                                    btn bg-warning-subtle
+                                    text-warning
+                                    
+                                  ">
+                              Save changes
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                    <!-- success header modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-success-subtle
+                            text-success
+                          " data-bs-toggle="modal" data-bs-target="#success-header-modal" fdprocessedid="cw61t3">
+                      Success Header
+                    </button>
+                    <!-- success Header Modal -->
+                    <div id="success-header-modal" class="modal fade" tabindex="-1" aria-labelledby="success-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  bg-success
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="success-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0">Success Background</h5>
+                            <p>
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p>
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                            <button type="button" class="
+                                    btn bg-success-subtle
+                                    text-success
+                                    
+                                  ">
+                              Save changes
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                    <!-- dark header modal -->
+                    <button type="button" class="btn btn-dark btn-lg px-4 fs-4 " data-bs-toggle="modal" data-bs-target="#dark-header-modal" fdprocessedid="nb24yi">
+                      Dark Header
+                    </button>
+                    <!-- dark Header Modal -->
+                    <div id="dark-header-modal" class="modal fade" tabindex="-1" aria-labelledby="dark-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  bg-dark
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="dark-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0">Dark Background</h5>
+                            <p>
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p>
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                            <button type="button" class="btn btn-dark">
+                              Save changes
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+              <pre class="mt-0">
+                    <code class="language-html" style="height: 300px;">
+  &lt;div class=&quot;button-group&quot;&gt;
+    &lt;!-- Primary header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn mb-1 me-1 bg-primary-subtle text-primary&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#primary-header-modal&quot; fdprocessedid=&quot;vj0v62j&quot;&gt;
+      Primary Header
+    &lt;/button&gt;
+    &lt;!-- Primary Header Modal --&gt;
+    &lt;div id=&quot;primary-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;primary-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header bg-primary text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;primary-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0&quot;&gt;Primary Background&lt;/h5&gt;
+            &lt;p&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-danger&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn bg-primary-subtle text-primary &quot;&gt;
+              Save changes
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+    &lt;!-- info header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn mb-1 me-1 bg-info-subtle text-info&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#info-header-modal&quot; fdprocessedid=&quot;smq8on&quot;&gt;
+      Info Header
+    &lt;/button&gt;
+    &lt;!-- info Header Modal --&gt;
+    &lt;div id=&quot;info-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;info-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header bg-info text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;info-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0&quot;&gt;Info Background&lt;/h5&gt;
+            &lt;p&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-danger&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn bg-info-subtle text-info &quot;&gt;
+              Save changes
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+    &lt;!-- danger header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn mb-1 me-1 bg-danger-subtle text-danger&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#danger-header-modal&quot; fdprocessedid=&quot;vnzjw&quot;&gt;
+      Danger Header
+    &lt;/button&gt;
+    &lt;!-- danger Header Modal --&gt;
+    &lt;div id=&quot;danger-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;danger-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header bg-danger text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;danger-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0&quot;&gt;Danger Background&lt;/h5&gt;
+            &lt;p&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-danger&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn bg-danger-subtle text-danger &quot;&gt;
+              Save changes
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+    &lt;!-- warning header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn mb-1 me-1 bg-warning-subtle text-warning&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#warning-header-modal&quot; fdprocessedid=&quot;l8awt4b&quot;&gt;
+      Warning Header
+    &lt;/button&gt;
+    &lt;!-- warning Header Modal --&gt;
+    &lt;div id=&quot;warning-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;warning-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header bg-warning text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;warning-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0&quot;&gt;Warning Background&lt;/h5&gt;
+            &lt;p&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-danger&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn bg-warning-subtle text-warning &quot;&gt;
+              Save changes
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+    &lt;!-- success header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn mb-1 me-1 bg-success-subtle text-success&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#success-header-modal&quot; fdprocessedid=&quot;cw61t3&quot;&gt;
+      Success Header
+    &lt;/button&gt;
+    &lt;!-- success Header Modal --&gt;
+    &lt;div id=&quot;success-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;success-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header bg-success text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;success-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0&quot;&gt;Success Background&lt;/h5&gt;
+            &lt;p&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-danger&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn bg-success-subtle text-success &quot;&gt;
+              Save changes
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+    &lt;!-- dark header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn btn-dark btn-lg px-4 fs-4 &quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#dark-header-modal&quot; fdprocessedid=&quot;nb24yi&quot;&gt;
+      Dark Header
+    &lt;/button&gt;
+    &lt;!-- dark Header Modal --&gt;
+    &lt;div id=&quot;dark-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;dark-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header bg-dark text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;dark-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0&quot;&gt;Dark Background&lt;/h5&gt;
+            &lt;p&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-danger&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-dark&quot;&gt;
+              Save changes
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+  &lt;/div&gt;
+                                        </code>
+                                    </pre>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">Filled Modals</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4 text-center">
+                  <div class="button-group">
+                    <!-- Primary header modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-primary-subtle
+                            text-primary
+                          " data-bs-toggle="modal" data-bs-target="#bg-primary-header-modal" fdprocessedid="25na8">
+                      Primary Modal
+                    </button>
+                    <!-- Primary Header Modal -->
+                    <div id="bg-primary-header-modal" class="modal fade" tabindex="-1" aria-labelledby="primary-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content modal-filled bg-primary">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="primary-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0 text-white">
+                              Primary Background
+                            </h5>
+                            <p class="text-white-50">
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p class="text-white-50">
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                    <!-- info header modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-info-subtle
+                            text-info
+                          " data-bs-toggle="modal" data-bs-target="#bg-info-header-modal" fdprocessedid="0488r">
+                      Info Modal
+                    </button>
+                    <!-- info Header Modal -->
+                    <div id="bg-info-header-modal" class="modal fade" tabindex="-1" aria-labelledby="info-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content modal-filled bg-info">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="info-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0 text-white">
+                              Info Background
+                            </h5>
+                            <p class="text-white-50">
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p class="text-white-50">
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                    <!-- danger header modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-danger-subtle
+                            text-danger
+                          " data-bs-toggle="modal" data-bs-target="#bg-danger-header-modal" fdprocessedid="iigz6">
+                      Danger Modal
+                    </button>
+                    <!-- danger Header Modal -->
+                    <div id="bg-danger-header-modal" class="modal fade" tabindex="-1" aria-labelledby="danger-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content modal-filled bg-danger">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="danger-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0 text-white">
+                              Danger Background
+                            </h5>
+                            <p class="text-white-50">
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p class="text-white-50">
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                    <!-- warning header modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-warning-subtle
+                            text-warning
+                          " data-bs-toggle="modal" data-bs-target="#bg-warning-header-modal" fdprocessedid="g7th7">
+                      Warning Modal
+                    </button>
+                    <!-- warning Header Modal -->
+                    <div id="bg-warning-header-modal" class="modal fade" tabindex="-1" aria-labelledby="warning-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content modal-filled bg-warning">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white text-white" id="warning-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0 text-white">
+                              Warning Background
+                            </h5>
+                            <p class="text-white-50">
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p class="text-white-50">
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                    <!-- success header modal -->
+                    <button type="button" class="
+                            btn mb-1 me-1 bg-success-subtle
+                            text-success
+                          " data-bs-toggle="modal" data-bs-target="#bg-success-header-modal" fdprocessedid="lwbst">
+                      Success Modal
+                    </button>
+                    <!-- success Header Modal -->
+                    <div id="bg-success-header-modal" class="modal fade" tabindex="-1" aria-labelledby="success-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content modal-filled bg-success">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="success-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0 text-white">
+                              Success Background
+                            </h5>
+                            <p class="text-white-50">
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p class="text-white-50">
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                    <!-- dark header modal -->
+                    <button type="button" class="btn btn-dark mb-1 me-1" data-bs-toggle="modal" data-bs-target="#bg-dark-header-modal" fdprocessedid="sg79re">
+                      Dark Modal
+                    </button>
+                    <!-- dark Header Modal -->
+                    <div id="bg-dark-header-modal" class="modal fade" tabindex="-1" aria-labelledby="dark-header-modalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-contentmodal-filled bg-dark">
+                          <div class="
+                                  modal-header modal-colored-header
+                                  text-white
+                                ">
+                            <h4 class="modal-title text-white" id="dark-header-modalLabel">
+                              Modal Heading
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h5 class="mt-0 text-white">
+                              Dark Background
+                            </h5>
+                            <p class="text-white-50">
+                              Cras mattis consectetur purus sit amet
+                              fermentum. Cras justo odio, dapibus ac
+                              facilisis in, egestas eget quam. Morbi leo
+                              risus, porta ac consectetur ac, vestibulum
+                              at eros.
+                            </p>
+                            <p class="text-white-50">
+                              Praesent commodo cursus magna, vel
+                              scelerisque nisl consectetur et. Vivamus
+                              sagittis lacus vel augue laoreet rutrum
+                              faucibus dolor auctor.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                          </div>
+                        </div>
+                        <!-- /.modal-content -->
+                      </div>
+                      <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+              <pre class="mt-0">
+                    <code class="language-html" style="height: 300px;">
+  &lt;div class=&quot;button-group&quot;&gt;
+    &lt;!-- Primary header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn mb-1 me-1 bg-primary-subtle text-primary&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#bg-primary-header-modal&quot; fdprocessedid=&quot;25na8&quot;&gt;
+      Primary Modal
+    &lt;/button&gt;
+    &lt;!-- Primary Header Modal --&gt;
+    &lt;div id=&quot;bg-primary-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;primary-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content modal-filled bg-primary&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;primary-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0 text-white&quot;&gt;
+              Primary Background
+            &lt;/h5&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-light&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+    &lt;!-- info header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn mb-1 me-1 bg-info-subtle text-info&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#bg-info-header-modal&quot; fdprocessedid=&quot;0488r&quot;&gt;
+      Info Modal
+    &lt;/button&gt;
+    &lt;!-- info Header Modal --&gt;
+    &lt;div id=&quot;bg-info-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;info-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content modal-filled bg-info&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;info-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0 text-white&quot;&gt;
+              Info Background
+            &lt;/h5&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-light&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+    &lt;!-- danger header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn mb-1 me-1 bg-danger-subtle text-danger&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#bg-danger-header-modal&quot; fdprocessedid=&quot;iigz6&quot;&gt;
+      Danger Modal
+    &lt;/button&gt;
+    &lt;!-- danger Header Modal --&gt;
+    &lt;div id=&quot;bg-danger-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;danger-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content modal-filled bg-danger&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;danger-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0 text-white&quot;&gt;
+              Danger Background
+            &lt;/h5&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-light&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+    &lt;!-- warning header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn mb-1 me-1 bg-warning-subtle text-warning&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#bg-warning-header-modal&quot; fdprocessedid=&quot;g7th7&quot;&gt;
+      Warning Modal
+    &lt;/button&gt;
+    &lt;!-- warning Header Modal --&gt;
+    &lt;div id=&quot;bg-warning-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;warning-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content modal-filled bg-warning&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white text-white&quot; id=&quot;warning-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0 text-white&quot;&gt;
+              Warning Background
+            &lt;/h5&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-light&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+    &lt;!-- success header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn mb-1 me-1 bg-success-subtle text-success&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#bg-success-header-modal&quot; fdprocessedid=&quot;lwbst&quot;&gt;
+      Success Modal
+    &lt;/button&gt;
+    &lt;!-- success Header Modal --&gt;
+    &lt;div id=&quot;bg-success-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;success-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-content modal-filled bg-success&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;success-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0 text-white&quot;&gt;
+              Success Background
+            &lt;/h5&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-light&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+    &lt;!-- dark header modal --&gt;
+    &lt;button type=&quot;button&quot; class=&quot;btn btn-dark mb-1 me-1&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#bg-dark-header-modal&quot; fdprocessedid=&quot;sg79re&quot;&gt;
+      Dark Modal
+    &lt;/button&gt;
+    &lt;!-- dark Header Modal --&gt;
+    &lt;div id=&quot;bg-dark-header-modal&quot; class=&quot;modal fade&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;dark-header-modalLabel&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;div class=&quot;modal-dialog&quot;&gt;
+        &lt;div class=&quot;modal-contentmodal-filled bg-dark&quot;&gt;
+          &lt;div class=&quot;modal-header modal-colored-header text-white&quot;&gt;
+            &lt;h4 class=&quot;modal-title text-white&quot; id=&quot;dark-header-modalLabel&quot;&gt;
+              Modal Heading
+            &lt;/h4&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn-close btn-close-white&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&gt;&lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-body&quot;&gt;
+            &lt;h5 class=&quot;mt-0 text-white&quot;&gt;
+              Dark Background
+            &lt;/h5&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            &lt;/p&gt;
+            &lt;p class=&quot;text-white-50&quot;&gt;
+              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;modal-footer&quot;&gt;
+            &lt;button type=&quot;button&quot; class=&quot;btn btn-light&quot; data-bs-dismiss=&quot;modal&quot;&gt;
+              Close
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- /.modal-content --&gt;
+      &lt;/div&gt;
+      &lt;!-- /.modal-dialog --&gt;
+    &lt;/div&gt;
+    &lt;!-- /.modal --&gt;
+  &lt;/div&gt; 
+                                        </code>
+                                    </pre>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body border-bottom">
+              <h4 class="card-title mb-0">Multiple Modal</h4>
+            </div>
+            <div class="p-8">
+              <div class="card mb-0">
+                <div class="p-4 text-center">
+                  <!-- Modal -->
+                  <div id="multiple-one" class="modal fade" tabindex="-1" aria-labelledby="multiple-oneModalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="multiple-oneModalLabel">
+                            Modal Heading
+                          </h4>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" fdprocessedid="egnlz9"></button>
+                        </div>
+                        <div class="modal-body">
+                          <h5 class="mt-0">Text in a modal</h5>
+                          <p>
+                            Duis mollis, est non commodo luctus, nisi erat
+                            porttitor ligula.
+                          </p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-primary" data-bs-target="#multiple-two" data-bs-toggle="modal" data-bs-dismiss="modal" fdprocessedid="do3s7b8">
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <!-- Modal -->
+                  <div id="multiple-two" class="modal fade" tabindex="-1" aria-labelledby="multiple-twoModalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title" id="multiple-twoModalLabel">
+                            Modal Heading
+                          </h4>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" fdprocessedid="z4okwn"></button>
+                        </div>
+                        <div class="modal-body">
+                          <h5 class="mt-0">Text in a modal</h5>
+                          <p>
+                            Duis mollis, est non commodo luctus, nisi erat
+                            porttitor ligula.
+                          </p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" fdprocessedid="k88afm">
+                            Close
+                          </button>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- /.modal -->
+                  <div class="button-group">
+                    <!-- Top modal -->
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#multiple-one" fdprocessedid="u2xk1g6">
+                      Multiple Modal
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="px-8 pb-8">
+
+              <pre class="mt-0">
+                    <code class="language-html" style="height: 300px;">
+    &#x3C;div id=&#x22;multiple-one&#x22; class=&#x22;modal fade&#x22; tabindex=&#x22;-1&#x22; role=&#x22;dialog&#x22; aria-labelledby=&#x22;multiple-oneModalLabel&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+          &#x3C;div class=&#x22;modal-dialog&#x22;&#x3E;
+              &#x3C;div class=&#x22;modal-content&#x22;&#x3E;
+                  &#x3C;div class=&#x22;modal-header&#x22;&#x3E;
+                      &#x3C;h4 class=&#x22;modal-title&#x22; id=&#x22;multiple-oneModalLabel&#x22;&#x3E;Modal Heading&#x3C;/h4&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn-close&#x22; data-bs-dismiss=&#x22;modal&#x22; aria-label=&#x22;Close&#x22;&#x3E;&#x3C;/button&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-body&#x22;&#x3E;
+                      &#x3C;h5 class=&#x22;mt-0&#x22;&#x3E;Text in a modal&#x3C;/h5&#x3E;
+                      &#x3C;p&#x3E;Duis mollis, est non commodo luctus, nisi erat porttitor ligula.&#x3C;/p&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-footer&#x22;&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-primary&#x22; data-bs-target=&#x22;#multiple-two&#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-dismiss=&#x22;modal&#x22;&#x3E;Next&#x3C;/button&#x3E; &#x3C;/div&#x3E;
+              &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+          &#x3C;/div&#x3E; &#x3C;!-- /.modal-dialog --&#x3E;
+      &#x3C;/div&#x3E; &#x3C;!-- /.modal --&#x3E;
+      &#x3C;!-- Modal --&#x3E;
+      &#x3C;div id=&#x22;multiple-two&#x22; class=&#x22;modal fade&#x22; tabindex=&#x22;-1&#x22; role=&#x22;dialog&#x22; aria-labelledby=&#x22;multiple-twoModalLabel&#x22; aria-hidden=&#x22;true&#x22;&#x3E;
+          &#x3C;div class=&#x22;modal-dialog&#x22;&#x3E;
+              &#x3C;div class=&#x22;modal-content&#x22;&#x3E;
+                  &#x3C;div class=&#x22;modal-header&#x22;&#x3E;
+                      &#x3C;h4 class=&#x22;modal-title&#x22; id=&#x22;multiple-twoModalLabel&#x22;&#x3E;Modal Heading&#x3C;/h4&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn-close&#x22; data-bs-dismiss=&#x22;modal&#x22; aria-label=&#x22;Close&#x22;&#x3E;&#x3C;/button&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-body&#x22;&#x3E;
+                      &#x3C;h5 class=&#x22;mt-0&#x22;&#x3E;Text in a modal&#x3C;/h5&#x3E;
+                      &#x3C;p&#x3E;Duis mollis, est non commodo luctus, nisi erat porttitor ligula.&#x3C;/p&#x3E;
+                  &#x3C;/div&#x3E;
+                  &#x3C;div class=&#x22;modal-footer&#x22;&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-primary&#x22; data-bs-dismiss=&#x22;modal&#x22;&#x3E;Close&#x3C;/button&#x3E; &#x3C;/div&#x3E;
+              &#x3C;/div&#x3E; &#x3C;!-- /.modal-content --&#x3E;
+          &#x3C;/div&#x3E; &#x3C;!-- /.modal-dialog --&#x3E;
+      &#x3C;/div&#x3E; &#x3C;!-- /.modal --&#x3E;
+      &#x3C;div class=&#x22;button-group&#x22;&#x3E;
+          &#x3C;!-- Top modal --&#x3E; &#x3C;button type=&#x22;button&#x22; class=&#x22;btn btn-secondary&#x22; data-bs-toggle=&#x22;modal&#x22; data-bs-target=&#x22;#multiple-one&#x22;&#x3E;Multiple Modal&#x3C;/button&#x3E;
+      &#x3C;/div&#x3E;
+                                          </code>
+                                      </pre>
+            </div>
+          </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Container fluid  -->
+        <!-- ============================================================== -->
+      </div>
+      <!-- ============================================================== -->
+      <!-- End Page wrapper  -->
+      <!-- ============================================================== -->
+    </div>
+  </div>
+  <div class="dark-transparent sidebartoggler"></div>
+  <!-- ============================================================== -->
+  <!-- End Wrapper -->
+  <!-- ============================================================== -->
+  <!-- End Page -->
+  <!-- ============================================================== -->
+  <!-- All Jquery -->
+  <!-- ============================================================== -->
+  <script src="../assets/libs/simplebar/dist/simplebar.min.js"></script>
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  function handleSidebar() {
+    document.querySelectorAll(".sidebartoggler").forEach(function (element) {
+      element.addEventListener("click", function () {
+        document.querySelectorAll(".sidebartoggler").forEach(function (el) {
+          el.checked = true;
+        });
+        document
+          .getElementById("main-wrapper")
+          .classList.toggle("show-sidebar");
+        document.querySelectorAll(".sidebarmenu").forEach(function (el) {
+          el.classList.toggle("close");
+        });
+        var dataTheme = document.body.getAttribute("data-sidebartype");
+        if (dataTheme === "full") {
+          document.body.setAttribute("data-sidebartype", "mini-sidebar");
+        } else {
+          document.body.setAttribute("data-sidebartype", "full");
+        }
+      });
+    });
+  }
+
+  handleSidebar();
+
+  function findMatchingElement() {
+    var currentUrl = window.location.href;
+    var anchors = document.querySelectorAll("#sidebarnav a");
+    for (var i = 0; i < anchors.length; i++) {
+      if (anchors[i].href === currentUrl) {
+        return anchors[i];
+      }
+    }
+
+    return null; // Return null if no matching element is found
+  }
+  var elements = findMatchingElement();
+
+  // Do something with the matching element
+  if (elements) {
+    elements.classList.add("active");
+  }
+
+  document
+    .querySelectorAll("ul#sidebarnav ul li a.active")
+    .forEach(function (link) {
+      link.closest("ul").classList.add("in");
+      link.closest("ul").parentElement.classList.add("selected");
+    });
+
+  document.querySelectorAll("#sidebarnav li").forEach(function (li) {
+    const isActive = li.classList.contains("selected");
+    if (isActive) {
+      const anchor = li.querySelector("a");
+      if (anchor) {
+        anchor.classList.add("active");
+      }
+    }
+  });
+
+  document.querySelectorAll("#sidebarnav a").forEach(function (link) {
+    link.addEventListener("click", function (e) {
+      const isActive = this.classList.contains("active");
+      const parentUl = this.closest("ul");
+      if (!isActive) {
+        // hide any open menus and remove all other classes
+        parentUl.querySelectorAll("ul").forEach(function (submenu) {
+          submenu.classList.remove("in");
+        });
+        parentUl.querySelectorAll("a").forEach(function (navLink) {
+          navLink.classList.remove("active");
+        });
+
+        // open our new menu and add the open class
+        const submenu = this.nextElementSibling;
+        if (submenu) {
+          submenu.classList.add("in");
+        }
+
+        this.classList.add("active");
+      } else {
+        this.classList.remove("active");
+        parentUl.classList.remove("active");
+        const submenu = this.nextElementSibling;
+        if (submenu) {
+          submenu.classList.remove("in");
+        }
+      }
+    });
+  });
+</script>
+
+
+  <!-- solar icons -->
+  <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+  <script src="../assets/libs/prismjs/prism.js"></script>
+  <!-- End JS -->
+</body>
+
+</html>

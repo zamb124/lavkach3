@@ -9,13 +9,14 @@
     >
 {% endblock %}
 {% block as_get %}
-    <a class="text-danger form-control " style="background-color: var(--vz-tertiary-bg);"
+    <a class="text-danger form-control"
        href="#"
        hx-params="model,method,id,key"
        hx-trigger="click"
        hx-target="#htmx_content"
        hx-swap="beforeend transition:true"
        hx-ext="json-enc"
+       disabled="1"
        hx-post="/base/modal"
        hx-vals='{
 "model": "{{ field.model_name }}",
@@ -23,8 +24,7 @@
 "id": "{{ field.line.id }}",
 "key": "{{ field.key }}"
 }'
-    ><i
-            class="rel ri-links-fill fs-6 text-danger"> </i> {{ field.line.display_title }}
+    > {{ field.line.display_title }}
     </a>
 
 

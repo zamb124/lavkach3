@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl" data-bs-theme="light" data-color-theme="Blue_Theme" data-layout="vertical">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon icon-->
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+
+  <!-- Core Css -->
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+
+  <title>MatDash Bootstrap Admin</title>
+  <!-- Owl Carousel  -->
+  <link rel="stylesheet" href="../assets/libs/owl.carousel/dist/assets/owl.carousel.min.css" />
+</head>
+
+<body>
+  <!-- Preloader -->
+  <div class="preloader">
+    <img src="../assets/images/logos/favicon.png" alt="loader" class="lds-ripple img-fluid" />
+  </div>
+  <!-- ------------------------------------- -->
+  <!-- Top Bar Start -->
+  <!-- ------------------------------------- -->
+  <div class="topbar-image bg-dark py-8 rounded-0 mb-0 alert alert-dismissible fade show" role="alert">
+    <div class="d-flex justify-content-center gap-sm-3 gap-2 align-items-center text-center flex-md-nowrap flex-wrap">
+      <span class="badge bg-white bg-opacity-10 fs-2 fw-bolder px-2">New</span>
+      <p class="mb-0 text-white fw-bold">Frontend Pages Included!</p>
+    </div>
+    <button type="button" class="btn-close btn-close-white p-3 fs-2" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- ------------------------------------- -->
+  <!-- Top Bar End -->
+  <!-- ------------------------------------- -->
+
+  <!-- -------------------------------------------- -->
+  <!-- Header start -->
+  <!-- -------------------------------------------- -->
+  <header class="header-fp p-0 w-100 bg-light-gray">
+    <nav class="navbar navbar-expand-lg py-10">
+      <div class="container-fluid d-flex justify-content-between">
+        <a href="../rtl/frontend-landingpage.html" class="text-nowrap logo-img">
+          <img src="../assets/images/logos/logo.svg" alt="Logo" />
+        </a>
+        <button class="navbar-toggler border-0 p-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+          <i class="ti ti-menu-2 fs-8"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mx-auto mb-2 gap-xl-7 gap-8 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link fs-4 fw-bold text-dark link-primary" href="../rtl/frontend-aboutpage.html">About Us</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fs-4 fw-bold text-dark link-primary" href="../rtl/frontend-blogpage.html">Blog</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link fs-4 fw-bold text-dark link-primary d-flex gap-2" href="../rtl/frontend-portfoliopage.html">Portfolio
+                <span class="badge text-primary bg-primary-subtle fs-2 fw-bolder hstack">New</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fs-4 fw-bold text-dark link-primary" href="../rtl/index.html">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fs-4 fw-bold text-dark link-primary" href="../rtl/frontend-pricingpage.html">Pricing</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fs-4 fw-bold text-dark link-primary" href="../rtl/frontend-contactpage.html">Contact</a>
+            </li>
+          </ul>
+          <a href="javascript:void(0)">
+            <a href="../rtl/authentication-login.html" class="btn btn-dark btn-sm py-2 px-9">Log
+              In</a>
+          </a>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <!-- -------------------------------------------- -->
+  <!-- Header End -->
+  <!-- -------------------------------------------- -->
+
+  <!-- ------------------------------------- -->
+  <!-- Responsive Header Start -->
+  <!-- ------------------------------------- -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+      <a href="../rtl/frontend-landingpage.html" class="text-nowrap logo-img">
+        <img src="../assets/images/logos/logo.svg" alt="Logo" />
+      </a>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="list-unstyled ps-0">
+        <li class="mb-1">
+          <a href="../rtl/frontend-aboutpage.html" class="px-0 fs-4 d-block text-dark link-primary w-100 py-2">
+            About Us
+          </a>
+        </li>
+
+        <li class="mb-1">
+          <a href="../rtl/frontend-blogpage.html" class="px-0 fs-4 d-block w-100 py-2 text-dark link-primary">
+            Blog
+          </a>
+        </li>
+
+        <li class="mb-1">
+          <a href="../rtl/frontend-portfoliopage.html" class="px-0 fs-4 d-flex align-items-center justify-content-start gap-2 w-100 py-2 text-dark link-primary">
+            Portfolio
+            <span class="badge text-primary bg-primary-subtle fs-2 fw-bolder hstack">New</span>
+          </a>
+        </li>
+
+        <li class="mb-1">
+          <a href="../rtl/index.html" class="px-0 fs-4 d-block w-100 py-2 text-dark link-primary">
+            Dashboard
+          </a>
+        </li>
+
+        <li class="mb-1">
+          <a href="../rtl/frontend-pricingpage.html" class="px-0 fs-4 d-block w-100 py-2 text-dark link-primary">
+            Pricing
+          </a>
+        </li>
+
+        <li class="mb-1">
+          <a href="../rtl/frontend-contactpage.html" class="px-0 fs-4 d-block w-100 py-2 text-dark link-primary">
+            Contact
+          </a>
+        </li>
+        <li class="mt-3">
+          <a href="../rtl/authentication-login.html" class="btn btn-primary w-100">Log In</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- ------------------------------------- -->
+  <!-- Responsive Header End -->
+  <!-- ------------------------------------- -->
+
+  <div class="main-wrapper overflow-hidden">
+    <!-- ------------------------------------- -->
+    <!-- Banner Start -->
+    <!-- ------------------------------------- -->
+    <section class="pt-5 bg-light-gray">
+      <div class="container-fluid">
+        <div class="text-center">
+          <div class="d-flex align-items-center justify-content-center gap-6">
+            <a href="../rtl/frontend-landingpage.html" class="text-muted fw-bolder link-primary fs-3 text-uppercase">
+              Matdash
+            </a>
+            <iconify-icon icon="solar:alt-arrow-right-outline" class="fs-5 text-muted"></iconify-icon>
+            <a href="../rtl/frontend-blogpage.html" class="text-muted link-primary fw-bolder fs-3 text-uppercase">
+              Blog posts
+            </a>
+            <iconify-icon icon="solar:alt-arrow-right-outline" class="fs-5 text-muted"></iconify-icon>
+            <a href="#" class="text-primary link-primary fw-bolder fs-3 text-uppercase">
+              Web Development
+            </a>
+          </div>
+          <h2 class="fs-15 fw-bolder my-9">
+            Early Black Friday Amazon deals: cheap TVs, headphones, laptops
+          </h2>
+          <div class="d-flex justify-content-center align-items-center gap-10">
+            <div class="d-flex gap-2">
+              <i class="ti ti-eye fs-5 text-dark"></i>
+              <p class="mb-0 fs-2 fw-semibold">6941</p>
+            </div>
+            <div class="d-flex gap-2">
+              <i class="ti ti-message fs-5 text-dark"></i>
+              <p class="mb-0 fs-2 fw-semibold">3</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="ti ti-circle fs-2"></i>
+              <p class="mb-0 fs-2 fw-semibold">Tue, May 2</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-5 d-lg-block d-none">
+          <img src="../assets/images/frontend-pages/blog-detail-banner.jpg" alt="blog detail banner" class="rounded-3 img-fluid">
+        </div>
+      </div>
+    </section>
+    <!-- ------------------------------------- -->
+    <!-- Banner End -->
+    <!-- ------------------------------------- -->
+
+    <!-- ------------------------------------- -->
+    <!-- Details Start -->
+    <!-- ------------------------------------- -->
+    <section class="pt-md-13 pb-md-11 bg-light-gray">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-4 mb-7 mb-lg-0">
+            <div class="d-flex flex-column gap-3 bg-white p-7 rounded-3">
+              <div class="d-flex gap-3 pb-3 border-bottom ">
+                <div>
+                  <img src="../assets/images/profile/user-6.jpg" alt="user" class="rounded-circle" width="44px" height="44px">
+                </div>
+                <div class="">
+                  <p class="mb-0 text-dark fs-4 fw-semibold">Zachary Smith</p>
+                  <p class="mb-0 fs-3 fw-bold">Product Manager</p>
+                </div>
+              </div>
+              <div class="py-9 d-flex flex-column gap-3 border-bottom">
+                <h4 class="fs-3 fw-bold text-uppercase text-muted mb-0 ">Contents</h4>
+                <a href="#mobile-first-approach" class="text-dark fs-4 fw-semibold link-primary">Adopt a
+                  Mobile-First Approach</a>
+                <a href="#fluid-grid-layouts" class="text-dark fs-4 fw-semibold link-primary">Use Fluid
+                  Grid Layouts</a>
+                <a href="#leverage-media" class="text-dark fs-4 fw-semibold link-primary">Leverage Media
+                  Queries</a>
+                <a href="#optimize-images" class="text-dark fs-4 fw-semibold link-primary">Optimize
+                  Images for Different Devices</a>
+                <a href="#conclusion" class="text-dark fs-4 fw-semibold link-primary">Conclusion</a>
+              </div>
+              <div class="py-9">
+                <h4 class="text-uppercase fs-3 fw-bold">Share</h4>
+                <div class="d-flex gap-6">
+                  <a href="#" class="border rounded-circle round-40 hstack justify-content-center" data-bs-toggle="tooltip" data-bs-title="Facebook">
+                    <img src="../assets/images/frontend-pages/icon-facebook-dark.svg" alt="facebook">
+                  </a>
+                  <a href="#" class="border rounded-circle round-40 hstack justify-content-center" data-bs-toggle="tooltip" data-bs-title="Instagram">
+                    <img src="../assets/images/frontend-pages/icon-instagram-dark.svg" alt="instagram">
+                  </a>
+                  <a href="#" class="border rounded-circle round-40 hstack justify-content-center" data-bs-toggle="tooltip" data-bs-title="YouTube">
+                    <img src="../assets/images/frontend-pages/icon-youtube-dark.svg" alt="youtube">
+                  </a>
+                  <a href="#" class="border rounded-circle round-40 hstack justify-content-center" data-bs-toggle="tooltip" data-bs-title="Linckedin">
+                    <img src="../assets/images/frontend-pages/icon-linckedin-dark.svg" alt="linckedin">
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <div class="d-flex flex-column gap-sm-4 gap-3 bg-white rounded-3 p-7">
+              <div class="">
+                <p class="fs-4 mb-sm-4 mb-3 text-muted">
+                  In today’s digital age, having a responsive website is no longer optional—it’s a
+                  necessity. With the increasing variety of devices used to access the web, from
+                  smartphones and tablets to laptops and large desktop monitors, developers face the
+                  challenge of ensuring a seamless experience across all screen sizes.
+                </p>
+                <p class="fs-4 mb-0 text-muted">
+                  This article offers essential tips and tricks for modern developers to create
+                  responsive
+                  websites that not only look great but also perform efficiently.
+                </p>
+              </div>
+              <div class="" id="mobile-first-approach">
+                <h3 class="fs-7 fw-bolder mb-sm-4 mb-3">
+                  Adopt a Mobile-First Approach
+                </h3>
+                <p class="fs-4 mb-0 text-muted">
+                  Starting with mobile design and then scaling up is a widely recommended approach. By
+                  prioritizing the mobile experience, developers can ensure that the most critical
+                  content is accessible on smaller screens. Once the mobile version is optimized,
+                  expanding to larger screens becomes much easier.
+                </p>
+              </div>
+              <div class="" id="fluid-grid-layouts">
+                <h3 class="fs-7 fw-bolder mb-sm-4 mb-3">
+                  Use Fluid Grid Layouts
+                </h3>
+                <p class="fs-4 mb-0 text-muted">
+                  A fluid grid layout is the backbone of a responsive design. Unlike fixed layouts,
+                  fluid grids use relative units like percentages instead of pixels, allowing the
+                  layout to adjust smoothly across different screen sizes. Popular frameworks like
+                  <a href="https://getbootstrap.com/" class="text-underline text-primary link-primary" target="_blank">Bootstrap</a> and Foundation
+                  offer pre-built grid systems that simplify the
+                  implementation of fluid grids.
+                </p>
+              </div>
+              <div class="" id="leverage-media">
+                <h3 class="fs-7 fw-bolder mb-sm-4 mb-3">
+                  Leverage Media Queries
+                </h3>
+                <p class="fs-4 mb-sm-4 mb-3 text-muted">
+                  Media queries are CSS techniques that apply styles based on the screen size or
+                  device characteristics. By using media queries, developers can create breakpoints in
+                  their design, ensuring that the layout adapts to different screen widths. For
+                  instance, you might want to change the font size or adjust the padding on a smaller
+                  screen. A simple example of a media query is:
+                </p>
+                <ul class="list mb-0">
+                  <li>
+                    <p class="fs-4 mb-1">
+                      <span class="fw-bolder">Set Breakpoints</span>: Define breakpoints for
+                      different screen sizes (e.g., 600px,
+                      768px, 1024px) to adjust the layout and design elements.
+                    </p>
+                  </li>
+                  <li>
+                    <p class="fs-4 mb-1">
+                      <span class="fw-bolder">Adjust Font Sizes</span>: Use media
+                      queries to change font sizes for readability on smaller screens.
+                    </p>
+                  </li>
+                  <li>
+                    <p class="fs-4 mb-1">
+                      <span class="fw-bolder">Modify Layout</span>: Rearrange or
+                      hide certain elements based on the screen size to maintain a clean design.
+                    </p>
+                  </li>
+                  <li>
+                    <p class="fs-4 mb-1">
+                      <span class="fw-bolder">Responsive Images</span>: Serve
+                      different image sizes using media queries to improve loading times.
+                    </p>
+                  </li>
+                  <li>
+                    <p class="fs-4 mb-1">
+                      <span class="fw-bolder">Test Across Devices</span>: Ensure
+                      media queries work as intended on various devices and orientations.
+                    </p>
+                  </li>
+                </ul>
+              </div>
+              <div class="" id="optimize-images">
+                <h3 class="fs-7 fw-bolder mb-sm-4 mb-3">
+                  Optimize Images for Different Devices
+                </h3>
+                <p class="fs-4 mb-sm-4 mb-3 text-muted">
+                  Images can make or break the performance of a website. To ensure that your website
+                  loads quickly on all devices, consider using responsive images. The &lt;picture&gt;
+                  element in HTML5 allows you to serve different images based on the screen size
+                  or resolution. Additionally, tools like
+                  <a href="https://imageoptim.com/" class="text-underline text-primary link-primary" target="_blank">ImageOptim</a>
+                  and
+                  <a href="https://imageoptim.com/" class="text-underline text-primary link-primary" target="_blank">TinyPNG</a>
+                  can help you compress images without sacrificing quality.
+                </p>
+                <p class="fs-4 mb-0 text-muted">
+                  Responsive design isn’t just about screen sizes—it’s also about accessibility. Make
+                  sure your website is usable for people with disabilities by following accessibility
+                  best practices. Use semantic HTML, ensure keyboard navigation works seamlessly, and
+                  provide alternative text for images. The
+                  <a href="https://www.w3.org/WAI/WCAG21/quickref/" class="text-underline text-primary link-primary" target="_blank">Web Content
+                    Accessibility
+                    Guidelines (WCAG)</a>
+                  provide a comprehensive overview of accessibility standards.
+                </p>
+              </div>
+              <div class="" id="conclusion">
+                <h3 class="fs-7 fw-bolder mb-sm-4 mb-3">
+                  Conclusion
+                </h3>
+                <p class="fs-4 mb-sm-4 mb-3 text-muted">
+                  Building responsive websites requires careful planning, testing, and a deep
+                  understanding of both design and development principles. By adopting a mobile-first
+                  approach, leveraging fluid grids and media queries, and optimizing both performance
+                  and accessibility, modern developers can create websites that deliver a seamless
+                  experience across all devices. As the famous saying goes, "A responsive design is
+                  not a luxury; it's a necessity for every website today."
+                </p>
+                <p class="fs-4 mb-0 text-muted">
+                  Incorporating these tips and tricks into your workflow will not only improve the
+                  user experience but also ensure your website stands out in today’s competitive
+                  digital landscape.
+                </p>
+                <div class="my-4 px-9 py-6 bg-light-gray border-3 border-start border-primary">
+                  <p class="fs-4 mb-0 text-muted">
+                    "A responsive design is not a luxury; it's a necessity for
+                    every website today."
+                  </p>
+                </div>
+                <p class="fs-4 mb-0 text-muted">
+                  For more resources on responsive web design, check out the
+                  <a href="https://www.w3.org/WAI/WCAG21/quickref/" class="text-underline text-primary link-primary" target="_blank">
+                    MDN Web Docs and Smashing
+                  </a>
+                  Magazine’s Guide.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ------------------------------------- -->
+    <!-- Details End -->
+    <!-- ------------------------------------- -->
+
+    <!-- ------------------------------------- -->
+    <!-- Focus Start -->
+    <!-- ------------------------------------- -->
+    <section class="bg-primary py-lg-11 py-5 position-relative">
+      <div class="position-absolute top-50 start-0 translate-middle-y">
+        <img src="../assets/images/frontend-pages/screenshot-1.png" alt="image" class="d-xxl-block d-none">
+      </div>
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-lg-9 text-center">
+            <a class="round-56 mx-auto rounded-2 shadow bg-white hstack justify-content-center" href="../rtl/frontend-landingpage.html">
+              <img src="../assets/images/logos/logo-icon.svg" alt="logo">
+            </a>
+            <h2 class="fs-15 my-9 fw-bolder text-white text-center lh-sm">
+              Focus on what truly matters—creating stunning, functional designs.
+            </h2>
+            <p class="text-white fs-5 mb-9 px-xl-11">
+              Designed for ease of use and customization, this template help you build professional
+              dashboards
+              faster.
+            </p>
+            <a href="../rtl/authentication-register.html" class="btn btn-outline-light">
+              Register
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="position-absolute top-50 end-0 translate-middle-y">
+        <img src="../assets/images/frontend-pages/screenshot-2.png" alt="image" class="d-xxl-block d-none">
+      </div>
+    </section>
+    <!-- ------------------------------------- -->
+    <!-- Focus End -->
+    <!-- ------------------------------------- -->
+  </div>
+
+  <!-- ------------------------------------- -->
+  <!-- Footer Start -->
+  <!-- ------------------------------------- -->
+  <footer class="bg-dark">
+    <div class="container-fluid">
+      <div class="row py-7 py-md-14 py-lg-11">
+        <div class="col-md-3 col-6 mb-7 mb-md-0">
+          <img src="../assets/images/logos/white-logo.svg" alt="white logo">
+
+          <ul class="d-flex flex-column gap-9 mt-7 mb-0">
+            <li>
+              <a href="../rtl/app-kanban.html" class="fs-4 text-light link-primary">Kanban</a>
+            </li>
+            <li>
+              <a href="../rtl/app-invoice.html" class="fs-4 text-light link-primary">Invoice
+                List</a>
+            </li>
+            <li>
+              <a href="../rtl/eco-shop.html" class="fs-4 text-light link-primary">eCommerce</a>
+            </li>
+            <li>
+              <a href="../rtl/app-chat.html" class="fs-4 text-light link-primary">Chat</a>
+            </li>
+            <li>
+              <a href="../rtl/app-calendar.html" class="fs-4 text-light link-primary">Calendar</a>
+            </li>
+            <li>
+              <a href="../rtl/blog-posts.html" class="fs-4 text-light link-primary">Blog</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-3 col-6 mb-7 mb-md-0">
+          <h3 class="fs-4 text-white fw-semibold mb-7">Forms</h3>
+          <ul class="d-flex flex-column gap-9 mb-0">
+            <li>
+              <a href="../rtl/form-basic.html" class="fs-4 text-light link-primary">Form
+                Basic</a>
+            </li>
+            <li>
+              <a href="../rtl/form-horizontal.html" class="fs-4 text-light link-primary">Form
+                Horizontal</a>
+            </li>
+            <li>
+              <a href="../rtl/form-wizard.html" class="fs-4 text-light link-primary">Form
+                Wizard</a>
+            </li>
+            <li>
+              <a href="../rtl/form-bootstrap-validation.html" class="fs-4 text-light link-primary">Form Validation
+              </a>
+            </li>
+            <li>
+              <a href="../rtl/form-editor-quill.html" class="fs-4 text-light link-primary">Quill
+                Editor</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-3 col-6 mb-7 mb-md-0">
+          <h3 class="fs-4 text-white fw-semibold mb-7">Tables</h3>
+          <ul class="d-flex flex-column gap-9 mb-0">
+            <li>
+              <a href="../rtl/table-basic.html" class="fs-4 text-light link-primary">Basic
+                Table</a>
+            </li>
+            <li>
+              <a href="../rtl/table-dark-basic.html" class="fs-4 text-light link-primary">Table
+                Dark Basic</a>
+            </li>
+            <li>
+              <a href="../rtl/table-sizing.html" class="fs-4 text-light link-primary">Table
+                Sizing</a>
+            </li>
+            <li>
+              <a href="../rtl/table-layout-coloured.html" class="fs-4 text-light link-primary">Coloured Table</a>
+            </li>
+            <li>
+              <a href="../rtl/table-datatable-basic.html" class="fs-4 text-light link-primary">Basic Initialisation</a>
+            </li>
+            <li>
+              <a href="../rtl/table-datatable-api.html" class="fs-4 text-light link-primary">API</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-3 col-6 mb-7 mb-md-0">
+          <h3 class="fs-4 text-white fw-semibold mb-7">Follow us</h3>
+          <div class="d-flex gap-9">
+            <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-title="Facebook">
+              <img src="../assets/images/frontend-pages/icon-facebook.svg" alt="facebook">
+            </a>
+            <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-title="Twitter">
+              <img src="../assets/images/frontend-pages/icon-twitter.svg" alt="twitter">
+            </a>
+            <a href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-title="Instagram">
+              <img src="../assets/images/frontend-pages/icon-instagram.svg" alt="instagram">
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between flex-md-nowrap flex-wrap py-13 border-top border-dark-subtle">
+        <div class="d-flex gap-3">
+          <img src="../assets/images/logos/logo-icon-white.svg" alt="logo">
+          <p class="text-white opacity-50 mb-0">All rights reserved by MatDash. </p>
+        </div>
+        <div>
+          <p class="text-white mb-0">
+            <span class="opacity-50">Produced by</span>
+            <a href="https://adminmart.com/" class="text-white link-primary">AdminMart</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- ------------------------------------- -->
+  <!-- Footer End -->
+  <!-- ------------------------------------- -->
+
+  <!-- Scroll Top -->
+  <a href="javascript:void(0)" class="top-btn btn btn-primary d-flex align-items-center justify-content-center round-54 p-0 rounded-circle">
+    <i class="ti ti-arrow-up fs-7"></i>
+  </a>
+
+  <script src="../assets/js/vendor.min.js"></script>
+  <!-- Import Js Files -->
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/libs/simplebar/dist/simplebar.min.js"></script>
+  <script src="../assets/js/theme/app.rtl.init.js"></script>
+  <script src="../assets/js/theme/theme.js"></script>
+  <script src="../assets/js/theme/app.min.js"></script>
+
+  <!-- solar icons -->
+  <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+  <script src="../assets/libs/owl.carousel/dist/owl.carousel.min.js"></script>
+  <script src="../assets/js/frontend-landingpage/homepage.js"></script>
+</body>
+
+</html>

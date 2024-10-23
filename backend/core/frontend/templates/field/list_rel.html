@@ -16,6 +16,7 @@
     (async function () {
             let element = document.getElementById("{{ field.key }}");
             let choices = new Choices(element);
+             choices.containerInner.element.classList.add('form-control');
             choices.disable()
         })();
     </script>
@@ -40,6 +41,7 @@
                 multiple: true,
                 removeItemButton: true
             });
+            choices.containerInner.element.classList.add('form-control');
             function check_valid(event) {
                 if (element.required) {
                     if (event) {

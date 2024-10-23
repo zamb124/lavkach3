@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-bs-theme="light" data-color-theme="Blue_Theme"
+      data-layout="vertical">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- Favicon icon-->
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static' ,path='images/logos/favicon.png') }}"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <!-- Core Css -->
+    <link rel="stylesheet" href="{{ url_for('static' ,path='css/styles.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static' ,path='css/choices.css') }}"/>
+    <title>MatDash Bootstrap Admin</title>
+</head>
+
+<body id="body" hx-boost="true">
+<div id="websocket_bus" hx-ext="ws" ws-connect="{{ ws }}"></div>
+<div class="position-fixed top-0 end-0 p-3">
+    <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert"
+         aria-live="assertive"
+         aria-atomic="true">
+        <div class="d-flex">
+            <div id="toast-body" class="toast-body"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+<div id="main-wrapper">
+{% block base %}
+
+{% endblock %}
+</div>
+<div class="dark-transparent sidebartoggler"></div>
+
+<!-- Import Js Libs Files -->
+<script src="{{ url_for('static' ,path='libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="{{ url_for('static' ,path='js/plugins/choices.min.js') }}"></script>
+<script src="{{ url_for('static' ,path='libs/simplebar/dist/simplebar.min.js') }}"></script>
+
+<!-- Import Js Files -->
+<script src="{{ url_for('static' ,path='js/theme/app.init.js') }}"></script>
+<script src="{{ url_for('static' ,path='js/theme/theme.js') }}"></script>
+<script src="{{ url_for('static' ,path='js/theme/app.min.js') }}"></script>
+<script src="{{ url_for('static' ,path='js/theme/sidebarmenu.js') }}"></script>
+
+<!-- solar icons -->
+<script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+<script src="{{ url_for('static' ,path='libs/apexcharts/dist/apexcharts.min.js') }}"></script>
+
+<!-- Import HTMX Files -->
+<script src="{{ url_for('static' ,path='js/htmx.min.js') }}"></script>
+<script src="{{ url_for('static' ,path='js/ws.js') }}"></script>
+<script src="{{ url_for('static' ,path='js/json-enc.js') }}"></script>
+<script src="{{ url_for('static' ,path='js/auth.js') }}"></script>
+<script src="{{ url_for('static' ,path='js/ws_process.js') }}"></script>
+</body>
+
+</html>

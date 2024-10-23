@@ -1,0 +1,19 @@
+{% block content %}
+    {% autoescape false %}
+        {% include 'widgets/breadcrumb-widget.html' %}
+        <!-- end page title -->
+        <div class="row">
+            <div class="col-lg-12">
+                {{ cls.as_header_widget }}
+                {{ cls.as_filter_widget }}
+            </div>
+            <!--end col-->
+            <div class="col-xxl-12">
+                {{ cls.as_table_widget }}
+            </div>
+            <!--end col-->
+            <!--end col-->
+        </div>
+        <!-- end main content-->
+    {% endautoescape %}
+{% endblock content %}
