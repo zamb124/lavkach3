@@ -135,8 +135,10 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         self.user = CurrentUser(id=uuid4(), is_admin=True)
         return self
 
-    async def _get(self, id: Any) -> Row | RowMapping:
+    async def _get(self, id: Any, for_update=False) -> Row | RowMapping:
         query = select(self.model).where(self.model.id == id)
+        if for_update:
+            query.with_for_update()
         if self.user.is_admin:
             query = select(self.model).where(self.model.id == id)
         result = await self.session.execute(query)
@@ -145,16 +147,8 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             raise HTTPException(status_code=404, detail=f"Not found")
         return entity
 
-    async def get(self, id: Any) -> Row | RowMapping:
-        entity = None
-        if not entity:
-            entity = await self._get(id)
-            # self.basecache.set(entity)
-        insp = inspect(entity)
-        if not insp.persistent:
-            self.session.add(entity)
-            await self.session.refresh(entity)
-
+    async def get(self, id: Any, for_update=False):
+        entity = await self._get(id, for_update)
         return entity
 
     async def _list(self, _filter: FilterSchemaType | dict, size: int = 100):
@@ -234,8 +228,8 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         # self.basecache.set(entity)
         return entity
 
-    async def _update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Row | RowMapping | tuple[Base, list]:
-        entity: Base = await self.get(id)
+    async def _update(self, id: Any, obj: UpdateSchemaType, commit=True) -> tuple[Row, list]:
+        entity: Row = await self.get(id, for_update=True)
         if not entity:
             raise HTTPException(status_code=404, detail=f"Not Found with id {id}")
 
@@ -286,7 +280,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             return await self.get(id), updated_fields
         return entity, updated_fields
 
-    async def prepere_bus(self, entity: ModelType, method: str):
+    async def prepere_bus(self, entity: ModelType, method: str) -> dict:
         return {
             'cache_tag': CacheTag.MODEL,
             'message': f'{self.model.__tablename__.capitalize()} is {method.capitalize()}',
@@ -300,10 +294,10 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         }
 
 
-    async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Optional[ModelType]:
+    async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Row:
         entity, updated_fields = await self._update(id, obj, commit=commit)
         if updated_fields:
-            message = asyncio.create_task(entity.notify('update', updated_fields))
+            asyncio.create_task(entity.notify('update', updated_fields))
         return entity
 
     async def _delete(self, id: Any) -> bool:
