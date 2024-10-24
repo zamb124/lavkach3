@@ -36,8 +36,6 @@ class MoveBaseScheme(BasicModel):
     status: MoveStatus = Field(title='Status', table=True, readonly=True, color_map=move_color_map)
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = Move
 
 class MoveUpdateScheme(MoveBaseScheme):

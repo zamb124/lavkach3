@@ -1,11 +1,15 @@
 {% block as_update %}
     <select
             name="{{ field.key }}"
-            class="enum form-control is-valid"
-            {% if field.update.readonly %} readonly {% endif %}
-            {% if field.update.readonly %} disabled {% endif %}
+
+            {% if field.update.readonly %}
+                style="pointer-events: none;"
+                class="enum form-control disabled"
+            {% else %}
+                class="enum form-control is-valid"
+            {% endif %}
+
             aria-label="Default select example"
-            style="padding-right: 1rem; padding-left: 1rem"
     >
         {% for s in field.enums %}
             {% if s.value == field.val %}
