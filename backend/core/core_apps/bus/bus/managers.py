@@ -17,19 +17,21 @@ class ConnectionManager:
 
     async def connect(self, session_key: str, websocket: WebSocket):
         await websocket.accept()
-        cache_key = await self.cache.set(tag=CacheTag.WS_SESSION, key=session_key, response={'session_start': datetime.now().isoformat()})
-        self.active_connections[cache_key] = websocket
+        #cache_key = await self.cache.set(tag=CacheTag.WS_SESSION, key=session_key, response={'session_start': datetime.now().isoformat()})
+        self.active_connections[session_key] = websocket
+        logger.info(f"websocket connected: {session_key}")
 
     async def disconnect(self, session_key: str):
-        await self.cache.remove_by_tag(tag=CacheTag.WS_SESSION, key=session_key)
-        keys_to_delete = [
-            key for key, socket in
-            self.active_connections.items()
-            if key.startswith(f'{CacheTag.WS_SESSION.value}:{session_key}')
-        ]
-        for key_to_del in keys_to_delete:
-            logger.warning(f"Disconnecting {key_to_del}")
-            self.active_connections.pop(key_to_del)
+        logger.warning(f"Disconnecting session_key")
+        #await self.cache.remove_by_tag(tag=CacheTag.WS_SESSION, key=session_key)
+        # keys_to_delete = [
+        #     key for key, socket in
+        #     self.active_connections.items()
+        #     if key.startswith(f'{CacheTag.WS_SESSION.value}:{session_key}')
+        # ]
+        # for key_to_del in keys_to_delete:
+        #     logger.warning(f"Disconnecting {key_to_del}")
+        self.active_connections.pop(session_key, logger.warning(f"Has no session {session_key}"))
 
     async def send_personal_message(self, message: str, user_id: str, message_type='other'):
         sockets = [

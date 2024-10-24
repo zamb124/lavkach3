@@ -40,7 +40,7 @@ services:
     env_file:
       - .env-docker
     container_name: bus_app
-    command: gunicorn core.core_apps.bus.bus_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
+    command: gunicorn core.core_apps.bus.bus_server:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
     ports:
       - 8099:80
     depends_on:

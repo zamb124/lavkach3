@@ -36,7 +36,6 @@ async def send_message(message):
                 sended=True
             except Exception as e:
                 logger.error(str(e))
-                conn_to_delete.append(_)
         elif connection.user.company_id.__str__() == message.get('company_id'):
             try:
                 await ws_manager.send_tagged_message(
@@ -48,13 +47,10 @@ async def send_message(message):
                 sended = True
             except Exception as e:
                 logger.error(str(e))
-                conn_to_delete.append(_)
     if not sended:
         logger.warning(f"Message not sended: {message}")
     else:
         logger.info(f"Message sended: {message}")
-    for con in conn_to_delete:
-        ws_manager.active_connections.pop(con)
     bs_entity = await bs.get(message['bus_id'])
     bs_entity.status = BusStatus.DELIVERED
     await bs.session.commit()
@@ -77,7 +73,7 @@ async def start_processing_messages_task():
                         vars=message.vars
                     )
                 except Exception as e:
-                    ws_manager.active_connections.pop(_)
+                    logger.error(str(e))
                 message.status = BusStatus.DELIVERED
                 bs.session.add(message)
     await bs.session.commit()

@@ -79,7 +79,7 @@ async def lifespan(app: FastAPI):
     """
         Старт сервера
     """
-    await start_processing_messages()
+    #await start_processing_messages()
     await broker.startup()
     yield
     """
