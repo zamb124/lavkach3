@@ -21,7 +21,7 @@
     cursor: not-allowed;
     -webkit-user-select: none;
     user-select: none;
-    background-color: var(--bs-secondary-bg);
+
 }
 
 .choices.is-disabled .choices__item {
@@ -46,7 +46,7 @@
     width: 100%;
     padding: 10px;
     border-bottom: 1px solid #ddd;
-    background-color: #fff;
+    background-color: var(--bs-primary);
     margin: 0
 }
 
@@ -591,6 +591,12 @@ select option[selected] {
 html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .container-lg, html[data-boxed-layout=boxed] .container-md, html[data-boxed-layout=boxed] .container-sm, html[data-boxed-layout=boxed] .container-xl, html[data-boxed-layout=boxed] .container-xxl {
     max-width: var(--bs-breakpoint-xxl);
     margin: 0 auto;
+}
+.line-col {
+  & .form-control {
+    background-color: transparent;
+      border: transparent;
+  }
 }
 
 
