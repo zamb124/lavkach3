@@ -39,6 +39,7 @@
             choices.containerInner.element.classList.add('form-control');
             {% if field.update.readonly %}
                 choices.disable()
+                choices.containerInner.element.classList.add('disabled');
             {% endif %}
 
             async function searchChoices(value) {

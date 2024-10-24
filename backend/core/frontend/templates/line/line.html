@@ -156,6 +156,15 @@
     {% endfor %}
 
 {% endblock %}
+{% block as_tr_placeholder %}
+    <tr>
+        {% for field in line.fields|table(method=method) %}
+            <td class="col-line placeholder-glow">
+                <span class="form-control placeholder col-12"></span>
+            </td>
+        {% endfor %}
+    </tr>
+{% endblock %}
 {% block as_tr %}
 {% autoescape false %}
 <tr

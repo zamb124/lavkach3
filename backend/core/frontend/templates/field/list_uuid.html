@@ -21,6 +21,7 @@
             });
             {% if field.update.readonly %}
                 choices.disable()
+                choices.containerInner.element.classList.add('disabled');
             {% endif %}
             choices.containerInner.element.classList.add('form-control');
             {% if not field.is_filter %}

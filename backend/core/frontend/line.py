@@ -147,6 +147,11 @@ class Line:
         return self.render(block_name='as_tr_header', method=MethodType.GET)
 
     @property
+    def as_tr_placeholder(self) -> str:
+        """Отобразить обьект как строку заголовок таблицы"""
+        return self.render(block_name='as_tr_placeholder', method=MethodType.GET)
+
+    @property
     def as_tr_update(self) -> str:
         """Отобразить обьект как строку таблицы на редактирование"""
         return self.render(block_name='as_tr', method=MethodType.UPDATE)
@@ -496,3 +501,5 @@ class Lines:
     @property
     def as_table_header(self) -> str:
         return self.lines[0].as_tr_header if self.lines else self.line_header.as_tr_header  # type: ignore
+
+
