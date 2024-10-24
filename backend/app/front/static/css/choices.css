@@ -588,4 +588,9 @@ select option[selected] {
     padding-top: 0px;
 }
 
+html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .container-lg, html[data-boxed-layout=boxed] .container-md, html[data-boxed-layout=boxed] .container-sm, html[data-boxed-layout=boxed] .container-xl, html[data-boxed-layout=boxed] .container-xxl {
+    max-width: var(--bs-breakpoint-xxl);
+    margin: 0 auto;
+}
+
 

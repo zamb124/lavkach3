@@ -1,11 +1,13 @@
+import uuid
 from collections import defaultdict
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from starlette.responses import RedirectResponse
 
+from app.front.apps.basic.company.company import company
 from app.front.template_spec import templates
 from app.front.utills import BasePermit
 
@@ -57,6 +59,33 @@ async def sidebar(request: Request):
 @index_router.get("/", response_class=HTMLResponse)
 async def root_page(request: Request):
     return templates.TemplateResponse(request, 'index-full.html')
+
+
+async def get_user_companies(request: Request) -> dict:
+    async with request.scope['env']['company'].adapter as a:
+        res = await a.list(params={'id__in': request.user.company_ids})
+        companies = {i['id']: i for i in res['data']}
+        company = companies.get(request.user.company_id.__str__())
+        companies.pop(request.user.company_id.__str__())
+    return {
+        'companies': companies,
+        'company': company
+    }
+
+
+@index_router.get("/front/company_changer_widget", response_class=HTMLResponse)
+async def company_changer_widget(request: Request) -> dict:
+    data = await get_user_companies(request)
+    return templates.TemplateResponse(request, 'widgets/widget_company_changer.html', context=data)
+
+class CompanyId(BaseModel):
+    company_id: uuid.UUID
+@index_router.post("/front/company_changer_widget", response_class=HTMLResponse)
+async def company_changer_widget(request: Request, schema: CompanyId) -> dict:
+    async with request.scope['env']['user'].adapter as a:
+        data = await a.user_company_change(user_id=request.user.user_id, company_id=schema.company_id)
+    data = await get_user_companies(request)
+    return templates.TemplateResponse(request, 'widgets/widget_company_changer.html', context=data)
 
 
 @index_router.get("/basic/dropdown-ids", response_class=HTMLResponse)
