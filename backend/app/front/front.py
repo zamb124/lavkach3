@@ -6,10 +6,14 @@ from fastapi import Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from starlette.responses import RedirectResponse
+from starlette.websockets import WebSocket
 
 from app.front.apps.basic.company.company import company
 from app.front.template_spec import templates
 from app.front.utills import BasePermit
+from distributed_websocket import WebSocketProxy
+
+from app.front.front_config import config
 
 
 class ExceptionResponseSchema(BaseModel):
