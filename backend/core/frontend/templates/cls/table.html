@@ -31,6 +31,7 @@
                     </thead>
                     <tbody id="{{ 'tbody-table' ~'--'~ cls.key }}">
                     {%  for i in range(10) %}
+
                         {{ cls.lines.line_header.as_tr_placeholder }}
                     {% endfor %}
 

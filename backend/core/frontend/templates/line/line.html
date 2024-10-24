@@ -158,9 +158,15 @@
 {% endblock %}
 {% block as_tr_placeholder %}
     <tr>
+        <th scope="row">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="">
+            </div>
+        </th>
         {% for field in line.fields|table(method=method) %}
-            <td class="col-line placeholder-glow">
-                <span class="form-control placeholder col-12"></span>
+            <td class="col-line placeholder-glow ">
+                <button class="form-control placeholder col-12"><span
+                        class="placeholder col-12"></span></button>
             </td>
         {% endfor %}
     </tr>
