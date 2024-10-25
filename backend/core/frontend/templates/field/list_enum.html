@@ -35,6 +35,43 @@
         })();
     </script>
 {% endblock %}
+{% block as_create %}
+    <select id="{{ field.key }}"
+            name="{{ field.key }}"
+            {% if field.required %} required {% endif %}
+            {% if field.update.readonly %}readonly {% endif %}
+            class="list_enum form-control"
+            data-choices data-choices-removeItem
+            multiple
+    >
+        {% for i in field.enums %}
+            <option value="{{ i.value }}"  {% if field.val %}{% if i.value in field.val %} selected {% endif %}{% endif %}> {{ i.name }}</option>
+        {% endfor %}
+    </select>
+    <script>
+        (async function () {
+            let element = document.getElementById("{{ field.key }}");
+            let choices = new Choices(element, {
+                placeholderValue: "Enter {{ field.title }}",
+                multiple: true,
+                removeItemButton: true,
+            });
+            choices.containerInner.element.classList.add('form-control');
+            {% if not field.is_filter %}
+            function check_valid() {
+                if (element.required) {
+                    choices.containerInner.element.classList.add('is-invalid');
+                    choices.containerInner.element.classList.remove('is-valid');
+                } else {
+                    choices.containerInner.element.classList.remove('is-invalid');
+                    choices.containerInner.element.classList.add('is-valid');
+                }
+            }
+            check_valid()
+            {% endif %}
+        })();
+    </script>
+{% endblock %}
 {% block as_get %}
     <select id="{{ field.key }}"
             name="{{ field.key }}"

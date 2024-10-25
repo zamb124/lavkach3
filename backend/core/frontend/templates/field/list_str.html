@@ -18,6 +18,26 @@
         })();
     </script>
 {% endblock %}
+{% block as_create %}
+    <input
+            name="{{ field.key }}" id="{{ field.key }}"
+            class="list-str form-control"
+            data-choices data-choices-limit="Required Limit"
+            data-choices-removeItem
+           value="{% if field.val %}{{ ','.join(field.val) }}{% endif %}"
+    />
+    <script>
+    (async function () {
+            let element = document.getElementById("{{ field.key }}");
+            let choices = new Choices(element, {
+                placeholderValue: "Enter {{ field.title }}",
+                multiple: true,
+                removeItemButton: true
+            });
+             choices.containerInner.element.classList.add('form-control');
+        })();
+    </script>
+{% endblock %}
 {% block as_get %}
     <input name="{{ field.key }}" id="{{ field.key }}"
 

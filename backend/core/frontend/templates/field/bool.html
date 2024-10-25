@@ -8,6 +8,16 @@
                 {% if field.val == True %} checked {% endif %}
         >
 {% endblock %}
+{% block as_create %}
+        <input
+                class="bool form-check-input"
+                type="checkbox"
+                role="switch"
+                id="{{ field.key }}"
+                name="{{ field.key }}"
+                {% if field.val == True %} checked {% endif %}
+        >
+{% endblock %}
 {% block as_get %}
         <input
                 class="bool form-check-input"

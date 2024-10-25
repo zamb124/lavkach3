@@ -23,6 +23,31 @@
     </script>
 
 {% endblock %}
+{% block as_create %}
+    <select class="list-uuid form-control is-valid"
+            id="{{ field.key }}"
+            {% if field.update.required and not field.is_filter %} required {% endif %}
+            {% if field.update.readonly %} readonly="1" {% endif %}
+            name="{{ field.key }}"
+            filter="{{ field.update.filter }}"
+            {% if field.is_filter %} is-filter="1"{% endif %}
+            model-name="{{ field.model_name }}"
+            title="{{ field.update.description }}"
+            display-title="{{ field.update.title }}"
+            data-choices multiple>
+        {% if field.val %}
+            {% for val in field.val %}
+                <option value="{{ val }}" selected></option>
+            {% endfor %}
+        {% endif %}
+    </select>
+        <script>
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choiceMultiUUID(el)
+    </script>
+
+{% endblock %}
 
 {% block as_get %}
         <div class="text-start form-control disabled" style="min-height: 37px" id="{{ field.key }}">

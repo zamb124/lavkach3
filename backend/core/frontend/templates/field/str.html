@@ -1,24 +1,46 @@
 {% block as_update %}
-        <input
-                class="str form-control"
-                {% if field.update.required %} required {% endif %}
-                {% if field.update.readonly %} readonly {% endif %}
-                {% if field.update.hidden %} hidden {% endif %}
-                name="{{ field.key }}"
-                title="{{ field.update.description }}"
+    <input
+            {% if field.update.required %} required {% endif %}
+            {% if field.update.readonly %}
+                readonly
+                class="str form-control disabled"
+            {% else %}
+                class="enum form-control is-valid"
                 placeholder="Enter {{ field.update.title }}"
-                value="{{ field.val if field.val else "" }}"
+            {% endif %}
+            {% if field.update.hidden %} hidden {% endif %}
+            name="{{ field.key }}"
+            title="{{ field.update.description }}"
+            value="{{ field.val if field.val else "" }}"
 
-        >
+    >
+{% endblock %}
+{% block as_create %}
+    <input
+            {% if field.update.required %} required {% endif %}
+            {% if field.update.readonly %}
+                readonly
+                class="str form-control disabled"
+            {% else %}
+                class="enum form-control is-valid"
+                placeholder="Enter {{ field.update.title }}"
+            {% endif %}
+            {% if field.update.hidden %} hidden {% endif %}
+            name="{{ field.key }}"
+            title="{{ field.update.description }}"
+
+            value="{{ field.val if field.val else "" }}"
+
+    >
 {% endblock %}
 {% block as_get %}
-            <input  type="text"
-                    class="form-control"
-                    {% if field.get.required %} required {% endif %}
-                    disabled
-                    name="{{ field.key }}"
-                    value="{{ field.val if field.val else "" }}"
-            >
+    <input type="text"
+           class="form-control"
+            {% if field.get.required %} required {% endif %}
+           disabled
+           name="{{ field.key }}"
+           value="{{ field.val if field.val else "" }}"
+    >
 {% endblock %}
 
 {% block as_table_header %}

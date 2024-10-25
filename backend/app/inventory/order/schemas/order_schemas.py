@@ -54,7 +54,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     id: UUID4
     company_id: UUID = Field(title='Company', model='company')
     vars: Optional[dict] = None
-    number: str = Field(title='Order #', table=True, form=True, description="Internal number of order")
+    number: str = Field(title='Order #', table=True, readonly=True, description="Internal number of order")
     actual_datetime: Optional[datetime] = Field(title='Actual Date', table=True)
     created_by: UUID = Field(title='Created By', table=True, model='user')
     edited_by: UUID = Field(title='Edit By', model='user')

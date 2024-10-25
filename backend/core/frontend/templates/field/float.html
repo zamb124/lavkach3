@@ -11,6 +11,19 @@
             style="padding-right: 1rem; padding-left: 1rem"
     >
 {% endblock %}
+{% block as_create %}
+    <input
+            type="number"
+            class="float form-control"
+            name="{{ field.key }}"
+            {% if field.readonly %}readonly{% endif %}
+            step="any"
+            {% if field.required %}required {% endif %}
+            placeholder="Enter {{ field.title }}"
+            value="{{ field.val }}"
+            style="padding-right: 1rem; padding-left: 1rem"
+    >
+{% endblock %}
 {% block as_get %}
     <input  type="text"
                     class="form-control"

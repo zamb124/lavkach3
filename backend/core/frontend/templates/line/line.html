@@ -43,9 +43,6 @@
 {% endblock %}
 
 {% block button_update %}
-    <script>
-        //hideModals()
-    </script>
     <button
             href="#"
             hx-params="model,method,id,key,backdrop"
@@ -83,8 +80,8 @@
 {% if line.id %}"id": "{{ line.id }}", {% endif %}
 "key": "{{ line.class_key }}"
 }'
-      >
-    <iconify-icon icon="solar:add-square-broken" class="fs-10"></iconify-icon>
+    >
+        <iconify-icon icon="solar:add-square-broken" class="fs-10"></iconify-icon>
     </a>
 {% endblock %}
 
@@ -106,14 +103,12 @@
 "key": "{{ line.key }}"
 }'
        class="btn btn-soft-danger">
-       <iconify-icon icon="solar:trash-bin-2-bold" class="fs-10"></iconify-icon>
+        <iconify-icon icon="solar:trash-bin-2-bold" class="fs-10"></iconify-icon>
     </a>
 {% endblock %}
 
 {% block button_actions %}
-
-
-    <button class="btn btn-soft-info" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+    <button class="btn btn-soft-info" type="button" data-bs-toggle="actions" aria-expanded="false"
             id="{{ "actions-" ~ line.key }}">
         <iconify-icon icon="solar:checklist-minimalistic-bold" class="fs-10"></iconify-icon>
     </button>
@@ -146,6 +141,16 @@
 
 {% endblock %}
 {% block as_tr_header %}
+    <tr class="text-uppercase fs-13 text-center" style="text-align: center">
+        <th scope="col">
+            <p>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       id="{{ line.class_key ~'--'~ 'checkAll' }}"
+                       value="option">
+            </div>
+            </p>
+        </th>
     {% for field in line.fields|table(method=method) %}
         <td
                 data-bs-toggle="tooltip"
@@ -154,7 +159,8 @@
             <p>{{ field.get.title or field.field_name }}</p>
         </td>
     {% endfor %}
-
+    <th style="min-width: 8rem"><p>Active</p></th>
+        </tr>
 {% endblock %}
 {% block as_tr_placeholder %}
     <tr>
@@ -172,206 +178,219 @@
     </tr>
 {% endblock %}
 {% block as_tr %}
-{% autoescape false %}
-<tr
-        id="{{ line.key }}"
-        class="line"
-        ui_key="{{ line.ui_key }}"
-        lsn="{{ line.lsn }}"
-        hx-trigger="backend_update"
-        hx-params="model,method,mode,id,key"
-        hx-post="/base/line"
-        hx-ext="json-enc"
-        hx-swap="outerHTML transition:true"
-        hx-target="#{{ line.key }}"
-        hx-vals='{
+    {% autoescape false %}
+        <tr
+                id="{{ line.key }}"
+                class="line"
+                ui_key="{{ line.ui_key }}"
+                lsn="{{ line.lsn }}"
+                hx-trigger="backend_update"
+                hx-params="model,method,mode,id,key"
+                hx-post="/base/line"
+                hx-ext="json-enc"
+                hx-swap="outerHTML transition:true"
+                hx-target="#{{ line.key }}"
+                hx-vals='{
                     "model": "{{ line.model_name }}",
                     "method": "{{ method.value }}",
                     "mode": "tr",
                     "key": "{{ line.class_key }}",
                     "id": "{{ line.id }}"
                     }'
->
-    <th scope="row">
-        <div class="form-check fs-13">
-            <input class="form-check-input" type="checkbox" name="{{ line.key ~ '--check' }}" value="">
-        </div>
-    </th>
-    {% for field in line.fields|table(method=method) %}
-        {% if method in ('update', 'create') %}
-            <td class="line-col" style="padding-left: 2px; padding-right: 2px;">{{ field.as_update }}</td>
-        {% else %}
-            <td class="line-col" style="padding-left: 2px; padding-right: 2px;">{{ field.as_get }}</td>
-        {% endif %}
-    {% endfor %}
-    <td class="line-col" style="padding-bottom: 0px;">
-        <div
-                {% if line.is_last and not line.is_rel %}
-                    hx-include="{{ '#filter' ~'--'~ line.class_key }}"
-                    hx-params="*"
-                    hx-post="/base/table"
-                    hx-ext="json-enc"
-                    hx-trigger="revealed" hx-swap="beforeend" hx-select="#{{ 'tbody-table' ~'--'~ line.class_key }}>tr"
-                    hx-target="#tbody-table--{{ line.class_key }}"
-                    hx-vals='{
+        >
+            <th scope="row">
+                <div class="form-check fs-13">
+                    <input class="form-check-input" type="checkbox"
+                           name="{{ line.key ~ '--check' }}" value="">
+                </div>
+            </th>
+            {% for field in line.fields|table(method=method) %}
+                {% if method in ('update', 'create') %}
+                    <td class="line-col"
+                        style="padding-left: 2px; padding-right: 2px;">{{ field.as_update }}</td>
+                {% else %}
+                    <td class="line-col"
+                        style="padding-left: 2px; padding-right: 2px;">{{ field.as_get }}</td>
+                {% endif %}
+            {% endfor %}
+            <td class="line-col" style="padding-bottom: 0px;">
+                <div
+                        {% if line.is_last and not line.is_rel %}
+                            hx-include="{{ '#filter' ~'--'~ line.class_key }}"
+                            hx-params="*"
+                            hx-post="/base/table"
+                            hx-ext="json-enc"
+                            hx-trigger="revealed" hx-swap="beforeend"
+                            hx-select="#{{ 'tbody-table' ~'--'~ line.class_key }}>tr"
+                            hx-target="#tbody-table--{{ line.class_key }}"
+                            hx-vals='{
                             "model": "{{ line.model_name }}",
                             "{{ line.class_key ~'--filter--'~ 'cursor' }}": "{{ line.lsn }}",
                             "key": "{{ line.class_key }}"
                         }'
-                {% endif %}>
-        </div>
-        <div>
-            <ul class="list-inline text-center position-relative" style="
-    margin-bottom: 0px;>
-                {% if line.type == 'new' %}
-                {% else %}
-                    <li class="list-inline-item edit" title="Edit">
-                        {{ line.button_update }}
+                        {% endif %}>
+                </div>
+                <div>
+                    <li class="breadcrumb-item d-flex align-items-center">
+                        <a href="javascript:void(0)" class="text-muted"
+                           id="dropdownMenuButton" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <i class="ti ti-dots-vertical fs-12"></i>
+
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li>
+                                {{ line.button_update }} Edit
+                            </li>
+                            <li>
+                                {{ line.button_delete }} Delete
+                            </li>
+                            <li>
+                                {{ line.button_actions }} Actions
+                            </li>
+                        </ul>
                     </li>
-                    <li class="list-inline-item" title="Remove">
-                        {{ line.button_delete }}
-                    </li>
-                    <li class="list-inline-item" title="Actions">
-                        {{ line.button_actions }}
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
-    </td>
-</tr>
-{% endautoescape %}
+
+
+                </div>
+            </td>
+        </tr>
+    {% endautoescape %}
 {% endblock %}
 
 
 {% block as_div %}
-    <div class="row formline was-validated"
-         id="{{ line.key }}"
-         lsn="{{ line.lsn }}"
-         ui_key="{{ line.ui_key }}"
-         hx-trigger="backend_update"
-         hx-post="/base/line"
-         hx-ext="json-enc"
-         hx-swap="outerHTML transition:true"
-         hx-target="#{{ line.key }}"
-         hx-vals='{
+    {% autoescape false %}
+        <div class="row formline was-validated"
+             id="{{ line.key }}"
+             lsn="{{ line.lsn }}"
+             ui_key="{{ line.ui_key }}"
+             hx-trigger="backend_update"
+             hx-post="/base/line"
+             hx-ext="json-enc"
+             hx-swap="outerHTML transition:true"
+             hx-target="#{{ line.key }}"
+             hx-vals='{
                     "model": "{{ line.model_name }}",
                     "method": "{{ method.value }}",
                     "mode": "div",
                     "key": "{{ line.class_key }}",
                     "id": "{{ line.id }}"
                     }'
-    >
-    {% for field in line.fields if not field.is_reserved and field.type != 'list_rel' %}
-        {% if loop.length % 3 != 0 and loop.first %}
-            <div class="row">
-        {% endif %}
-        {% if loop.index0 % 3 == 0 %}
-            <div class="row">
-        {% endif %}
-    <div class="col">
-        {{ field.label|safe }}
-        {% if method in ('create', 'update') %}
-                {{ field.as_update|safe }}
-        {% else %}
+        >
+        {% for field in line.fields if not field.is_reserved and field.type != 'list_rel' %}
+            {% if loop.length % 3 != 0 and loop.first %}
+                <div class="row">
+            {% endif %}
+            {% if loop.index0 % 3 == 0 %}
+                <div class="row">
+            {% endif %}
+        <div class="col">
+            {{ field.label|safe }}
+            {% if method =='update' %}
+                {{ field.as_update }}
+            {% elif method =='create' %}
+                {{ field.as_create }}
+            {% else %}
                 {{ field.as_get|safe }}
-        {% endif %}
+            {% endif %}
 
-    </div>
-    {% if loop.index % 3 == 0 %}
         </div>
-    {% endif %}
-    {% endfor %}
-    {% for field in line.fields if not field.is_reserved and field.type == 'list_rel' %}
-        <div class="row" style="padding-right: 0px;
+        {% if loop.index % 3 == 0 %}
+            </div>
+        {% endif %}
+        {% endfor %}
+        {% for field in line.fields if not field.is_reserved and field.type == 'list_rel' %}
+            <div class="row" style="padding-right: 0px;
     margin-right: 0px;
     padding-left: 0px;
     margin-left: 0px;">
-        <div class="col">
-        <p style="margin-bottom: 0; margin-top: 1rem"
-           class="sort text-uppercase text-muted text-start"
-           for="{{ field.key }}">{{ field.get.title|capitalize }}:</p>
-        {% if method in ('create', 'update') %}
-            {% if field.type == 'list_rel' %}
-                {{ field.as_table_update|safe }}
+            <div class="col">
+            <p style="margin-bottom: 0; margin-top: 1rem"
+               class="sort text-uppercase text-muted text-start"
+               for="{{ field.key }}">{{ field.get.title|capitalize }}:</p>
+            {% if method in ('create', 'update') %}
+                {% if field.type == 'list_rel' %}
+                    {{ field.as_table_update|safe }}
+                {% else %}
+                    {{ field.as_update|safe }}
+                {% endif %}
             {% else %}
-                {{ field.as_update|safe }}
+                {% if field.type == 'list_rel' %}
+                    {{ field.as_table_get|safe }}
+                {% else %}
+                    {{ field.as_get|safe }}
+                {% endif %}
             {% endif %}
-        {% else %}
-            {% if field.type == 'list_rel' %}
-                {{ field.as_table_get|safe }}
-            {% else %}
-                {{ field.as_get|safe }}
-            {% endif %}
-        {% endif %}
-    {% endfor %}
-</div>
+        {% endfor %}
+    </div>
+    {% endautoescape %}
 {% endblock %}
 {% block as_item %}
-{% autoescape false %}
-<a href="{{ line.domain_name ~'/'~ line.model_name }}"
-   class="dropdown-item notify-item py-2" style="display: block;">
-    <div class="d-flex">
-        <div class="flex-grow-1">
-            <h6 class="m-0">{{ line.display_name }}</h6>
-            <span class="fs-11 mb-0 text-muted">Manager</span>
-        </div>
-    </div>
-</a>
-{% endautoescape %}
+    {% autoescape false %}
+        <a href="{{ line.domain_name ~'/'~ line.model_name }}"
+           class="dropdown-item notify-item py-2" style="display: block;">
+            <div class="d-flex">
+                <div class="flex-grow-1">
+                    <h6 class="m-0">{{ line.display_name }}</h6>
+                    <span class="fs-11 mb-0 text-muted">Manager</span>
+                </div>
+            </div>
+        </a>
+    {% endautoescape %}
 {% endblock %}
 {% block as_card %}
-{% autoescape false %}
-<div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}">
-    <div class="card-header" style="padding-bottom: 0px;">
-        <h5 style="display: block;">{{ line.display_title }}</h5>
-    </div>
-    <div class="card-body text-muted">
-        <div class="row">
-            {% if line.button_view %}
-            <div class="col">
-                <button
-                        name="{{ line.key }}"
-                        type="button"
-                        ws-send
-                        hx-ext="json-enc"
-                        hx-vals='{
+    {% autoescape false %}
+        <div class="card" id="{{ line.key }}" ui_key="{{ line.ui_key }}">
+            <div class="card-header" style="padding-bottom: 0px;">
+                <h5 style="display: block;">{{ line.display_title }}</h5>
+            </div>
+            <div class="card-body text-muted">
+                <div class="row">
+                    {% if line.button_view %}
+                        <div class="col">
+                            <button
+                                    name="{{ line.key }}"
+                                    type="button"
+                                    ws-send
+                                    hx-ext="json-enc"
+                                    hx-vals='{
                             "model": "{{ line.model_name }}",
                             "method": "get",
                             "id": "{{ line.id or "" }}",
                             "key": "{{ line.key }}",
-                            "title":  "{{ line.display_title  }}",
+                            "title":  "{{ line.display_title }}",
                             "class_key": "{{ line.class_key }}",
-                            "ui_key": "{{ line.ui_key}}"
+                            "ui_key": "{{ line.ui_key }}"
                         }'
-                        value="{{ line.id }}" class="btn btn-light col-12">View
-                </button>
-            </div>
-            {% endif  %}
-            {% if line.button_update%}
-            <div class="col">
-                <button
-                        type="button"
-                        name="{{ line.key }}"
-                        type="button"
-                        ws-send
-                        hx-ext="json-enc"
-                        hx-vals='{
+                                    value="{{ line.id }}" class="btn btn-light col-12">View
+                            </button>
+                        </div>
+                    {% endif %}
+                    {% if line.button_update %}
+                        <div class="col">
+                            <button
+                                    type="button"
+                                    name="{{ line.key }}"
+                                    type="button"
+                                    hx-ext="json-enc"
+                                    hx-vals='{
                             "model": "{{ line.model_name }}",
                             "method": "update",
                             "id": "{{ line.id or "" }}",
                             "key": "{{ line.key }}",
-                            "title":  "{{ line.display_title  }}",
+                            "title":  "{{ line.display_title }}",
                             "class_key": "{{ line.class_key }}",
-                            "ui_key": "{{ line.ui_key}}"
+                            "ui_key": "{{ line.ui_key }}"
                         }
                         }'
-                        value="{{ line.id }}" class="btn btn-secondary col-12">Process
-                </button>
+                                    value="{{ line.id }}" class="btn btn-secondary col-12">Process
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-        {% endif  %}
         </div>
-    </div>
-</div>
-{% endautoescape %}
+    {% endautoescape %}
 {% endblock %}
 

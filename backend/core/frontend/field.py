@@ -58,7 +58,7 @@ class Field:
         """Отдает уникальный идентификатор для поля"""
         return f'{self.line.key}--{self.field_name}'
 
-    def render(self, block_name: str, type: str = '', backdrop: list = []) -> str:
+    def render(self, block_name: str, type: str = '', method: MethodType=MethodType.GET) -> str:
         """Метод рендера шаблона"""
         type = type or self.type
         rendered_html = render_block(
@@ -66,7 +66,7 @@ class Field:
             template_name=f'field/{type}.html',
             block_name=block_name,
             field=self,
-            backdrop=backdrop
+            method=method,
         )
         return rendered_html
 
@@ -83,7 +83,12 @@ class Field:
     @property
     def as_update(self) -> str:
         """Отобразить поле с возможностью редактирования"""
-        return self.render(block_name='as_update')
+        return self.render(block_name='as_update', method=MethodType.UPDATE)
+
+    @property
+    def as_create(self) -> str:
+        """Отобразить поле с возможностью редактирования"""
+        return self.render(block_name='as_create', method=MethodType.CREATE)
 
     @property
     def as_get(self) -> str:

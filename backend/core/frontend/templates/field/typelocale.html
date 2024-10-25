@@ -2,62 +2,64 @@
     <select class="form-control is-valid"
             id="{{ field.key }}"
             name="{{ field.key }}"
+            display-title="{{ field.create.title }}"
+            title="{{ field.create.description }}"
+            {% if field.create.readonly %} readonly='1' {% endif %}
+            name="{{ field.key }}"
+            {% if field.create.required %} required {% endif %}
+            filter="{{ field.create.filter }}"
+            model-name="{{ field.model_name }}"
             data-choices
     >
 
-                {% if field.val %}
-                    <option value="{{ field.val.id }}" selected> {{ field.val.name or field.val.english_name }}</option>
-                {% endif %}
+        {% if field.val %}
+            <option value="{{ field.val.id }}"
+                    selected> {{ field.val.name or field.val.english_name }}</option>
+        {% endif %}
     </select>
     <script>
-        (async function () {
-            let element = document.getElementById("{{ field.key }}");
-            let choices = new Choices(element, {
-                removeItemButton: true
-            });
-            function check_valid() {
-                if (element.required) {
-                    choices.containerInner.element.classList.add('is-invalid');
-                    choices.containerInner.element.classList.remove('is-valid');
-                } else {
-                    choices.containerInner.element.classList.remove('is-invalid');
-                    choices.containerInner.element.classList.add('is-valid');
-                }
-            }
-            function init(){
-                choices.setChoices(async () => {
-                    try {
-                        const items = await fetch('/base/search?model={{ field.model_name }}&search=');
-                        const results = await items.json();
-                        if (0 === results.length) { // Handle error from result, for example.
-                            throw 'Empty!';
-                        }
-                        return results;
-                    } catch (err) {
-                        console.error(err);
-                    }
-                }).then(() => {
-                    choices.input.element.focus()
-                });
-            }
-            init()
-            if (!element.id.includes('__')){
-                check_valid()
-            }
-        })();
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choiceOneBabel(el)
+    </script>
+{% endblock %}
+{% block as_create %}
+    <select class="form-control is-valid"
+            id="{{ field.key }}"
+            name="{{ field.key }}"
+            display-title="{{ field.create.title }}"
+            title="{{ field.create.description }}"
+            {% if field.create.readonly %} readonly='1' {% endif %}
+            name="{{ field.key }}"
+            {% if field.create.required %} required {% endif %}
+            filter="{{ field.create.filter }}"
+            model-name="{{ field.model_name }}"
+            data-choices
+    >
+
+        {% if field.val %}
+            <option value="{{ field.val.id }}"
+                    selected> {{ field.val.name or field.val.english_name }}</option>
+        {% endif %}
+    </select>
+    <script>
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choiceOneBabel(el)
     </script>
 {% endblock %}
 {% block as_get %}
-    <input  type="text"
-                    class="form-control"
-                    {% if field.required %} required {% endif %}
-                    disabled
-                    name="{{ field.key }}"
-                    placeholder="Enter {{ field.title }}"
-                    value="{{ field.val.english_name or field.val.name or field.val}}"
-            >
+    <input type="text"
+           class="form-control"
+            {% if field.required %} required {% endif %}
+           disabled
+           name="{{ field.key }}"
+           placeholder="Enter {{ field.title }}"
+           value="{{ field.val.english_name or field.val.name or field.val }}"
+    >
 
 {% endblock %}
 {% block as_table %}
-<a href="#" hx-params="none" hx-get="/base/table/row?model={{ field.model_name }}">{{ field.val.code or field.val.english_name}}</a>
+    <a href="#" hx-params="none"
+       hx-get="/base/table/row?model={{ field.model_name }}">{{ field.val.code or field.val.english_name }}</a>
 {% endblock %}

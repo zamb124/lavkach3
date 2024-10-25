@@ -1,22 +1,3 @@
-{% block as_get %}
-        <a class="text-danger form-control disabled "
-           href="#"
-           hx-include="none"
-           hx-trigger="click"
-           hx-params="model,method,id,key"
-           hx-target="#htmx_content"
-           hx-swap="beforeend transition:true"
-           hx-ext="json-enc"
-           hx-post="/base/modal"
-           hx-vals='{
-            "model": "{{ field.model_name }}",
-            "method": "get",
-            "id": "{{ field.val.id }}",
-            "key": "{{ field.key }}"
-            }'
-        >{{ field.val.title or field.val.nickname }}
-        </a>
-{% endblock %}
 {% block as_update %}
     <select class="rel form-control text-start "
             id="{{ field.key }}"
@@ -37,6 +18,46 @@
         choiceOneUUID(el)
     </script>
 {% endblock %}
+{% block as_create %}
+    <select class="rel form-control text-start "
+            id="{{ field.key }}"
+            {% if field.update.readonly %} readonly="1" {% endif %}
+            name="{{ field.key }}"
+            {% if field.update.required %} required {% endif %}
+            filter="{{ field.update.filter }}"
+            model-name="{{ field.model_name }}"
+            data-choices
+    >
+        {% if field.val %}
+            <option value="{{ field.val.id }}" selected>{{ field.val.title or field.val.nickname }}</option>
+        {% endif %}
+    </select>
+    <script>
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choiceOneUUID(el)
+    </script>
+{% endblock %}
+{% block as_get %}
+        <a class="text-danger form-control disabled "
+           href="#"
+           hx-include="none"
+           hx-trigger="click"
+           hx-params="model,method,id,key"
+           hx-target="#htmx_content"
+           hx-swap="beforeend transition:true"
+           hx-ext="json-enc"
+           hx-post="/base/modal"
+           hx-vals='{
+            "model": "{{ field.model_name }}",
+            "method": "get",
+            "id": "{{ field.val.id }}",
+            "key": "{{ field.key }}"
+            }'
+        >{{ field.val.title or field.val.nickname }}
+        </a>
+{% endblock %}
+
 {% block as_table %}
     <i class="ri-links-fill fs-8 text-danger"> </i>
     <a class="text-danger py-3"

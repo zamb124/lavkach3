@@ -1,112 +1,97 @@
 {% block widget %}
     {% autoescape false %}
-    <div id="{{ 'table' ~'--'~ cls.key }}"
-         hx-post="/base/table"
-         hx-ext="json-enc"
-         hx-target="this"
-         hx-vals='{
+        <div id="{{ 'table' ~'--'~ cls.key }}"
+             hx-post="/base/table"
+             hx-ext="json-enc"
+             hx-target="this"
+             hx-vals='{
         "model": "{{ cls.model_name or cls.model.name }}",
         "key": "{{ cls.key }}",
         "method": "{{ method.value or "get" }}"
      }'
-         hx-trigger="change from:{{ '#filter' ~'--'~ cls.key }} delay:500ms, load, update delay:500ms"
-         hx-include="{{ '#filter' ~'--'~ cls.key }}"
-    >
-        <div class="card">
-        <div class="card-body">
-            <div class="table-responsive scrollable-dropdown" style="width: auto; min-height: 400px; white-space: nowrap;" data-show-columns="true">
-                <table class="table table-hover" id="{{ 'table' ~'--'~ cls.key }}" style="vertical-align: middle;">
-                    <thead class="text-muted" style="position: sticky; top: 0px">
-                    <tr class="text-uppercase fs-13 text-center" style="text-align: center">
-                        <th scope="col" >
-                            <div class="form-check text-center" align="center">
-                                <input class="form-check-input " type="checkbox" id="{{ cls.key ~'--'~ 'checkAll' }}"
-                                       value="option">
-                            </div>
-                        </th>
+             hx-trigger="change from:{{ '#filter' ~'--'~ cls.key }} delay:500ms, load, update delay:500ms"
+             hx-include="{{ '#filter' ~'--'~ cls.key }}"
+        >
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive scrollable-dropdown"
+                         style="width: auto; min-height: 400px; white-space: nowrap;"
+                         data-show-columns="true">
+                        <table class="table table-hover" id="{{ 'table' ~'--'~ cls.key }}"
+                               style="vertical-align: middle;">
+                            <thead class="text-muted" style="position: sticky; top: 0px">
+                            {{ cls.lines.as_table_header }}
+                            <th style="min-width: 8rem"><p>Active</p></th>
 
-                        {{ cls.lines.as_table_header }}
-                        <th style="min-width: 8rem"><p>Active</p></th>
-                    </tr>
-                    </thead>
-                    <tbody id="{{ 'tbody-table' ~'--'~ cls.key }}">
-                    {%  for i in range(10) %}
-                        {{ cls.lines.line_header.as_tr_placeholder }}
-                    {% endfor %}
+                            </thead>
+                            <tbody id="{{ 'tbody-table' ~'--'~ cls.key }}">
+                            {% for i in range(10) %}
+                                {{ cls.lines.line_header.as_tr_placeholder }}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <!------Таблица----->
+                    </div>
 
-                    </tbody>
-                </table>
-                <!------Таблица----->
+                </div>
             </div>
-
+            <!--end card-->
         </div>
-    </div>
-        <!--end card-->
-    </div>
     {% endautoescape %}
 {% endblock %}
 
 {% block as_table %}
     {% autoescape false %}
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive scrollable-dropdown" style="width: auto; min-height: 400px; white-space: nowrap;" data-show-columns="true">
-                <table class="table table-hover" id="{{ 'table' ~'--'~ cls.key }}" style="vertical-align: middle;">
-                    <thead class="text-muted" style="position: sticky; top: 0px">
-                    <tr class="text-uppercase fs-13 text-center" style="text-align: center">
-                        <th scope="col">
-                            <p>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="{{ cls.key ~'--'~ 'checkAll' }}"
-                                       value="option">
-                            </div>
-                            </p>
-                        </th>
-
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive scrollable-dropdown"
+                     style="width: auto; min-height: 400px; white-space: nowrap;"
+                     data-show-columns="true">
+                    <table class="table table-hover" id="{{ 'table' ~'--'~ cls.key }}"
+                           style="vertical-align: middle;">
+                        <thead class="text-muted" style="position: sticky; top: 0px">
                         {{ cls.lines.as_table_header }}
-                        <th style="min-width: 8rem"><p>Active</p></th>
-                    </tr>
-                    </thead>
-                    <tbody id="{{ 'tbody-table' ~'--'~ cls.key }}">
-                    {% if cls.lines %}
-                        {% if  method in ('update', 'create') %}
-                            {{ cls.lines.as_table_update }}
-                        {% else %}
-                            {{ cls.lines.as_table_get}}
+                        </thead>
+                        <tbody id="{{ 'tbody-table' ~'--'~ cls.key }}">
+                        {% if cls.lines %}
+                            {% if  method in ('update', 'create') %}
+                                {{ cls.lines.as_table_update }}
+                            {% else %}
+                                {{ cls.lines.as_table_get }}
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
 
-                    </tbody>
-                {% if not method == 'get' %}
-                <tr>
-                        <td style="border-width: 0; background-color: var(--bs-border-color) !important;">
-                            <a
-                               hx-boost="true"
-                               id="{{ cls.field_name~'--create' }}"
-                               hx-ext="json-enc"
-                               hx-include="none"
-                               hx-target="#{{ 'tbody-table' ~'--'~ cls.key }}"
-                               hx-swap="beforeend transition: true"
-                               hx-params="model,key,method"
-                               hx-post="/base/line"
-                               hx-vals='{
+                        </tbody>
+                        {% if not method == 'get' %}
+                            <tr>
+                                <td style="border-width: 0; background-color: var(--bs-border-color) !important;">
+                                    <a
+                                            hx-boost="true"
+                                            id="{{ cls.field_name~'--create' }}"
+                                            hx-ext="json-enc"
+                                            hx-include="none"
+                                            hx-target="#{{ 'tbody-table' ~'--'~ cls.key }}"
+                                            hx-swap="beforeend transition: true"
+                                            hx-params="model,key,method"
+                                            hx-post="/base/line"
+                                            hx-vals='{
                                 "model": "{{ cls.model_name or cls.model.name }}",
                                 "key": "{{ cls.key }}",
                                 "method": "create"
                                 }'
-                               class="btn btn-soft-secondary fw-medium">
-                                <i class="ri-add-fill me-1 align-bottom"></i> Add Item
-                            </a>
-                        </td>
-                    </tr>
-                {% endif %}
+                                            class="btn btn-soft-secondary fw-medium form-control">
+                                        <i class="ri-add-fill me-1 align-bottom"></i> Add Item
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endif %}
 
-                </table>
-                <!------Таблица----->
+                    </table>
+                    <!------Таблица----->
+                </div>
+
             </div>
-
         </div>
-    </div>
     {% endautoescape %}
 {% endblock %}
 

@@ -5,10 +5,11 @@
                 <div class="col-12">
                     <div class="d-sm-flex align-items-center justify-space-between">
                         <span>{{ cls.lines.line_new.button_create }}</span>
-                        <h4 class="card-title" style="padding-left: 20px">{{ cls.model.name|capitalize }} </h4>
+                        <h4 class="card-title"
+                            style="padding-left: 20px">{{ cls.model.name|capitalize }} </h4>
                         <div class="col">
 
-                            </div>
+                        </div>
                         <nav aria-label="breadcrumb" class="ms-auto">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item d-flex align-items-center">
@@ -21,12 +22,13 @@
                                        hx-target="#htmx_content"
                                        hx-swap="beforeend transition:true"
                                        hx-vals='{
-                            "model": "{{ cls.model.name }}",
-                            "key": "{{ cls.key }}",
-                            "method": "get"
-                          }'
+                                        "model": "{{ cls.model.name }}",
+                                        "key": "{{ cls.key }}",
+                                        "method": "get"
+                                      }'
                                     >
-                                        <iconify-icon icon="solar:file-send-bold" class="fs-10"></iconify-icon>
+                                        <iconify-icon icon="solar:file-send-bold"
+                                                      class="fs-10"></iconify-icon>
                                     </a>
                                 </li>
                                 <li class="breadcrumb-item d-flex align-items-center">
@@ -39,6 +41,36 @@
                                                       class="fs-10"></iconify-icon>
                                     </a>
                                 </li>
+                                <li class="breadcrumb-item d-flex align-items-center">
+                                    <a href="javascript:void(0)" class="text-muted"
+                                       id="dropdownMenuButton" data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        <iconify-icon icon="solar:menu-dots-bold"
+                                                      class="fs-10"></iconify-icon>
+
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-3"
+                                               href="javascript:void(0)">
+                                                <i class="fs-4 ti ti-plus"></i>Add
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-3"
+                                               href="javascript:void(0)">
+                                                <i class="fs-4 ti ti-edit"></i>Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-3"
+                                               href="javascript:void(0)">
+                                                <i class="fs-4 ti ti-trash"></i>Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
 
                             </ol>
                         </nav>

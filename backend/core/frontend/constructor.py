@@ -249,6 +249,7 @@ class ClassView:
                     }
             else:
                 create_fieldinfo = BasicField(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
+
         return {
             'create': self._get_view_vars_by_fieldinfo(create_fieldinfo),
             'update': self._get_view_vars_by_fieldinfo(update_fieldinfo) if not is_filter else self._get_view_vars_by_fieldinfo(filter_fieldinfo),

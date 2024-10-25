@@ -20,6 +20,28 @@
         {% endfor %}
     </select>
 {% endblock %}
+{% block as_create %}
+    <select
+            name="{{ field.key }}"
+
+            {% if field.update.readonly %}
+                style="pointer-events: none;"
+                class="enum form-control disabled"
+            {% else %}
+                class="enum form-control is-valid"
+            {% endif %}
+
+            aria-label="Default select example"
+    >
+        {% for s in field.enums %}
+            {% if s.value == field.val %}
+                <option value="{{ s.value }}" selected> {{ s.name }} </option>
+            {% else %}
+                <option value="{{ s.value }}"> {{ s.name }} </option>
+            {% endif %}
+        {% endfor %}
+    </select>
+{% endblock %}
 {% block as_get %}
     {% if field.color_map %}
         <div class="d-flex flex-wrap gap-2">

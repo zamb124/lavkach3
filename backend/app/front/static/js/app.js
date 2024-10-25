@@ -1,31 +1,25 @@
-async function choiceOneUUID(element) {
+
+async function choiceOneUUID(element, method) {
     var filter = element.getAttribute('filter')
     var model_name = element.getAttribute('model-name')
-    let choices = new Choices(element, {
-        placeholderValue: "Enter " + element.title,
-        removeItemButton: true,
-        read_only: true,
-    });
-    if (element.getAttribute('readonly')) {
+    var attrs = {
+         placeholderValue: "Enter " + element.title
+    }
+    if (method==='get'||element.getAttribute('readonly')) {
+       attrs.removeItemButton = false
+    }else {
+        attrs.removeItemButton = true
+    }
+    let choices = new Choices(element, attrs);
+        if (method==='get'||element.getAttribute('readonly')) {
         choices.containerInner.element.classList.add('disabled');
         choices.disable()
     }
-    choices.containerInner.element.classList.add('form-control');
-
-    async function searchChoices(value) {
-        try {
-            const items = await fetch('/base/search?model=' + model_name + '&filter=' + filter + '&search=' + encodeURIComponent(value));
-            const results = await items.json();
-            if (0 === results.length) { // Handle error from result, for example.
-                throw 'Empty!';
-            }
-            return results;
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
     function check_valid(event) {
+        if (method === 'get'|| element.getAttribute('readonly')) { // Если метод get или reanonly, то нет смысла от валидования
+            // Если метод get или reanonly, то нет смысла от валидования
+            return
+        }
         if (element.required) {
             if (event) {
                 if (event.type === 'choice') {
@@ -68,7 +62,25 @@ async function choiceOneUUID(element) {
         }
     }
 
-    check_valid()
+
+
+
+    choices.containerInner.element.classList.add('form-control');
+
+    async function searchChoices(value) {
+        try {
+            const items = await fetch('/base/search?model=' + model_name + '&filter=' + filter + '&search=' + encodeURIComponent(value));
+            const results = await items.json();
+            if (0 === results.length) { // Handle error from result, for example.
+                throw 'Empty!';
+            }
+            return results;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+
 
     async function getValues() {
         var id__in = ''
@@ -143,10 +155,10 @@ async function choiceMultiUUID(element) {
         description: description,
     });
     choices.containerInner.element.classList.add('form-control');
-     if (element.getAttribute('readonly')) {
-         choices.disable()
-         choices.containerInner.element.classList.add('disabled');
-     }
+    if (element.getAttribute('readonly')) {
+        choices.disable()
+        choices.containerInner.element.classList.add('disabled');
+    }
 
     if (is_filter) {
         function check_valid() {
@@ -179,7 +191,7 @@ async function choiceMultiUUID(element) {
             if (id__in === '') {
                 return []
             }
-            const items = await fetch('/base/get_by_ids?model='+model_name+'&id__in=' + encodeURIComponent(id__in));
+            const items = await fetch('/base/get_by_ids?model=' + model_name + '&id__in=' + encodeURIComponent(id__in));
             const results = await items.json();
             if (0 === results.length) { // Handle error from result, for example.
                 return []
@@ -219,4 +231,95 @@ async function choiceMultiUUID(element) {
         choices.input.element.style = ""
     });
     check_valid()
+}
+
+async function choiceMultiBabel() {
+    var filter = element.getAttribute('filter')
+    var model_name = element.getAttribute('model-name')
+    var is_filter = element.getAttribute('is-filter')
+    var title = element.getAttribute('display-title')
+    var description = element.getAttribute('title')
+    let choices = new Choices(element, {
+        placeholderValue: "Enter {{ field.title }}",
+        multiple: true,
+        removeItemButton: true
+    });
+    if (is_filter) {
+        function check_valid() {
+            if (element.required) {
+                choices.containerInner.element.classList.add('is-invalid');
+                choices.containerInner.element.classList.remove('is-valid');
+            } else {
+                choices.containerInner.element.classList.remove('is-invalid');
+                choices.containerInner.element.classList.add('is-valid');
+            }
+        }
+
+        check_valid()
+    }
+
+    function init() {
+        choices.setChoices(async () => {
+            try {
+                const items = await fetch('/base/search?model=' + model_name + '&search=');
+                const results = await items.json();
+                if (0 === results.length) { // Handle error from result, for example.
+                    throw 'Empty!';
+                }
+                return results;
+            } catch (err) {
+                console.error(err);
+            }
+        }).then(() => {
+            choices.input.element.focus()
+        });
+    }
+
+    init()
+
+}
+
+async function choiceOneBabel() {
+    var filter = element.getAttribute('filter')
+    var model_name = element.getAttribute('model-name')
+    var is_filter = element.getAttribute('is-filter')
+    var title = element.getAttribute('display-title')
+    var description = element.getAttribute('title')
+    let choices = new Choices(element, {
+        removeItemButton: true
+    });
+    if (is_filter) {
+
+        function check_valid() {
+            if (element.required) {
+                choices.containerInner.element.classList.add('is-invalid');
+                choices.containerInner.element.classList.remove('is-valid');
+            } else {
+                choices.containerInner.element.classList.remove('is-invalid');
+                choices.containerInner.element.classList.add('is-valid');
+            }
+        }
+
+        check_valid()
+    }
+
+    function init() {
+        choices.setChoices(async () => {
+            try {
+                const items = await fetch('/base/search?model='+ model_name +'&search=');
+                const results = await items.json();
+                if (0 === results.length) { // Handle error from result, for example.
+                    throw 'Empty!';
+                }
+                return results;
+            } catch (err) {
+                console.error(err);
+            }
+        }).then(() => {
+            choices.input.element.focus()
+        });
+    }
+
+    init()
+
 }

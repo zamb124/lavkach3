@@ -14,6 +14,22 @@
     >
     </div>
 {% endblock %}
+{% block as_create %}
+    <div    id="{{ field.key }}"
+            class="babel row"
+            hx-ext="json-enc"
+            hx-post="/bff/select"
+            hx-vals='{
+                    "model": "{{ field.model_name }}",
+                    "value": "{{ field.val.id if field.val else None }}",
+                    "key": "{{ model.update.key }}",
+                    "name": "{{ field.model_name }}",
+                    "required": "{{ field.required }}"
+                 }'
+            hx-trigger="load"
+    >
+    </div>
+{% endblock %}
 {% block as_get %}
     <input  type="text"
                     class="form-control"

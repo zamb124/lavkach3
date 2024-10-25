@@ -5,19 +5,30 @@
             name="{{ field.key }}"
             placeholder="Enter {{ field.title }}"
             value="{{ field.val.national_number }}"
+
+    >
+{% endblock %}
+{% block as_create %}
+    <input
+            type="number"
+            class="form-control"
+            name="{{ field.key }}"
+            placeholder="Enter {{ field.title }}"
+            value="{{ field.val.national_number }}"
+
     >
 {% endblock %}
 {% block as_get %}
-    <input  type="text"
-                    class="form-control"
-                    {% if field.required %} required {% endif %}
-                    disabled
-                    name="{{ field.key }}"
-                    placeholder="Enter {{ field.title }}"
-                    value="{{ field.val.international or field.val.name or field.val}}"
-            >
+    <input type="text"
+           class="form-control"
+            {% if field.required %} required {% endif %}
+           disabled
+           name="{{ field.key }}"
+           placeholder="Enter {{ field.title }}"
+           value="{{ field.val.international or field.val.name or field.val }}"
+    >
 
 {% endblock %}
 {% block as_table %}
-{{ field.field_name }}">{{ field.val if field.val else '' }}
+    {{ field.field_name }}">{{ field.val if field.val else '' }}
 {% endblock %}

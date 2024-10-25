@@ -9,6 +9,17 @@
         <i class="ri-search-line search-icon"></i>
     </div>
 {% endblock %}
+{% block as_create %}
+    <div class="search-box">
+        <input type="search"
+               name="{{ field.key }}"
+               id="search"
+               class="form-control search"
+               placeholder="{{ field.title }}"
+        >
+        <i class="ri-search-line search-icon"></i>
+    </div>
+{% endblock %}
 {% block as_table %}
 <td class="{{ field.field_name }}">{{ field.val if field.val else '' }}</td>
 {% endblock %}

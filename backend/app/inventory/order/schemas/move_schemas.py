@@ -40,6 +40,7 @@ class MoveBaseScheme(BasicModel):
 
 class MoveUpdateScheme(MoveBaseScheme):
     suggest_list_rel: Optional[list[SuggestUpdateScheme]] = Field(default=[], title='Suggests', form=True)
+    order_id: Optional[UUID4] = Field(default=None, title='Order ID', model='order',readonly=True)
     ...
 
 

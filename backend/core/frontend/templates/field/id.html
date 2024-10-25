@@ -13,6 +13,21 @@
             value="{{ field.val if field.val else "" }}"
     >
 {% endblock %}
+{% block as_create %}
+    <input
+
+            {% if field.update.required %} required {% endif %}
+           {% if field.update.readonly %}
+                style="pointer-events: none;"
+                class="id form-control disabled"
+                readonly
+            {% else %}
+                class="id form-control is-valid"
+            {% endif %}
+            name="{{ field.key }}"
+            value="{{ field.val if field.val else "" }}"
+    >
+{% endblock %}
 {% block as_get %}
     <a class="text-danger form-control disabled"
        data-bs-placement="bottom"

@@ -38,8 +38,10 @@
                                     trigger="loop"
                                     style="width:150px;height:150px">
                             </lord-icon>
-                            {% if method in ('create', 'update') %}
+                            {% if method == 'update' %}
                                 {{ line.as_div_update }}
+                           {% elif method == 'create' %}
+                                {{ line.as_div_create }}
                             {% else %}
                                 {{ line.as_div_get }}
                             {% endif %}

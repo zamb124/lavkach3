@@ -1,7 +1,13 @@
 {% block as_update %}
     <select class="list_typecountry form-control select"
             id="{{ field.key }}"
+            display-title="{{ field.create.title }}"
+            title="{{ field.create.description }}"
+            {% if field.create.readonly %} readonly='1' {% endif %}
             name="{{ field.key }}"
+            {% if field.create.required %} required {% endif %}
+            filter="{{ field.create.filter }}"
+            model-name="{{ field.model_name }}"
             data-choices multiple
     >
 
@@ -9,45 +15,33 @@
                     <option value="{{ field.val.id }}" selected> {{ field.val.name }}</option>
                 {% endif %}
     </select>
-    <script>
-        (async function () {
-            let element = document.getElementById("{{ field.key }}");
-            let choices = new Choices(element, {
-                placeholderValue: "Enter {{ field.title }}",
-                multiple: true,
-                removeItemButton: true
-            });
-            {% if not field.is_filter %}
-            function check_valid() {
-                if (element.required) {
-                    choices.containerInner.element.classList.add('is-invalid');
-                    choices.containerInner.element.classList.remove('is-valid');
-                } else {
-                    choices.containerInner.element.classList.remove('is-invalid');
-                    choices.containerInner.element.classList.add('is-valid');
-                }
-            }
-            check_valid()
-            {% endif %}
-            function init(){
-                choices.setChoices(async () => {
-                    try {
-                        const items = await fetch('/base/search?model={{ field.model_name }}&search=');
-                        const results = await items.json();
-                        if (0 === results.length) { // Handle error from result, for example.
-                            throw 'Empty!';
-                        }
-                        return results;
-                    } catch (err) {
-                        console.error(err);
-                    }
-                }).then(() => {
-                    choices.input.element.focus()
-                });
-            }
-            init()
+        <script>
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choiceMultiBabel(el)
+    </script>
+{% endblock %}
+{% block as_create %}
+    <select class="list_typecountry form-control select"
+            id="{{ field.key }}"
+            display-title="{{ field.create.title }}"
+            title="{{ field.create.description }}"
+            {% if field.create.readonly %} readonly='1' {% endif %}
+            name="{{ field.key }}"
+            {% if field.create.required %} required {% endif %}
+            filter="{{ field.create.filter }}"
+            model-name="{{ field.model_name }}"
+            data-choices multiple
+    >
 
-        })();
+                {% if field.val %}
+                    <option value="{{ field.val.id }}" selected> {{ field.val.name }}</option>
+                {% endif %}
+    </select>
+        <script>
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choiceMultiBabel(el)
     </script>
 {% endblock %}
 {% block as_get %}

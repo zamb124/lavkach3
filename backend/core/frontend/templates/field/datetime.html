@@ -13,6 +13,21 @@
            placeholder="{{ field.update.title or field.field_name }}" id="{{ field.field_name }}"
            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
 {% endblock %}
+{% block as_create %}
+    <input
+           type="text"
+           name="{{ field.key }}"
+            {% if field.update.required %} aria-required="true" {% endif %}
+            {% if field.update.readonly %}
+                readonly
+                class="datetime form-control disabled"
+            {% else %}
+                class="datetime form-control"
+            {% endif %}
+           onfocus="(this.type='date')"
+           placeholder="{{ field.update.title or field.field_name }}" id="{{ field.field_name }}"
+           value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
+{% endblock %}
 {% block as_get %}
     <input  type="text"
                     class="form-control"

@@ -44,7 +44,7 @@ def upgrade():
     op.create_table('bus',
                     sa.Column('id', sa.Uuid(), nullable=False),
                     sa.Column('cache_tag',
-                              sa.Enum('GET_USER_LIST', 'WS_SESSION', 'MESSAGE', 'MODEL',
+                              sa.Enum('GET_USER_LIST', 'WS_SESSION', 'MESSAGE', 'MODEL', 'REFRESH',
                                       name='cachetag'), nullable=False),
                     sa.Column('message', sa.String(), nullable=False),
                     sa.Column('status',

@@ -6,6 +6,14 @@
             });
         </script>
 {% endblock %}
+{% block as_create %}
+    <input type="text" id="{{ field.key }}" size="24" style="text-align:center">
+    <script>
+            window.addEventListener("load", function (event) {
+                new DateRangePicker('{{ field.key }}');
+            });
+        </script>
+{% endblock %}
 {% block as_get %}
     <input  type="text"
                     class="form-control"
