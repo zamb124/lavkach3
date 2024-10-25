@@ -1,97 +1,66 @@
 {% block as_update %}
     <select id="{{ field.key }}"
+            display-title="{{ field.update.title }}"
+            title="{{ field.update.description }}"
+            {% if field.update.readonly %} readonly='1' {% endif %}
             name="{{ field.key }}"
-            {% if field.required %} required {% endif %}
-            {% if field.update.readonly %}readonly {% endif %}
-            class="list_enum form-control"
-            data-choices data-choices-removeItem
-            multiple
+            {% if field.update.required %} required {% endif %}
+            filter="{{ field.update.filter }}"
+            model-name="{{ field.model_name }}"
+            data-choices multiple
     >
         {% for i in field.enums %}
-            <option value="{{ i.value }}"  {% if field.val %}{% if i.value in field.val %} selected {% endif %}{% endif %}> {{ i.name }}</option>
+            <option value="{{ i.value }}"{% if field.val %}{% if i.value in field.val %} selected
+            {% endif %}{% endif %}> {{ i.name }}</option>
         {% endfor %}
     </select>
     <script>
-        (async function () {
-            let element = document.getElementById("{{ field.key }}");
-            let choices = new Choices(element, {
-                placeholderValue: "Enter {{ field.title }}",
-                multiple: true,
-                removeItemButton: true,
-            });
-            choices.containerInner.element.classList.add('form-control');
-            {% if not field.is_filter %}
-            function check_valid() {
-                if (element.required) {
-                    choices.containerInner.element.classList.add('is-invalid');
-                    choices.containerInner.element.classList.remove('is-valid');
-                } else {
-                    choices.containerInner.element.classList.remove('is-invalid');
-                    choices.containerInner.element.classList.add('is-valid');
-                }
-            }
-            check_valid()
-            {% endif %}
-        })();
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choiceMultiEnum(el, 'update')
     </script>
 {% endblock %}
 {% block as_create %}
     <select id="{{ field.key }}"
+            display-title="{{ field.create.title }}"
+            title="{{ field.create.description }}"
+            {% if field.create.readonly %} readonly='1' {% endif %}
             name="{{ field.key }}"
-            {% if field.required %} required {% endif %}
-            {% if field.update.readonly %}readonly {% endif %}
-            class="list_enum form-control"
-            data-choices data-choices-removeItem
-            multiple
+            {% if field.create.required %} required {% endif %}
+            filter="{{ field.create.filter }}"
+            model-name="{{ field.model_name }}"
+            data-choices multiple
     >
         {% for i in field.enums %}
-            <option value="{{ i.value }}"  {% if field.val %}{% if i.value in field.val %} selected {% endif %}{% endif %}> {{ i.name }}</option>
+            <option value="{{ i.value }}"{% if field.val %}{% if i.value in field.val %} selected
+            {% endif %}{% endif %}> {{ i.name }}</option>
         {% endfor %}
     </select>
     <script>
-        (async function () {
-            let element = document.getElementById("{{ field.key }}");
-            let choices = new Choices(element, {
-                placeholderValue: "Enter {{ field.title }}",
-                multiple: true,
-                removeItemButton: true,
-            });
-            choices.containerInner.element.classList.add('form-control');
-            {% if not field.is_filter %}
-            function check_valid() {
-                if (element.required) {
-                    choices.containerInner.element.classList.add('is-invalid');
-                    choices.containerInner.element.classList.remove('is-valid');
-                } else {
-                    choices.containerInner.element.classList.remove('is-invalid');
-                    choices.containerInner.element.classList.add('is-valid');
-                }
-            }
-            check_valid()
-            {% endif %}
-        })();
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choiceMultiEnum(el, 'create')
     </script>
 {% endblock %}
 {% block as_get %}
     <select id="{{ field.key }}"
+            display-title="{{ field.update.title }}"
+            title="{{ field.update.description }}"
+            {% if field.update.readonly %} readonly='1' {% endif %}
             name="{{ field.key }}"
-            class="form-control"
-            data-choices
-            multiple
-    >
+            {% if field.update.required %} required {% endif %}
+            filter="{{ field.update.filter }}"
+            model-name="{{ field.model_name }}"
+            multiple>
         {% for i in field.enums %}
-            <option value="{{ i.value }}" {% if field.val %}{% if i.value in field.val %} selected {% endif %}{% endif %}> {{ i.name }}</option>
+            <option value="{{ i.value }}"{% if field.val %}{% if i.value in field.val %} selected
+            {% endif %}{% endif %}> {{ i.name }}</option>
         {% endfor %}
     </select>
     <script>
-        (async function () {
-            let element = document.getElementById("{{ field.key }}");
-            let choices = new Choices(element, {
-                multiple: true,
-            });
-            choices.containerInner.element.classList.add('form-control');
-            choices.disable()
-        })();
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choiceMultiEnum(el, 'get')
     </script>
 {% endblock %}
 

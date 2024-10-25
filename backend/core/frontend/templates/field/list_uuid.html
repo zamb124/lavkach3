@@ -1,5 +1,5 @@
 {% block as_update %}
-    <select class="list-uuid form-control is-valid"
+    <select class="list-uuid form-control"
             id="{{ field.key }}"
             {% if field.update.required and not field.is_filter %} required {% endif %}
             {% if field.update.readonly %} readonly="1" {% endif %}
@@ -19,21 +19,21 @@
         <script>
         var key = '{{ field.key }}';
         var el = document.getElementById(key);
-        choiceMultiUUID(el)
+        choiceMultiUUID(el, 'update')
     </script>
 
 {% endblock %}
 {% block as_create %}
     <select class="list-uuid form-control is-valid"
             id="{{ field.key }}"
-            {% if field.update.required and not field.is_filter %} required {% endif %}
-            {% if field.update.readonly %} readonly="1" {% endif %}
+            {% if field.create.required and not field.is_filter %} required {% endif %}
+            {% if field.create.readonly %} readonly="1" {% endif %}
             name="{{ field.key }}"
-            filter="{{ field.update.filter }}"
+            filter="{{ field.create.filter }}"
             {% if field.is_filter %} is-filter="1"{% endif %}
             model-name="{{ field.model_name }}"
-            title="{{ field.update.description }}"
-            display-title="{{ field.update.title }}"
+            title="{{ field.create.description }}"
+            display-title="{{ field.create.title }}"
             data-choices multiple>
         {% if field.val %}
             {% for val in field.val %}
@@ -44,7 +44,7 @@
         <script>
         var key = '{{ field.key }}';
         var el = document.getElementById(key);
-        choiceMultiUUID(el)
+        choiceMultiUUID(el, 'create')
     </script>
 
 {% endblock %}
@@ -73,7 +73,6 @@
                 }
 
             }
-
             getValues()
         })();
     </script>

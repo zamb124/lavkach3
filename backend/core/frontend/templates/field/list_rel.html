@@ -1,9 +1,8 @@
-
 {% block as_update %}
     <input
             name="{{ field.key }}"
             id="{{ field.key }}"
-            class="list-str form-control"
+            class="list-rel form-control"
             {% if field.update.readonly %}readonly="1" {% endif %}
             model-name="{{ field.model_name }}"
             title="{{ field.update.description }}"
@@ -67,11 +66,11 @@
             name="{{ field.key }}"
             id="{{ field.key }}"
             class="list-str form-control"
-            {% if field.update.readonly %}readonly="1" {% endif %}
+            {% if field.create.readonly %}readonly="1" {% endif %}
             model-name="{{ field.model_name }}"
-            title="{{ field.update.description }}"
-            display-title="{{ field.update.title }}"
-            filter="{{ field.update.filter }}"
+            title="{{ field.create.description }}"
+            display-title="{{ field.create.title }}"
+            filter="{{ field.create.filter }}"
             {% if field.is_filter %} is-filter="1"{% endif %}
             data-choices
             data-choices-limit="Required Limit"
@@ -82,7 +81,7 @@
     (async function () {
             let element = document.getElementById("{{ field.key }}");
             let choices = new Choices(element, {
-                placeholderValue: "Enter {{ field.update.title or field.field_name }}",
+                placeholderValue: "Enter {{ field.create.title or field.field_name }}",
                 multiple: true,
                 removeItemButton: true
             });

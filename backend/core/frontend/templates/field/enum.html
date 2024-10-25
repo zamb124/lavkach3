@@ -3,10 +3,10 @@
             name="{{ field.key }}"
 
             {% if field.update.readonly %}
-                style="pointer-events: none;"
-                class="enum form-control disabled"
+            style="pointer-events: none;"
+            class="enum form-control disabled"
             {% else %}
-                class="enum form-control is-valid"
+            class="enum form-control is-valid"
             {% endif %}
 
             aria-label="Default select example"
@@ -25,10 +25,10 @@
             name="{{ field.key }}"
 
             {% if field.update.readonly %}
-                style="pointer-events: none;"
-                class="enum form-control disabled"
+            style="pointer-events: none;"
+            class="enum form-control disabled"
             {% else %}
-                class="enum form-control is-valid"
+            class="enum form-control is-valid"
             {% endif %}
 
             aria-label="Default select example"
@@ -45,17 +45,18 @@
 {% block as_get %}
     {% if field.color_map %}
         <div class="d-flex flex-wrap gap-2">
-                                            <span class="text-uppercase badge border border-{{  field.color.value|safe  }} text-{{  field.color.value|safe  }} p-3" style="border-radius: 15px"><b>{{ field.val.english_name or field.val.name or field.val}}</b></span>
-                                        </div>
-        {% else %}
-         <input  type="text"
-                    class="form-control"
-                    {% if field.get.required %} required {% endif %}
-                    disabled
-                    name="{{ field.key }}"
-                    placeholder="Enter {{ field.title }}"
-                    value="{{ field.val if field.val else "" }}"
-            >
+            <span class="text-uppercase badge border border-{{ field.color.value|safe }} text-{{ field.color.value|safe }} p-3"
+                  style="border-radius: 15px"><b>{{ field.val.english_name or field.val.name or field.val }}</b></span>
+        </div>
+    {% else %}
+        <input type="text"
+               class="form-control"
+                {% if field.get.required %} required {% endif %}
+               disabled
+               name="{{ field.key }}"
+               placeholder="Enter {{ field.title }}"
+               value="{{ field.val if field.val else "" }}"
+        >
     {% endif %}
 
 {% endblock %}
