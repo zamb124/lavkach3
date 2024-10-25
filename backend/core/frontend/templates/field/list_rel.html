@@ -2,7 +2,7 @@
     <input
             name="{{ field.key }}"
             id="{{ field.key }}"
-            class="list_str form-control" data-choices data-choices-text-disabled-true
+            class="list_str form-control is-valid" data-choices data-choices-text-disabled-true
             value="
                {% for val in field.val %}
                 {{ val.title or val.id }}
@@ -28,7 +28,12 @@
             name="{{ field.key }}"
             id="{{ field.key }}"
             class="list-str form-control"
-            {% if field.update.readonly %}readonly {% endif %}
+            {% if field.update.readonly %}readonly="1" {% endif %}
+            model-name="{{ field.model_name }}"
+            title="{{ field.update.description }}"
+            display-title="{{ field.update.title }}"
+            filter="{{ field.update.filter }}"
+            {% if field.is_filter %} is-filter="1"{% endif %}
             data-choices
             data-choices-limit="Required Limit"
             data-choices-removeItem

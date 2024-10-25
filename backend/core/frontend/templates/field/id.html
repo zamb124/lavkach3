@@ -1,15 +1,23 @@
 {% block as_update %}
     <input
-            class="id form-control"
+
             {% if field.update.required %} required {% endif %}
-            {% if field.update.readonly %} readonly {% endif %}
+           {% if field.update.readonly %}
+                style="pointer-events: none;"
+                class="id form-control disabled"
+                readonly
+            {% else %}
+                class="id form-control is-valid"
+            {% endif %}
             name="{{ field.key }}"
-            placeholder="Enter {{ field.title }}"
             value="{{ field.val if field.val else "" }}"
     >
 {% endblock %}
 {% block as_get %}
     <a class="text-danger form-control disabled"
+       data-bs-placement="bottom"
+       data-bs-toggle="tooltip"
+       title="Object Link"
        href="#"
        hx-params="model,method,id,key"
        hx-trigger="click"

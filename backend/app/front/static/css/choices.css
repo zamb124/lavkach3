@@ -1,8 +1,12 @@
+
 .choices {
     position: relative;
     overflow: hidden;
-    margin-bottom: 24px;
     font-size: 16px
+}
+
+.choices [hidden] {
+    display: none !important
 }
 
 .choices:focus {
@@ -17,19 +21,15 @@
     overflow: visible
 }
 
+.choices.is-disabled .choices__item {
+    cursor: not-allowed
+}
+
 .choices.is-disabled .choices__inner, .choices.is-disabled .choices__input {
     cursor: not-allowed;
     -webkit-user-select: none;
     user-select: none;
 
-}
-
-.choices.is-disabled .choices__item {
-    cursor: not-allowed
-}
-
-.choices [hidden] {
-    display: none !important
 }
 
 .choices[data-type*=select-one] {
@@ -39,6 +39,7 @@
 .choices[data-type*=select-one] .choices__inner {
     padding-bottom: 7.5px;
     position: relative;
+    border-radius: 10px !important;
 }
 
 .choices[data-type*=select-one] .choices__input {
@@ -46,7 +47,7 @@
     width: 100%;
     padding: 10px;
     border-bottom: 1px solid #ddd;
-    background-color: var(--bs-primary);
+    background-color: var(--bs-light);
     margin: 0
 }
 
@@ -90,6 +91,9 @@
     margin-top: -2.5px;
     pointer-events: none
 }
+.choices[data-type*=select-one].is-disabled::after {
+    border-color: transparent;
+}
 
 .choices[data-type*=select-one].is-open::after {
     border-color: transparent transparent #333;
@@ -108,9 +112,6 @@
     margin-right: 0
 }
 
-.choices[data-type*=select-multiple] .choices__inner, .choices[data-type*=text] .choices__inner {
-    cursor: text
-}
 
 .choices[data-type*=select-multiple] .choices__button, .choices[data-type*=text] .choices__button {
     position: relative;
@@ -129,7 +130,6 @@
 .choices[data-type*=select-multiple] .choices__button:focus, .choices[data-type*=select-multiple] .choices__button:hover, .choices[data-type*=text] .choices__button:focus, .choices[data-type*=text] .choices__button:hover {
     opacity: 1
 }
-
 
 
 .is-focused .choices__inner, .is-open .choices__inner {
@@ -204,15 +204,15 @@
 .choices__list--dropdown, .choices__list[aria-expanded] {
     display: none;
     position: absolute;
-    width: 100%;
+    width: max-content;
     background-color: var(--bs-card-bg);
     color: var(--bs-heading-color);
-    border: 1px solid #ddd;
     border-radius: 15px;
     top: 100%;
     margin-top: -1px;
     overflow: hidden;
-    word-break: break-all
+    word-break: break-all;
+    z-index: 9999;
 }
 
 .is-active.choices__list--dropdown, .is-active.choices__list[aria-expanded] {
@@ -236,11 +236,11 @@
     max-height: 300px;
     overflow: auto;
     width: fit-content;
+    font-size: medium;
     min-width: 100%;
     background-color: var(--bs-body-color);
     -webkit-overflow-scrolling: touch;
     will-change: scroll-position;
-    z-index: 9999 !important;
 }
 
 .choices__list--dropdown .choices__item, .choices__list[aria-expanded] .choices__item {
@@ -248,8 +248,7 @@
     padding: 10px;
     width: fit-content;
     min-width: 100%;
-    background-color: var(--bs-body-color);
-    z-index: 9999 !important;
+    background-color: var(--bs-tertiary-bg);
 }
 
 [dir=rtl] .choices__list--dropdown .choices__item, [dir=rtl] .choices__list[aria-expanded] .choices__item {
@@ -357,25 +356,8 @@
     opacity: .5
 }
 
-.form-control:focus {
-    border-color: #ff7f5d !important;
-    border-width: 2px !important;
-    box-shadow: 0px 0px 5px #f7666e !important; /*here change the color*/
-}
-
-.is-focused,
-.is-open {
-    .choices__inner {
-        border-color: #ff7f5d !important;
-        border-width: 2px !important;
-        box-shadow: 0px 0px 5px #f7666e !important; /*here change the color*/
-    }
-}
-
-
 
 .choices__inner .choices__list {
-    background: transparent;
     background: transparent;
     background-color: transparent;
     border-radius: 10px !important;
@@ -392,211 +374,11 @@
     border-radius: 10px !important;
 }
 
-
-input[type="date"] {
-    position: relative;
-}
-
-::-webkit-datetime-edit-year-field:not([aria-valuenow]),
-::-webkit-datetime-edit-month-field:not([aria-valuenow]),
-::-webkit-datetime-edit-day-field:not([aria-valuenow]) {
-    color: transparent;
-}
-
-
-.choices {
-    position: relative;
-    margin-bottom: 0px;
-    font-size: 16px;
-    border-radius: 10px;
-}
-
-.is-valid {
-    border: 10px solid var(--bs-form-valid-border-color) !important;
-}
-
-.is-invalid {
-    border: 1px solid var(--bs-form-invalid-border-color) !important;
-    border-radius: 10px !important;
-}
-
-.is-invalid::after {
-    position: absolute;
-    font-weight: 900;
-    font-size: 20px;
-    right: 40px;
-    border-radius: 15px !important;
-}
-
-.is-valid {
-    border: 1px solid var(--bs-form-valid-border-color) !important;
-    border-radius: 10px !important;
-}
-
-.is-valid::after {
-    position: absolute;
-    font-weight: 900;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%233cd188' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-    background-position: right calc(1.375em + 1.5rem) center !important;
-    color: var(--bs-form-valid-border-color);
-    font-size: 20px;
-    right: 40px;
-}
-
-.choices[data-type*=select-one] .choices__inner {
-    border-radius: 10px !important;
-}
-
-.choices[data-type*=select-one] .choices__input {
-    border-radius: 10px !important;
-}
-
-.card {
-    border-radius: 15px;
-}
-
-.card-header {
-    border-radius: 15px;
-}
-
-.btn {
-    border-radius: 10px;
-}
-
-.card-header:first-child {
-    border-radius: 10px;
-}
-
-.table {
-    border-radius: 15px;
-}
-
-.table-responsive {
-    border-radius: 15px;
-}
-
-.form-control {
-    border-radius: 10px;
-}
-
-.form-control.is-valid {
-    border-radius: 10px;
-    background-position: right calc(1.375em + 1.5rem) center !important;
-}
-.form-control.is-invalid,.was-validated .form-control:invalid {
-    border-color: var(--bs-form-invalid-border-color);
-    background-position: right calc(2.375em + 5px) center;
-    padding-right: calc(5.5em + 20px);
-}
-
-.app-menu {
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-}
-
-.page-title-box {
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-}
-
-.modal-backdrop.show {
-    background-color: rgba(5, 4, 4, 0.5);
-    --vz-backdrop-opacity: 0.5;
-    animation: ani 10.5s forwards;
-}
-
-select option[selected] {
-    background-color: var(--vz-form-valid-border-color)
-}
-
-.modal-xl {
-    min-width: 80%;
-}
-
-
-* {
-    margin: 0;
-    padding: 0;
-}
-
-.loader {
-    display: none;
-    z-index: -999999;
-    top: 50%;
-    left: 50%;
-    position: absolute;
-    transform: translate(-50%, -50%);
-}
-
-.loading {
-    border: 2px solid #ccc;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border-top-color: #1ecd97;
-    border-left-color: #1ecd97;
-    animation: spin 1s infinite ease-in;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
+.is-open {
+    .choices__inner {
+        border-color: #ff7f5d !important;
+        border-width: 2px !important;
+        box-shadow: 0px 0px 5px #f7666e !important; /*here change the color*/
     }
 }
-
-.tost {
-    border-radius: 10px;
-}
-
-.toastify {
-
-    border-radius: 10px;
-}
-.line-col {
-     line-height: 10px;
-   min-height: 10px;
-   height: 10px;
-
-}
-
-
-.table>:not(caption)>*>* {
-    /* padding: 14px 24px; */
-    padding-top: 0px;
-    padding-right: 24px;
-    padding-bottom: 0px;
-    padding-left: 24px;
-    font-weight: 450;
-    color: #29343d;
- }
-.form-control{
-    font-weight: 600;
-    font-size: large;
-    color: #29343d
-}
-
-.form-control.disabled {
-    background-color: var(--bs-secondary-bg);
-    opacity: 1;
-}
-.inline {
-    padding-bottom: 0px;
-    padding-top: 0px;
-}
-
-html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .container-lg, html[data-boxed-layout=boxed] .container-md, html[data-boxed-layout=boxed] .container-sm, html[data-boxed-layout=boxed] .container-xl, html[data-boxed-layout=boxed] .container-xxl {
-    max-width: var(--bs-breakpoint-xxl);
-    margin: 0 auto;
-}
-.line-col {
-  & .form-control {
-    background-color: transparent;
-      border: transparent;
-  }
-}
-
 

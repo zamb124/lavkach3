@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 from typing import Optional, Any
 
@@ -13,9 +14,6 @@ class FieldFields:
     vars: Optional[dict] = None  # Переменные если нужно передать контекст
 
 
-
-
-
 class Field:
     """
         Описание поля
@@ -24,18 +22,18 @@ class Field:
         - as_table_update - виджет как таблица (доступен только для list_rel) полей
         - as_table_get - виджет как таблица (доступен только для list_rel) полей
     """
-    field_name: str                    # Системное имя поля
-    type: str                          # Тип поля (srt, ins, rel, list_rel ... )
-    model_name: str                    # Наименование модели
-    domain_name: str                   # Наименование домена модели
+    field_name: str  # Системное имя поля
+    type: str  # Тип поля (srt, ins, rel, list_rel ... )
+    model_name: str  # Наименование модели
+    domain_name: str  # Наименование домена модели
     # widget params
-    enums: Optional[Any] = None        # Если поле enum, то тут будет список енумов
-    sort_idx: int = 0                  # Индекс сортировки поля
-    line: Optional[Any] = None         # Обьект, которому принадлежит поле
-    lines: Optional[Any] = None        # Если поле list_rel, то субобьекты
+    enums: Optional[Any] = None  # Если поле enum, то тут будет список енумов
+    sort_idx: int = 0  # Индекс сортировки поля
+    line: Optional[Any] = None  # Обьект, которому принадлежит поле
+    lines: Optional[Any] = None  # Если поле list_rel, то субобьекты
 
-    is_filter: bool = False            # Является ли поле фильтром
-    is_reserved: bool = False          # Призна
+    is_filter: bool = False  # Является ли поле фильтром
+    is_reserved: bool = False  # Призна
     # Views vars
     get: ViewVars
     create: ViewVars
@@ -45,6 +43,15 @@ class Field:
     def __init__(self, *args, **kwargs):
         self.__dict__.update(kwargs)
 
+    @property
+    def js(self):
+        di = self.__dict__
+        di['update'] = self.update.model_dump(mode='json')
+        di['get'] = self.get.model_dump(mode='json')
+        di['create'] = self.create.model_dump(mode='json')
+        di.pop('lines')
+        di.pop('line')
+        return json.dumps(di)
 
     @property
     def key(self) -> str:
@@ -108,23 +115,16 @@ class Field:
 
     def filter_as_string(self) -> str:
         """Костыльная утилита, что бы в js передать фильтр"""
-        filter = ''
-        if self.update.filter:
-            filter += '{'
-            for k, v in self.update.filter.items():
-                if isinstance(v, Enum):
-                    v = v.name
-                filter += f'"{k}":"{v}",'
-            filter += '}'
-        return filter
+        return self.update.get('filter')
+
+
 class Fields:
     """Обертка для удобства, что бы с полями работать как с обьектом"""
     _fields: list = []
-    __state = 0                                      # счетчик итераций
+    __state = 0  # счетчик итераций
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
-
 
     def __iter__(self):
         self._fields = [i for i in self.__dict__.values() if isinstance(i, Field)]
@@ -139,4 +139,3 @@ class Fields:
         except IndexError:
             self.__state = 0
             raise StopIteration
-

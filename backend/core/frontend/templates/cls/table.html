@@ -17,10 +17,10 @@
             <div class="table-responsive scrollable-dropdown" style="width: auto; min-height: 400px; white-space: nowrap;" data-show-columns="true">
                 <table class="table table-hover" id="{{ 'table' ~'--'~ cls.key }}" style="vertical-align: middle;">
                     <thead class="text-muted" style="position: sticky; top: 0px">
-                    <tr class="text-uppercase fs-13" style="text-align: center">
+                    <tr class="text-uppercase fs-13 text-center" style="text-align: center">
                         <th scope="col" >
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="{{ cls.key ~'--'~ 'checkAll' }}"
+                            <div class="form-check text-center" align="center">
+                                <input class="form-check-input " type="checkbox" id="{{ cls.key ~'--'~ 'checkAll' }}"
                                        value="option">
                             </div>
                         </th>
@@ -31,7 +31,6 @@
                     </thead>
                     <tbody id="{{ 'tbody-table' ~'--'~ cls.key }}">
                     {%  for i in range(10) %}
-
                         {{ cls.lines.line_header.as_tr_placeholder }}
                     {% endfor %}
 
@@ -54,12 +53,14 @@
             <div class="table-responsive scrollable-dropdown" style="width: auto; min-height: 400px; white-space: nowrap;" data-show-columns="true">
                 <table class="table table-hover" id="{{ 'table' ~'--'~ cls.key }}" style="vertical-align: middle;">
                     <thead class="text-muted" style="position: sticky; top: 0px">
-                    <tr class="text-uppercase fs-13" style="text-align: center">
-                        <th scope="col" >
+                    <tr class="text-uppercase fs-13 text-center" style="text-align: center">
+                        <th scope="col">
+                            <p>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="{{ cls.key ~'--'~ 'checkAll' }}"
                                        value="option">
                             </div>
+                            </p>
                         </th>
 
                         {{ cls.lines.as_table_header }}

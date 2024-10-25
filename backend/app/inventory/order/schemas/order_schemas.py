@@ -27,11 +27,11 @@ class OrderBaseScheme(BasicModel):
     lot_id: Optional[UUID] = Field(default=None, title='Lot', model='lot')
     origin_type: Optional[str] = Field(default=None, title='Original Type', form=True)
     origin_number: Optional[str] = Field(default=None, title='Original', table=True, form=True)
-    planned_datetime: Optional[datetime] = Field(default=None, title='Planned Date', table=True, form=True)
-    expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=True, form=True)
-    description: Optional[str] = Field(default=None, title='Description', table=True, form=True)
-    status: OrderStatus = Field(default=OrderStatus.DRAFT, title='Status', readonly=True, table=True, form=True)
-    order_id: Optional[UUID] = Field(default=None, title='Parent', readonly=True,  form=True)
+    planned_datetime: Optional[datetime] = Field(default=None, title='Planned Date', table=True)
+    expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=True)
+    description: Optional[str] = Field(default=None, title='Description', table=True)
+    status: OrderStatus = Field(default=OrderStatus.DRAFT, title='Status', readonly=True, table=True)
+    order_id: Optional[UUID] = Field(default=None, title='Parent', readonly=True)
 
 
     class Config:
@@ -41,11 +41,12 @@ class OrderBaseScheme(BasicModel):
 
 
 class OrderUpdateScheme(OrderBaseScheme):
-    move_list_rel: Optional[list['MoveUpdateScheme']] = Field(default=[], title='Order Movements', form=True)
+    move_list_rel: Optional[list['MoveUpdateScheme']] = Field(default=[], title='Order Movements')
+    order_type_id: UUID = Field(title='Order type', model='order_type', readonly=True, filter={'status__in': OrderStatus.DRAFT.value})
 
 
 class OrderCreateScheme(OrderBaseScheme):
-    move_list_rel: Optional[list[MoveCreateScheme]] = Field(default=[], title='Order Movements', form=True)
+    move_list_rel: Optional[list[MoveCreateScheme]] = Field(default=[], title='Order Movements')
 
 
 class OrderScheme(OrderCreateScheme, TimeStampScheme):
@@ -54,15 +55,16 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     company_id: UUID = Field(title='Company', model='company')
     vars: Optional[dict] = None
     number: str = Field(title='Order #', table=True, form=True, description="Internal number of order")
-    actual_datetime: Optional[datetime] = Field(title='Actual Date', table=True, form=True)
+    actual_datetime: Optional[datetime] = Field(title='Actual Date', table=True)
     created_by: UUID = Field(title='Created By', table=True, model='user')
     edited_by: UUID = Field(title='Edit By', model='user')
     user_ids: Optional[list[UUID]] = Field(default=[], title='Users', readonly=True, model='user')
-    order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True, readonly=True)
-    move_list_rel: Optional[list["MoveScheme"]] = Field(default=[], title='Order Movements', form=True)
+    #order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True, readonly=True)
+    move_list_rel: Optional[list["MoveScheme"]] = Field(default=[], title='Order Movements')
 
     @computed_field
     def title(self) -> str:
+        "some title"
         return f'{self.order_type_rel.title}: [{self.number}]'
 
 

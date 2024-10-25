@@ -1,10 +1,11 @@
 {% block as_update %}
         <input
-                class="form-control"
+                class="str form-control"
                 {% if field.update.required %} required {% endif %}
-                {% if field.update.readonly %} readonly{% endif %}
-                {% if field.update.hidden %} hidden{% endif %}
+                {% if field.update.readonly %} readonly {% endif %}
+                {% if field.update.hidden %} hidden {% endif %}
                 name="{{ field.key }}"
+                title="{{ field.update.description }}"
                 placeholder="Enter {{ field.update.title }}"
                 value="{{ field.val if field.val else "" }}"
 

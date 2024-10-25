@@ -1,8 +1,14 @@
 {% block as_update %}
-    <input class="datetime form-control" type="text"
+    <input
+           type="text"
            name="{{ field.key }}"
             {% if field.update.required %} aria-required="true" {% endif %}
-            {% if field.update.readonly %} readonly {% endif %}
+            {% if field.update.readonly %}
+                readonly
+                class="datetime form-control disabled"
+            {% else %}
+                class="datetime form-control"
+            {% endif %}
            onfocus="(this.type='date')"
            placeholder="{{ field.update.title or field.field_name }}" id="{{ field.field_name }}"
            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
@@ -12,6 +18,9 @@
                     class="form-control"
                     {% if field.required %} required {% endif %}
                     disabled
+                    data-bs-placement="bottom"
+                    data-bs-toggle="tooltip"
+                    title="{{ field.get.description}}"
                     name="{{ field.key }}"
                     placeholder=""
                     value="{{field.val.strftime('%Y-%m-%d') if field.val else ''}}"

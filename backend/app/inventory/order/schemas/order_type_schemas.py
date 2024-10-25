@@ -18,7 +18,9 @@ class OrderTypeBaseScheme(BaseModel):
     title: str = Field(title='Titile', table=True, form=True)
     allowed_location_src_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
-        title='Allowed locations source'
+        title='Allowed locations source',
+        description='Allowed locations for the source of this order type',
+        filter={'location_class__not_in': LocationClass.PACKAGE.value}
     )
     exclude_location_src_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',

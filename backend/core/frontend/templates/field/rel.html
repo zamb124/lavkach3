@@ -9,20 +9,22 @@
            hx-ext="json-enc"
            hx-post="/base/modal"
            hx-vals='{
-"model": "{{ field.model_name }}",
-"method": "get",
-"id": "{{ field.val.id }}",
-"key": "{{ field.key }}"
-}'
+            "model": "{{ field.model_name }}",
+            "method": "get",
+            "id": "{{ field.val.id }}",
+            "key": "{{ field.key }}"
+            }'
         >{{ field.val.title or field.val.nickname }}
         </a>
 {% endblock %}
 {% block as_update %}
-    <select class="uuid form-control is-valid text-start "
+    <select class="rel form-control text-start "
             id="{{ field.key }}"
-            {% if field.update.readonly %} readonly {% endif %}
+            {% if field.update.readonly %} readonly="1" {% endif %}
             name="{{ field.key }}"
             {% if field.update.required %} required {% endif %}
+            filter="{{ field.update.filter }}"
+            model-name="{{ field.model_name }}"
             data-choices
     >
         {% if field.val %}
@@ -30,137 +32,9 @@
         {% endif %}
     </select>
     <script>
-        (async function () {
-            let element = document.getElementById("{{ field.key }}");
-            let choices = new Choices(element, {
-                placeholderValue: "Enter {{ field.update.title }}",
-                removeItemButton: true,
-            });
-            choices.containerInner.element.classList.add('form-control');
-            {% if field.update.readonly %}
-                choices.disable()
-                choices.containerInner.element.classList.add('disabled');
-            {% endif %}
-
-            async function searchChoices(value) {
-                try {
-                    const items = await fetch('/base/search?model={{ field.model_name }}&filter={{field.filter_as_string()|safe}}&search=' + encodeURIComponent(value));
-                    const results = await items.json();
-                    if (0 === results.length) { // Handle error from result, for example.
-                        throw 'Empty!';
-                    }
-                    return results;
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-
-            function check_valid(event) {
-                if (element.required) {
-                    if (event) {
-                        if (event.type === 'choice') {
-                            if (event.detail.choice.value) {
-                                choices.containerInner.element.classList.remove('is-invalid');
-                                choices.containerInner.element.classList.add('is-valid');
-                            }
-                        } else if (event.type === 'removeItem') {
-                            if (event.detail.value) {
-                                if (!choices.containerInner.element.innerText){
-                                    choices.containerInner.element.classList.add('is-invalid');
-                                    choices.containerInner.element.classList.remove('is-valid');
-                                } else {
-                                    choices.containerInner.element.classList.add('is-valid');
-                                    choices.containerInner.element.classList.remove('is-invalid');
-                                }
-
-                            }
-                        }
-
-                    } else {
-                        if (!choices.containerInner.element.innerText){
-                                    choices.containerInner.element.classList.add('is-invalid');
-                                    choices.containerInner.element.classList.remove('is-valid');
-                                } else {
-                                    choices.containerInner.element.classList.add('is-valid');
-                                    choices.containerInner.element.classList.remove('is-invalid');
-                                }
-                    }
-                } else if (element.id.includes('__in')) {
-                    choices.containerInner.element.classList.remove('is-invalid');
-                    choices.containerInner.element.classList.remove('is-invalid');
-                } else {
-                    try {
-                        choices.containerInner.element.classList.remove('is-invalid');
-                    } catch (err) {
-
-                    }
-
-                    choices.containerInner.element.classList.add('is-valid');
-                }
-            }
-
-            check_valid()
-
-            async function getValues() {
-                var id__in = ''
-                let value = await choices.getValue();
-
-                try {
-                    if (!value) {
-                        return []
-                    } else {
-                        id__in = value.value
-                    }
-                    var maybe_cache = cache[id__in]
-                    if (maybe_cache)  {
-                        return  [{
-                            value:  id__in,
-                            label:  maybe_cache,
-                        }]
-                    }
-                    const items = await fetch('/base/get_by_ids?model={{ field.model_name }}&id__in=' + encodeURIComponent(id__in));
-                    const results = await items.json();
-                    for  (let i = 0; i < results.length; i++) {
-                        cache[results[i].value] = results[i].label
-                    }
-                    if (0 === results.length) { // Handle error from result, for example.
-                        return []
-                    }
-                    return results;
-                } catch (err) {
-                    console.error(err);
-                    return []
-                }
-            }
-
-            let init_values = await getValues()
-            choices.removeActiveItems()
-            choices.clearChoices()
-            choices.setValue(init_values)
-            element.addEventListener('search', async e => {
-                element.focus()
-                let value = e.detail.value;
-                choices.clearChoices()// Test!
-                choices.setChoices(
-                    await searchChoices(value)
-                )
-            });
-
-            check_valid()
-            element.addEventListener('choice', function (event) {
-                check_valid(event)
-            });
-            element.addEventListener('showDropdown', async e => {
-                choices.clearChoices()// Test!
-                choices.setChoices(
-                    await searchChoices('')
-                )
-            });
-
-            element.addEventListener('removeItem', function (event) {
-                check_valid(event)
-            });
-        })();
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choiceOneUUID(el)
     </script>
 {% endblock %}
 {% block as_table %}

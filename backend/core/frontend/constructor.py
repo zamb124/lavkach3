@@ -173,6 +173,23 @@ class ClassView:
 
     def _get_view_vars(self, fieldname: str, is_filter: bool, schema: BaseModel) -> dict[str, ViewVars]:
         """Костыльный метод собирания ViewVars"""
+        if compute_field := schema.model_computed_fields.get(fieldname):
+            compute_field.title = fieldname.capitalize()
+            compute_field_info = ViewVars(**{
+                'required': False,
+                'title': fieldname.capitalize(),
+                'hidden': False,
+                'color_map': {},
+                'readonly': True,
+                'filter': {},
+                'table': False,
+                'description': None,
+            })
+            return {
+                'create': compute_field_info,
+                'update': compute_field_info,
+                'get': compute_field_info,
+            }
         if schema and issubclass(schema, ActionBaseSchame):  # type: ignore
             default_fieldinfo = schema.model_fields.get(fieldname)
             create_fieldinfo = update_fieldinfo = get_fieldinfo = filter_fieldinfo = default_fieldinfo
@@ -234,8 +251,7 @@ class ClassView:
                 create_fieldinfo = BasicField(title=fieldname.capitalize(), table=table, hidden=hidden, readonly=True)
         return {
             'create': self._get_view_vars_by_fieldinfo(create_fieldinfo),
-            'update': self._get_view_vars_by_fieldinfo(
-                update_fieldinfo) if not is_filter else self._get_view_vars_by_fieldinfo(filter_fieldinfo),
+            'update': self._get_view_vars_by_fieldinfo(update_fieldinfo) if not is_filter else self._get_view_vars_by_fieldinfo(filter_fieldinfo),
             'get': self._get_view_vars_by_fieldinfo(get_fieldinfo),
         }
 
