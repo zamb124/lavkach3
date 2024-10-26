@@ -1,5 +1,6 @@
 {
   "t-order": "Order!",
   "t-move": "Move Move",
-  "t-dashboards": "Dash"
+  "t-dashboards": "Dash",
+  "t-order_type": "Order Types"
 }

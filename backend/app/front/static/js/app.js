@@ -6,6 +6,8 @@ async function choiceOneUUID(element, method) {
     var is_filter = element.getAttribute('is-filter')
     var model_name = element.getAttribute('model-name')
     var attrs = {
+        placeholder: true,
+        searchPlaceholderValue: 'Start typing to search',
         placeholderValue: "Enter " + display_title
     }
     if (method === 'get' || element.getAttribute('readonly')) {

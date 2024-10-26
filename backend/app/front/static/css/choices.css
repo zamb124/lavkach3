@@ -48,7 +48,8 @@
     padding: 10px;
     border-bottom: 1px solid #ddd;
     background-color: var(--bs-light);
-    margin: 0
+    margin: 0;
+    font-size: small;
 }
 
 .choices[data-type*=select-one] .choices__button {
