@@ -9,7 +9,6 @@ from app.front.apps.inventory.inventory import inventory
 inventory_router = APIRouter()
 inventory_router.include_router(inventory)
 inventory_router.include_router(inventory_app, prefix="/app")
-inventory_router.include_router(order_router, prefix="/order")
 inventory_router.include_router(order_router, prefix="/order", tags=["order"])
-inventory_router.include_router(order_type_router, prefix="/order_type", tags=["order_type"])
+inventory_router.include_router(order_type_router, prefix="/order_type", tags=["order"])
 inventory_router.include_router(move_router, prefix="/move", tags=["move"])

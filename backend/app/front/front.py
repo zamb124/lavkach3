@@ -1,5 +1,6 @@
 import uuid
 from collections import defaultdict
+from lib2to3.fixes.fix_input import context
 
 from fastapi import APIRouter, Query
 from fastapi import Request
@@ -25,15 +26,44 @@ index_router = APIRouter(
 )
 
 
-@index_router.get("/front/header", response_class=HTMLResponse)
+@index_router.get("/front/topbar_vertical", response_class=HTMLResponse)
 async def topbar(request: Request):
-    return templates.TemplateResponse(request, 'partials/header.html', context={})
+    return templates.TemplateResponse(request, 'partials/topbar_vertical.html', context={})
 
 
-@index_router.get("/front/sidebar", response_class=HTMLResponse)
+@index_router.get("/front/topbar_horizontal", response_class=HTMLResponse)
+async def topbar(request: Request):
+    return templates.TemplateResponse(request, 'partials/topbar_horizontal.html', context={})
+
+@index_router.get("/front/theme_editor", response_class=HTMLResponse)
+async def topbar(request: Request):
+    return templates.TemplateResponse(request, 'partials/theme_editor.html', context={})
+
+@index_router.get("/front/search_bar", response_class=HTMLResponse)
+async def topbar(request: Request):
+    return templates.TemplateResponse(request, 'partials/search_bar.html', context={})
+
+
+@index_router.get("/front/sidebar_vertical", response_class=HTMLResponse)
 async def sidebar(request: Request):
     """Строит левое меню Админки, на базе tags в роутах и пермишенах Пользователя"""
-    return templates.TemplateResponse(request, 'partials/sidebar.html')
+    admin_nav = {}
+    env = request.scope['env']
+    for domain_name, domain in env.domains.items():
+        model_list = {}
+        for model_name, model in domain.models.items():
+            model_list.update({
+                model_name: f'/{domain_name}/{model_name}',
+            })
+        admin_nav.update({
+            domain_name: model_list
+        })
+    return templates.TemplateResponse(request, 'partials/sidebar_vertical.html', context={'nav': admin_nav})
+
+@index_router.get("/front/sidebar_horizontal", response_class=HTMLResponse)
+async def sidebar(request: Request):
+    """Строит левое меню Админки, на базе tags в роутах и пермишенах Пользователя"""
+    return templates.TemplateResponse(request, 'partials/sidebar_horizontal.html')
 
 
 @index_router.get("/front/sidebar", response_class=HTMLResponse)

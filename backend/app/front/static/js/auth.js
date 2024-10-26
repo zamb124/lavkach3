@@ -1,4 +1,5 @@
 var cache = {};
+var loaded = false;
 function getCookieValue(name) {
     const nameString = name + "="
 
