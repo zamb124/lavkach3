@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic.types import UUID4
-from core.schemas.basic_schemes import BasicField as Field
+from core.schemas.basic_schemes import BasicField as Field, bollean
 
 from app.inventory.location.enums import LocationClass
 from app.inventory.location.models import Location
@@ -18,13 +18,13 @@ class LocationBaseScheme(BasicModel):
     title: str
     store_id: UUID4 = Field(title='Store', model='store')
     location_id: Optional[UUID4] = Field(default=None, title='Parent Location', model='location')
-    is_active: bool = Field(default=True, title='Is Active')
+    is_active: bollean = Field(default=True, title='Is Active')
     location_type_id: UUID4 = Field(title='Location Type', model='location_type')
     partner_id: Optional[UUID4] = Field(default=None, title='Partner', model='partner')
 
     location_class: LocationClass = Field(default=LocationClass.PLACE, title='Location Class')
     lot_id: Optional[UUID4] = Field(default=None, title='Lot')
-    is_can_negative: bool = Field(default=False, title='Can Negative')
+    is_can_negative: bollean = Field(default=False, title='Can Negative')
     allowed_package_ids: Optional[list[UUID4]] = Field(default=[], title='Allowed Packages')  # Разрешенные типы упаковок
     exclude_package_ids: Optional[list[UUID4]] = Field(default=[], title='Exclude Packages')  # Разрешенные типы упаковок
 

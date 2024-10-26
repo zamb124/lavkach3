@@ -21,10 +21,10 @@
 {% block as_create %}
     <select class="rel form-control text-start "
             id="{{ field.key }}"
-            {% if field.update.readonly %} readonly="1" {% endif %}
+            {% if field.create.readonly %} readonly="1" {% endif %}
             name="{{ field.key }}"
-            {% if field.update.required %} required {% endif %}
-            filter="{{ field.update.filter }}"
+            {% if field.create.required %} required {% endif %}
+            filter="{{ field.create.filter }}"
             model-name="{{ field.model_name }}"
             data-choices
     >

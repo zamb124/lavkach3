@@ -5,10 +5,9 @@
                 readonly
                 class="str form-control disabled"
             {% else %}
-                class="str form-control is-valid"
+                class="str form-control {% if not field.is_filter %}is-valid{% endif %}"
                 placeholder="Enter {{ field.update.title }}"
             {% endif %}
-            {% if field.update.hidden %} hidden {% endif %}
             name="{{ field.key }}"
             title="{{ field.update.description }}"
             value="{{ field.val if field.val else "" }}"
@@ -17,17 +16,17 @@
 {% endblock %}
 {% block as_create %}
     <input
-            {% if field.update.required %} required {% endif %}
-            {% if field.update.readonly %}
+            {% if field.create.required %} required {% endif %}
+            {% if field.create.readonly %}
                 readonly
                 class="str form-control disabled"
             {% else %}
                 class="enum form-control"
                 placeholder="Enter {{ field.update.title }}"
             {% endif %}
-            {% if field.update.hidden %} hidden {% endif %}
+            {% if field.create.hidden %} hidden {% endif %}
             name="{{ field.key }}"
-            title="{{ field.update.description }}"
+            title="{{ field.create.description }}"
 
             value="{{ field.val if field.val else "" }}"
 

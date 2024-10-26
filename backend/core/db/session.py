@@ -1,4 +1,6 @@
+import asyncio
 from contextvars import ContextVar, Token
+from idlelib.pyparse import trans
 from typing import Union
 import logging
 from sqlalchemy.ext.asyncio import (
@@ -34,8 +36,8 @@ def reset_session_context(context: Token) -> None:
 
 
 engines = {
-    "writer": create_async_engine(config.WRITER_DB_URL, echo=True, pool_recycle=3600, max_overflow=30),
-    "reader": create_async_engine(config.READER_DB_URL, echo=True, pool_recycle=3600, max_overflow=30),
+    "writer": create_async_engine(config.WRITER_DB_URL, echo=False, pool_recycle=3600, max_overflow=30),
+    "reader": create_async_engine(config.READER_DB_URL, echo=False, pool_recycle=3600, max_overflow=30),
 }
 
 
@@ -98,5 +100,17 @@ class Base(metaclass=DeclarativeMeta):
 
     async def notify(self, method, updated_fields: list):
         message = await self.prepere_bus(self, method, updated_fields)
-        task = await self.update_notify.kiq(self.__tablename__, message)
+        i: int = 1
+        while True:
+            try:
+                task = await self.update_notify.kiq(self.__tablename__, message)
+                logger.info(f'Message sended to bus.bus with id: {task.task_id}')
+                break
+            except Exception as ex:
+                i += 1
+                await asyncio.sleep(5)
+                logger.error(f'Error while sending message to bus.bus: {ex}')
+                logger.error(f'Try to send message again to bus.bus: {i}..')
+            if i > 20:
+                break
 

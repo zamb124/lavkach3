@@ -24,7 +24,7 @@
     <select
             name="{{ field.key }}"
 
-            {% if field.update.readonly %}
+            {% if field.create.readonly %}
             style="pointer-events: none;"
             class="enum form-control disabled"
             {% else %}

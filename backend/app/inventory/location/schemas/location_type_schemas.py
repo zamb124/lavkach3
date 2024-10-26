@@ -7,7 +7,7 @@ from pydantic.types import UUID4
 from app.inventory.location.enums import LocationClass, PutawayStrategy
 from app.inventory.location.models import LocationType
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import BasicModel
+from core.schemas.basic_schemes import BasicModel, bollean
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
@@ -20,7 +20,7 @@ class LocationTypeBaseScheme(BasicModel):
     allowed_package_ids: Optional[list[UUID4]] = Field(default=[], module='inventory', model='location', filter={'location_class__in': LocationClass.PACKAGE})
     exclude_package_ids: Optional[list[UUID4]] = Field(default=[], module='inventory', model='location', filter={'location_class__in': LocationClass.PACKAGE})
     strategy: Optional[PutawayStrategy] = PutawayStrategy.FEFO
-    is_can_negative: bool = Field(default=False, title='Can be Negative')
+    is_can_negative: bollean = Field(default=False, title='Can be Negative')
 
     class Config:
         extra = 'allow'

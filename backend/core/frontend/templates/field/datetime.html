@@ -17,15 +17,15 @@
     <input
            type="text"
            name="{{ field.key }}"
-            {% if field.update.required %} aria-required="true" {% endif %}
-            {% if field.update.readonly %}
+            {% if field.create.required %} aria-required="true" {% endif %}
+            {% if field.create.readonly %}
                 readonly
                 class="datetime form-control disabled"
             {% else %}
                 class="datetime form-control"
             {% endif %}
            onfocus="(this.type='date')"
-           placeholder="{{ field.update.title or field.field_name }}" id="{{ field.field_name }}"
+           placeholder="{{ field.create.title or field.field_name }}" id="{{ field.field_name }}"
            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
 {% endblock %}
 {% block as_get %}

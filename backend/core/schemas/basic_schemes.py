@@ -1,7 +1,8 @@
 import typing
 from typing import Optional, List, Any
 
-from pydantic import BaseModel, UUID4, Field, AliasPath, AliasChoices, types
+from pydantic import BaseModel, UUID4, Field, AliasPath, AliasChoices, types, model_validator, \
+    BeforeValidator
 from pydantic.config import JsonDict
 from pydantic.fields import _EmptyKwargs, computed_field
 from pydantic_core import PydanticUndefined
@@ -9,10 +10,28 @@ from enum import Enum
 from ..schemas.list_schema import GenericListSchema
 
 
+def validate_bollean(x):
+    if isinstance(x, list):
+        if 'on' in x:
+            return True
+        else:
+            return False
+    if isinstance(x, str):
+        if x == 'on':
+            return True
+        else:
+            return False
+    return x
+
+
+bollean = typing.Annotated[bool, BeforeValidator(validate_bollean)]
+
+
 class BasicModel(BaseModel):
     """
      Переопределяем для удобства
     """
+
     def check_condition(self, condition: tuple):
         resolution = False
         if len(condition) != 3:
@@ -59,21 +78,22 @@ class BasicModel(BaseModel):
     #             for condition in readonly:
     #                 resolution = self.check_condition(condition)
 
-
-
     class Config:
         extra = 'allow'
         from_attributes = True
 
+
 _Unset: Any = PydanticUndefined
+
+
 def BasicField(
         default: Any = PydanticUndefined,
         *,
         #####
-        model: str | None = None,               # Имя модели
-        readonly: bool | list = False,          # Только на чтение (всегда) или одно из условий  например
+        model: str | None = None,  # Имя модели
+        readonly: bool | list = False,  # Только на чтение (всегда) или одно из условий  например
         # [('status','==', 'CONFIRMED')]
-        table: bool = False,                    # Показывать в таблице
+        table: bool = False,  # Показывать в таблице
         ####
         default_factory: typing.Callable[[], Any] | None = _Unset,
         alias: str | None = _Unset,
@@ -115,36 +135,36 @@ def BasicField(
         table=table,
         model=model,
         readonly=readonly,
-        default_factory= default_factory,
-        alias= alias,
-        alias_priority= alias_priority,
-        validation_alias= validation_alias,
-        serialization_alias= serialization_alias,
-        title=title  ,
+        default_factory=default_factory,
+        alias=alias,
+        alias_priority=alias_priority,
+        validation_alias=validation_alias,
+        serialization_alias=serialization_alias,
+        title=title,
         description=description,
-        examples= examples,
-        exclude= exclude,
-        discriminator=  discriminator,
-        json_schema_extra= json_schema_extra,
-        frozen= frozen,
-        validate_default= validate_default,
-        repr= repr,
-        init= init,
-        init_var= init_var,
-        kw_only= kw_only,
-        pattern= pattern,
-        strict= strict,
-        gt= gt,
-        ge= ge,
-        lt= lt,
-        le= le,
-        multiple_of= multiple_of,
-        allow_inf_nan= allow_inf_nan,
-        max_digits= max_digits,
-        decimal_places= decimal_places,
-        min_length= min_length,
-        max_length= max_length,
-        union_mode= union_mode,
+        examples=examples,
+        exclude=exclude,
+        discriminator=discriminator,
+        json_schema_extra=json_schema_extra,
+        frozen=frozen,
+        validate_default=validate_default,
+        repr=repr,
+        init=init,
+        init_var=init_var,
+        kw_only=kw_only,
+        pattern=pattern,
+        strict=strict,
+        gt=gt,
+        ge=ge,
+        lt=lt,
+        le=le,
+        multiple_of=multiple_of,
+        allow_inf_nan=allow_inf_nan,
+        max_digits=max_digits,
+        decimal_places=decimal_places,
+        min_length=min_length,
+        max_length=max_length,
+        union_mode=union_mode,
         **extra,
     )
 

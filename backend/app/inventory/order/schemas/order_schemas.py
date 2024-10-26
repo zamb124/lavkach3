@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional, List, TYPE_CHECKING
 
+from celery.worker.strategy import default
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, computed_field
 from pydantic.types import UUID4
@@ -42,7 +43,7 @@ class OrderBaseScheme(BasicModel):
 
 class OrderUpdateScheme(OrderBaseScheme):
     move_list_rel: Optional[list['MoveUpdateScheme']] = Field(default=[], title='Order Movements')
-    order_type_id: UUID = Field(title='Order type', model='order_type', readonly=True, filter={'status__in': OrderStatus.DRAFT.value})
+    order_type_id: Optional[UUID] = Field(default=None, title='Order type', model='order_type', readonly=True, filter={'status__in': OrderStatus.DRAFT.value})
 
 
 class OrderCreateScheme(OrderBaseScheme):
@@ -65,7 +66,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     @computed_field
     def title(self) -> str:
         "some title"
-        return f'{self.order_type_rel.title}: [{self.number}]'
+        return f'{self.number}'
 
 
 class OrderFilter(BaseFilter):

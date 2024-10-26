@@ -1,18 +1,19 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field
+from pydantic import Field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import PutawayStrategy, LocationClass
 from app.inventory.order.models import OrderType
 from app.inventory.order.models.order_models import OrderClass, BackOrderAction, ReservationMethod
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicModel, bollean
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
-class OrderTypeBaseScheme(BaseModel):
+class OrderTypeBaseScheme(BasicModel):
     prefix: str = Field(title='Prefix', table=True, form=True)
     order_class: OrderClass = Field(title='Order Class', table=True, form=True)
     title: str = Field(title='Titile', table=True, form=True)
@@ -75,18 +76,16 @@ class OrderTypeBaseScheme(BaseModel):
                                                        form=True)
     exclude_package_ids: Optional[list[UUID4]] = Field(default=[], model='location', title='Exclude packages dest',
                                                        form=True)
-    is_homogeneity: bool = Field(default=False, title='Is homogeneity', form=True)
-    is_allow_create_package: bool = Field(default=True, title='Is allow create package', form=True)
-    is_can_create_order_manualy: bool = Field(default=True, title='Can create order manualy', form=True)
-    is_overdelivery: bool = Field(default=False, title='Is overdelivery', form=True)
+    is_homogeneity: bollean = Field(default=False, title='Is homogeneity', form=True)
+    is_allow_create_package: bollean = Field(default=True, title='Is allow create package', form=True)
+    is_can_create_order_manualy: bollean = Field(default=True, title='Can create order manualy', form=True)
+    is_overdelivery: bollean = Field(default=False, title='Is overdelivery', form=True)
     barcode: str = Field(title='Barcode', table=True, form=True)
     reservation_method: ReservationMethod = Field(default=ReservationMethod.AT_CONFIRM, title='Reservation method',
                                                   table=True, form=True)
     strategy: PutawayStrategy = Field(default=PutawayStrategy.FEFO, title='Strategy', form=True)
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = OrderType
 
 

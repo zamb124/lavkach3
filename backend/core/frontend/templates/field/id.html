@@ -16,8 +16,8 @@
 {% block as_create %}
     <input
 
-            {% if field.update.required %} required {% endif %}
-           {% if field.update.readonly %}
+            {% if field.create.required %} required {% endif %}
+           {% if field.create.readonly %}
                 style="pointer-events: none;"
                 class="id form-control disabled"
                 readonly
