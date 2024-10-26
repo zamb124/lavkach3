@@ -68,6 +68,7 @@
 <script src="{{ url_for('static' ,path='js/i18n.js') }}"></script>
 <script>
     console.log('wrapper')
+    let loaded = false;
     htmx.onLoad(function (elt) {
         if (!loaded) {
             // Смотрим, если все элементы прогрузились

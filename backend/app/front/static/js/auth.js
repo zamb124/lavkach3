@@ -1,5 +1,54 @@
 var cache = {};
-var loaded = false;
+
+const Singleton = {
+    secret: 'Singleton',
+    temp: [],
+    results: {},
+    async pushUUID(model, uuid) {
+        let modelList = this.temp[model]
+        if (!modelList) {
+            this.temp[model] = []
+            this.temp[model].push(uuid)
+        } else {
+            if (!this.temp[model].includes(uuid)) {
+                this.temp[model].push(uuid)
+            }
+        }
+    },
+    async run() {
+        console.log('Бесконечно идем в цикл');
+        while (true) {
+            let promises = []
+            for (let model in this.temp) {
+                if (this.temp[model].length > 0) {
+                    ids_str = this.temp[model].join(',')
+                    const items = fetch('/base/get_by_ids?model=' + model + '&id__in=' + encodeURIComponent(ids_str));
+                    promises.push(items)
+                } else {
+                    continue
+                }
+                this.temp[model] = []
+            }
+            for (let i = 0; i < promises.length; i++) {
+                const item = await promises[i]
+                const results = await item.json();
+                for (let i = 0; i < results.length; i++) {
+                    this.results[results[i].value] = results[i].label
+                }
+            }
+            await new Promise(r => setTimeout(r, 1000));
+            if (this.results.length > 2000) {
+                this.results.splice(0, 100);
+            }
+        }
+    }
+};
+
+// Заморозим объект на века
+Object.freeze(Singleton);
+
+Singleton.run()
+
 function getCookieValue(name) {
     const nameString = name + "="
 

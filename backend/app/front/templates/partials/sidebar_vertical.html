@@ -20,9 +20,8 @@
                     <li class="mini-nav-item" id="mini-1">
                         <a href="javascript:void(0)" data-bs-toggle="tooltip"
                            data-bs-custom-class="custom-tooltip" data-bs-placement="right"
-                           data-bs-title="Dashboards">
-                            <iconify-icon icon="solar:layers-line-duotone"
-                                          class="fs-7"></iconify-icon>
+                           data-bs-title="Dashboards" title="Dashboards">
+                            <iconify-icon icon="solar:layers-line-duotone" class="fs-7"></iconify-icon>
                         </a>
                     </li>
 
@@ -152,34 +151,34 @@
                         <!-- Home -->
                         <!-- ---------------------------------- -->
                         <li class="nav-small-cap">
-                            <span class="hide-menu">Dashboards</span>
+                            <span class="hide-menu" data-key="t-dashboards">Dashboards</span>
                         </li>
                         <!-- ---------------------------------- -->
                         <!-- Dashboard -->
                         <!-- ---------------------------------- -->
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="" id="get-url"
+                            <a class="sidebar-link" href="/sales/dashboards/sales" id="get-url"
                                aria-expanded="false">
                                 <iconify-icon icon="solar:atom-line-duotone"></iconify-icon>
-                                <span class="hide-menu">Dashboard 1</span>
+                                <span class="hide-menu" data-key="t-sales-dashboard">Sales Dashboard</span>
                             </a>
                         </li>
 
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/index2.html"
+                            <a class="sidebar-link" href="/delivery/dashboards/logistics"
                                aria-expanded="false">
                                 <iconify-icon
                                         icon="solar:chart-line-duotone"></iconify-icon>
-                                <span class="hide-menu">Dashboard 2</span>
+                                <span class="hide-menu" data-key="t-logistics-dashboard">Logistic Dashboard</span>
                             </a>
                         </li>
 
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/index3.html"
+                            <a class="sidebar-link" href="/inventory/dashboards/inventory"
                                aria-expanded="false">
                                 <iconify-icon
                                         icon="solar:screencast-2-line-duotone"></iconify-icon>
-                                <span class="hide-menu">Dashboard 3</span>
+                                <span class="hide-menu" data-key="t-inventory-dashboard">Inventory Dashboard</span>
                             </a>
                         </li>
 
@@ -188,56 +187,36 @@
                                aria-expanded="false">
                                 <iconify-icon
                                         icon="solar:home-angle-line-duotone"></iconify-icon>
-                                <span class="hide-menu">Front Pages</span>
+                                <span class="hide-menu" data-key="t-reports">Reports</span>
                             </a>
                             <ul aria-expanded="false" class="collapse first-level">
                                 <li class="sidebar-item">
                                     <a class="sidebar-link"
-                                       href="./main/frontend-landingpage.html">
+                                       href="/sales/reports/sales"
+                                    >
                                         <span class="icon-small"></span>
-                                        Homepage
+                                        Sales
                                     </a>
                                 </li>
                                 <li class="sidebar-item">
                                     <a class="sidebar-link"
                                        href="./main/frontend-aboutpage.html">
                                         <span class="icon-small"></span>
-                                        About Us
+                                        Clients
                                     </a>
                                 </li>
                                 <li class="sidebar-item">
                                     <a class="sidebar-link"
                                        href="./main/frontend-blogpage.html">
                                         <span class="icon-small"></span>
-                                        Blog
+                                        Delivery
                                     </a>
                                 </li>
                                 <li class="sidebar-item">
                                     <a class="sidebar-link"
                                        href="./main/frontend-blogdetailpage.html">
                                         <span class="icon-small"></span>
-                                        Blog Details
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link"
-                                       href="./main/frontend-contactpage.html">
-                                        <span class="icon-small"></span>
-                                        Contact Us
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link"
-                                       href="./main/frontend-portfoliopage.html">
-                                        <span class="icon-small"></span>
-                                        Portfolio
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link"
-                                       href="./main/frontend-pricingpage.html">
-                                        <span class="icon-small"></span>
-                                        Pricing
+                                        Inventory
                                     </a>
                                 </li>
                             </ul>
@@ -252,128 +231,28 @@
                         </li>
 
                         <li class="sidebar-item">
-                            <a class="sidebar-link has-arrow" href="javascript:void(0)"
+                            <a class="sidebar-link" href="#"
                                aria-expanded="false">
                                 <iconify-icon
-                                        icon="solar:cart-3-line-duotone"></iconify-icon>
-                                <span class="hide-menu">Ecommerce</span>
-                            </a>
-                            <ul aria-expanded="false" class="collapse first-level">
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link" href="./main/eco-shop.html">
-                                        <span class="icon-small"></span> Shop
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link"
-                                       href="./main/eco-shop-detail.html">
-                                        <span class="icon-small"></span>Details
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link"
-                                       href="./main/eco-product-list.html">
-                                        <span class="icon-small"></span>List
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link" href="./main/eco-checkout.html">
-                                        <span class="icon-small"></span>Checkout
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link"
-                                       href="./main/eco-add-product.html">
-                                        <span class="icon-small"></span>Add
-                                        Product
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link"
-                                       href="./main/eco-edit-product.html">
-                                        <span class="icon-small"></span>Edit
-                                        Product
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link has-arrow" href="javascript:void(0)"
-                               aria-expanded="false">
-                                <iconify-icon
-                                        icon="solar:widget-4-line-duotone"></iconify-icon>
-                                <span class="hide-menu">Blog</span>
-                            </a>
-                            <ul aria-expanded="false" class="collapse first-level">
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link" href="./main/blog-posts.html">
-                                        <span class="icon-small"></span>Blog
-                                        Posts
-                                    </a>
-                                </li>
-                                <li class="sidebar-item">
-                                    <a class="sidebar-link" href="./main/blog-detail.html">
-                                        <span class="icon-small"></span>Blog
-                                        Details
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/page-user-profile.html"
-                               aria-expanded="false">
-                                <iconify-icon
-                                        icon="solar:shield-user-line-duotone"></iconify-icon>
-                                User Profile
+                                        icon="solar:screencast-2-line-duotone"></iconify-icon>
+                                <span class="hide-menu" data-key="t-shop">Shop</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/app-email.html">
+                            <a class="sidebar-link" href="#"
+                               aria-expanded="false">
                                 <iconify-icon
-                                        icon="solar:letter-line-duotone"></iconify-icon>
-                                Email</a>
+                                        icon="solar:screencast-2-line-duotone"></iconify-icon>
+                                <span class="hide-menu" data-key="t-shop">Delivery App</span>
+                            </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/app-calendar.html">
+                            <a class="sidebar-link" href="#"
+                               aria-expanded="false">
                                 <iconify-icon
-                                        icon="solar:calendar-mark-line-duotone"></iconify-icon>
-                                Calendar</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/app-kanban.html">
-                                <iconify-icon
-                                        icon="solar:airbuds-case-minimalistic-line-duotone"></iconify-icon>
-                                Kanban</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/app-chat.html">
-                                <iconify-icon
-                                        icon="solar:chat-round-line-line-duotone"></iconify-icon>
-                                Chat</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/app-notes.html">
-                                <iconify-icon
-                                        icon="solar:document-text-line-duotone"></iconify-icon>
-                                Notes</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/app-contact.html">
-                                <iconify-icon
-                                        icon="solar:iphone-line-duotone"></iconify-icon>
-                                Contact Table</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/app-contact2.html">
-                                <iconify-icon
-                                        icon="solar:phone-line-duotone"></iconify-icon>
-                                Contact List</a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="./main/app-invoice.html">
-                                <iconify-icon
-                                        icon="solar:bill-list-line-duotone"></iconify-icon>
-                                Invoice</a>
+                                        icon="solar:screencast-2-line-duotone"></iconify-icon>
+                                <span class="hide-menu" data-key="t-shop">Store App</span>
+                            </a>
                         </li>
                     </ul>
                 </nav>

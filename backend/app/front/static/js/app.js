@@ -1,9 +1,10 @@
+
+
 async function choiceOneUUID(element, method) {
     var display_title = element.getAttribute('display-title')
     var filter = element.getAttribute('filter')
     var is_filter = element.getAttribute('is-filter')
     var model_name = element.getAttribute('model-name')
-
     var attrs = {
         placeholderValue: "Enter " + display_title
     }
@@ -76,32 +77,30 @@ async function choiceOneUUID(element, method) {
             console.error(err);
         }
     }
-
     async function getValues() {
+
         var id__in = ''
         let value = await choices.getValue();
+        if (value) {
+            value.label = 'Loading....'
+        } else {
+            return []
+        }
+        choices.setValue([value])
         try {
             if (!value) {
                 return []
             } else {
                 id__in = value.value
             }
-            var maybe_cache = cache[id__in]
-            if (maybe_cache) {
-                return [{
-                    value: id__in,
-                    label: maybe_cache,
-                }]
+            var maybe_cache = cache[id__in] // вдруг есть в кеше
+            Singleton.pushUUID(model_name, id__in)
+            while (true) {
+                if (Singleton.results[id__in]) {
+                    return [{ value: id__in, label: Singleton.results[id__in] }]
+                }
+                await new Promise(r => setTimeout(r, 50));
             }
-            const items = await fetch('/base/get_by_ids?model=' + model_name + '&id__in=' + encodeURIComponent(id__in));
-            const results = await items.json();
-            for (let i = 0; i < results.length; i++) {
-                cache[results[i].value] = results[i].label
-            }
-            if (0 === results.length) { // Handle error from result, for example.
-                return []
-            }
-            return results;
         } catch (err) {
             console.error(err);
             return []
@@ -204,31 +203,31 @@ async function choiceMultiUUID(element, method) {
     }
     choices.containerInner.element.classList.add('form-control');
     async function getValues() {
-
         var id__in = ''
         let values = await choices.getValue();
         choices.setValue([])
         for (let v in values) {
-            if (id__in === '') {
-                id__in += values[v].value
-            } else {
-                id__in += ',' + values[v].value
+            var maybe_cache = cache[v]
+            if (!maybe_cache) {
+                Singleton.pushUUID(model_name, values[v].value)
             }
         }
-        try {
-            if (id__in === '') {
-                return []
+        result = []
+        while (true){
+            for (let v in values){
+                id__in = values[v].value
+                if (Singleton.results[id__in]) {
+                    result.push({
+                        value: values[v].label,
+                        label: Singleton.results[id__in]
+                    })
+                    values.splice(v, 1)
+                }
             }
-            const items = await fetch('/base/get_by_ids?model=' + model_name + '&id__in=' + encodeURIComponent(id__in));
-            const results = await items.json();
-            if (0 === results.length) { // Handle error from result, for example.
-                return []
+            if (values.length === 0){
+                return result
             }
-            return results;
-        } catch (err) {
-            console.error(err);
-            choices.input.element.style = ""
-            return []
+            await new Promise(r => setTimeout(r, 50));
         }
     }
 
