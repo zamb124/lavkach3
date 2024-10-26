@@ -37,7 +37,7 @@
                                 <a href="javascript:void(0)" data-bs-toggle="tooltip"
                                    data-bs-custom-class="custom-tooltip" data-bs-placement="right"
                                    data-bs-title="Inventory">
-                                    <iconify-icon icon="solar:widget-add-bold-duotone"
+                                    <iconify-icon icon="solar:box-broken"
                                                   class="fs-7"></iconify-icon>
                                 </a>
                             </li>
@@ -103,6 +103,14 @@
 
                             <li>
                                 <span class="sidebar-divider lg"></span>
+                            </li>
+                            <li class="mini-nav-item" id="administration_mini">
+                                <a href="javascript:void(0)" data-bs-toggle="tooltip"
+                                   data-bs-custom-class="custom-tooltip" data-bs-placement="right"
+                                   data-bs-title="Administration">
+                                    <iconify-icon icon="solar:server-minimalistic-broken"
+                                                  class="fs-7"></iconify-icon>
+                                </a>
                             </li>
                             <!-- --------------------------------------------------------------------------------------------------------- -->
                             <!-- Auth -->
@@ -386,6 +394,7 @@
                                 <li class="nav-small-cap">
                                     <span class="hide-menu" data-key="t-inventory">Inventory</span>
                                 </li>
+
                                 <li class="sidebar-item">
                                     <a href="/inventory/order" hx-target="#htmx_content"
                                        class="sidebar-link">
@@ -1085,7 +1094,87 @@
                                 </li>
                             </ul>
                         </nav>
+                        <!-- ---------------------------------- -->
+                        <!-- Administration -->
+                        <!-- ---------------------------------- -->
+                        <nav class="sidebar-nav scroll-sidebar" id="menu-right-administration_mini"
+                             data-simplebar>
+                            <ul class="sidebar-menu" id="sidebarnav">
+                                <!-- ---------------------------------- -->
+                                <!-- Home -->
+                                <!-- ---------------------------------- -->
+                                <li class="nav-small-cap">
+                                    <span class="hide-menu">Inventory</span>
+                                </li>
+                                <!-- ---------------------------------- -->
+                                <!-- Dashboard -->
+                                <!-- ---------------------------------- -->
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link has-arrow" href="javascript:void(0)"
+                                       aria-expanded="false">
+                                        <iconify-icon
+                                                icon="solar:text-selection-line-duotone"></iconify-icon>
+                                        <span class="hide-menu">Inventory Orders</span>
+                                    </a>
+                                    <ul aria-expanded="false" class="collapse first-level">
+                                        <li class="sidebar-item">
+                                            <a href="/inventory/order" hx-target="#htmx_content"
+                                               class="sidebar-link">
+                                                <span class="icon-small"></span>
+                                                <span class="hide-menu"
+                                                      data-key="t-orders">Orders</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item">
+                                            <a href="/inventory/move" hx-target="#htmx_content"
+                                               class="sidebar-link">
+                                                <span class="icon-small"></span>
+                                                <span class="hide-menu"
+                                                      data-key="t-moves">Moves</span>
+                                            </a>
+                                        </li>
+                                        <li class="sidebar-item">
+                                            <a href="/inventory/suggest" hx-target="#htmx_content"
+                                               class="sidebar-link">
+                                                <span class="icon-small"></span>
+                                                <span class="hide-menu" data-key="t-suggests">Suggests</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
 
+
+                                <li class="sidebar-item">
+                                    <a href="javascript:void(0)" aria-expanded="false"
+                                       class="sidebar-link">
+                                        <iconify-icon
+                                                icon="solar:documents-minimalistic-line-duotone"></iconify-icon>
+                                        <span class="hide-menu" data-key="t-orders">Inventory</span>
+                                    </a>
+                                    <ul aria-expanded="false" class="collapse first-level">
+                                        <li class="sidebar-item">
+                                            <a href="./main/form-inputs.html"
+                                               class="sidebar-link">
+                                                <span class="icon-small"></span>
+                                                <span class="hide-menu">Forms Input</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link has-arrow" href="javascript:void(0)"
+                                       aria-expanded="false">
+                                        <iconify-icon
+                                                icon="solar:text-selection-line-duotone"></iconify-icon>
+                                        <span class="hide-menu">Order</span>
+                                    </a>
+                                </li>
+                                <li class="nav-small-cap">
+                                    <span class="hide-menu">Basic </span>
+                                </li>
+
+                            </ul>
+                        </nav>
                         <!-- ---------------------------------- -->
                         <!-- Auth Pages -->
                         <!-- ---------------------------------- -->
@@ -1473,11 +1562,13 @@
                                     </div>
                                 </div>
                             </li>
-                            <li class="nav-item placeholder-lg" hx-get="/front/company_changer_widget" hx-trigger="load">
-                                <button type="button" class="btn btn-primary btn-sm dropdown-toggle placeholder-lg"
+                            <li class="nav-item placeholder-lg"
+                                hx-get="/front/company_changer_widget" hx-trigger="load">
+                                <button type="button"
+                                        class="btn btn-primary btn-sm dropdown-toggle placeholder-lg"
                                         data-bs-toggle="dropdown" aria-haspopup="true"
                                         aria-expanded="false"
-                                        >Loading..
+                                >Loading..
                                 </button>
                             </li>
                         </ul>
@@ -2462,9 +2553,10 @@
                             <li class="sidebar-item">
                                 <a class="sidebar-link has-arrow" href="javascript:void(0)"
                                    aria-expanded="false">
-                  <span class="rounded-3">
-                    <iconify-icon icon="solar:home-angle-line-duotone" class="ti"></iconify-icon>
-                  </span>
+                                      <span class="rounded-3">
+                                        <iconify-icon icon="solar:home-angle-line-duotone"
+                                                      class="ti"></iconify-icon>
+                                      </span>
                                     <span class="hide-menu">Front Pages</span>
                                 </a>
                                 <ul aria-expanded="false" class="collapse first-level">

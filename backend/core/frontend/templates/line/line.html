@@ -15,8 +15,8 @@
 "id": "{{ line.id or "" }}",
 "key": "{{ line.key }}"
 }'
-       class="btn btn-soft-success inline">
-        <iconify-icon icon="solar:document-bold" class="fs-10"></iconify-icon>
+       class="btn btn-soft-success inline" style="padding: 0px">
+        <iconify-icon icon="solar:document-bold" class="fs-8"></iconify-icon>
 
     </a>
 {% endblock %}
@@ -57,8 +57,8 @@
 "id": "{{ line.id }}",
 "key": "{{ line.class_key }}"
 }'
-            class="btn btn-soft-primary inline">
-        <iconify-icon icon="solar:document-add-bold" class="fs-10"></iconify-icon>
+            class="btn btn-soft-primary inline" style="padding: 0px">
+        <iconify-icon icon="solar:document-add-bold" class="fs-8"></iconify-icon>
 
     </button>
 {% endblock %}
@@ -81,7 +81,7 @@
 "key": "{{ line.class_key }}"
 }'
     >
-        <iconify-icon icon="solar:add-square-broken" class="fs-10"></iconify-icon>
+        <iconify-icon icon="solar:add-square-broken" class="fs-8"></iconify-icon>
     </a>
 {% endblock %}
 
@@ -102,16 +102,15 @@
 "id": "{{ line.id or "" }}",
 "key": "{{ line.key }}"
 }'
-       class="btn btn-soft-danger">
-        <iconify-icon icon="solar:trash-bin-2-bold" class="fs-10"></iconify-icon>
+       class="btn btn-soft-danger" style="padding: 0px">
+        <iconify-icon icon="solar:trash-bin-2-bold" class="fs-8"></iconify-icon>
     </a>
 {% endblock %}
 
 {% block button_actions %}
-    <button class="btn btn-soft-info" type="button" data-bs-toggle="actions" aria-expanded="false"
-            id="{{ "actions-" ~ line.key }}">
-        <iconify-icon icon="solar:checklist-minimalistic-bold" class="fs-10"></iconify-icon>
-    </button>
+    <a class="btn btn-soft-info" style="padding: 0px" id="{{ "actions-" ~'--'~ line.key }}" aria-expanded="false" data-bs-toggle="dropdown">
+        <i class="ti ti-dots-vertical fs-8"></i>
+    </a>
     <ul class="dropdown-menu" aria-labelledby="{{ "actions-" ~'--'~ line.key }}">
         {% for action_name, action_vals in line.actions.items() %}
             <li class="dropdown-item">
@@ -170,7 +169,7 @@
             </div>
         </th>
         {% for field in line.fields|table(method=method) %}
-            <td class="col-line placeholder-glow ">
+            <td class="col-line placeholder-glow " style="height: 37px; overflow:auto;">
                 {% if field.get.required %}
                     <span class="placeholder col-12"></span>
                 {% else %}
@@ -237,29 +236,13 @@
                         {% endif %}>
                 </div>
                 <div>
-                    <li class="breadcrumb-item d-flex align-items-center">
-                        <a href="javascript:void(0)" class="text-muted"
-                           id="dropdownMenuButton" data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            <i class="ti ti-dots-vertical fs-8"></i>
-
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li>
-                                {{ line.button_update }} Edit
-                            </li>
-                            <li>
-                                {{ line.button_delete }} Delete
-                            </li>
-                            <li>
-                                {{ line.button_actions }} Actions
-                            </li>
-                        </ul>
-                    </li>
-
+                    {{ line.button_update }}
+                    {{ line.button_delete }}
+                    {{ line.button_actions }}
 
                 </div>
             </td>
+
         </tr>
     {% endautoescape %}
 {% endblock %}
