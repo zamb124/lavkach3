@@ -50,6 +50,14 @@ class BaseAdapter(BaseAdapter):
         responce = await self.client.post(self.host + path, json=body, params=None)
         return responce.json()
 
+    async def logout(self, user_id):
+        path = f'/api/base/user/logout'
+        body = {
+            'user_id': user_id.__str__(),
+        }
+        responce = await self.client.post(self.host + path, json=body, params=None)
+        return responce.json()
+
     async def dropdown_ids(self, model: str, id: str, itemlink: str, is_named=False, message=None):
         """
             Виджет на вход получает модуль-модель-ид- и обратную ссылку если нужно, если нет будет /module/model/{id}

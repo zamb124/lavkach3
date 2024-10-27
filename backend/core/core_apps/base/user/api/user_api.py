@@ -19,7 +19,7 @@ from .....fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )
-from .schemas import LoginRequest
+from .schemas import LoginRequest, LogoutRequest
 from ..schemas.user_schemas import SignUpScheme, ChangeCompanyScheme, ChangeLocaleScheme
 
 user_router = APIRouter()
@@ -77,6 +77,13 @@ async def login(schema: LoginRequest, service: UserService = Depends()):
         email=schema.email,
         password=schema.password,
     )
+
+@user_router.post(
+    "/logout",
+    responses={"404": {"model": ExceptionResponseSchema}},
+)
+async def login(schema: LogoutRequest, service: UserService = Depends()):
+    return await service.logout(obj=schema)
 
 
 @user_router.post("/signup", response_model=LoginResponseSchema)

@@ -4,6 +4,12 @@ htmx.on('htmx:wsBeforeMessage', (e) => {
     console.log(message)
     if (message.message_type === 'COMPANY_CHANGED') {
         document.location.reload()
+    } else if (message.tag === 'LOGOUT') {
+        debugger
+        document.cookie = "token={{token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;"
+        document.cookie = "refresh_token={{refresh_token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;"
+        document.location.replace('/basic/user/login?/')
+        //document.location.replace('/basic/user/login?/')
     } else if (message.tag === 'MODEL') {
         var elements = htmx.findAll(`[ui_key="${message.vars.model}--${message.vars.id}"]`)
         if (message.vars.method === 'create') {

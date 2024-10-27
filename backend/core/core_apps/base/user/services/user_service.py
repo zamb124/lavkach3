@@ -6,7 +6,8 @@ from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 
-#from .. import RoleService
+from ..api.schemas import LogoutRequest
+# from .. import RoleService
 from ...company import CompanyService
 from ...user.models.role_models import Role
 from ...user.models.user_models import User
@@ -25,6 +26,7 @@ from .....permissions.permissions import permit, permits
 from .....service.base import BaseService, ModelType, FilterSchemaType, logger
 from .....utils.token_helper import TokenHelper
 from httpx import AsyncClient as asyncclient
+
 
 class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilter]):
     def __init__(self, request: Request):
@@ -64,7 +66,7 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         return entity
 
-    async def login(self, email: str = None, password: str = None, user = None):
+    async def login(self, email: str = None, password: str = None, user=None):
         # Получаем юзера из бд
         if not user:
             result_user = await self.session.execute(
@@ -138,9 +140,10 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
 
     async def signup(self, obj: SignUpScheme):
         try:
-            company = await CompanyService(db_session=self.session).sudo().create(obj.company, commit=False)
+            company = await CompanyService(db_session=self.session).sudo().create(obj.company,
+                                                                                  commit=False)
             obj.user.company_ids = [company.id]
-            #role = await RoleService(db_session=self.session).sudo().create_company_admin_role(company.id, commit=False)
+            # role = await RoleService(db_session=self.session).sudo().create_company_admin_role(company.id, commit=False)
             obj.user.role_ids = [role.id]
             user = await self.sudo().create(obj.user, commit=False)
             login = await self.login(user.email, user.password)
@@ -151,9 +154,28 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
             raise HTTPException(status_code=409, detail=f"Dublicate {str(e)}")
         await self.session.commit()
         return login
+
     async def send_relogin(self, user_id: UUID):
         data = {
             'cache_tag': CacheTag.REFRESH.value,
+            'company_id': self.user.company_id.__str__(),
+            'user_id': self.user.user_id.__str__(),
+            'message': 'relogin',
+        }
+        client = asyncclient()
+        responce = await client.post(
+            url=f'http://{config.BUS_HOST}:{config.BUS_PORT}/api/bus/bus',
+            json=data,
+            headers={'Authorization': config.INTERCO_TOKEN}
+        )
+        if responce.status_code == 200:
+            logger.info(f'Message sended to bus.bus')
+        else:
+            logger.warning(responce.text)
+
+    async def send_logout(self):
+        data = {
+            'cache_tag': CacheTag.LOGOUT.value,
             'company_id': self.user.company_id.__str__(),
             'user_id': self.user.user_id.__str__(),
             'message': 'relogin',
@@ -179,6 +201,10 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         await self.send_relogin(user.id)
         return user
 
+    @permit('logout')
+    async def logout(self, obj: LogoutRequest, commit=True) -> ModelType:
+        await self.send_logout()
+
     @permit('locale_change')
     async def locale_change(self, obj: ChangeLocaleScheme, commit=True) -> ModelType:
         user = await self.get(obj.user_id)
@@ -186,19 +212,19 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         self.session.add(user)
         await self.session.commit()
         await self.session.refresh(user)
-        #await self.send_relogin(user.id)
+        # await self.send_relogin(user.id)
         return user
 
     async def permissions(self, user_id: UUID) -> List[str]:
         permits_allow: list[str] = []
-        permits_deny: list[str]  =  []
+        permits_deny: list[str] = []
         user_entity = await self.get(user_id)
         role_service = self.env['role'].service
         roles = await role_service.list(_filter={'id__in': user_entity.role_ids})
         children = []
         for r in roles:
             permits_allow += r.permission_allow_list
-            permits_deny  += r.permission_deny_list
+            permits_deny += r.permission_deny_list
             children += r.role_ids
         while children:
             child_roles_entities = await role_service.list(_filter={'id__in': children})

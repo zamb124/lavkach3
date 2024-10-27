@@ -7,6 +7,7 @@ class CacheTag(Enum):
     MESSAGE = 'message'
     MODEL = 'model'
     REFRESH = 'refresh'
+    LOGOUT = 'logout'
 
 class CacheStrategy(str, Enum):
     FULL: str = 'FULL'

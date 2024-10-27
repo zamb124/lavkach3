@@ -10,3 +10,5 @@ permits:
   role_delete: Может удалять роль
   role_get: Может смотреть на роль
   company_change: Может сменить компанию
+  locale_change: Может сменить локаль
+  logout: Может выйти

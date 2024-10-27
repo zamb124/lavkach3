@@ -63,6 +63,10 @@ async def login(request: Request, schema: LoginSchema, ):
         }
     )
 
+@user_router.get("/logout", responses={"404": {"model": ExceptionResponseSchema}}, )
+async def logout(request: Request, response: Response):
+    async with request.scope['env']['user'].adapter as a:
+        data = await a.logout(request.user.user_id)
 
 class RefreshTokenSchema(BaseModel):
     token: str

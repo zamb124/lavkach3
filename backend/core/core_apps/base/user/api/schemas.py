@@ -13,3 +13,6 @@ class LoginResponse(BaseModel):
     refresh_token: str = Field(..., description="Refresh token")
     company_ids: Optional[list[UUID4]]
     role_ids: Optional[list[str]]
+
+class LogoutRequest(BaseModel):
+    user_id: UUID4 = Field(..., description="User ID")
