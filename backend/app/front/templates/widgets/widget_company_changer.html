@@ -1,10 +1,12 @@
 {% block company_changer %}
+    <li>
 <button type="button" class="btn btn-primary btn-sm dropdown-toggle"
-        data-bs-toggle="dropdown" aria-haspopup="true"
+        data-bs-toggle="dropdown" id="company_selector"
         aria-expanded="false"
 >{{ company.title }}
 </button>
-<ul class="dropdown-menu animated rubberBand" style="">
+<ul class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
+    aria-labelledby="company_selector">
     {% for company_id, company in companies.items() %}
     <li>
         <a class="dropdown-item"
@@ -20,4 +22,5 @@
     </li>
     {% endfor %}
 </ul>
+    </li>
 {% endblock %}
