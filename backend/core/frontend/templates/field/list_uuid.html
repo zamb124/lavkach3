@@ -50,30 +50,10 @@
 {% endblock %}
 
 {% block as_get %}
-        <div class="text-start form-control disabled" style="min-height: 37px" id="{{ field.key }}">
-        </div>
-    <script>
-        (async function () {
-            let element = document.getElementById("{{ field.key }}");
-
-            async function getValues() {
-                var id__in = {% if field.val %}"{{ ','.join(field.val) }}"{% else %}""{% endif %}
-                try {
-                    const items = await fetch('/base/get_by_ids?model={{ field.model_name }}&id__in=' + encodeURIComponent(id__in));
-                    const results = await items.json();
-                    if (0 === results.length) { // Handle error from result, for example.
-                        return []
-                    } else {
-                        results.forEach(function (line) {
-                            element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary">' + line.label + '</span>');
-                        });
-                    }
-                } catch (err) {
-                    console.error(err);
-                }
-
-            }
-            getValues()
-        })();
+        <div  model-name="{{ field.model_name }}" class="text-start form-control disabled" style="min-height: 37px" id="{{ field.key }}">{{ ','.join(field.val)|safe }}</div>
+        <script>
+        var key = '{{ field.key }}';
+        var el = document.getElementById(key);
+        choicesMultiBadges(el, 'get')
     </script>
 {% endblock %}

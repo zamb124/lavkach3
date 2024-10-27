@@ -1,5 +1,3 @@
-
-
 async function choiceOneUUID(element, method) {
     var display_title = element.getAttribute('display-title')
     var filter = element.getAttribute('filter')
@@ -20,6 +18,7 @@ async function choiceOneUUID(element, method) {
         choices.containerInner.element.classList.add('disabled');
         choices.disable()
     }
+
     function check_valid(event) {
         if (method === 'get' || element.getAttribute('readonly')) { // Если метод get или reanonly, то нет смысла от валидования
             // Если метод get или reanonly, то нет смысла от валидования
@@ -66,7 +65,9 @@ async function choiceOneUUID(element, method) {
             choices.containerInner.element.classList.add('is-valid');
         }
     }
+
     choices.containerInner.element.classList.add('form-control');
+
     async function searchChoices(value) {
         try {
             const items = await fetch('/base/search?model=' + model_name + '&filter=' + filter + '&search=' + encodeURIComponent(value));
@@ -79,6 +80,7 @@ async function choiceOneUUID(element, method) {
             console.error(err);
         }
     }
+
     async function getValues() {
 
         var id__in = ''
@@ -95,11 +97,14 @@ async function choiceOneUUID(element, method) {
             } else {
                 id__in = value.value
             }
-            var maybe_cache = cache[id__in] // вдруг есть в кеше
+            var maybe_cache = Singleton.results[id__in] // вдруг есть в кеше
+            if (maybe_cache) {
+                return [{value: id__in, label: maybe_cache}]
+            }
             Singleton.pushUUID(model_name, id__in)
             while (true) {
                 if (Singleton.results[id__in]) {
-                    return [{ value: id__in, label: Singleton.results[id__in] }]
+                    return [{value: id__in, label: Singleton.results[id__in]}]
                 }
                 await new Promise(r => setTimeout(r, 50));
             }
@@ -157,6 +162,7 @@ async function choiceMultiUUID(element, method) {
         choices.containerInner.element.classList.add('disabled');
         choices.disable()
     }
+
     function check_valid(event) {
         if (method === 'get' || element.getAttribute('readonly')) { // Если метод get или reanonly, то нет смысла от валидования
             // Если метод get или reanonly, то нет смысла от валидования
@@ -203,20 +209,23 @@ async function choiceMultiUUID(element, method) {
             choices.containerInner.element.classList.add('is-valid');
         }
     }
+
     choices.containerInner.element.classList.add('form-control');
+
     async function getValues() {
         var id__in = ''
         let values = await choices.getValue();
         choices.setValue([])
+
         for (let v in values) {
-            var maybe_cache = cache[v]
+            var maybe_cache = Singleton.results[v]
             if (!maybe_cache) {
                 Singleton.pushUUID(model_name, values[v].value)
             }
         }
-        result = []
-        while (true){
-            for (let v in values){
+        var result = []
+        while (true) {
+            for (let v in values) {
                 id__in = values[v].value
                 if (Singleton.results[id__in]) {
                     result.push({
@@ -226,7 +235,7 @@ async function choiceMultiUUID(element, method) {
                     values.splice(v, 1)
                 }
             }
-            if (values.length === 0){
+            if (values.length === 0) {
                 return result
             }
             await new Promise(r => setTimeout(r, 50));
@@ -259,6 +268,45 @@ async function choiceMultiUUID(element, method) {
         choices.input.element.style = ""
     });
     check_valid()
+}
+
+async function choicesMultiBadges(element, method) {
+    var model_name = element.getAttribute('model-name')
+    async function getValues() {
+        var id__in = ''
+        var str = element.innerText.replace(/[\s\n\t]+/g, ' ').trim()
+        let values = str ? str.split(',')  : [];
+
+        for (let v in values) {
+            var maybe_cache = Singleton.results[values[v]]
+            if (!maybe_cache) {
+                Singleton.pushUUID(model_name, values[v])
+            }
+        }
+        var result = []
+        while (true) {
+            for (let v in values) {
+                if (Singleton.results[values[v]]) {
+                    result.push({
+                        value: values[v],
+                        label: Singleton.results[values[v]]
+                    })
+                    values.splice(v, 1)
+                }
+            }
+            if (values.length === 0) {
+                return result
+            }
+            await new Promise(r => setTimeout(r, 50));
+        }
+    }
+
+    let res = await getValues()
+    element.innerText = ''
+    res.forEach(function (line) {
+
+        element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary">' + line.label + '</span>');
+    });
 }
 
 async function choiceMultiBabel() {
@@ -388,6 +436,7 @@ async function choiceMultiEnum(element, method) {
         choices.disable()
     }
     choices.containerInner.element.classList.add('form-control');
+
     function check_valid(event) {
         if (method === 'get' || element.getAttribute('readonly')) { // Если метод get или reanonly, то нет смысла от валидования
             // Если метод get или reanonly, то нет смысла от валидования
@@ -434,6 +483,7 @@ async function choiceMultiEnum(element, method) {
             choices.containerInner.element.classList.add('is-valid');
         }
     }
+
     choices.containerInner.element.classList.add('form-control');
 
     check_valid()
