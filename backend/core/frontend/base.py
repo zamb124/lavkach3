@@ -167,11 +167,11 @@ async def line(request: Request, schema: LineSchema):
     match schema.method:
         case Method.UPDATE:
             """Отдать обьект на редактирование, в зависимости от mode (tr/div)"""
-            lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+            lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
             return getattr(lines[0], f'as_{schema.mode}_update')
         case Method.GET:
             """Отдать обьект на чтение, в зависимости от mode (tr/div)"""
-            lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+            lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
             return getattr(lines[0], f'as_{schema.mode}_get')
         case Method.CREATE:
             """Отдать обьект на создание, в зависимости от mode (tr/div)"""
@@ -212,13 +212,13 @@ async def modal(request: Request, schema: ModalSchema):
     cls = ClassView(request, schema.model, force_init=False)
     match schema.method:
         case Method.GET:
-            lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+            lines = await cls.lines.get_lines(ids=[schema.id])
             return lines[0].get_get
         case Method.UPDATE:
-            lines = await cls.lines.get_lines(ids=[schema.id], join_related=True)
+            lines = await cls.lines.get_lines(ids=[schema.id])
             return lines[0].get_update
         case Method.DELETE:
-            lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
+            lines = await cls.lines.get_lines(ids=[schema.id])
             return lines[0].get_delete
         case Method.CREATE:
             return cls.lines.line_new.get_create
