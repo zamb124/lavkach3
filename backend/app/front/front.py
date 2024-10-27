@@ -160,3 +160,11 @@ async def company_changer_widget(request: Request, locale: str=None) -> dict:
         'widgets/widget_locale_changer.html',
         context=locales
     )
+
+
+@index_router.get("/front/widget_user_profile", response_class=HTMLResponse)
+async def widget_user_profile(request: Request) -> dict:
+    return templates.TemplateResponse(
+        request,
+        'widgets/widget_user_profile.html'
+    )

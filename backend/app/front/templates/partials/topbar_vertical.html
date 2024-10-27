@@ -354,62 +354,24 @@
                     <!-- ------------------------------- -->
                     <!-- start profile Dropdown -->
                     <!-- ------------------------------- -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link" href="javascript:void(0)" id="drop1"
-                           aria-expanded="false">
-                            <div class="d-flex align-items-center gap-2 lh-base">
-
-                                <img src="{{ url_for('static' ,path='images/profile/user-1.jpg') }}"
-                                     class="rounded-circle" width="35" height="35"
-                                     alt="matdash-img"/>
-                                <iconify-icon icon="solar:alt-arrow-down-bold"
-                                              class="fs-2"></iconify-icon>
-                            </div>
-                        </a>
-                        <div class="dropdown-menu profile-dropdown dropdown-menu-end dropdown-menu-animate-up"
-                             aria-labelledby="drop1">
-                            <div class="position-relative px-4 pt-3 pb-2">
-                                <div class="d-flex align-items-center mb-3 pb-3 border-bottom gap-6">
+                    <div id="widget_user_profile" hx-get="/front/widget_user_profile"
+                         hx-trigger="load">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="javascript:void(0)" id="drop1"
+                               aria-expanded="false">
+                                <div class="d-flex align-items-center gap-2 lh-base">
 
                                     <img src="{{ url_for('static' ,path='images/profile/user-1.jpg') }}"
-                                         class="rounded-circle" width="56"
-                                         height="56"
+                                         class="rounded-circle" width="35" height="35"
                                          alt="matdash-img"/>
-                                    <div>
-                                        <h5 class="mb-0 fs-12">David McMichael <span
-                                                class="text-success fs-11">Pro</span>
-                                        </h5>
-                                        <p class="mb-0 text-dark">
-                                            david@wrappixel.com
-                                        </p>
-                                    </div>
+                                    <iconify-icon icon="solar:alt-arrow-down-bold"
+                                                  class="fs-2"></iconify-icon>
                                 </div>
-                                <div class="message-body">
-                                    <a href="./main/page-user-profile.html"
-                                       class="p-2 dropdown-item h6 rounded-1">
-                                        My Profile
-                                    </a>
-                                    <a href="./main/page-pricing.html"
-                                       class="p-2 dropdown-item h6 rounded-1">
-                                        My Subscription
-                                    </a>
-                                    <a href="./main/app-invoice.html"
-                                       class="p-2 dropdown-item h6 rounded-1">
-                                        My Invoice <span
-                                            class="badge bg-danger-subtle text-danger rounded ms-8">4</span>
-                                    </a>
-                                    <a href="./main/page-account-settings.html"
-                                       class="p-2 dropdown-item h6 rounded-1">
-                                        Account Settings
-                                    </a>
-                                    <a href="./main/authentication-login2.html"
-                                       class="p-2 dropdown-item h6 rounded-1">
-                                        Sign Out
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+                            </a>
+
+                        </li>
+                    </div>
+
                     <!-- ------------------------------- -->
                     <!-- end profile Dropdown -->
                     <!-- ------------------------------- -->

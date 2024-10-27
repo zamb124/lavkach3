@@ -8,7 +8,7 @@ from starlette.templating import Jinja2Templates
 
 from app.front.front_config import config
 
-a=1
+
 
 template_path = "app/front/templates/"
 

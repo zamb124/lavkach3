@@ -24,7 +24,7 @@ async def store(request: Request):
     return templates.TemplateResponse(request, template, context={'cls': cls})
 
 
-@store_router.get("/mystore", response_class=HTMLResponse)
+@store_router.get("/store_monitor", response_class=HTMLResponse)
 async def mystore(request: Request):
     """Интерфейс работы со своим складом"""
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
