@@ -135,7 +135,7 @@ async def table(request: Request, schema: TableSchema):
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
     form_data = await request.json()
-
+    def_lsn = 9999999999999999999
     qp = request.query_params
     if form_data.get('key'):
         qp = clean_filter(form_data, form_data['key'])

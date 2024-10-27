@@ -18,14 +18,14 @@ class BaseFilter(Filter):
     """
     search: Optional[str] = Field(default='', title='Search')
     lsn__gt: Optional[int] = Field(alias="cursor", title='Lsn', default=0, filter=False)
-    lsn__lt: Optional[int] = Field(alias="-cursor", title='-Lsn', default=99999999999999, filter=False)
+    lsn__lt: Optional[int] = Field(alias="cursor_lt", title='-Lsn', default=999999999999, filter=False)
     id__in: Optional[List[UUID4]] = Field(default=None, title='ID', filter=False)
     created_at__gte: Optional[datetime] = Field(default=None, title='Created at from', hidden=True)
     created_at__lt: Optional[datetime] = Field(default=None, title='Created at to', hidden=True)
     updated_at__gte: Optional[datetime] = Field(default=None, title='Updated at from', hidden=False)
     updated_at__lt: Optional[datetime] = Field(default=None, title='Updated at to', hidden=True)
     # company_id__in: Optional[List[UUID4]] = Field(alias="company_id", default=None, title='Company')
-    order_by: Optional[List[str]] = Field(default=["lsn", ], title='Order by', filter=False)
+    order_by: Optional[List[str]] = Field(default=["-lsn", ], title='Order by', filter=False)
    ##
 
     @model_validator(mode='before')

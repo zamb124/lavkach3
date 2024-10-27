@@ -225,7 +225,9 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
         entity = await self._create(obj, commit=commit)
-        # self.basecache.set(entity)
+        if self.model.__tablename__ == 'bus':
+            return entity
+        await entity.notify('create')
         return entity
 
     async def _update(self, id: Any, obj: UpdateSchemaType, commit=True) -> tuple[Row, list]:
@@ -300,7 +302,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             await entity.notify('update', updated_fields)
         return entity
 
-    async def _delete(self, id: Any) -> bool:
+    async def _delete(self, id: Any):
         entity = await self.get(id)
         message = await self.prepere_bus(entity, 'delete')
         await self.session.delete(entity)
@@ -314,10 +316,11 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
-        return True
+        return True, message
 
     async def delete(self, id: Any) -> bool:
-        res = await self._delete(id)
+        res, message = await self._delete(id)
+        await self.model.notify(self.model, method='delete', message=message)
         return res
 
     @classmethod

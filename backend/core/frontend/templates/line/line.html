@@ -52,11 +52,11 @@
             hx-swap="beforeend transition:true"
             hx-post="/base/modal"
             hx-vals='{
-"model": "{{ line.model_name }}",
-"method": "update",
-"id": "{{ line.id }}",
-"key": "{{ line.class_key }}"
-}'
+            "model": "{{ line.model_name }}",
+            "method": "update",
+            "id": "{{ line.id }}",
+            "key": "{{ line.class_key }}"
+            }'
             class="btn btn-soft-primary inline" style="padding: 0px">
         <iconify-icon icon="solar:document-add-bold" class="fs-8"></iconify-icon>
 
@@ -108,7 +108,8 @@
 {% endblock %}
 
 {% block button_actions %}
-    <a class="btn btn-soft-info" style="padding: 0px" id="{{ "actions-" ~'--'~ line.key }}" aria-expanded="false" data-bs-toggle="dropdown">
+    <a class="btn btn-soft-info" style="padding: 0px" id="{{ "actions-" ~'--'~ line.key }}"
+       aria-expanded="false" data-bs-toggle="dropdown">
         <i class="ti ti-dots-vertical fs-8"></i>
     </a>
     <ul class="dropdown-menu" aria-labelledby="{{ "actions-" ~'--'~ line.key }}">
@@ -150,16 +151,16 @@
             </div>
             </p>
         </th>
-    {% for field in line.fields|table(method=method) %}
-        <td
-                data-bs-toggle="tooltip"
-                data-bs-html="true"
-                title="{{ field.get.description or field.get.title }}">
-            <p>{{ field.get.title or field.field_name }}</p>
-        </td>
-    {% endfor %}
-    <th style="min-width: 8rem"><p>Active</p></th>
-        </tr>
+        {% for field in line.fields|table(method=method) %}
+            <td
+                    data-bs-toggle="tooltip"
+                    data-bs-html="true"
+                    title="{{ field.get.description or field.get.title }}">
+                <p>{{ field.get.title or field.field_name }}</p>
+            </td>
+        {% endfor %}
+        <th style="min-width: 8rem"><p>Active</p></th>
+    </tr>
 {% endblock %}
 {% block as_tr_placeholder %}
     <tr>
@@ -176,7 +177,7 @@
                     {% set rand = range(1, 4) | random %}
                     {% if rand == 2 %}
                         <span class="placeholder col-12"></span>
-                        {% endif %}
+                    {% endif %}
                 {% endif %}
             </td>
         {% endfor %}
@@ -190,23 +191,51 @@
                 ui_key="{{ line.ui_key }}"
                 lsn="{{ line.lsn }}"
                 hx-trigger="backend_update"
-                hx-params="model,method,mode,id,key"
+
                 hx-post="/base/line"
                 hx-ext="json-enc"
                 hx-swap="outerHTML transition:true"
                 hx-target="#{{ line.key }}"
                 hx-vals='{
                     "model": "{{ line.model_name }}",
-                    "method": "{{ method.value }}",
+                    "method": "get",
                     "mode": "tr",
                     "key": "{{ line.class_key }}",
                     "id": "{{ line.id }}"
                     }'
         >
-            <th scope="row">
-                <div class="form-check fs-5">
-                    <input class="form-check-input" type="checkbox"
-                           name="{{ line.key ~ '--check' }}" value="">
+            <th scope="row" style="white-space: nowrap; vertical-align: middle;">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-check fs-5" style="display: inline-block;">
+                            <input class="form-check-input" type="checkbox"
+                                   name="{{ line.key ~ '--check' }}" value="">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <a
+                                href="#"
+                                hx-trigger="click"
+                                {% if method.value in ('get','create') %}hx-target="#{{ line.key }}"
+                                {% else %}hx-target="this"{% endif %}
+                                hx-include="#{{ line.key }}"
+                                hx-ext="json-enc"
+                                hx-swap="outerHTML"
+                                hx-post="/base/line"
+                                hx-vals='{
+                                    "model": "{{ line.model_name }}",
+                                    "method": "{% if method.value =='get' %}update{% elif method.value =='create' %}save_create{% else %}save{% endif %}",
+                                    "mode": "tr",
+                                    "id": "{{ line.id }}",
+                                    "key": "{{ line.class_key }}"
+                                }'
+                                class="btn btn-soft-primary inline"
+                                style="display: inline-block">
+                            <iconify-icon
+                                    icon="{% if method.value =='get' %}solar:pen-bold{% else %}solar:diskette-bold{% endif %}"
+                                    class="fs-8"></iconify-icon>
+                        </a>
+                    </div>
                 </div>
             </th>
             {% for field in line.fields|table(method=method) %}
@@ -230,13 +259,12 @@
                             hx-target="#tbody-table--{{ line.class_key }}"
                             hx-vals='{
                             "model": "{{ line.model_name }}",
-                            "{{ line.class_key ~'--filter--'~ 'cursor' }}": "{{ line.lsn }}",
+                            "{{ line.class_key ~'--filter--'~ 'cursor_lt' }}": "{{ line.lsn }}",
                             "key": "{{ line.class_key }}"
                         }'
                         {% endif %}>
                 </div>
                 <div>
-                    {{ line.button_update }}
                     {{ line.button_delete }}
                     {{ line.button_actions }}
 
@@ -267,6 +295,33 @@
                     "id": "{{ line.id }}"
                     }'
         >
+
+<div class="text-start" style="padding-left: 0px;">
+            <a
+                    href="#"
+                    hx-trigger="click"
+                    {% if method.value in ('get', 'create') %}
+                    hx-target="#{{ line.key }}"
+                    {% else %}hx-target="this"{% endif %}
+                    hx-include="#{{ line.key }}"
+                    hx-ext="json-enc"
+                    hx-swap="outerHTML"
+                    hx-post="/base/line"
+                    hx-vals='{
+                "model": "{{ line.model_name }}",
+                "method": "{% if method.value =='get' %}update{% elif method.value =='create' %}save_create{% else %}save{% endif %}",
+                "mode": "div",
+                "id": "{{ line.id }}",
+                "key": "{{ line.class_key }}"
+            }'
+                    class="btn btn-soft-primary inline"
+                    style="display: inline-block">
+                <iconify-icon
+                        icon="{% if method.value =='get' %}solar:pen-bold{% else %}solar:diskette-bold{% endif %}"
+                        class="fs-8"></iconify-icon>
+            </a>
+
+        </div>
         {% for field in line.fields if not field.is_reserved and field.type != 'list_rel' %}
             {% if loop.length % 3 != 0 and loop.first %}
                 <div class="row">
@@ -313,6 +368,7 @@
             {% endif %}
         {% endfor %}
     </div>
+
     {% endautoescape %}
 {% endblock %}
 {% block as_item %}

@@ -69,7 +69,7 @@ class Base(metaclass=DeclarativeMeta):
 
     __init__ = mapper_registry.constructor
 
-    async def prepere_bus(self, entity: object, method: str, updated_fields:list):
+    async def prepere_bus(self, entity: object, method: str, updated_fields:list = None):
         return {
             'cache_tag': CacheTag.MODEL,
             'message': f'{self.__tablename__.capitalize()} is {method.capitalize()}',
@@ -98,8 +98,9 @@ class Base(metaclass=DeclarativeMeta):
             logger.warning(responce.text)
 
 
-    async def notify(self, method, updated_fields: list):
-        message = await self.prepere_bus(self, method, updated_fields)
+    async def notify(self, method, updated_fields: list = None, message=None):
+        if not message:
+            message = await self.prepere_bus(self, method=method, updated_fields=updated_fields)
         i: int = 1
         while True:
             try:

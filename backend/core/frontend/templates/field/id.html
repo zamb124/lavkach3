@@ -17,15 +17,15 @@
     <input
 
             {% if field.create.required %} required {% endif %}
-           {% if field.create.readonly %}
-                style="pointer-events: none;"
-                class="id form-control disabled"
-                readonly
+            {% if field.create.readonly %}
+                                           style="pointer-events: none;"
+                                           class="id form-control disabled"
+                                           readonly
             {% else %}
-                class="id form-control is-valid"
+                                           class="id form-control is-valid"
             {% endif %}
-            name="{{ field.key }}"
-            value="{{ field.val if field.val else "" }}"
+                                           name="{{ field.key }}"
+                                           value="{{ field.val if field.val else "" }}"
     >
 {% endblock %}
 {% block as_get %}

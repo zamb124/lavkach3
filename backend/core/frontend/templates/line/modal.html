@@ -6,27 +6,15 @@
                 <div class="modal-content">
                     <div class="modal-header">
 
-                        <div class="col-6">
                             <h5 class="modal-title">
                                 {{ method|capitalize }} {{ line.model_name|capitalize }}
-                                <span>
-                    {% if method in ('create', 'update') %}
-                        {{ line.button_view|safe }}
-                    {% else %}
-                        {{ line.button_update|safe }}
-                    {% endif %}
-                        </span>
-                                <span>
-                            {{ line.button_delete|safe }}
-                        </span>
-                                <span>
-                        {{ line.button_actions }}
-                    </span>
+                                <span></span>
 
                             </h5>
-                        </div>
 
-                        <div class="bx-pull-right">
+                        <div class="text-end">
+                            {{ line.button_delete|safe }}
+                            {{ line.button_actions }}
                             <button class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                         </div>
@@ -40,22 +28,14 @@
                             </lord-icon>
                             {% if method == 'update' %}
                                 {{ line.as_div_update }}
-                           {% elif method == 'create' %}
+                            {% elif method == 'create' %}
                                 {{ line.as_div_create }}
                             {% else %}
                                 {{ line.as_div_get }}
                             {% endif %}
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            Close
-                        </button>
-                        {% if method in ('create', 'update') %}
-                            {{ line.button_save }}
-                        {% endif %}
 
-                    </div>
                 </div>
 
             </div>
@@ -65,31 +45,31 @@
             modal.show()
         </script>
         <script>
-    // Modal'ı sürüklenebilir hale getiren JavaScript kodu
-    (function () {
-        var modal = document.getElementById('{{ 'modal_'~line.class_key }}');
-        var header = modal.querySelector('.modal-header');
+            // Modal'ı sürüklenebilir hale getiren JavaScript kodu
+            (function () {
+                var modal = document.getElementById('{{ 'modal_'~line.class_key }}');
+                var header = modal.querySelector('.modal-header');
 
-        header.onmousedown = function (e) {
-            var offsetX = e.clientX - modal.getBoundingClientRect().left;
-            var offsetY = e.clientY - modal.getBoundingClientRect().top;
+                header.onmousedown = function (e) {
+                    var offsetX = e.clientX - modal.getBoundingClientRect().left;
+                    var offsetY = e.clientY - modal.getBoundingClientRect().top;
 
-            function mouseMoveHandler(e) {
-                modal.style.position = 'absolute';
-                modal.style.left = (e.clientX - offsetX) + 'px';
-                modal.style.top = (e.clientY - offsetY) + 'px';
-            }
+                    function mouseMoveHandler(e) {
+                        modal.style.position = 'absolute';
+                        modal.style.left = (e.clientX - offsetX) + 'px';
+                        modal.style.top = (e.clientY - offsetY) + 'px';
+                    }
 
-            function mouseUpHandler() {
-                document.removeEventListener('mousemove', mouseMoveHandler);
-                document.removeEventListener('mouseup', mouseUpHandler);
-            }
+                    function mouseUpHandler() {
+                        document.removeEventListener('mousemove', mouseMoveHandler);
+                        document.removeEventListener('mouseup', mouseUpHandler);
+                    }
 
-            document.addEventListener('mousemove', mouseMoveHandler);
-            document.addEventListener('mouseup', mouseUpHandler);
-        };
-    })();
-</script>
+                    document.addEventListener('mousemove', mouseMoveHandler);
+                    document.addEventListener('mouseup', mouseUpHandler);
+                };
+            })();
+        </script>
     {% endautoescape %}
 {% endblock %}
 
