@@ -23,14 +23,17 @@ environment = Environment(
 def _crud_filter(fields: 'Fields', method: 'MethodType', display_view: str = 'table'):
     """
         Jinja2 флильтр, который фильтрует строки для типа отображений
+        ВАЖНО: Если table и в схеме 'get' True, то поле будет отображаться в таблице в любом режиме
     """
     res = []
     for field in fields:
-        if field.field_name == 'id':
-            a=1
         method_type = getattr(field, method.value)
         if getattr(method_type, display_view):
             res.append(field)
+        else:
+            if display_view == 'table':
+                if getattr(field.get, 'table'):
+                    res.append(field)
 
     return res
     #return [v for v in fields if getattr(getattr(v, method.value), display_view)]

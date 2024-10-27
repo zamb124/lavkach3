@@ -32,7 +32,7 @@ function sidebarMenu() {
                         }
                     }
 
-                    return null; // Return null if no matching element is found
+                    document.location.replace('/inventory/order'); // Return null if no matching element is found
                 }
 
                 var elements = findMatchingElement();

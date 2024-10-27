@@ -161,7 +161,7 @@ class ClassView:
                 'description': None,
             })
         return ViewVars(**{
-            'required': fielinfo.is_required(),
+            'required': fielinfo.is_required() if isinstance(fielinfo, FieldInfo) else False,
             'title': fielinfo.title or str(fielinfo),
             'hidden': fielinfo.json_schema_extra.get('hidden', False) if fielinfo.json_schema_extra else False, # type: ignore
             'color_map': fielinfo.json_schema_extra.get('color_map', {}) if fielinfo.json_schema_extra else {},# type: ignore
@@ -173,31 +173,20 @@ class ClassView:
 
     def _get_view_vars(self, fieldname: str, is_filter: bool, schema: BaseModel) -> dict[str, ViewVars]:
         """Костыльный метод собирания ViewVars"""
-        if compute_field := schema.model_computed_fields.get(fieldname):
-            compute_field.title = fieldname.capitalize()
-            compute_field_info = ViewVars(**{
-                'required': False,
-                'title': fieldname.capitalize(),
-                'hidden': False,
-                'color_map': {},
-                'readonly': True,
-                'filter': {},
-                'table': False,
-                'description': None,
-            })
-            return {
-                'create': compute_field_info,
-                'update': compute_field_info,
-                'get': compute_field_info,
-            }
+        if fieldname == 'title':
+            a=1
+        create_fields = self.model.schemas.create.model_fields | self.model.schemas.create.model_computed_fields
+        update_fields = self.model.schemas.update.model_fields | self.model.schemas.update.model_computed_fields
+        get_fields = self.model.schemas.get.model_fields | self.model.schemas.get.model_computed_fields
+        filter_fields = self.model.schemas.filter.model_fields | self.model.schemas.filter.model_computed_fields
         if schema and issubclass(schema, ActionBaseSchame):  # type: ignore
             default_fieldinfo = schema.model_fields.get(fieldname)
             create_fieldinfo = update_fieldinfo = get_fieldinfo = filter_fieldinfo = default_fieldinfo
         else:
-            create_fieldinfo = self.model.schemas.create.model_fields.get(fieldname)
-            update_fieldinfo = self.model.schemas.update.model_fields.get(fieldname)
-            get_fieldinfo = self.model.schemas.get.model_fields.get(fieldname)
-            filter_fieldinfo = self.model.schemas.filter.model_fields.get(fieldname)
+            create_fieldinfo = create_fields.get(fieldname)
+            update_fieldinfo = update_fields.get(fieldname)
+            get_fieldinfo = get_fields.get(fieldname)
+            filter_fieldinfo = filter_fields.get(fieldname)
         if fieldname in readonly_fields:
             hidden = True if fieldname in hidden_fields else False
             table = True if fieldname in table_fields else False

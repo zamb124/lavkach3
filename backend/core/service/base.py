@@ -298,8 +298,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
 
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Row:
         entity, updated_fields = await self._update(id, obj, commit=commit)
-        if updated_fields:
-            await entity.notify('update', updated_fields)
+        await entity.notify('update', updated_fields)
         return entity
 
     async def _delete(self, id: Any):
