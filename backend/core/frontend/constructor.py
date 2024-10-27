@@ -134,7 +134,7 @@ class ClassView:
             schema=schema if schema else self.model.schemas.get,
             params=params,
             data=data,
-            join_related=join_related or self.join_related,
+            join_related=join_related,
             join_fields=self.join_fields,
         )
     def render(self, template_name: str, block_name: str, method: MethodType, **kwargs) -> str:

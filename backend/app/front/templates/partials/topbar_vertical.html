@@ -336,51 +336,16 @@
                     <!-- ------------------------------- -->
                     <!-- start language Dropdown -->
                     <!-- ------------------------------- -->
-                    <li class="nav-item dropdown nav-icon-hover-bg rounded-circle">
-                        <a class="nav-link" href="javascript:void(0)" id="drop2"
+                    <div id="locale" hx-get="/front/widget_locale_changer" hx-trigger="load">
+                        <a class="nav-link" href="javascript:void(0)" id="locale_selector"
                            data-bs-toggle="dropdown" aria-expanded="false">
-
-                            <img src="{{ url_for('static' ,path='images/flag/icon-flag-en.svg') }}"
+                            {% set locale_file = 'images/flag/icon-flag-%s.svg'|format(request.user.locale) %}
+                            <img src="{{ url_for('static' ,path=locale_file ) }}"
                                  alt="matdash-img" width="20px" height="20px"
                                  class="rounded-circle object-fit-cover round-20"/>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
-                             aria-labelledby="drop2">
-                            <div class="message-body">
-                                <a href="javascript:void(0)"
-                                   class="d-flex align-items-center gap-2 py-3 px-4 dropdown-item">
-                                    <div class="position-relative">
-                                        <img src="{{ url_for('static' ,path='images/flag/icon-flag-en.svg') }}"
-                                             alt="matdash-img" width="20px"
-                                             height="20px"
-                                             class="rounded-circle object-fit-cover round-20"/>
-                                    </div>
-                                    <p class="mb-0 fs-3">English (UK)1</p>
-                                </a>
-                                <a href="javascript:void(0)"
-                                   class="d-flex align-items-center gap-2 py-3 px-4 dropdown-item">
-                                    <div class="position-relative">
+                    </div>
 
-                                        <img src="{{ url_for('static' ,path='images/flag/icon-flag-ru.png') }}"
-                                             alt="matdash-img" width="20px"
-                                             height="20px"
-                                             class="rounded-circle object-fit-cover round-20"/>
-                                    </div>
-                                    <p class="mb-0 fs-3">Russian (RU)</p>
-                                </a>
-                                <a href="javascript:void(0)"
-                                   class="d-flex align-items-center gap-2 py-3 px-4 dropdown-item">
-                                    <div class="position-relative">
-                                        <img src="{{ url_for('static' ,path='images/flag/icon-flag-sa.svg') }}"
-                                             alt="matdash-img" width="20px"
-                                             height="0px"
-                                             class="rounded-circle object-fit-cover round-20"/>
-                                    </div>
-                                    <p class="mb-0 fs-3">عربي (Arabic)</p>
-                                </a>
-                            </div>
-                        </div>
-                    </li>
                     <!-- ------------------------------- -->
                     <!-- end language Dropdown -->
                     <!-- ------------------------------- -->

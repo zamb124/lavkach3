@@ -115,7 +115,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         try:
             await self.session.commit()
             await self.session.refresh(move)
-            message = await self.prepere_bus(move, 'update')
+            message = await self.prepare_bus(move, 'update')
             await self.update_notify.kiq('move', message)
         except Exception as ex:
             await self.session.rollback()

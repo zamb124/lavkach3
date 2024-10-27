@@ -36,7 +36,7 @@ const Singleton = {
                     this.results[results[i].value] = results[i].label
                 }
             }
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 300));
             if (this.results.length > 2000) {
                 this.results.splice(0, 100);
             }

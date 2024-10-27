@@ -69,7 +69,7 @@ class Base(metaclass=DeclarativeMeta):
 
     __init__ = mapper_registry.constructor
 
-    async def prepere_bus(self, entity: object, method: str, updated_fields:list = None):
+    async def prepare_bus(self, entity: object, method: str, updated_fields:list = None):
         return {
             'cache_tag': CacheTag.MODEL,
             'message': f'{self.__tablename__.capitalize()} is {method.capitalize()}',
@@ -100,11 +100,12 @@ class Base(metaclass=DeclarativeMeta):
 
     async def notify(self, method, updated_fields: list = None, message=None):
         if not message:
-            message = await self.prepere_bus(self, method=method, updated_fields=updated_fields)
+            message = await self.prepare_bus(self, method=method, updated_fields=updated_fields)
         i: int = 1
         while True:
             try:
                 task = await self.update_notify.kiq(self.__tablename__, message)
+                result = await task.result()
                 logger.info(f'Message sended to bus.bus with id: {task.task_id}')
                 break
             except Exception as ex:

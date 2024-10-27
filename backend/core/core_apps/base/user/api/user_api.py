@@ -20,8 +20,7 @@ from .....fastapi.dependencies import (
     IsAuthenticated,
 )
 from .schemas import LoginRequest
-from ..schemas.user_schemas import SignUpScheme, ChangeCompanyScheme
-
+from ..schemas.user_schemas import SignUpScheme, ChangeCompanyScheme, ChangeLocaleScheme
 
 user_router = APIRouter()
 
@@ -104,4 +103,9 @@ async def permissions(user_id: uuid.UUID, service: UserService = Depends()):
 @user_router.post("/company_change",response_model=LoginResponseSchema)
 async def company_change(schema: ChangeCompanyScheme, service: UserService = Depends()):
     user = await service.company_change(obj=schema)
+    return await service.login(user=user)
+
+@user_router.post("/locale_change",response_model=LoginResponseSchema)
+async def company_change(schema: ChangeLocaleScheme, service: UserService = Depends()):
+    user = await service.locale_change(obj=schema)
     return await service.login(user=user)

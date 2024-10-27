@@ -143,7 +143,7 @@ async def table(request: Request, schema: TableSchema):
             qp = {i: v for i, v in qp[0].items() if v}  # type: ignore
 
     cls = ClassView(request, model=schema.model, key=schema.key)
-    await cls.init(params=qp, join_related=True)
+    await cls.init(params=qp, join_related=False)
     if request.query_params.get('edit'):
         return cls.as_table_update
     else:

@@ -32,6 +32,15 @@ class BaseAdapter(BaseAdapter):
         responce = await self.client.post(self.host + path, json=body, params=None)
         return responce.json()
 
+    async def user_locale_change(self, user_id, locale):
+        path = '/api/base/user/locale_change'
+        body = {
+            'user_id': user_id.__str__(),
+            'locale': locale
+        }
+        responce = await self.client.post(self.host + path, json=body, params=None)
+        return responce.json()
+
     async def login(self, username, password):
         path = f'/api/base/user/login'
         body = {

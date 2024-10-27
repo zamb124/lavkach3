@@ -127,3 +127,6 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
 .form-check {
     padding-left: 0;
 }
+.toastify.on {
+    border-radius: 10px;
+}

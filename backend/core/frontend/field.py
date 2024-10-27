@@ -144,3 +144,6 @@ class Fields:
         except IndexError:
             self.__state = 0
             raise StopIteration
+
+    def get_fields(self):
+        return {i.field_name: i for i in self._fields}.items()

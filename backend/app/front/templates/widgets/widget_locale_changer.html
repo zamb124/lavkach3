@@ -1,0 +1,33 @@
+<li class="nav-item dropdown nav-icon-hover-bg rounded-circle">
+    <a class="nav-link" href="javascript:void(0)" id="locale_selector"
+       data-bs-toggle="dropdown" aria-expanded="false">
+        {% set locale_file = 'images/flag/icon-flag-%s.svg'|format(current_locale) %}
+        <img src="{{ url_for('static' ,path=locale_file ) }}"
+             alt="matdash-img" width="20px" height="20px"
+             class="rounded-circle object-fit-cover round-20"/>
+    </a>
+    <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
+         aria-labelledby="locale_selector">
+        <div class="message-body">
+            {% for locale in locales %}
+            <a href="/front/widget_locale_changer/?locale={{ locale }}"
+               hx-target="closest li"
+               hx-boost="true"
+               hx-push-url="false"
+               class="d-flex align-items-center gap-2 py-3 px-4 dropdown-item">
+                <div class="position-relative">
+                    {% set locale_file = 'images/flag/icon-flag-%s.svg'|format(locale) %}
+                    <img src="{{ url_for('static' ,path=locale_file) }}"
+                         alt="matdash-img" width="20px"
+                         height="20px"
+                         class="rounded-circle object-fit-cover round-20"/>
+                </div>
+                <p class="mb-0 fs-3" data-key="t-{{ locale }}">{{ locale }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</li>
+<script>
+    setLocale("{{ current_locale }}");
+</script>

@@ -94,3 +94,7 @@ class SignUpScheme(BaseModel):
 class ChangeCompanyScheme(BaseModel):
     user_id: UUID4
     company_id: UUID4
+
+class ChangeLocaleScheme(BaseModel):
+    user_id: UUID4
+    locale: str

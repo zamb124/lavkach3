@@ -91,10 +91,12 @@ function sidebarMenu() {
 
                 var closestNav = elements.closest("nav[class^=sidebar-nav]");
                 var menuid = (closestNav && closestNav.id) || "menu-right-mini-1";
-                var menu = menuid[menuid.length - 1];
+                var menu = menuid.split('-').pop()
+
+
 
                 document
-                    .getElementById("menu-right-mini-" + menu)
+                    .getElementById("menu-right-" + menu)
                     .classList.add("d-block");
                 document.getElementById("mini-" + menu).classList.add("selected");
 
@@ -111,7 +113,7 @@ function sidebarMenu() {
                     .querySelectorAll(".mini-nav .mini-nav-item")
                     .forEach(function (item) {
                         item.addEventListener("click", function () {
-                            var id = this.id;
+                            var id = this.id.split('-').pop();
                             document
                                 .querySelectorAll(".mini-nav .mini-nav-item")
                                 .forEach(function (navItem) {
@@ -123,8 +125,7 @@ function sidebarMenu() {
                                 .forEach(function (nav) {
                                     nav.classList.remove("d-block");
                                 });
-                            document
-                                .getElementById("menu-right-" + id)
+                            document.getElementById("menu-right-" + id)
                                 .classList.add("d-block");
                             document.body.setAttribute("data-sidebartype", "full");
                         });

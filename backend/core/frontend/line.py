@@ -306,13 +306,13 @@ class Lines:
     async def get_data(
             self,
             params: QueryParams | dict | None = None,
-            join_related: bool = True,
-            join_fields: list | None = None,
             data: list | dict | None = None,
             schema: BaseModel | None = None,
+            join_related: bool = False,
             **kwargs
     ) -> None:
         """Метод собирает данные для конструктора модели"""
+
         if not params:
             params = self.params
         if not data:
@@ -324,7 +324,7 @@ class Lines:
                 data_obj = await self.cls.model.service.list(_filter=params)
                 data = [i.__dict__ for i in data_obj]
         self.data = data
-        await self.fill_lines(self.data, self.join_related, self.join_fields, schema)
+        await self.fill_lines(self.data, join_related, self.join_fields, schema)
 
 
 
@@ -368,7 +368,7 @@ class Lines:
             for _line in self.lines:
                 """Достаем все релейтед обьекты у которых модуль отличается"""
                 assert _line.fields,   "Проверяем что все поля есть"
-                for field_name, field in _line.fields:
+                for field_name, field in _line.fields.get_fields():
                     if field.type in ('uuid',):
                         # if field.widget.get('table'):  # TODO: может все надо а не ток table
                         if not join_fields:
@@ -412,7 +412,7 @@ class Lines:
                             detail=f'Wrong field name {_field.field_name} in table model {_field.model}'
                         )
             for col in missing_fields.keys():
-                for _field_name, _header_col in self.line_header.fields:  # type: ignore
+                for _field_name, _header_col in self.line_header.fields.get_fields():  # type: ignore
                     if col == _field_name:
                         _header_col.type = _header_col.type.replace('uuid', 'rel')
                         _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')

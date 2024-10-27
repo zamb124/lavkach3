@@ -24,12 +24,12 @@ document.addEventListener("DOMContentLoaded", () => {
 // the page to this locale
 
 async function setLocale(newLocale) {
-
+    document.getElementsByTagName('html')[0].setAttribute('lang', newLocale);
+    userSettings.locale = newLocale;
+    document.cookie = "locale="+userSettings.locale+";path=/;"
     if (newLocale === locale) return;
 
-    const newTranslations =
-
-        await fetchTranslationsFor(newLocale);
+    const newTranslations = await fetchTranslationsFor(newLocale);
 
     locale = newLocale;
 

@@ -10,7 +10,7 @@ from starlette.requests import Request
 from ...company import CompanyService
 from ...user.models.role_models import Role
 from ...user.models.user_models import User
-from ...user.schemas.user_schemas import SignUpScheme, ChangeCompanyScheme
+from ...user.schemas.user_schemas import SignUpScheme, ChangeCompanyScheme, ChangeLocaleScheme
 from ...user.schemas.user_schemas import UserCreateScheme, UserUpdateScheme, UserFilter
 from .....db_config import config
 # from app.base.user.services.role_service import RoleService
@@ -177,6 +177,16 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         await self.session.commit()
         await self.session.refresh(user)
         await self.send_relogin(user.id)
+        return user
+
+    @permit('locale_change')
+    async def locale_change(self, obj: ChangeLocaleScheme, commit=True) -> ModelType:
+        user = await self.get(obj.user_id)
+        user.locale = obj.locale
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)
+        #await self.send_relogin(user.id)
         return user
 
     async def permissions(self, user_id: UUID) -> List[str]:
