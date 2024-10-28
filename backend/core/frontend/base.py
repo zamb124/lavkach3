@@ -135,7 +135,6 @@ async def table(request: Request, schema: TableSchema):
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
     form_data = await request.json()
-    def_lsn = 9999999999999999999
     qp = request.query_params
     if form_data.get('key'):
         qp = clean_filter(form_data, form_data['key'])
@@ -143,7 +142,7 @@ async def table(request: Request, schema: TableSchema):
             qp = {i: v for i, v in qp[0].items() if v}  # type: ignore
 
     cls = ClassView(request, model=schema.model, key=schema.key)
-    await cls.init(params=qp, join_related=False)
+    await cls.init(params=qp, join_related=True)
     if request.query_params.get('edit'):
         return cls.as_table_update
     else:

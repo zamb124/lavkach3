@@ -364,20 +364,20 @@ class Lines:
             line_copied.id = row.get('id', id(line_copied))
             line_copied.lsn = row.get('lsn')
             for col in line_copied.fields:
-                val = row.get(col.field_name, None)
+                col.val = row.get(col.field_name, None)
                 if col.type in ('date', 'datetime'):
-                    if isinstance(val, datetime.datetime):
+                    if isinstance(col.val, datetime.datetime):
                         pass
-                    elif isinstance(val, str):
-                        val = datetime.datetime.fromisoformat(val)
+                    elif isinstance(col.val, str):
+                        col.val = datetime.datetime.fromisoformat(col.val)
                 elif col.type == 'id':
-                    if not val:
-                        val = []
+                    if not col.val:
+                        col.val = []
                 elif col.type.endswith('list_rel'):
                     ...
                     col.lines.parent_field = col
-                    await col.lines.fill_lines(data=val, join_related=False)
-                row[col.field_name] = val
+                    await col.lines.fill_lines(data=col.val, join_related=False)
+                #row[col.field_name] = col.val
                 #setattr(line_copied, col.field_name, col.val)
             self.lines.append(line_copied)
 
