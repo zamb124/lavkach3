@@ -31,6 +31,15 @@ class Line:
     id: Optional[uuid.UUID] = None          # ID обьекта (если есть)
     fields: Fields                          # Поля обьекта
 
+    def copy(self):
+        copied_line = copy.copy(self)
+        copied_line.fields = Fields()
+        for field in self.fields:
+            new_field = field.copy()
+            new_field.line = copied_line
+            setattr(copied_line.fields, field.field_name, new_field)
+        return copied_line
+
 
     def __init__(self, lines, type,id=None, is_last=False, schema=None, **data):
         self.type = type
@@ -323,43 +332,52 @@ class Lines:
             else:
                 data_obj = await self.cls.model.service.list(_filter=params)
                 data = [i.__dict__ for i in data_obj]
-        self.data = data
+        self.data = {i['id']: i for i in data}
         await self.fill_lines(self.data, join_related, self.join_fields, schema)
 
 
 
     async def fill_lines(
             self,
-            data: list,
+            data: list|dict,
             join_related: bool = False,
             join_fields: list = [],
             schema: BaseModel | None = None
     ) -> None:
+        if isinstance(data, list):
+            data = {i['id']: i for i in data}
+        if not data:
+            data = {}
+        self.data = data
         join_fields = join_fields or self.join_fields
-        for row in data:
-            line_copied = Line(
-                type=LineType.LINE,
-                lines=self,
-                id=row.get('id'),
-                is_last=False,
-                schema=schema
-            )
+        for _id, row in data.items():
+            line_copied = self.line_header.copy()
+            line_copied.type = LineType.LINE
+            # line_copied = Line(
+            #     type=LineType.LINE,
+            #     lines=self,
+            #     id=row.get('id'),
+            #     is_last=False,
+            #     schema=schema
+            # )
             line_copied.is_last = False
             line_copied.id = row.get('id', id(line_copied))
             line_copied.lsn = row.get('lsn')
             for col in line_copied.fields:
-                col.val = row.get(col.field_name, None)
+                val = row.get(col.field_name, None)
                 if col.type in ('date', 'datetime'):
-                    if isinstance(col.val, datetime.datetime):
+                    if isinstance(val, datetime.datetime):
                         pass
-                    elif isinstance(col.val, str):
-                        col.val = datetime.datetime.fromisoformat(col.val)
+                    elif isinstance(val, str):
+                        val = datetime.datetime.fromisoformat(val)
                 elif col.type == 'id':
-                    if not col.val:
-                        col.val = []
+                    if not val:
+                        val = []
                 elif col.type.endswith('list_rel'):
+                    ...
                     col.lines.parent_field = col
-                    await col.lines.fill_lines(data=col.val, join_related=False)
+                    await col.lines.fill_lines(data=val, join_related=False)
+                row[col.field_name] = val
                 #setattr(line_copied, col.field_name, col.val)
             self.lines.append(line_copied)
 

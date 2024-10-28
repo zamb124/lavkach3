@@ -19,6 +19,7 @@ from core.frontend.line import Line, Lines
 from core.frontend.types import LineType, ViewVars, MethodType
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import ActionBaseSchame, BasicField
+from core.utils.timeit import timed
 
 
 def _get_key() -> str:
@@ -126,8 +127,10 @@ class ClassView:
         self.is_inline = is_inline
         self.lines = Lines(cls=self)
 
-    async def init(self, params: dict | None = None, join_related: bool = False, data: list = None,schema: BaseModel = None) -> None:
+    async def init(self, params: dict | None = None, join_related: bool = False, data: list | dict = None,schema: BaseModel = None) -> None:
         """Майнинг данных по params"""
+        if isinstance(data, list):
+            data = {i['id']: i for i in data}
         await self.lines.get_data(
             env=self.env,
             model=self.model,
@@ -310,6 +313,7 @@ class ClassView:
             'line': line
         })
         return field
+
 
     def _get_schema_fields(self, lines: Lines, line: Line, schema: BaseModel, **kwargs) -> Fields:
         """Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2 - а зачем?"""

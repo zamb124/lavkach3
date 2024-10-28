@@ -22,3 +22,12 @@ async def order(request: Request):
     template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
     cls = OrderView(request)
     return templates.TemplateResponse(request, template, context={'cls': cls})
+
+
+@inventory.get("/store_monitor", response_class=HTMLResponse)
+async def mystore(request: Request):
+    """Интерфейс работы со своим складом"""
+    template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
+    store_cls = await StoreView(request)
+    store_dash = store_cls.get_store_dashboard()
+    return templates.TemplateResponse(request, template, context={'cls': cls})

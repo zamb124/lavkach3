@@ -1,3 +1,4 @@
+import copy
 import json
 from enum import Enum
 from typing import Optional, Any
@@ -38,11 +39,22 @@ class Field:
     get: ViewVars
     create: ViewVars
     update: ViewVars
-    val: Any
+    #val: Any
+
+
+    def copy(self):
+        return copy.copy(self)
 
     def __init__(self, *args, **kwargs):
         self.__dict__.update(kwargs)
-
+    @property
+    def val(self):
+        val = None
+        try:
+            val = self.lines.data.get(self.line.id)[self.field_name]
+        except Exception as ex:
+            a=1
+        return val
     @property
     def js(self):
         di = self.__dict__

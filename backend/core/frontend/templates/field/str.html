@@ -38,6 +38,9 @@
             {% if field.get.required %} required {% endif %}
            disabled
            name="{{ field.key }}"
+    {%  if field.val %}
+        {{ field.val }}
+   {% endif %}
            value="{{ field.val if field.val else "" }}"
     >
 {% endblock %}

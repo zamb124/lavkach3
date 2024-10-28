@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import List
 
 import taskiq_fastapi
+import uvicorn
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +13,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
-from .tkq import broker
+from app.front.tkq import broker
 from app.front.front_router import front_router
 #from app.front.front_tasks import remove_expired_tokens
 from core.helpers.broker import list_brocker
@@ -171,9 +172,13 @@ def create_app() -> FastAPI:
     init_cache()
     return app_
 
-
 app = create_app()
 path = os.path.dirname(os.path.abspath(__file__))
-
 add_timing_middleware(app, record=logger.info, prefix="front", exclude="untimed")
 app.mount(f"/static", StaticFiles(directory=f"{path}/static"), name="static")
+
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="127.0.0.1", port=8003, log_level="info")
+
+
+

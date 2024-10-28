@@ -105,7 +105,6 @@ class Base(metaclass=DeclarativeMeta):
         while True:
             try:
                 task = await self.update_notify.kiq(self.__tablename__, message)
-                result = await task.result()
                 logger.info(f'Message sended to bus.bus with id: {task.task_id}')
                 break
             except Exception as ex:
