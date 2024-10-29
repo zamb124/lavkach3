@@ -1,11 +1,11 @@
 {% block widget %}
-<div id="{{ 'filter' ~'--'~ cls.key }}"
+<div id="{{ 'filter' ~'--'~ cls.p.class_key }}"
       hx-ext="json-enc"
       hx-post="/base/filter"
       hx-trigger="load"
       hx-vals='{
-        "model": "{{ cls.model.name }}",
-        "key": "{{ cls.key }}",
+        "model": "{{ cls.v.model.name }}",
+        "key": "{{ cls.p.class_key }}",
         "method": "get"
       }'
 class="collapse">
@@ -16,7 +16,7 @@ class="collapse">
 <div class="card">
     <div class="card-body">
         <div class="row g-3">
-            {% for field in cls.lines.line_filter.fields %}
+            {% for field in cls.get_fields(display_view='filter') if field.is_filter %}
                 {% if field.field_name != 'order_by' %}
                     <div class="col-xxl-2 col-sm-4">
                         {{ field.as_update|safe }}

@@ -1,13 +1,13 @@
 {% block import_get %}
     {% autoescape false %}
-        <div class="modal" id="{{ 'import_'~cls.key }}" tabindex="-1" style="display: none;"
+        <div class="modal" id="{{ 'import_'~cls.p.class_key }}" tabindex="-1" style="display: none;"
              aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <div class="col-6">
                             <h5 class="modal-title">
-                                {{ method|capitalize }} {{ cls.model_name|capitalize }}
+                                {{ method|capitalize }} {{ cls.v.model.name|capitalize }}
                                 <span>
                         </span>
                             </h5>
@@ -18,7 +18,7 @@
                                     aria-label="Close"></button>
                         </div>
                     </div>
-                    <div id="{{ 'modal_body'~ cls.key }}">
+                    <div id="{{ 'modal_body'~ cls.p.class_key }}">
                         <div class="modal-body text-center p-5">
                             <lord-icon
                                     src="https://cdn.lordicon.com/yvjimpju.json"
@@ -35,7 +35,7 @@
                                             </div>
                                             <form id="file"
                                                   hx-encoding='multipart/form-data'
-                                                  hx-post='/base/import_upload?model={{ cls.model_name }}&key={{ cls.key }}'
+                                                  hx-post='/base/import_upload?model={{ cls.v.model.name }}&key={{ cls.p.class_key }}'
                                             >
                                                 <div class="row">
                                                     <div class="col-6">
@@ -65,15 +65,15 @@
                         <button
                                 type="button"
                                 class="btn btn-secondary"
-                                id="{{ 'submit-'~cls.key }}"
+                                id="{{ 'submit-'~cls.p.class_key }}"
                                 hx-post="/base/import"
-                                hx-target="#{{ 'modal_body'~ cls.key }}"
-                                hx-include="#{{ 'tbody-table' ~'--'~ cls.key }}"
+                                hx-target="#{{ 'modal_body'~ cls.p.class_key }}"
+                                hx-include="#{{ 'tbody-table' ~'--'~ cls.p.class_key }}"
                                 hx-ext="json-enc"
                                 hx-vals='{
-                                "model": "{{ cls.model_name }}",
+                                "model": "{{ cls.v.model.name }}",
                                 "method": "save",
-                                "key": "{{ cls.key }}"
+                                "key": "{{ cls.p.class_key }}"
                             }'
                         >
                             Commit Import
@@ -84,13 +84,13 @@
             </div>
         </div>
         <script>
-            var modal = new bootstrap.Modal('#{{ 'import_'~cls.key }}')
+            var modal = new bootstrap.Modal('#{{ 'import_'~cls.p.class_key }}')
             modal.show()
         </script>
         <script>
             // Modal'ı sürüklenebilir hale getiren JavaScript kodu
             (function () {
-                var modal = document.getElementById('{{ 'import_'~cls.key }}');
+                var modal = document.getElementById('{{ 'import_'~cls.p.class_key }}');
                 var header = modal.querySelector('.modal-header');
 
                 header.onmousedown = function (e) {
@@ -117,7 +117,7 @@
 {% endblock %}
 {% block import_errors %}
     {% autoescape false %}
-        <div class="card" id="{{ 'import_errors_'~cls.key }}">
+        <div class="card" id="{{ 'import_errors_'~cls.p.class_key }}">
             <div class="card-header" style="padding-bottom: 0px;">
                 <h5 class="form-control bg-danger" style="display: block;">Errors</h5>
             </div>

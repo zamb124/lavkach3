@@ -39,6 +39,6 @@
                     disabled
                     name="{{ field.key }}"
                     placeholder="Enter {{ field.title }}"
-                    value="{{ field.val.english_name or field.val.name or field.val}}"
+                    value="{{ field.val or field.val.english_name or field.val.name }}"
             >
 {% endblock %}

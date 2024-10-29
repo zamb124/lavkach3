@@ -50,7 +50,8 @@
 {% endblock %}
 
 {% block as_get %}
-        <div  model-name="{{ field.model_name }}" class="text-start form-control disabled" style="min-height: 37px" id="{{ field.key }}">{{ ','.join(field.val)|safe }}</div>
+        <div  model-name="{{ field.model_name }}" class="text-start form-control disabled" style="min-height: 37px" id="{{ field.key }}">
+            {% if field.val %}{{ ','.join(field.val)|safe }}{% endif %}</div>
         <script>
         var key = '{{ field.key }}';
         var el = document.getElementById(key);

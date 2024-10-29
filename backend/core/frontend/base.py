@@ -10,65 +10,41 @@ from pydantic import BaseModel, UUID4, model_validator
 from starlette.responses import JSONResponse
 
 from app.front.front_tasks import import_prepare_data, import_save
-from core.frontend.constructor import ClassView
+from app.front.utills import BaseClass
+from core.frontend.constructor import ClassView, get_view, BaseSchema, Method
 from core.frontend.utils import clean_filter
 from fastapi import FastAPI, File, UploadFile
 
-class Method(str, Enum):
-    GET: str = 'get'  # Дать запись на чтение
-    CREATE: str = 'create'  # Дать запись на создание
-    UPDATE: str = 'update'  # Дать запись на изменение
-    DELETE: str = 'delete'  # Дать запись на удаление
-    UPDATE_SAVE: str = 'save'  # Сохранить изменения
-    CREATE_SAVE: str = 'save_create'  # Сохранить новую запись
-    DELETE_SAVE: str = 'delete_delete'  # Подтвердить удаление записи
 
 
 class ExceptionResponseSchema(BaseModel):
     error: str
 
 
-class BaseSchema(BaseModel):
-    """
-        Обязательные моля всегда чц
-    """
-    model: str
-    key: str
-    method: Method
-
 
 router = APIRouter(
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 
-
-class FilterSchema(BaseSchema):
-    model: str
-    key: str
-
-
 @router.post("/filter", response_class=HTMLResponse)
-async def _filter(request: Request, filschema: FilterSchema):
+async def _filter(cls: ClassView = Depends(get_view)):
     """
      Универсальный запрос, который отдает фильтр обьекта по его модулю и модели
     """
-    cls = ClassView(request, filschema.model, key=filschema.key)
-    return cls.as_filter
+    return cls.h.as_filter
 
 
-class SearchSchema(BaseSchema):
+class SearchSchema(BaseModel):
     model: str
     search: str = ''
     filter: Optional[Any] = None
     key: Optional[str] = None
-    method: Optional[Method] = Method.GET
 
     @model_validator(mode='before')
     def _filter(cls, value):
         """
             Так же убираем все пустые params
         """
-
         if f := value.get('filter'):
             if isinstance(f, str):
                 try:
@@ -79,7 +55,7 @@ class SearchSchema(BaseSchema):
 
 
 @router.get("/search", response_class=JSONResponse)
-async def search(request: Request, schema: SearchSchema = Depends(SearchSchema)):
+async def search(request: Request, schema: SearchSchema = Depends()):
     """
      Универсальный запрос поиска
     """
@@ -97,15 +73,13 @@ async def search(request: Request, schema: SearchSchema = Depends(SearchSchema))
     ]
 
 
-class SearchIds(BaseSchema):
+class SearchIds(BaseModel):
     model: str
     id__in: str
-    key: Optional[str] = None  # type: ignore
-    method: Method = Method.GET
 
 
 @router.get("/get_by_ids", response_class=JSONResponse)
-async def get_by_ids(request: Request, schema: SearchIds = Depends(SearchIds)):
+async def get_by_ids(request: Request, schema: SearchIds = Depends()):
     """
      Универсальный запрос поиска
     """
@@ -129,24 +103,15 @@ class TableSchema(BaseSchema):
     key: str
 
 
+
+
 @router.post("/table", response_class=HTMLResponse)
-async def table(request: Request, schema: TableSchema):
+async def table(view: ClassView = Depends(get_view)):
     """
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
-    form_data = await request.json()
-    qp = request.query_params
-    if form_data.get('key'):
-        qp = clean_filter(form_data, form_data['key'])
-        if qp:
-            qp = {i: v for i, v in qp[0].items() if v}  # type: ignore
-
-    cls = ClassView(request, model=schema.model, key=schema.key)
-    await cls.init(params=qp, join_related=True)
-    if request.query_params.get('edit'):
-        return cls.as_table_update
-    else:
-        return cls.as_table
+    await view.init()
+    return view.h.as_table
 
 
 class LineSchema(BaseSchema):
@@ -158,69 +123,67 @@ class LineSchema(BaseSchema):
 
 
 @router.post("/line", response_class=HTMLResponse)
-async def line(request: Request, schema: LineSchema):
+async def line(cls: ClassView = Depends(get_view)):
     """
      Универсальный запрос, который отдает/изменяет обьект
     """
-    cls = ClassView(request, model=schema.model, key=schema.key)
-    match schema.method:
+    match cls.v.schema.method:
         case Method.UPDATE:
             """Отдать обьект на редактирование, в зависимости от mode (tr/div)"""
-            lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
-            return getattr(lines[0], f'as_{schema.mode}_update')
+            line = await cls.a.get_lines(ids=[cls.v.schema.id], join_related=False)
+            return getattr(line, f'as_{cls.v.schema.mode}_update')
         case Method.GET:
             """Отдать обьект на чтение, в зависимости от mode (tr/div)"""
-            lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
-            return getattr(lines[0], f'as_{schema.mode}_get')
+            line = await cls.a.get_lines(ids=[cls.v.schema.id], join_related=False)
+            return getattr(line, f'as_{cls.v.schema.mode}_get')
         case Method.CREATE:
             """Отдать обьект на создание, в зависимости от mode (tr/div)"""
-            return cls.lines.line_new.as_tr_create
+            return cls.h.as_tr_create
         case Method.DELETE:
             """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
-            if isinstance(schema.id, int):
+            if isinstance(cls.v.schema.id, int):
                 """Если это временная запись, то просто удалить"""
                 return
-            lines = await cls.lines.get_lines(ids=[schema.id], join_related=False)
-            return lines[0].get_delete
+            line = await cls.a.get_lines(ids=[cls.v.schema.id], join_related=False)
+            return line.h.get_modal_delete
         case Method.UPDATE_SAVE:
             """Сохранение записи при измененнии"""
-            data = clean_filter(schema.model_extra, schema.key)
-            await cls.lines.update_lines(id=schema.id, data=data)
+            data = clean_filter(cls.v.schema.model_extra, cls.v.schema.key)
+            await cls.a.update_lines(id=cls.v.schema.id, data=data)
         case Method.CREATE_SAVE:
             """Сохранение записи при создании"""
-            data = clean_filter(schema.model_extra, schema.key)
-            lines = await cls.lines.create_lines(data)
-            return lines[0].as_div_update
+            data = clean_filter(cls.v.schema.model_extra, cls.v.schema.key)
+            line = await cls.a.create_lines(data)
+            return line.h.as_div_update
         case Method.DELETE_SAVE:
-            await cls.lines.delete_lines(ids=[schema.id])
+            await cls.a.delete_lines(ids=[cls.v.schema.id])
             """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
 
 
 class ModalSchema(BaseSchema):
     id: Optional[UUID4] = None
-    class_key: Optional[str] = None
 
     class Config:
         extra = 'allow'
 
 @router.post("/modal", response_class=HTMLResponse)
-async def modal(request: Request, schema: ModalSchema):
+async def modal(cls: ClassView = Depends(get_view)):
     """
      Универсальный запрос модалки, который отдает форму модели
     """
-    cls = ClassView(request, schema.model, force_init=False)
-    match schema.method:
+    cls.reset_key()
+    match cls.v.schema.method:
         case Method.GET:
-            lines = await cls.lines.get_lines(ids=[schema.id])
-            return lines[0].get_get
+            line = await cls.a.get_lines(ids=[cls.v.schema.id])
+            return line.h.get_modal_get
         case Method.UPDATE:
-            lines = await cls.lines.get_lines(ids=[schema.id])
-            return lines[0].get_update
+            line = await cls.a.get_lines(ids=[cls.v.schema.id])
+            return line.h.get_modal_update
         case Method.DELETE:
-            lines = await cls.lines.get_lines(ids=[schema.id])
-            return lines[0].get_delete
+            line = await cls.a.get_lines(ids=[cls.v.schema.id])
+            return line.h.get_modal_delete
         case Method.CREATE:
-            return cls.lines.line_new.get_create
+            return cls.h.get_modal_create
 
 
 class ActionSchema(BaseSchema):
@@ -234,7 +197,7 @@ class ActionSchema(BaseSchema):
 
 
 @router.post("/action", response_class=HTMLResponse)
-async def action(request: Request, schema: ActionSchema):
+async def action(cls: ClassView = Depends(get_view)):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
@@ -264,7 +227,7 @@ class ImportSchema(BaseSchema):
         extra = 'allow'
 
 @router.post("/import", response_class=HTMLResponse)
-async def modal(request: Request, schema: ImportSchema = None):
+async def modal(cls: ClassView = Depends(get_view)):
     """
      Универсальный запрос модалки, который отдает форму модели
     """
@@ -279,7 +242,7 @@ async def modal(request: Request, schema: ImportSchema = None):
             return cls.as_table
 
 @router.post("/import_upload", response_class=HTMLResponse)
-async def modal(request: Request, file: UploadFile):
+async def import_upload(cls: ClassView = Depends(get_view)):
     """
      Универсальный запрос модалки, который отдает форму модели
     """

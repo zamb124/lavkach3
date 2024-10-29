@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from core.frontend.field import Fields, MethodType
+    from core.frontend.field import Fields, MethodType, Field
 
 path = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,7 +20,7 @@ environment = Environment(
 
 
 
-def _crud_filter(fields: 'Fields', method: 'MethodType', display_view: str = 'table'):
+def _crud_filter(fields: 'Fields', method: 'MethodType', display_view: str = None):
     """
         Jinja2 флильтр, который фильтрует строки для типа отображений
         ВАЖНО: Если table и в схеме 'get' True, то поле будет отображаться в таблице в любом режиме
@@ -28,7 +28,12 @@ def _crud_filter(fields: 'Fields', method: 'MethodType', display_view: str = 'ta
     res = []
     for field in fields:
         method_type = getattr(field, method.value)
-        if getattr(method_type, display_view):
+        if display_view == 'filter':
+            if field.is_filter:
+                res.append(field)
+        elif not display_view:
+            res.append(field)
+        elif getattr(method_type, display_view):
             res.append(field)
         else:
             if display_view == 'table':

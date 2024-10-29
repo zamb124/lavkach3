@@ -9,7 +9,9 @@ from core.frontend.constructor import ClassView
 order_type_router = APIRouter()
 class OrderTypeView(ClassView):
     """Переопределяем модель"""
-    model_name = "order_type"
+    model = "order_type"
+    def __init__(self):
+        super().__init__()
 class OrderTypePermit(BasePermit):
     permits = ['order_type_list']
 

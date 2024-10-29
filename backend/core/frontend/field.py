@@ -6,6 +6,7 @@ from typing import Optional, Any
 from jinja2_fragments import render_block
 from pydantic import BaseModel
 
+
 from core.frontend.enviroment import environment
 from core.frontend.types import MethodType, ViewVars
 
@@ -23,15 +24,13 @@ class Field:
         - as_table_update - виджет как таблица (доступен только для list_rel) полей
         - as_table_get - виджет как таблица (доступен только для list_rel) полей
     """
+    cls: 'ClassView'  # Класс, которому принадлежит поле
     field_name: str  # Системное имя поля
     type: str  # Тип поля (srt, ins, rel, list_rel ... )
-    model_name: str  # Наименование модели
-    domain_name: str  # Наименование домена модели
+
     # widget params
     enums: Optional[Any] = None  # Если поле enum, то тут будет список енумов
     sort_idx: int = 0  # Индекс сортировки поля
-    line: Optional[Any] = None  # Обьект, которому принадлежит поле
-    lines: Optional[Any] = None  # Если поле list_rel, то субобьекты
 
     is_filter: bool = False  # Является ли поле фильтром
     is_reserved: bool = False  # Призна
@@ -39,36 +38,20 @@ class Field:
     get: ViewVars
     create: ViewVars
     update: ViewVars
-    val: Any
+    val: Any = None
 
 
-    def copy(self):
-        return copy.copy(self)
+    def copy(self) -> 'Field':
+        instance = copy.copy(self)
+        return instance
 
     def __init__(self, *args, **kwargs):
         self.__dict__.update(kwargs)
-    # @property
-    # def val(self):
-    #     val = None
-    #     try:
-    #         val = self.lines.data.get(self.line.id)[self.field_name]
-    #     except Exception as ex:
-    #         a=1
-    #     return val
-    @property
-    def js(self):
-        di = self.__dict__
-        di['update'] = self.update.model_dump(mode='json')
-        di['get'] = self.get.model_dump(mode='json')
-        di['create'] = self.create.model_dump(mode='json')
-        di.pop('lines')
-        di.pop('line')
-        return json.dumps(di)
 
     @property
     def key(self) -> str:
         """Отдает уникальный идентификатор для поля"""
-        return f'{self.line.key}--{self.field_name}'
+        return f'{self.cls.p.key}--{self.field_name}'
 
     def render(self, block_name: str, type: str = '', method: MethodType=MethodType.GET) -> str:
         """Метод рендера шаблона"""
@@ -115,7 +98,7 @@ class Field:
             template_name=f'cls/table.html',
             block_name='as_table',
             method=MethodType.GET,
-            cls=self
+            cls=self.cls
         )
 
     @property
@@ -127,7 +110,7 @@ class Field:
             template_name=f'cls/table.html',
             block_name=block_name,
             method=MethodType.UPDATE,
-            cls=self
+            cls=self.cls
         )
 
     def filter_as_string(self) -> str:

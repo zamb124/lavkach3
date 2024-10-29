@@ -3,6 +3,7 @@ import copy
 import datetime
 import uuid
 from collections import defaultdict
+from idlelib.debugobj import ClassTreeItem
 from typing import Optional, Any
 from uuid import uuid4
 
@@ -11,6 +12,7 @@ from jinja2_fragments import render_block
 from pydantic import BaseModel, ValidationError
 from starlette.datastructures import QueryParams
 
+#from core.frontend.constructor import ClassView
 from core.frontend.enviroment import environment
 from core.frontend.exceptions import HTMXException
 from core.frontend.field import Fields
@@ -24,7 +26,7 @@ class Line:
     """
         Обьект описывающий обьект отданный из другого сервиса или класса с помощью Pydantic модели
     """
-    lines: 'Lines'                          # Список, которому принадлежит строка
+    cls: Any                          # Список, которому принадлежит строка
     type: LineType                          # Тип поля СМ LineType
     is_last: bool = False                   # True Если обьект последний в Lines
     is_rel: bool = False                    # True если обьек является relation от поля родителя
@@ -41,22 +43,22 @@ class Line:
         return copied_line
 
 
-    def __init__(self, lines, type,id=None, is_last=False, schema=None, **data):
+    def __init__(self, cls, type,id=None, is_last=False, schema=None, **data):
         self.type = type
-        self.lines = lines
+        self.cls = cls
         self.is_last = is_last
         self.id = id or uuid.uuid4()
         if self.type != LineType.FILTER:
-            self.fields = self.lines.cls._get_schema_fields(
-                schema=schema if schema else self.lines.cls.model.schemas.get,
-                lines=self.lines,
-                line=self
+            self.fields = self.cls._get_schema_fields(
+                schema=schema if schema else cls._view.model.schemas.get,
+                cls=cls,
+                line=self.cls
             )
         if self.type == LineType.FILTER:
-            self.fields = self.lines.cls._get_schema_fields(
-                schema=self.lines.cls.model.schemas.filter,
-                lines=self.lines,
-                line=self
+            self.fields = self.cls._get_schema_fields(
+                schema=schema if schema else cls._view.model.schemas.filter,
+                cls=cls,
+                line=self.cls
             )
 
     @property
@@ -507,14 +509,7 @@ class Lines:
             rendered_html += f'<div class="col-6">{line.as_card}</div>'
         return rendered_html
 
-    @property
-    def as_card_list(self)  -> str:
-        rendered_html = ''
-        for i, line in enumerate(self.lines):
-            if i == len(self.lines) - 1:
-                line.is_last = True
-            rendered_html += f'<div class="col-12">{line.as_card}</div>'
-        return rendered_html
+
 
     @property
     def as_table_header(self) -> str:

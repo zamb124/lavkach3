@@ -9,7 +9,7 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 
 class StoreService(BaseService[Store, StoreCreateScheme, StoreUpdateScheme, StoreFilter]):
-    def __init__(self, request:Request):
+    def __init__(self, request: Request):
         super(StoreService, self).__init__(request, Store,StoreCreateScheme, StoreUpdateScheme)
 
     @permit('store_edit')

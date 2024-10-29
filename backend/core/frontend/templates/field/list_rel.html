@@ -130,6 +130,7 @@
             id="{{ field.key }}"
             class="list_str form-control" data-choices data-choices-text-disabled-true
             value="
+
                {% for val in field.val %}
                 {{ val.title or val.id }}
                 {% if not loop.last %}
