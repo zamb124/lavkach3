@@ -131,11 +131,11 @@ async def line(cls: ClassView = Depends(get_view)):
         case Method.UPDATE:
             """Отдать обьект на редактирование, в зависимости от mode (tr/div)"""
             line = await cls.a.get_lines(ids=[cls.v.schema.id], join_related=False)
-            return getattr(line, f'as_{cls.v.schema.mode}_update')
+            return getattr(line.h, f'as_{cls.v.schema.mode}_update')
         case Method.GET:
             """Отдать обьект на чтение, в зависимости от mode (tr/div)"""
             line = await cls.a.get_lines(ids=[cls.v.schema.id], join_related=False)
-            return getattr(line, f'as_{cls.v.schema.mode}_get')
+            return getattr(line.h, f'as_{cls.v.schema.mode}_get')
         case Method.CREATE:
             """Отдать обьект на создание, в зависимости от mode (tr/div)"""
             return cls.h.as_tr_create

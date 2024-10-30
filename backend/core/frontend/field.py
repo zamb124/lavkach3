@@ -43,6 +43,7 @@ class Field:
 
     def copy(self) -> 'Field':
         instance = copy.copy(self)
+        instance.val = None
         return instance
 
     def __init__(self, *args, **kwargs):
@@ -98,7 +99,7 @@ class Field:
             template_name=f'cls/table.html',
             block_name='as_table',
             method=MethodType.GET,
-            cls=self.cls
+            cls=self.val
         )
 
     @property
@@ -110,7 +111,7 @@ class Field:
             template_name=f'cls/table.html',
             block_name=block_name,
             method=MethodType.UPDATE,
-            cls=self.cls
+            cls=self.val
         )
 
     def filter_as_string(self) -> str:

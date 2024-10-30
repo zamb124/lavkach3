@@ -66,9 +66,11 @@ class View:
     params: Optional[QueryParams] | dict | None  # Параметры на вхрде
     join_related: Optional[bool] | None = None  # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
+    submodels: dict
+    parent_field: Optional['ClassView'] = None  # Родительский класс
     # Список обьектов
     exclude: Optional[list] = [None]  # Исключаемые солбцы
-    sort: dict = {}  # Правила сортировки
+    sort: dict = dict  # Правила сортировки
     key: str = None  # Ключ конструктора
     actions: dict  # Доступные Методы модели
     is_rel: bool = False  # True, если
@@ -77,7 +79,6 @@ class View:
     errors: list = []  # Какие то ошибки, бывает
     env: Env  # Среда выполнения
     is_inline: bool = False  # Встроенный конструктор
-    parent_field: Optional[Field] = None  # Поле родитель
     extra: dict = {}  # Дополнительные параметры
     schema: BaseModel
 
@@ -165,6 +166,8 @@ class P:
     @property
     def key(self) -> str:
         """Ключ лайна"""
+        if self.cls.v.parent_field:
+            return f'{self.cls.v.parent_field.key}--{self.cls._id}'
         key = f'{self.cls.v.key}--{self.cls._id}'
         return key
 
@@ -479,10 +482,10 @@ class ClassView:
             if isinstance(attr, Field):
                 new_attr = attr.copy()
                 setattr(instance, k, new_attr)
-                if attr.cls.v.model.name == instance.v.model.name:
-                    '''Если совпадают классы, то назначаем себя родителем, если нет, значит это '
-                     'другая модель и ее не трогаем'''
-                    new_attr.cls = instance
+                # if attr.cls.v.model.name == instance.v.model.name:
+                #     '''Если совпадают классы, то назначаем себя родителем, если нет, значит это '
+                #      'другая модель и ее не трогаем'''
+                new_attr.cls = instance
         instance.a = A()
         instance.a.cls = instance
         instance.p = P()
@@ -516,7 +519,7 @@ class ClassView:
                  is_rel: bool = False,
                  vars: dict | None = None,
                  schema: BaseModel = None,
-                 permits: list = []
+                 permits: list = [],
                  ):
         self.a = A()
         self.a.cls = self
@@ -541,6 +544,7 @@ class ClassView:
         self._view.join_related = join_related
         self._view.join_fields = join_fields or []
         self._view.schema = schema
+        self._view.submodels = {}
         config_sort = self._view.model.sort
         if config_sort:
             self._view.sort = {v: i for i, v in enumerate(config_sort)}
@@ -549,6 +553,7 @@ class ClassView:
         self._view.is_inline = is_inline
         ##=======--------
         self._lines = []
+
         self._get_schema_fields(exclude=exclude)
 
     async def init(self, params: dict | None = None, join_related: bool = False,
@@ -713,7 +718,8 @@ class ClassView:
                     request=self._view.request,
                     model=model_name,
                     key=self._view.key,
-                )  #
+                )
+                self._view.submodels.update({field_name: submodel})
             else:
                 res += c.__name__.lower()  # type: ignore
 
@@ -733,10 +739,8 @@ class ClassView:
             'domain_name': model.domain.name,
             'enums': enums,
             'sort_idx': self._view.sort.get(field_name, 999),
-            'cls': submodel or self# Назначаем тут класс сразу тк это сабмодель
+            'cls': self,
         })
-        if submodel:
-            submodel._view.parent_field = field
         return field
 
     def _get_schema_fields(self, exclude: list = []) -> Fields:
@@ -784,17 +788,20 @@ class ClassView:
             line_copied._id = row.get('id', id(line_copied))
             line_copied._lsn = row.get('lsn')
             for col in line_copied.get_fields():
-                col.val = row.get(col.field_name, None)
+                val = row.get(col.field_name, None)
                 if col.type in ('date', 'datetime'):
-                    if isinstance(col.val, datetime):
+                    if isinstance(val, datetime):
                         pass
-                    elif isinstance(col.val, str):
-                        col.val = datetime.fromisoformat(col.val)
+                    elif isinstance(val, str):
+                        val = datetime.fromisoformat(val)
                 elif col.type == 'id':
-                    if not col.val:
-                        col.val = []
+                    if not val:
+                        val = []
                 elif col.type.endswith('list_rel'):
-                    await col.cls.fill_lines(data=col.val, join_related=False)
+                    submodel = line_copied.v.submodels[col.field_name]
+                    val = await submodel.fill_lines(data=val, join_related=False)
+                    submodel.v.parent_field = col
+                col.val = val
             line_copied._lines.append(line_copied)
         a=1
         if join_related or join_fields:
@@ -851,6 +858,7 @@ class ClassView:
                     if col == _field_name:
                         _header_col.type = _header_col.type.replace('uuid', 'rel')
                         _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
+        return self
 
     def get_fields(self, display_view: str = None, method: MethodType = MethodType.GET) -> Fields:
         fields = [k for i, k in self.__dict__.items() if isinstance(k, Field)]
@@ -882,6 +890,7 @@ class ClassView:
     @property
     def v(self):
         return self._view
+
 
 
 class Method(str, enum.Enum):
@@ -922,8 +931,6 @@ class BaseSchema(BaseModel):
                     raise 'Type Error'
         return value
 
-
-class ParamsModel(BaseModel):
     class Config:
         extra = 'allow'
 
