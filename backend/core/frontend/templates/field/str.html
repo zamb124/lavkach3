@@ -3,7 +3,7 @@
             {% if field.update.required %} required {% endif %}
             {% if field.update.readonly %}
                 readonly
-                class="str form-control disabled"
+                class="str form-control disabled  text-center"
             {% else %}
                 class="str form-control {% if not field.is_filter %}is-valid{% endif %}"
                 placeholder="Enter {{ field.update.title }}"
@@ -19,7 +19,7 @@
             {% if field.create.required %} required {% endif %}
             {% if field.create.readonly %}
                 readonly
-                class="str form-control disabled"
+                class="str form-control disabled text-center"
             {% else %}
                 class="enum form-control"
                 placeholder="Enter {{ field.update.title }}"
@@ -34,7 +34,7 @@
 {% endblock %}
 {% block as_get %}
     <input type="text"
-           class="form-control"
+           class="form-control  text-center"
             {% if field.get.required %} required {% endif %}
            disabled
            name="{{ field.key }}"

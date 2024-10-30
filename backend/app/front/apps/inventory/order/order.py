@@ -1,23 +1,11 @@
 from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
-from urllib3 import request
 
+from app.front.apps.inventory.views import OrderView
 from app.front.template_spec import templates
-from app.front.utills import BasePermit, BaseClass
-from core.frontend.constructor import ClassView, get_view, BaseSchema
-from core.permissions import permits
 
 order_router = APIRouter()
-
-
-
-
-class OrderView(ClassView):
-    """Переопределяем модель"""
-    def __init__(self, request: Request, schema: BaseSchema = None):
-        super().__init__(request=request, model='order', permits=permits)
 
 
 @order_router.get("", response_class=HTMLResponse)
