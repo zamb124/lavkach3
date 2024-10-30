@@ -9,7 +9,7 @@ from core.types import UUIDEncoder
 
 
 class InventoryAdapter(BaseAdapter):
-    module = 'basic'
+    module = 'inventory'
     protocol = config.APP_PROTOCOL
     port = config.APP_PORT
     host = config.APP_HOST

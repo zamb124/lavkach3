@@ -12,7 +12,7 @@ class LotService(BaseService[Lot, LotCreateScheme, LotUpdateScheme, LotFilter]):
     def __init__(self, request:Request):
         super(LotService, self).__init__(request, Lot,LotCreateScheme, LotUpdateScheme)
 
-    @permit('lot_edit')
+    @permit('lot_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(LotService, self).update(id, obj)
 

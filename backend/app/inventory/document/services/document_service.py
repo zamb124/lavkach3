@@ -14,7 +14,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
     def __init__(self, request: Request):
         super(OrderService, self).__init__(request, Order, OrderCreateScheme, OrderUpdateScheme)
 
-    @permit('order_edit')
+    @permit('order_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(OrderService, self).update(id, obj)
 

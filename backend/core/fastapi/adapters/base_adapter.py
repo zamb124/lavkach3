@@ -183,9 +183,6 @@ class BaseAdapter:
         responce = await self.client.get(self.host + path, params=params, kwargs=kwargs)
         return await common_exception_handler(responce)
 
-    async def view(self, id: uuid.UUID, model: str | None = None, params=None, **kwargs):
-        return await self.get(id, model, params, kwargs=kwargs)
-
     async def delete(self, id: uuid.UUID, model: str | None = None, params=None, **kwargs):
         path = f'/api/{self.model.domain.name}/{model or self.model.name}/{id}'
         responce = await self.client.delete(self.host + path, params=params)

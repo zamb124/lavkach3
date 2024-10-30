@@ -12,7 +12,7 @@ class StoreService(BaseService[Store, StoreCreateScheme, StoreUpdateScheme, Stor
     def __init__(self, request: Request):
         super(StoreService, self).__init__(request, Store,StoreCreateScheme, StoreUpdateScheme)
 
-    @permit('store_edit')
+    @permit('store_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(StoreService, self).update(id, obj)
 

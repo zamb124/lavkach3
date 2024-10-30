@@ -12,7 +12,7 @@ class LocationTypeService(BaseService[LocationType, LocationTypeCreateScheme, Lo
     def __init__(self, request:Request):
         super(LocationTypeService, self).__init__(request, LocationType,LocationTypeCreateScheme, LocationTypeUpdateScheme)
 
-    @permit('location_type_edit')
+    @permit('location_type_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(LocationTypeService, self).update(id, obj)
 

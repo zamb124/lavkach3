@@ -1,18 +1,18 @@
 permits:
   order_create: Может создавать квант
-  order_edit: Может редактировать квант
+  order_update: Может редактировать квант
   order_list: Может получать список квант
   order_delete: Может удалять квант
   order_get: Может смотреть на квант
   move_create: Может создавать квант
-  move_edit: Может редактировать квант
+  move_update: Может редактировать квант
   move_list: Может получать список квант
   move_delete: Может удалять квант
   move_get: Может смотреть на квант
   move_user_assign: Может прикрепить пользователя к move
 
   suggest_create: Может создавать саджест
-  suggest_edit: Может редактировать саджест
+  suggest_update: Может редактировать саджест
   suggest_list: Может получать список саджест
   suggest_delete: Может удалять саджест
   suggest_get: Может смотреть на саджест

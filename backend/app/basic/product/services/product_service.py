@@ -14,7 +14,7 @@ class ProductService(BaseService[Product, ProductCreateScheme, ProductUpdateSche
     def __init__(self, request: Request):
         super(ProductService, self).__init__(request, Product, ProductCreateScheme, ProductUpdateScheme)
 
-    @permit('product_edit')
+    @permit('product_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(ProductService, self).update(id, obj)
 

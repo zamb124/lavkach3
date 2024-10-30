@@ -13,7 +13,7 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
     def __init__(self, request:Request):
         super(OrderTypeService, self).__init__(request, OrderType,OrderTypeCreateScheme, OrderTypeUpdateScheme)
 
-    @permit('order_type_edit')
+    @permit('order_type_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(OrderTypeService, self).update(id, obj)
 

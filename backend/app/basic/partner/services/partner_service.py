@@ -10,7 +10,7 @@ class PartnerService(BaseService[Partner, PartnerCreateScheme, PartnerUpdateSche
     def __init__(self, request=None, db_session=None):
         super(PartnerService, self).__init__(request, Partner, PartnerCreateScheme, PartnerUpdateScheme, db_session)
 
-    @permit('partner_edit')
+    @permit('partner_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(PartnerService, self).update(id, obj)
 

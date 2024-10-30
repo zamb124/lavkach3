@@ -238,9 +238,9 @@
                     </div>
                 </div>
             </th>
-        {% if line.id.val %}
-            <input type="hidden" name="{{ line.id.key }}" value="{{ line.id.val }}">
-        {% endif %}
+            {% if line.id.val %}
+                <input type="hidden" name="{{ line.id.key }}" value="{{ line.id.val }}">
+            {% endif %}
             {% for field in line.get_fields(display_view='table') %}
                 {% if method in ('update', 'create') %}
                     <td class="line-col"
@@ -299,7 +299,7 @@
                     }'
         >
 
-<div class="text-start" style="padding-left: 0px;">
+        <div class="text-start" style="padding-left: 0px;">
             <a
                     href="#"
                     hx-trigger="click"
@@ -325,28 +325,23 @@
             </a>
 
         </div>
+                    <div class="row">
         {% for field in line.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' %}
-            {% if loop.length % 3 != 0 and loop.first %}
-                <div class="row">
-            {% endif %}
-            {% if loop.index0 % 3 == 0 %}
-                <div class="row">
-            {% endif %}
-        <div class="col">
-            {{ field.label|safe }}
-            {% if method =='update' %}
-                {{ field.as_update }}
-            {% elif method =='create' %}
-                {{ field.as_create }}
-            {% else %}
-                {{ field.as_get|safe }}
-            {% endif %}
 
-        </div>
-        {% if loop.index % 3 == 0 %}
-            </div>
-        {% endif %}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    {{ field.label|safe }}
+                    {% if method =='update' %}
+                        {{ field.as_update }}
+                    {% elif method =='create' %}
+                        {{ field.as_create }}
+                    {% else %}
+                        {{ field.as_get|safe }}
+                    {% endif %}
+
+                </div>
+
         {% endfor %}
+                    </div>
         {% for field in line.get_fields() if not field.is_reserved and field.type == 'list_rel' %}
             <div class="row" style="padding-right: 0px;
     margin-right: 0px;

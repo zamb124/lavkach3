@@ -17,7 +17,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
     def __init__(self, request: Request):
         super(SuggestService, self).__init__(request, Suggest, SuggestCreateScheme, SuggestUpdateScheme)
 
-    @permit('suggest_edit')
+    @permit('suggest_update')
     async def update(self, id: Any, obj: UpdateSchemaType, commit=False) -> Optional[ModelType]:
         return await super(SuggestService, self).update(id, obj, commit=commit)
 

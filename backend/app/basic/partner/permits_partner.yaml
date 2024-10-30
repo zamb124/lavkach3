@@ -1,6 +1,6 @@
 permits:
   partner_create: Может создавать партнера
-  partner_edit: Может редактировать партнера
+  partner_update: Может редактировать партнера
   partner_list: Может получать список партнеров
   partner_delete: Может удалять партнера
   partner_get: Может смотреть на партнера

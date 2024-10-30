@@ -1,6 +1,6 @@
 permits:
   location_create: Может создавать локацию
-  location_edit: Может редактировать локацию
+  location_update: Может редактировать локацию
   location_list: Может получать список локацию
   location_delete: Может удалять локацию
   location_get: Может смотреть на локацию

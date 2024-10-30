@@ -11,7 +11,7 @@ class ProductStorageTypeService(BaseService[ProductStorageType, ProductStorageTy
     def __init__(self, request:Request):
         super(ProductStorageTypeService, self).__init__(request, ProductStorageType, ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme,)
 
-    @permit('product_storage_type_edit')
+    @permit('product_storage_type_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(ProductStorageTypeService, self).update(id, obj)
 

@@ -18,7 +18,7 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
     def __init__(self, request:Request):
         super(QuantService, self).__init__(request, Quant, QuantCreateScheme, QuantUpdateScheme)
 
-    @permit('quant_edit')
+    @permit('quant_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(QuantService, self).update(id, obj)
 

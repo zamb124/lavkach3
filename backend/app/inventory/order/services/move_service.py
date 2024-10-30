@@ -39,7 +39,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
     def __init__(self, request: Request):
         super(MoveService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme)
 
-    @permit('move_edit')
+    @permit('move_update')
     async def update(self, id: Any, obj: UpdateSchemaType, commit: bool = True) -> Optional[ModelType]:
         return await super(MoveService, self).update(id, obj, commit)
 

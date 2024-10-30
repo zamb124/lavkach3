@@ -10,7 +10,7 @@ class ProductCategoryService(BaseService[ProductCategory, ProductCategoryCreateS
     def __init__(self, request:Request):
         super(ProductCategoryService, self).__init__(request, ProductCategory, ProductCategoryCreateScheme, ProductCategoryUpdateScheme)
 
-    @permit('product_category_edit')
+    @permit('product_category_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(ProductCategoryService, self).update(id, obj)
 

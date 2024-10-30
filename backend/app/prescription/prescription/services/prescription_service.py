@@ -12,7 +12,7 @@ class PrescriptionService(BaseService[Prescription, PrescriptionCreateScheme, Pr
     def __init__(self, request:Request):
         super(PrescriptionService, self).__init__(request, Prescription,PrescriptionCreateScheme, PrescriptionUpdateScheme)
 
-    @permit('prescription_edit')
+    @permit('prescription_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(PrescriptionService, self).update(id, obj)
 
