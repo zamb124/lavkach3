@@ -94,6 +94,7 @@ def BasicField(
         readonly: bool | list = False,  # Только на чтение (всегда) или одно из условий  например
         # [('status','==', 'CONFIRMED')]
         table: bool = False,  # Показывать в таблице
+        form: bool = False,  # Показывать в Форме
         ####
         default_factory: typing.Callable[[], Any] | None = _Unset,
         alias: str | None = _Unset,
@@ -135,6 +136,7 @@ def BasicField(
         table=table,
         model=model,
         readonly=readonly,
+        form=form,
         default_factory=default_factory,
         alias=alias,
         alias_priority=alias_priority,

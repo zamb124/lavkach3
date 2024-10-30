@@ -1,7 +1,7 @@
 import typing
 import uuid
 
-from fastapi import APIRouter, Query, Request, Depends
+from fastapi import APIRouter, Query, Depends
 from fastapi_filter import FilterDepends
 
 from app.inventory.store_staff.schemas import (
@@ -29,18 +29,21 @@ async def store_staff_list(
     cursor = model_filter.lsn__gt
     return {'size': len(data), 'cursor': cursor, 'data': data}
 
+
 @store_staff_router.post("", response_model=StoreStaffScheme)
 async def store_staff_create(schema: StoreStaffCreateScheme, service: StoreStaffService = Depends()):
     return await service.create(obj=schema)
 
 
-@store_staff_router.get("/{StoreStaff_id}")
-async def store_staff_get(store_staff_id: uuid.UUID, service: StoreStaffService = Depends()) -> typing.Union[None, StoreStaffScheme]:
+@store_staff_router.get("/{store_staff_id}")
+async def store_staff_get(store_staff_id: uuid.UUID, service: StoreStaffService = Depends()) -> typing.Union[
+    None, StoreStaffScheme]:
     return await service.get(id=store_staff_id)
 
 
 @store_staff_router.put("/{store_staff_id}", response_model=StoreStaffScheme)
-async def store_staff_update(store_staff_id: uuid.UUID, schema: StoreStaffUpdateScheme, service: StoreStaffService = Depends()):
+async def store_staff_update(store_staff_id: uuid.UUID, schema: StoreStaffUpdateScheme,
+                             service: StoreStaffService = Depends()):
     return await service.update(id=store_staff_id, obj=schema)
 
 

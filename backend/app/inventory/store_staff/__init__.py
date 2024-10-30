@@ -1,4 +1,4 @@
-from app.inventory.store_staff.models import StoreStaff, StoreStaffType
+from app.inventory.store_staff.models import StoreStaff
 from app.inventory.store_staff.schemas import (StoreStaffCreateScheme, StoreStaffUpdateScheme,
                                                StoreStaffFilter, StoreStaffScheme)
 from app.inventory.store_staff.services import StoreStaffService

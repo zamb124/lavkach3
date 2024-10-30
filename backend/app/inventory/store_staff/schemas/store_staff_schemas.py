@@ -1,10 +1,12 @@
 from typing import Optional, List
+from uuid import UUID
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic.types import UUID4
+
+from app.inventory.store_staff.enums import StaffPosition
 from core.schemas.basic_schemes import BasicField as Field, bollean
 
-from app.inventory.store_staff.enums import StoreStaffClass
 from app.inventory.store_staff.models import StoreStaff
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel
@@ -14,23 +16,14 @@ from core.schemas.timestamps import TimeStampScheme
 
 class StoreStaffBaseScheme(BasicModel):
     vars: Optional[dict] = None
-    store_staff_class: StoreStaffClass
-    title: str
+    user_id: UUID = Field(title='User', model='user')
+    staff_position: StaffPosition = Field(default=StaffPosition.STOREKEEPER, title='Staff Position', table=True)
     store_id: UUID4 = Field(title='Store', model='store')
-    store_staff_id: Optional[UUID4] = Field(default=None, title='Parent StoreStaff', model='store_staff')
-    is_active: bollean = Field(default=True, title='Is Active')
-    store_staff_type_id: UUID4 = Field(title='StoreStaff Type', model='store_staff_type')
-    partner_id: Optional[UUID4] = Field(default=None, title='Partner', model='partner')
-
-    store_staff_class: StoreStaffClass = Field(default=StoreStaffClass.PLACE, title='StoreStaff Class')
-    lot_id: Optional[UUID4] = Field(default=None, title='Lot')
-    is_can_negative: bollean = Field(default=False, title='Can Negative')
-    allowed_package_ids: Optional[list[UUID4]] = Field(default=[], title='Allowed Packages')  # Разрешенные типы упаковок
-    exclude_package_ids: Optional[list[UUID4]] = Field(default=[], title='Exclude Packages')  # Разрешенные типы упаковок
+    store_ids: Optional[list[UUID4]] = Field(default=[], title='Stores')  # Разрешенные типы упаковок
+    staff_number: Optional[str] = Field(default=None, title='Staff ID', table=True, form=True)
+    external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = StoreStaff
 
 class StoreStaffUpdateScheme(StoreStaffBaseScheme):
@@ -44,26 +37,20 @@ class StoreStaffCreateScheme(StoreStaffBaseScheme):
 class StoreStaffScheme(StoreStaffCreateScheme, TimeStampScheme):
     company_id: UUID4 = Field(model='company', title='Company')
     lsn: int
-    id: UUID4
-
-    class Config:
-        from_attributes = True
+    id: UUID4 = Field(title='ID', table=True)
 
 
 class StoreStaffFilter(BaseFilter):
-    title: Optional[str] = Field(default=None, title='Title')
     store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', model='store')
-    store_staff_type_id__in: Optional[List[UUID4]] = Field(default=None, title='StoreStaff Type', model='store_staff_type')
-    store_staff_class__in: Optional[List[StoreStaffClass]] = Field(default=None, title='Class')
-    store_staff_class__not_in: Optional[List[StoreStaffClass]] = Field(default=None, title='Class')
-    is_active: Optional[bool] = Field(default=None, title='Active')
-    is_can_negative: Optional[bool] = Field(default=None, title='Is can negative')
+    user_id__in: Optional[List[UUID4]] = Field(default=None, title='User Inn', model='user')
+    staff_position__in: Optional[List[StaffPosition]] = Field(default=None, title='Class')
+    staff_position__not_in: Optional[List[StaffPosition]] = Field(default=None, title='Class')
 
     class Constants(Filter.Constants):
         model = StoreStaff
         ordering_field_name = "order_by"
         search_field_name = "search"
-        search_model_fields = ["title"]
+        search_model_fields = ["staff_number", "external_number"]
 
 
 class StoreStaffListSchema(GenericListSchema):
