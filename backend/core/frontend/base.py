@@ -130,11 +130,11 @@ async def line(cls: ClassView = Depends(get_view)):
     match cls.v.schema.method:
         case Method.UPDATE:
             """Отдать обьект на редактирование, в зависимости от mode (tr/div)"""
-            line = await cls.a.get_lines(ids=[cls.v.schema.id], join_related=False)
+            line = await cls.get_lines(ids=[cls.v.schema.id], join_related=False)
             return getattr(line.h, f'as_{cls.v.schema.mode}_update')
         case Method.GET:
             """Отдать обьект на чтение, в зависимости от mode (tr/div)"""
-            line = await cls.a.get_lines(ids=[cls.v.schema.id], join_related=False)
+            line = await cls.get_lines(ids=[cls.v.schema.id], join_related=False)
             return getattr(line.h, f'as_{cls.v.schema.mode}_get')
         case Method.CREATE:
             """Отдать обьект на создание, в зависимости от mode (tr/div)"""
@@ -144,19 +144,19 @@ async def line(cls: ClassView = Depends(get_view)):
             if isinstance(cls.v.schema.id, int):
                 """Если это временная запись, то просто удалить"""
                 return
-            line = await cls.a.get_lines(ids=[cls.v.schema.id], join_related=False)
+            line = await cls.get_lines(ids=[cls.v.schema.id], join_related=False)
             return line.h.get_modal_delete
         case Method.UPDATE_SAVE:
             """Сохранение записи при измененнии"""
             data = clean_filter(cls.v.schema.model_extra, cls.v.schema.key)
-            await cls.a.update_lines(id=cls.v.schema.id, data=data)
+            await cls.update_lines(id=cls.v.schema.id, data=data)
         case Method.CREATE_SAVE:
             """Сохранение записи при создании"""
             data = clean_filter(cls.v.schema.model_extra, cls.v.schema.key)
-            line = await cls.a.create_lines(data)
+            line = await cls.create_lines(data)
             return line.h.as_div_update
         case Method.DELETE_SAVE:
-            await cls.a.delete_lines(ids=[cls.v.schema.id])
+            await cls.delete_lines(ids=[cls.v.schema.id])
             """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
 
 
@@ -174,13 +174,13 @@ async def modal(cls: ClassView = Depends(get_view)):
     cls.reset_key()
     match cls.v.schema.method:
         case Method.GET:
-            line = await cls.a.get_lines(ids=[cls.v.schema.id])
+            line = await cls.get_lines(ids=[cls.v.schema.id])
             return line.h.get_modal_get
         case Method.UPDATE:
-            line = await cls.a.get_lines(ids=[cls.v.schema.id])
+            line = await cls.get_lines(ids=[cls.v.schema.id])
             return line.h.get_modal_update
         case Method.DELETE:
-            line = await cls.a.get_lines(ids=[cls.v.schema.id])
+            line = await cls.get_lines(ids=[cls.v.schema.id])
             return line.h.get_modal_delete
         case Method.CREATE:
             return cls.h.get_modal_create

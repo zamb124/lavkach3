@@ -36,5 +36,6 @@ class ViewVars(BaseModel):
     readonly: bool = False  # Только на чтение
     required: bool = False  # Обязательно заполнить, актуально для форм
     table: bool = False  # Учавствует ли поле при построении таблицы
+    form: bool = False  # Учавствует ли поле при построении таблицы
     filter: Optional[dict] = None  # Учавствует ли поле, если это фильтр
     description: Optional[str] = None  # Описание поля в UI

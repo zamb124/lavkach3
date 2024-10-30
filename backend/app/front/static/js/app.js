@@ -272,10 +272,11 @@ async function choiceMultiUUID(element, method) {
 
 async function choicesMultiBadges(element, method) {
     var model_name = element.getAttribute('model-name')
+
     async function getValues() {
         var id__in = ''
         var str = element.innerText.replace(/[\s\n\t]+/g, ' ').trim()
-        let values = str ? str.split(',')  : [];
+        let values = str ? str.split(',') : [];
 
         for (let v in values) {
             var maybe_cache = Singleton.results[values[v]]
@@ -487,4 +488,36 @@ async function choiceMultiEnum(element, method) {
     choices.containerInner.element.classList.add('form-control');
 
     check_valid()
+}
+
+
+async function createModal(modal_id) {
+    var modal = new bootstrap.Modal(modal_id)
+    function createDragModal(modal) {
+        var header = modal.querySelector('.modal-header');
+
+        header.onmousedown = function (e) {
+            var offsetX = e.clientX - modal.getBoundingClientRect().left;
+            var offsetY = e.clientY - modal.getBoundingClientRect().top;
+
+            function mouseMoveHandler(e) {
+                modal.style.position = 'absolute';
+                modal.style.left = (e.clientX - offsetX) + 'px';
+                modal.style.top = (e.clientY - offsetY) + 'px';
+            }
+
+            function mouseUpHandler() {
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+            }
+
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+        };
+    }
+    modal.show()
+    document.addEventListener('hidden.bs.modal', function (event) {
+        console.log(event)
+        event.target.remove()
+    })
 }

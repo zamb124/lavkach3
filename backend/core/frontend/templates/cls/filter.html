@@ -17,7 +17,7 @@ class="collapse">
     <div class="card-body">
         <div class="row g-3">
             {% for field in cls.get_fields(display_view='filter') if field.is_filter %}
-                {% if field.field_name != 'order_by' %}
+                {% if field.field_name not in ('order_by', 'lsn__gt', 'lsn__lt', 'id__in' )%}
                     <div class="col-xxl-2 col-sm-4">
                         {{ field.as_update|safe }}
                     </div>

@@ -1,16 +1,16 @@
 {% block modal %}
     {% autoescape false %}
-        <div class="modal" id="{{ 'modal_'~line.p.class_key }}" tabindex="-1" style="display: none;"
+        <div class="modal" id="{{ 'modal_'~line.p.key }}" tabindex="-1" style="display: none;"
              aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
                 <div class="modal-content">
                     <div class="modal-header">
 
-                            <h5 class="modal-title">
-                                {{ method|capitalize }} {{ line.v.model.name|capitalize }}
-                                <span></span>
+                        <h5 class="modal-title">
+                            {{ method|capitalize }} {{ line.v.model.name|capitalize }}
+                            <span></span>
 
-                            </h5>
+                        </h5>
 
                         <div class="text-end">
                             {{ line.h.button_delete|safe }}
@@ -19,7 +19,7 @@
                                     aria-label="Close"></button>
                         </div>
                     </div>
-                    <div id="{{ 'modal_body'~ line.p.class_key }}">
+                    <div id="{{ 'modal_body'~ line.p.key }}">
                         <div class="modal-body text-center p-5">
                             <lord-icon
                                     src="https://cdn.lordicon.com/ghhwiltn.json"
@@ -41,34 +41,7 @@
             </div>
         </div>
         <script>
-            var modal = new bootstrap.Modal('#{{ 'modal_'~line.p.class_key }}')
-            modal.show()
-        </script>
-        <script>
-            // Modal'ı sürüklenebilir hale getiren JavaScript kodu
-            (function () {
-                var modal = document.getElementById('{{ 'modal_'~line.p.class_key }}');
-                var header = modal.querySelector('.modal-header');
-
-                header.onmousedown = function (e) {
-                    var offsetX = e.clientX - modal.getBoundingClientRect().left;
-                    var offsetY = e.clientY - modal.getBoundingClientRect().top;
-
-                    function mouseMoveHandler(e) {
-                        modal.style.position = 'absolute';
-                        modal.style.left = (e.clientX - offsetX) + 'px';
-                        modal.style.top = (e.clientY - offsetY) + 'px';
-                    }
-
-                    function mouseUpHandler() {
-                        document.removeEventListener('mousemove', mouseMoveHandler);
-                        document.removeEventListener('mouseup', mouseUpHandler);
-                    }
-
-                    document.addEventListener('mousemove', mouseMoveHandler);
-                    document.addEventListener('mouseup', mouseUpHandler);
-                };
-            })();
+            createModal('#{{ 'modal_'~line.p.key }}')
         </script>
     {% endautoescape %}
 {% endblock %}
@@ -86,7 +59,8 @@
 
                     <div class="mt-4">
                         <h4 class="mb-3" style="padding-bottom: 0">Are you sure you want to
-                            delete {{ line.v.model.name|capitalize }} -> {{ line.display_title }}</h4>
+                            delete {{ line.v.model.name|capitalize }}
+                            -> {{ line.display_title }}</h4>
                         <p class="text-muted mb-1 text-center" style="padding-top: 0"> With
                             id {{ line.p.id }} </p>
                         <p class="text-muted mb-10"> The record will be permanently deleted, did you
@@ -100,13 +74,14 @@
                                     hx-post="/base/line"
                                     hx-ext="json-enc"
                                     hx-target="this"
+                                    hx-swap="outerHTML"
                                     hx-vals='{
                                 "model": "{{ line.v.model.name }}",
                                 "method": "delete_delete",
                                 "id": "{{ line.p.id }}",
                                 "key": "{{ line.p.key }}"
                             }'
-                                    data-bs-dismiss="modal"
+
                                     class="btn btn-danger">Delete
                             </button>
                         </div>
@@ -116,7 +91,6 @@
         </div><!-- /.modal-dialog -->
     </div>
     <script>
-        var modal = new bootstrap.Modal('#{{ 'modal_'~line.p.key }}')
-        modal.show()
+        createModal('#{{ 'modal_'~line.p.key }}')
     </script>
 {% endblock %}

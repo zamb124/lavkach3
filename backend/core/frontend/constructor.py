@@ -57,6 +57,11 @@ def get_types(annotation: object, _class: list = []) -> list[object]:
 
 
 class View:
+    """
+        Класс описывает контекст конструктора модели,
+        ВАЖНО!! класс этот шерится между всеми лайнами,
+         <поэтому в нем не должно быть никаких данных
+    """
     request: Request = None  # Реквест - TODO: надо потом убрать
     model: Model = None  # Имя поля
     vars: Optional[dict] = {
@@ -74,87 +79,8 @@ class View:
     key: str = None  # Ключ конструктора
     actions: dict  # Доступные Методы модели
     is_rel: bool = False  # True, если
-    lines: []
-    state = 0  # счетчик итераций
-    errors: list = []  # Какие то ошибки, бывает
     env: Env  # Среда выполнения
-    is_inline: bool = False  # Встроенный конструктор
-    extra: dict = {}  # Дополнительные параметры
     schema: BaseModel
-
-
-class A:
-    """
-        Класс инкапсулирует все методы для работы с конструктором модели
-    """
-    cls: 'ClassView'
-
-    def send_message(self, message: str) -> str:
-        """Отправить пользователю сообщение """
-        return render_block(
-            environment=environment,
-            template_name=f'components/message.html',
-            block_name='success',
-            cls=self.cls,
-            message=message
-        )
-
-    async def delete_lines(self, ids: list[uuid.UUID]) -> bool:
-        """Метод удаления обьектов"""
-        for _id in ids:
-            await self.cls.v.model.adapter.delete(id=_id)
-        return True
-
-    async def get_lines(self, ids: list[uuid.UUID], join_related: bool = False) -> 'ClassView':
-        await self.cls.get_data(params={'id__in': ids})
-        return self.cls
-
-    async def update_lines(self, data: dict, id: uuid.UUID) -> 'ClassView':
-        """Метод обновления обьектов"""
-        new_data = []
-        for raw_line in data:
-            try:
-                method_schema_obj = self.cls.v.model.schemas.update(**raw_line)
-            except ValidationError as e:
-                raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
-            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
-            line = await self.cls.v.model.adapter.update(id=id, json=_json)
-            new_data.append(line)
-        lines = await self.cls.fill_lines(new_data)
-        return self.cls
-
-    async def create_lines(self, data: dict) -> 'ClassView':
-        """Метод создания обьектов"""
-        new_data = []
-        for raw_line in data:
-            try:
-                method_schema_obj = self.cls.v.model.schemas.create(**raw_line)
-            except ValidationError as e:
-                raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
-            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
-            line = await self.cls.v.model.adapter.create(json=_json)
-            new_data.append(line)
-        await self.cls.fill_lines(new_data)
-        return self.cls
-
-    async def get_action(self, action: str, ids: list[uuid.UUID], schema: BaseModel) -> str:
-        """Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов"""
-        data = {k: ids if k == 'ids' else None for k, v in schema.model_fields.items()}
-        self.action_line = await self._get_line(schema=schema, type=LineType.ACTION)
-        self.action_lines = Lines(cls=self, class_key=self.key, line_header=self.action_line,
-                                  line_new=self.action_line)
-        await self.action_lines.get_data(
-            params={},
-            data=[data],
-            key='action--0',
-            join_related=False,
-        )
-
-        return render_block(
-            environment=environment,
-            template_name=f'cls/action.html',
-            block_name='action', cls=self, action=action
-        )
 
 
 class P:
@@ -463,7 +389,6 @@ class ClassView:
     _view: View = None
     _lines: list = []
     __state: int = 0
-    a: A = None
     p: P = None
     h: H = None
 
@@ -486,8 +411,6 @@ class ClassView:
                 #     '''Если совпадают классы, то назначаем себя родителем, если нет, значит это '
                 #      'другая модель и ее не трогаем'''
                 new_attr.cls = instance
-        instance.a = A()
-        instance.a.cls = instance
         instance.p = P()
         instance.p.cls = instance
         instance.h = H()
@@ -521,8 +444,6 @@ class ClassView:
                  schema: BaseModel = None,
                  permits: list = [],
                  ):
-        self.a = A()
-        self.a.cls = self
         self.p = P()
         self.p.cls = self
         self.h = H()
@@ -578,6 +499,7 @@ class ClassView:
                 'readonly': True,
                 'filter': {},
                 'table': False,
+                'form': False,
                 'description': None,
             })
         return ViewVars(**{
@@ -596,6 +518,9 @@ class ClassView:
                                                      {}) if fielinfo.json_schema_extra else {},
             # type: ignore
             'table': fielinfo.json_schema_extra.get('table',
+                                                    False) if fielinfo.json_schema_extra else False,
+
+            'form': fielinfo.json_schema_extra.get('form',
                                                     False) if fielinfo.json_schema_extra else False,
             # type: ignore
             'description': fielinfo.description,
@@ -803,7 +728,7 @@ class ClassView:
                     submodel.v.parent_field = col
                 col.val = val
             line_copied._lines.append(line_copied)
-        a=1
+
         if join_related or join_fields:
             missing_fields = defaultdict(list)
             for _line in self.lines:
@@ -890,6 +815,73 @@ class ClassView:
     @property
     def v(self):
         return self._view
+
+    def send_message(self, message: str) -> str:
+        """Отправить пользователю сообщение """
+        return render_block(
+            environment=environment,
+            template_name=f'components/message.html',
+            block_name='success',
+            cls=self.cls,
+            message=message
+        )
+
+    async def delete_lines(self, ids: list[uuid.UUID]) -> bool:
+        """Метод удаления обьектов"""
+        for _id in ids:
+            await self.v.model.adapter.delete(id=_id)
+        return True
+
+    async def get_lines(self, ids: list[uuid.UUID], join_related: bool = False) -> 'ClassView':
+        await self.get_data(params={'id__in': ids})
+        return self
+
+    async def update_lines(self, data: dict, id: uuid.UUID) -> 'ClassView':
+        """Метод обновления обьектов"""
+        new_data = []
+        for raw_line in data:
+            try:
+                method_schema_obj = self.v.model.schemas.update(**raw_line)
+            except ValidationError as e:
+                raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
+            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
+            line = await self.v.model.adapter.update(id=id, json=_json)
+            new_data.append(line)
+        lines = await self.fill_lines(new_data)
+        return self
+
+    async def create_lines(self, data: dict) -> 'ClassView':
+        """Метод создания обьектов"""
+        new_data = []
+        for raw_line in data:
+            try:
+                method_schema_obj = self.v.model.schemas.create(**raw_line)
+            except ValidationError as e:
+                raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
+            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
+            line = await self.v.model.adapter.create(json=_json)
+            new_data.append(line)
+        await self.fill_lines(new_data)
+        return self
+
+    async def get_action(self, action: str, ids: list[uuid.UUID], schema: BaseModel) -> str:
+        """Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов"""
+        data = {k: ids if k == 'ids' else None for k, v in schema.model_fields.items()}
+        self.action_line = await self._get_line(schema=schema, type=LineType.ACTION)
+        self.action_lines = Lines(cls=self, class_key=self.key, line_header=self.action_line,
+                                  line_new=self.action_line)
+        await self.action_lines.get_data(
+            params={},
+            data=[data],
+            key='action--0',
+            join_related=False,
+        )
+
+        return render_block(
+            environment=environment,
+            template_name=f'cls/action.html',
+            block_name='action', cls=self, action=action
+        )
 
 
 

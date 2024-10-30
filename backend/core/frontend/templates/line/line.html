@@ -29,7 +29,7 @@
             hx-include="#{{ line.p.key }}"
             hx-post="/base/line"
             hx-ext="json-enc"
-            hx-target="{% if line.type == 'new' %}#{{ line.p.key }}{% else %}this{% endif %}"
+            hx-target="#htmx_content"
             hx-swap="{% if line.type == 'new' %}outerHTML{% else %}none{% endif %}"
             hx-vals='{
                 {% if line.p.id %}"id": "{{ line.p.id }}",{% endif %}
@@ -322,7 +322,7 @@
             </a>
 
         </div>
-        {% for field in line.get_fields() if not field.is_reserved and field.type != 'list_rel' %}
+        {% for field in line.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' %}
             {% if loop.length % 3 != 0 and loop.first %}
                 <div class="row">
             {% endif %}
