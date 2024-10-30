@@ -383,3 +383,8 @@
     }
 }
 
+.choices__list--dropdown .choices__item--selectable.is-highlighted, .choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
+    background-color: var(--bs-modal-bg);
+    color: var(--bs-danger-rgb);
+}
+

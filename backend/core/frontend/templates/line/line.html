@@ -238,6 +238,9 @@
                     </div>
                 </div>
             </th>
+        {% if line.id.val %}
+            <input type="hidden" name="{{ line.id.key }}" value="{{ line.id.val }}">
+        {% endif %}
             {% for field in line.get_fields(display_view='table') %}
                 {% if method in ('update', 'create') %}
                     <td class="line-col"

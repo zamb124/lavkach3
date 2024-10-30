@@ -9,7 +9,7 @@
             data-choices
     >
         {% if field.val %}
-            <option value="{{ field.val.id }}" selected>{{ field.val.title or field.val.nickname }}</option>
+            <option value="{{ field.val.p.id }}" selected>{{ field.val.p.display_title }}</option>
         {% endif %}
     </select>
     <script>
@@ -29,7 +29,7 @@
             data-choices
     >
         {% if field.val %}
-            <option value="{{ field.val.id }}" selected>{{ field.val.title or field.val.nickname }}</option>
+            <option value="{{ field.val.p.id }}" selected>{{ field.val.p.display_title }}</option>
         {% endif %}
     </select>
     <script>
@@ -51,10 +51,10 @@
            hx-vals='{
             "model": "{{ field.model_name }}",
             "method": "get",
-            "id": "{{ field.val.id }}",
+            "id": "{{ field.val.p.id }}",
             "key": "{{ field.key }}"
             }'
-        >{{ field.val.title or field.val.nickname }}
+        >{{ field.val.p.display_title }}
         </a>
 {% endblock %}
 

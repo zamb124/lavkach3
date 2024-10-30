@@ -15,6 +15,8 @@ async function choiceOneUUID(element, method) {
     }
     let choices = new Choices(element, attrs);
     if (method === 'get' || element.getAttribute('readonly')) {
+        choices.disable()
+    } else if (method === 'update' && element.getAttribute('readonly')) {
         choices.containerInner.element.classList.add('disabled');
         choices.disable()
     }
@@ -159,6 +161,8 @@ async function choiceMultiUUID(element, method) {
     }
     let choices = new Choices(element, attrs);
     if (method === 'get' || element.getAttribute('readonly')) {
+        choices.disable()
+    } else if (method === 'update' && element.getAttribute('readonly')) {
         choices.containerInner.element.classList.add('disabled');
         choices.disable()
     }

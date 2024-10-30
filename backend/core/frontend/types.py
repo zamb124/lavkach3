@@ -1,7 +1,8 @@
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, model_validator
+from pydantic_core.core_schema import ValidationInfo
 
 
 class MethodType(str, Enum):
@@ -39,3 +40,4 @@ class ViewVars(BaseModel):
     form: bool = False  # Учавствует ли поле при построении таблицы
     filter: Optional[dict] = None  # Учавствует ли поле, если это фильтр
     description: Optional[str] = None  # Описание поля в UI
+

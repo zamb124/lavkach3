@@ -5,10 +5,10 @@ import enum
 import uuid
 from collections import defaultdict
 from datetime import datetime
-from http.client import HTTPException
+
 from inspect import isclass
 from typing import Optional, get_args, get_origin, Any
-
+from starlette.exceptions import HTTPException
 from fastapi import Query
 from fastapi_filter.contrib.sqlalchemy import Filter
 from jinja2_fragments import render_block
@@ -92,8 +92,6 @@ class P:
     @property
     def key(self) -> str:
         """Ключ лайна"""
-        if self.cls.v.parent_field:
-            return f'{self.cls.v.parent_field.key}--{self.cls._id}'
         key = f'{self.cls.v.key}--{self.cls._id}'
         return key
 
@@ -448,7 +446,7 @@ class ClassView:
         self.p.cls = self
         self.h = H()
         self.h.cls = self
-
+        self._id = id(self)
         self._view = View()
         self._view.request = request
         if vars:
@@ -474,8 +472,11 @@ class ClassView:
         self._view.is_inline = is_inline
         ##=======--------
         self._lines = []
-
         self._get_schema_fields(exclude=exclude)
+
+    @property
+    def r(self):
+        return self.v.request
 
     async def init(self, params: dict | None = None, join_related: bool = False,
                    data: list | dict = None, schema: BaseModel = None) -> None:
@@ -528,72 +529,16 @@ class ClassView:
 
     def _get_view_vars(self, fieldname: str, is_filter: bool) -> dict[str, ViewVars]:
         """Костыльный метод собирания ViewVars"""
-        if fieldname == 'title':
+        if fieldname == 'id':
             a = 1
         create_fields = self._view.model.schemas.create.model_fields | self._view.model.schemas.create.model_computed_fields
         update_fields = self._view.model.schemas.update.model_fields | self._view.model.schemas.update.model_computed_fields
         get_fields = self._view.model.schemas.get.model_fields | self._view.model.schemas.get.model_computed_fields
         filter_fields = self._view.model.schemas.filter.model_fields | self._view.model.schemas.filter.model_computed_fields
-
         create_fieldinfo = create_fields.get(fieldname)
         update_fieldinfo = update_fields.get(fieldname)
         get_fieldinfo = get_fields.get(fieldname)
         filter_fieldinfo = filter_fields.get(fieldname)
-        if fieldname in readonly_fields:
-            hidden = True if fieldname in hidden_fields else False
-            table = True if fieldname in table_fields else False
-            if update_fieldinfo:
-                update_fieldinfo.title = fieldname.capitalize()
-                if update_fieldinfo.json_schema_extra:
-                    update_fieldinfo.json_schema_extra.update({  # type: ignore
-                        'readonly': True,
-                        'table': table,
-                        'hidden': hidden
-                    })
-                else:
-                    update_fieldinfo.json_schema_extra = {
-                        'readonly': True,
-                        'table': table,
-                        'hidden': hidden
-                    }
-            else:
-                update_fieldinfo = BasicField(title=fieldname.capitalize(), table=table,
-                                              hidden=hidden, readonly=True)
-            if get_fieldinfo:
-                get_fieldinfo.title = fieldname.capitalize()
-                if get_fieldinfo.json_schema_extra:
-                    get_fieldinfo.json_schema_extra.update({  # type: ignore
-                        'readonly': True,
-                        'table': table,
-                        'hidden': hidden
-                    })
-                else:
-                    get_fieldinfo.json_schema_extra = {
-                        'readonly': True,
-                        'table': table,
-                        'hidden': hidden
-                    }
-            else:
-                get_fieldinfo = BasicField(title=fieldname.capitalize(), table=table, hidden=hidden,
-                                           readonly=True)
-            if create_fieldinfo:
-                create_fieldinfo.title = fieldname.capitalize()
-                if create_fieldinfo.json_schema_extra:
-                    create_fieldinfo.json_schema_extra.update({  # type: ignore
-                        'readonly': True,
-                        'table': table,
-                        'hidden': hidden
-                    })
-                else:
-                    create_fieldinfo.json_schema_extra = {
-                        'readonly': True,
-                        'table': table,
-                        'hidden': hidden
-                    }
-            else:
-                create_fieldinfo = BasicField(title=fieldname.capitalize(), table=table,
-                                              hidden=hidden, readonly=True)
-
         return {
             'create': self._get_view_vars_by_fieldinfo(create_fieldinfo),
             'update': self._get_view_vars_by_fieldinfo(
@@ -723,8 +668,15 @@ class ClassView:
                     if not val:
                         val = []
                 elif col.type.endswith('list_rel'):
-                    submodel = line_copied.v.submodels[col.field_name]
+                    submodel = line_copied.v.submodels[col.field_name].copy()
                     val = await submodel.fill_lines(data=val, join_related=False)
+                    submodel.v.key = col.key
+                    submodel.v.parent_field = col
+                elif col.type.endswith('rel'):
+                    submodel = line_copied.v.submodels[col.field_name].copy()
+                    submodel._lines = []
+                    val = await submodel.fill_lines(data=[val], join_related=False)
+                    submodel.v.key = col.key
                     submodel.v.parent_field = col
                 col.val = val
             line_copied._lines.append(line_copied)
@@ -854,6 +806,7 @@ class ClassView:
         """Метод создания обьектов"""
         new_data = []
         for raw_line in data:
+            raw_line.update({'id': uuid.uuid4()})
             try:
                 method_schema_obj = self.v.model.schemas.create(**raw_line)
             except ValidationError as e:

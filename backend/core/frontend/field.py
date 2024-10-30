@@ -52,6 +52,10 @@ class Field:
     @property
     def key(self) -> str:
         """Отдает уникальный идентификатор для поля"""
+        if self.field_name == 'quantity':
+            a=1
+        # if self.cls.v.parent_field:
+        #     return f'{self.cls.v.parent_field.key}--{self.cls._id}--{self.field_name}'
         return f'{self.cls.p.key}--{self.field_name}'
 
     def render(self, block_name: str, type: str = '', method: MethodType=MethodType.GET) -> str:

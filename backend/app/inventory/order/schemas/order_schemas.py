@@ -52,7 +52,7 @@ class OrderCreateScheme(OrderBaseScheme):
 
 class OrderScheme(OrderCreateScheme, TimeStampScheme):
     lsn: int = Field(title='LSN', readonly=True)
-    id: UUID4
+    id: UUID4 = Field(title='ID', table=True, readonly=True)
     company_id: UUID = Field(title='Company', model='company')
     vars: Optional[dict] = None
     number: str = Field(title='Order #', readonly=True, description="Internal number of order")
@@ -60,7 +60,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     created_by: UUID = Field(title='Created By',  model='user')
     edited_by: UUID = Field(title='Edit By', model='user')
     user_ids: Optional[list[UUID]] = Field(default=[], title='Users', readonly=True, model='user')
-    #order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True, readonly=True)
+    order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True, readonly=True)
     move_list_rel: Optional[list["MoveScheme"]] = Field(default=[], title='Order Movements')
 
     @computed_field(title='Order #', json_schema_extra={'table': True})

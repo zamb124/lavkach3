@@ -12,32 +12,33 @@ def clean_filter(qp: QueryParams | dict, _filter: str) -> list:
         if not k.startswith(_filter):
             continue
         if v == '':
-            qp[k] = None  # type: ignore
-        model, line_number, field_name = k.split('--')[:3]
-        if len(k.split('--')) == 3:
+            v = None  # type: ignore
+        filterred_key = k.replace(_filter, '')
+        model, line_number, field_name = filterred_key.split('--')[:3]
+        if len(filterred_key.split('--')) == 3:
             if not models.get(model):
-                models.update({model: {line_number: {field_name: qp[k]}}})
+                models.update({model: {line_number: {field_name: v}}})
             else:
                 if not models[model].get(line_number):
-                    models[model].update({line_number: {field_name: qp[k]}})
+                    models[model].update({line_number: {field_name: v}})
                 else:
-                    models[model][line_number].update({field_name: qp[k]})
+                    models[model][line_number].update({field_name: v})
             keys_to_pop.append(k)
-        elif len(k.split('--')) == 5:
-            _model, _line_number, _field_name = k.split('--')[2:5]
+        elif len(filterred_key.split('--')) == 5:
+            _model, _line_number, _field_name = filterred_key.split('--')[2:5]
             if not models.get(model):
-                models.update({model: {line_number: {field_name: {_line_number: {_field_name: qp[k]}}}}})
+                models.update({model: {line_number: {field_name: {_line_number: {_field_name: v}}}}})
             else:
                 if not models[model].get(line_number):
-                    models[model].update({line_number: {field_name: {_line_number: {_field_name: qp[k]}}}})
+                    models[model].update({line_number: {field_name: {_line_number: {_field_name: v}}}})
                 else:
                     if not models[model][line_number].get(field_name):
-                        models[model][line_number].update({field_name: {_line_number: {_field_name: qp[k]}}})
+                        models[model][line_number].update({field_name: {_line_number: {_field_name: v}}})
                     else:
                         if not models[model][line_number][field_name].get(_line_number):
-                            models[model][line_number][field_name].update({_line_number: {_field_name: qp[k]}})
+                            models[model][line_number][field_name].update({_line_number: {_field_name: v}})
                         else:
-                            models[model][line_number][field_name][_line_number].update({_field_name: qp[k]})
+                            models[model][line_number][field_name][_line_number].update({_field_name: v})
 
 
             keys_to_pop.append(k)
