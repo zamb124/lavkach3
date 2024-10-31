@@ -88,3 +88,18 @@ class InventoryAdapter(BaseAdapter):
         }
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()
+
+    @action(model='order', multiple=False, permits=['store_assign'])
+    async def store_assign(self, store_id, user_id: UUID = None):
+        """Назначение пользователя на cклад"""
+        if isinstance(store_id, UUID):
+            store_id = store_id.__str__()
+        if isinstance(user_id, UUID):
+            user_id = user_id.__str__()
+        path = f'/api/inventory/store_staff/actions/store_assign'
+        payload = {
+            'store_id': store_id,
+            'user_id': user_id
+        }
+        responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()

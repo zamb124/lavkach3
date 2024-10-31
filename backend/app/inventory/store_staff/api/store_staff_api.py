@@ -50,3 +50,10 @@ async def store_staff_update(store_staff_id: uuid.UUID, schema: StoreStaffUpdate
 @store_staff_router.delete("/{store_staff_id}")
 async def store_staff_delete(store_staff_id: uuid.UUID, service: StoreStaffService = Depends()):
     await service.delete(id=store_staff_id)
+
+@store_staff_router.post("/actions/store_assign")
+async def store_assign(store_id: uuid.UUID, user_id: uuid.UUID, service: StoreStaffService = Depends()):
+    await service.store_assign(store_id=store_id, user_id=user_id)
+
+
+
