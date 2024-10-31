@@ -33,7 +33,11 @@ const Singleton = {
                 const item = await promises[i]
                 const results = await item.json();
                 for (let i = 0; i < results.length; i++) {
-                    this.results[results[i].value] = results[i].label
+                    var label = results[i].label
+                    if (!label){
+                        label = 'No Title'
+                    }
+                    this.results[results[i].value] = label
                 }
             }
             await new Promise(r => setTimeout(r, 300));

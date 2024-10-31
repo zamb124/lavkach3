@@ -388,3 +388,9 @@
     color: var(--bs-danger-rgb);
 }
 
+.choices.is-disabled .choices__item {
+    cursor: auto;
+}
+.choices.is-disabled .choices__inner, .choices.is-disabled .choices__input {
+    cursor: auto;
+}

@@ -610,6 +610,7 @@ class ClassView:
             'enums': enums,
             'sort_idx': self._view.sort.get(field_name, 999),
             'cls': self,
+            'val': submodel
         })
         return field
 

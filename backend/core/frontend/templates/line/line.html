@@ -243,13 +243,13 @@
             {% endif %}
             {% for field in line.get_fields(display_view='table') %}
                 {% if method in ('update', 'create') %}
-                    <td class="line-col"  data-key="t-{{ field.field_name }}"
+                    <td class="line-col text-center"
                         style="padding-left: 2px; padding-right: 2px;">{{ field.as_update }}</td>
                 {% else %}
-                    <td class="line-col" data-key="t-{{ field.field_name }}" style="padding-left: 2px; padding-right: 2px;">{{ field.as_get }}</td>
+                    <td class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">{{ field.as_get }}</td>
                 {% endif %}
             {% endfor %}
-            <td class="line-col" style="padding-bottom: 0px;">
+            <td class="line-col  text-center" style="padding-bottom: 0px;">
                 <div
                         {% if line.is_last and not line.is_rel %}
                             hx-include="{{ '#filter' ~'--'~ line.p.class_key }}"
