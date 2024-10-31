@@ -156,10 +156,10 @@
                     data-bs-toggle="tooltip"
                     data-bs-html="true"
                     title="{{ field.get.description or field.get.title }}">
-                <p>{{ field.get.title or field.field_name }}</p>
+                <p data-key="t-{{ field.field_name }}">{{ field.get.title or field.field_name }}</p>
             </td>
         {% endfor %}
-        <th style="min-width: 8rem"><p>Active</p></th>
+        <th style="min-width: 8rem"><p data-key="t-active">Active</p></th>
     </tr>
 {% endblock %}
 {% block as_tr_placeholder %}
@@ -169,7 +169,7 @@
                 <input class="form-check-input fs-5" type="checkbox" value="">
             </div>
         </th>
-        {% for field in line.fields|table(dislpay_view='table') %}
+        {% for field in line.get_fields(display_view='table') %}
             <td class="col-line placeholder-glow " style="height: 37px; overflow:auto;">
                 {% if field.get.required %}
                     <span class="placeholder col-12"></span>
@@ -243,11 +243,10 @@
             {% endif %}
             {% for field in line.get_fields(display_view='table') %}
                 {% if method in ('update', 'create') %}
-                    <td class="line-col"
+                    <td class="line-col"  data-key="t-{{ field.field_name }}"
                         style="padding-left: 2px; padding-right: 2px;">{{ field.as_update }}</td>
                 {% else %}
-                    <td class="line-col"
-                        style="padding-left: 2px; padding-right: 2px;">{{ field.as_get }}</td>
+                    <td class="line-col" data-key="t-{{ field.field_name }}" style="padding-left: 2px; padding-right: 2px;">{{ field.as_get }}</td>
                 {% endif %}
             {% endfor %}
             <td class="line-col" style="padding-bottom: 0px;">
@@ -325,8 +324,8 @@
             </a>
 
         </div>
-                    <div class="row">
-        {% for field in line.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' %}
+        <div class="row">
+            {% for field in line.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' %}
 
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     {{ field.label|safe }}
@@ -340,8 +339,8 @@
 
                 </div>
 
-        {% endfor %}
-                    </div>
+            {% endfor %}
+        </div>
         {% for field in line.get_fields() if not field.is_reserved and field.type == 'list_rel' %}
             <div class="row" style="padding-right: 0px;
     margin-right: 0px;

@@ -10,14 +10,13 @@ if TYPE_CHECKING:
 
 path = os.path.dirname(os.path.abspath(__file__))
 
-template_directory = f"{path}/templates/"
+template_dirs = ['app/front/templates', 'core/frontend/templates']
 
-environment = Environment(
-    loader=FileSystemLoader(template_directory),
-    autoescape=select_autoescape(("html", "jinja2"))
-)
+# Создайте загрузчик файловой системы с несколькими директориями
+loader = FileSystemLoader(template_dirs)
 
-
+# Создайте окружение Jinja2 с указанным загрузчиком
+environment = Environment(loader=loader)
 
 
 def _crud_filter(fields: 'Fields', method: 'MethodType', display_view: str = None):

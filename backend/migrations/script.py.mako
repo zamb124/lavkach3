@@ -19,6 +19,7 @@ depends_on = ${repr(depends_on)}
 
 def upgrade():
     ${upgrades if upgrades else "pass"}
+    op.execute("create sequence store_staff_lsn_seq")
     op.execute("create sequence suggest_lsn_seq")
     op.execute("create sequence order_type_lsn_seq")
     op.execute("create sequence order_lsn_seq")
@@ -45,6 +46,7 @@ def upgrade():
 
 def downgrade():
     ${downgrades if downgrades else "pass"}
+    op.execute("drop sequence store_staff_lsn_seq")
     op.execute("drop sequence suggest_lsn_seq")
     op.execute("drop sequence order_type_lsn_seq")
     op.execute("drop sequence order_lsn_seq")

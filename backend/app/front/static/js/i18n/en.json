@@ -5,5 +5,8 @@
   "t-order_type": "Order Types",
   "t-en": "English",
   "t-ru": "Russian",
-  "t-sa": "Arabic"
+  "t-sa": "Arabic",
+  "t-assign_order": "Assign Order",
+  "t-order_start": "Order Start",
+  "t-store_id": "Store"
 }

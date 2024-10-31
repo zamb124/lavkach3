@@ -30,3 +30,10 @@ class StoreView(ClassView):
         permits = ['store_list']
         super().__init__(request=request, model='store', permits=permits)
 
+class StoreStaffView(ClassView):
+    """Переопределяем модель"""
+
+    def __init__(self, request: Request, schema: BaseSchema = None):
+        permits = ['store_staff_list']
+        super().__init__(request=request, model='store_staff', permits=permits)
+
