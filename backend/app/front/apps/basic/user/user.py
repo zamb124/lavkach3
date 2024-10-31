@@ -49,19 +49,15 @@ class LoginSchema(BaseModel):
     "/login",
     responses={"404": {"model": ExceptionResponseSchema}},
 )
-async def login(request: Request, schema: LoginSchema, ):
+async def login(request: Request, schema: LoginSchema):
     request.scope['env']
     async with request.scope['env']['user'].adapter as a:
         data = await a.login(schema.username, schema.password)
-    return templates.TemplateResponse(
-        request,
-        'components/write_ls.html',
-        context={
+    return {
             'token': data['token'],
             'refresh_token': data['refresh_token'],
             'next': schema.next,
         }
-    )
 
 @user_router.get("/logout", responses={"404": {"model": ExceptionResponseSchema}}, )
 async def logout(request: Request, response: Response):

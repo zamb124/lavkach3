@@ -1,4 +1,5 @@
 from typing import Any
+from uuid import UUID
 
 from sqlalchemy import Row
 from starlette.requests import Request
@@ -29,3 +30,17 @@ class StoreStaffService(BaseService[StoreStaff, StoreStaffCreateScheme, StoreSta
     @permit('store_staff_delete')
     async def delete(self, id: Any) -> bool:
         return await super(StoreStaffService, self).delete(id)
+
+
+    @permit('store_assign')
+    async def company_change(self, store_id: UUID, user_id: UUID, commit=True) -> ModelType:
+        store_staff = await self.get(user_id)
+        if not store_staff:
+            await self.create(StoreStaffCreateScheme(
+                store_id=store_id, user_id=user_id
+            ))
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)
+        await self.send_relogin(user.id)
+        return user

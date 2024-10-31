@@ -138,3 +138,7 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
 .modal-xl {
     max-width: 90%; /* Установите нужную ширину */
 }
+.form-control:disabled {
+    background-color:transparent;
+    opacity: 1
+}

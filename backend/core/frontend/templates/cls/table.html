@@ -4,6 +4,7 @@
              hx-post="/base/table"
              hx-ext="json-enc"
              hx-target="this"
+             hx-swap="innerHTML transition:true"
              hx-vals='{
         "model": "{{ cls.v.model.name }}",
         "key": "{{ cls.p.class_key }}",
@@ -69,7 +70,7 @@
                                             hx-ext="json-enc"
                                             hx-include="none"
                                             hx-target="#{{ 'tbody-table' ~'--'~ cls.p.class_key }}"
-                                            hx-swap="beforeend transition: true"
+                                            hx-swap="beforeend transition:true"
                                             hx-params="model,key,method"
                                             hx-post="/base/line"
                                             hx-vals='{

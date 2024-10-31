@@ -41,7 +41,7 @@
             </div>
         </div>
         <script>
-            createModal('#{{ 'modal_'~line.p.key }}')
+            new ModalHandler('#{{ 'modal_'~line.p.key }}')
         </script>
     {% endautoescape %}
 {% endblock %}
@@ -91,6 +91,6 @@
         </div><!-- /.modal-dialog -->
     </div>
     <script>
-        createModal('#{{ 'modal_'~line.p.key }}')
+        new ModalHandler('#{{ 'modal_'~line.p.key }}')
     </script>
 {% endblock %}

@@ -245,15 +245,15 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                         rel_service = self.env[_obj.Config.orm_model.__tablename__].service
                         #rel = rel_service(self.request)
                         if hasattr(_obj, 'id') and getattr(_obj, 'id'):
-                            rel_entity, _updated_fields = await rel_service._update(id=_obj.id, obj=_obj, commit=False)
+                            rel_entity = await rel_service.update(id=_obj.id, obj=_obj, commit=False)
                             self.session.add(rel_entity)
-                            if _updated_fields:
-                                updated_fields.append(key)
+                            updated_fields.append(key)
                         else:
                             _dump = _obj.model_dump()
                             _dump[f'{self.model.__tablename__}_id'] = id
                             create_obj = rel_service.create_schema(**_dump)
-                            await rel_service._create(obj=create_obj, parent=entity, commit=False)
+                            await rel_service.create(obj=create_obj, parent=entity, commit=False)
+                            updated_fields.append(key)
                 else:
                     if key == 'id':
                         value = id

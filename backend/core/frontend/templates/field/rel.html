@@ -13,9 +13,7 @@
         {% endif %}
     </select>
     <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceOneUUID(el)
+        new ChoiceHandler('{{ field.key }}', 'update')
     </script>
 {% endblock %}
 {% block as_create %}
@@ -33,9 +31,7 @@
         {% endif %}
     </select>
     <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceOneUUID(el)
+        new ChoiceHandler('{{ field.key }}', 'create')
     </script>
 {% endblock %}
 {% block as_get %}

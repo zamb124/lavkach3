@@ -30,7 +30,7 @@
             hx-post="/base/line"
             hx-ext="json-enc"
             hx-target="#htmx_content"
-            hx-swap="{% if line.type == 'new' %}outerHTML{% else %}none{% endif %}"
+            hx-swap="{% if line.type == 'new' %}outerHTML{% else %}none{% endif %} transition:true"
             hx-vals='{
                 {% if line.p.id %}"id": "{{ line.p.id }}",{% endif %}
                 "model": "{{ line.v.model.name }}",
@@ -92,9 +92,9 @@
     <a href="#"
        hx-params="model,method,id,key,target_id,backdrop"
        hx-trigger="click"
-       hx-target="#htmx_content"
+       hx-target="#{{ line.p.key }}"
        hx-ext="json-enc"
-       hx-swap="beforeend transition:true"
+       hx-swap="outerHTML transition:true"
        hx-post="/base/line"
        hx-vals='{
 "model": "{{ line.v.model.name }}",
@@ -220,7 +220,7 @@
                                 {% else %}hx-target="this"{% endif %}
                                 hx-include="#{{ line.p.key }}"
                                 hx-ext="json-enc"
-                                hx-swap="outerHTML"
+                                hx-swap="outerHTML transition:true"
                                 hx-post="/base/line"
                                 hx-vals='{
                                     "model": "{{ line.v.model.name }}",
@@ -256,7 +256,7 @@
                             hx-params="*"
                             hx-post="/base/table"
                             hx-ext="json-enc"
-                            hx-trigger="revealed" hx-swap="beforeend"
+                            hx-trigger="revealed" hx-swap="beforeend transition:true"
                             hx-select="#{{ 'tbody-table' ~'--'~ line.p.class_key }}>tr"
                             hx-target="#tbody-table--{{ line.p.class_key }}"
                             hx-vals='{
@@ -307,7 +307,7 @@
                     {% else %}hx-target="this"{% endif %}
                     hx-include="#{{ line.p.key }}"
                     hx-ext="json-enc"
-                    hx-swap="outerHTML"
+                    hx-swap="outerHTML transition:true"
                     hx-post="/base/line"
                     hx-vals='{
                 "model": "{{ line.v.model.name }}",

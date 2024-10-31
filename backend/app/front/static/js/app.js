@@ -1,527 +1,238 @@
-async function choiceOneUUID(element, method) {
-    var display_title = element.getAttribute('display-title')
-    var filter = element.getAttribute('filter')
-    var is_filter = element.getAttribute('is-filter')
-    var model_name = element.getAttribute('model-name')
-    var attrs = {
-        placeholder: true,
-        searchPlaceholderValue: 'Start typing to search',
-        placeholderValue: "Enter " + display_title
-    }
-    if (method === 'get' || element.getAttribute('readonly')) {
-        attrs.removeItemButton = false
-    } else {
-        attrs.removeItemButton = true
-    }
-    let choices = new Choices(element, attrs);
-    if (method === 'get' || element.getAttribute('readonly')) {
-        choices.disable()
-    } else if (method === 'update' && element.getAttribute('readonly')) {
-        choices.containerInner.element.classList.add('disabled');
-        choices.disable()
+class CacheHandler {
+    constructor() {
+        this.temp = [];
+        this.results = {};
+        Object.freeze(this);
+        this.run();
     }
 
-    function check_valid(event) {
-        if (method === 'get' || element.getAttribute('readonly')) { // Если метод get или reanonly, то нет смысла от валидования
-            // Если метод get или reanonly, то нет смысла от валидования
-            return
-        }
-        if (element.required) {
-            if (event) {
-                if (event.type === 'choice') {
-                    if (event.detail.choice.value) {
-                        choices.containerInner.element.classList.remove('is-invalid');
-                        choices.containerInner.element.classList.add('is-valid');
-                    }
-                } else if (event.type === 'removeItem') {
-                    if (event.detail.value) {
-                        if (!choices.containerInner.element.innerText) {
-                            choices.containerInner.element.classList.add('is-invalid');
-                            choices.containerInner.element.classList.remove('is-valid');
-                        } else {
-                            choices.containerInner.element.classList.add('is-valid');
-                            choices.containerInner.element.classList.remove('is-invalid');
-                        }
-
-                    }
-                }
-
-            } else {
-                if (!choices.containerInner.element.innerText) {
-                    choices.containerInner.element.classList.add('is-invalid');
-                    choices.containerInner.element.classList.remove('is-valid');
-                } else {
-                    choices.containerInner.element.classList.add('is-valid');
-                    choices.containerInner.element.classList.remove('is-invalid');
-                }
-            }
-        } else if (element.id.includes('__in')) {
-            choices.containerInner.element.classList.remove('is-invalid');
-            choices.containerInner.element.classList.remove('is-invalid');
+    async pushUUID(model, uuid) {
+        let modelList = this.temp[model];
+        if (!modelList) {
+            this.temp[model] = [];
+            this.temp[model].push(uuid);
         } else {
-            try {
-                choices.containerInner.element.classList.remove('is-invalid');
-            } catch (err) {
-
+            if (!this.temp[model].includes(uuid)) {
+                this.temp[model].push(uuid);
             }
-            choices.containerInner.element.classList.add('is-valid');
         }
     }
 
-    choices.containerInner.element.classList.add('form-control');
-
-    async function searchChoices(value) {
-        try {
-            const items = await fetch('/base/search?model=' + model_name + '&filter=' + filter + '&search=' + encodeURIComponent(value));
-            const results = await items.json();
-            if (0 === results.length) { // Handle error from result, for example.
-                throw 'Empty!';
-            }
-            return results;
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    async function getValues() {
-
-        var id__in = ''
-        let value = await choices.getValue();
-        if (value) {
-            value.label = 'Loading....'
-        } else {
-            return []
-        }
-        choices.setValue([value])
-        try {
-            if (!value) {
-                return []
-            } else {
-                id__in = value.value
-            }
-            var maybe_cache = Singleton.results[id__in] // вдруг есть в кеше
-            if (maybe_cache) {
-                return [{value: id__in, label: maybe_cache}]
-            }
-            Singleton.pushUUID(model_name, id__in)
-            while (true) {
-                if (Singleton.results[id__in]) {
-                    return [{value: id__in, label: Singleton.results[id__in]}]
-                }
-                await new Promise(r => setTimeout(r, 50));
-            }
-        } catch (err) {
-            console.error(err);
-            return []
-        }
-    }
-
-    let init_values = await getValues()
-    choices.removeActiveItems()
-    choices.clearChoices()
-    choices.setValue(init_values)
-    element.addEventListener('search', async e => {
-        element.focus()
-        let value = e.detail.value;
-        choices.clearChoices()// Test!
-        choices.setChoices(
-            await searchChoices(value)
-        )
-    });
-
-    check_valid()
-    element.addEventListener('choice', function (event) {
-        check_valid(event)
-    });
-    element.addEventListener('showDropdown', async e => {
-        choices.clearChoices()// Test!
-        choices.setChoices(
-            await searchChoices('')
-        )
-    });
-    element.addEventListener('removeItem', function (event) {
-        check_valid(event)
-    });
-}
-
-
-async function choiceMultiUUID(element, method) {
-    var display_title = element.getAttribute('display-title')
-    var filter = element.getAttribute('filter')
-    var is_filter = element.getAttribute('is-filter')
-    var model_name = element.getAttribute('model-name')
-    var attrs = {
-        placeholderValue: "Enter " + display_title
-    }
-    if (method === 'get' || element.getAttribute('readonly')) {
-        attrs.removeItemButton = false
-        attrs.placeholderValue = ''
-    } else {
-        attrs.removeItemButton = true
-    }
-    let choices = new Choices(element, attrs);
-    if (method === 'get' || element.getAttribute('readonly')) {
-        choices.disable()
-    } else if (method === 'update' && element.getAttribute('readonly')) {
-        choices.containerInner.element.classList.add('disabled');
-        choices.disable()
-    }
-
-    function check_valid(event) {
-        if (method === 'get' || element.getAttribute('readonly')) { // Если метод get или reanonly, то нет смысла от валидования
-            // Если метод get или reanonly, то нет смысла от валидования
-            return
-        }
-        if (element.required) {
-            if (event) {
-                if (event.type === 'choice') {
-                    if (event.detail.choice.value) {
-                        choices.containerInner.element.classList.remove('is-invalid');
-                        choices.containerInner.element.classList.add('is-valid');
-                    }
-                } else if (event.type === 'removeItem') {
-                    if (event.detail.value) {
-                        if (!choices.containerInner.element.innerText) {
-                            choices.containerInner.element.classList.add('is-invalid');
-                            choices.containerInner.element.classList.remove('is-valid');
-                        } else {
-                            choices.containerInner.element.classList.add('is-valid');
-                            choices.containerInner.element.classList.remove('is-invalid');
-                        }
-
-                    }
-                }
-
-            } else {
-                if (!choices.containerInner.element.innerText) {
-                    choices.containerInner.element.classList.add('is-invalid');
-                    choices.containerInner.element.classList.remove('is-valid');
-                } else {
-                    choices.containerInner.element.classList.add('is-valid');
-                    choices.containerInner.element.classList.remove('is-invalid');
-                }
-            }
-        } else if (element.id.includes('__in')) {
-            choices.containerInner.element.classList.remove('is-invalid');
-            choices.containerInner.element.classList.remove('is-invalid');
-        } else {
-            try {
-                choices.containerInner.element.classList.remove('is-invalid');
-            } catch (err) {
-
-            }
-            choices.containerInner.element.classList.add('is-valid');
-        }
-    }
-
-    choices.containerInner.element.classList.add('form-control');
-
-    async function getValues() {
-        var id__in = ''
-        let values = await choices.getValue();
-        choices.setValue([])
-
-        for (let v in values) {
-            var maybe_cache = Singleton.results[v]
-            if (!maybe_cache) {
-                Singleton.pushUUID(model_name, values[v].value)
-            }
-        }
-        var result = []
+    async run() {
+        console.log('Бесконечно идем в цикл');
         while (true) {
-            for (let v in values) {
-                id__in = values[v].value
-                if (Singleton.results[id__in]) {
-                    result.push({
-                        value: values[v].label,
-                        label: Singleton.results[id__in]
-                    })
-                    values.splice(v, 1)
-                }
-            }
-            if (values.length === 0) {
-                return result
-            }
-            await new Promise(r => setTimeout(r, 50));
-        }
-    }
-
-    let init_values = await getValues()
-    choices.removeActiveItems()
-    choices.clearChoices()
-    choices.setValue(init_values)
-    element.addEventListener('search', async e => {
-        element.focus()
-        let value = e.detail.value;
-        choices.clearChoices()// Test!
-        choices.setChoices(async () => {
-            try {
-                const items = await fetch('/base/search?model=' + model_name + '&filter=' + filter + '&search=' + encodeURIComponent(value));
-                const results = await items.json();
-                if (0 === results.length) { // Handle error from result, for example.
-                    throw 'Empty!';
-                }
-                return results;
-            } catch (err) {
-                console.error(err);
-                choices.input.element.style = ""
-            }
-        }).then(() => {
-            e.target.parentNode.querySelector('input').focus();
-        });
-        choices.input.element.style = ""
-    });
-    check_valid()
-}
-
-async function choicesMultiBadges(element, method) {
-    var model_name = element.getAttribute('model-name')
-
-    async function getValues() {
-        var id__in = ''
-        var str = element.innerText.replace(/[\s\n\t]+/g, ' ').trim()
-        let values = str ? str.split(',') : [];
-
-        for (let v in values) {
-            var maybe_cache = Singleton.results[values[v]]
-            if (!maybe_cache) {
-                Singleton.pushUUID(model_name, values[v])
-            }
-        }
-        var result = []
-        while (true) {
-            for (let v in values) {
-                if (Singleton.results[values[v]]) {
-                    result.push({
-                        value: values[v],
-                        label: Singleton.results[values[v]]
-                    })
-                    values.splice(v, 1)
-                }
-            }
-            if (values.length === 0) {
-                return result
-            }
-            await new Promise(r => setTimeout(r, 50));
-        }
-    }
-
-    let res = await getValues()
-    element.innerText = ''
-    res.forEach(function (line) {
-
-        element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary">' + line.label + '</span>');
-    });
-}
-
-async function choiceMultiBabel() {
-    var display_title = element.getAttribute('display-title')
-    var filter = element.getAttribute('filter')
-    var is_filter = element.getAttribute('is-filter')
-    var model_name = element.getAttribute('model-name')
-    var attrs = {
-        placeholderValue: "Enter " + display_title
-    }
-    if (method === 'get' || element.getAttribute('readonly')) {
-        attrs.removeItemButton = false
-    } else {
-        attrs.removeItemButton = true
-    }
-    let choices = new Choices(element, attrs);
-    if (method === 'get' || element.getAttribute('readonly')) {
-        choices.containerInner.element.classList.add('disabled');
-        choices.disable()
-    }
-    choices.containerInner.element.classList.add('form-control');
-    if (is_filter) {
-        function check_valid() {
-            if (element.required) {
-                choices.containerInner.element.classList.add('is-invalid');
-                choices.containerInner.element.classList.remove('is-valid');
-            } else {
-                choices.containerInner.element.classList.remove('is-invalid');
-                choices.containerInner.element.classList.add('is-valid');
-            }
-        }
-
-        check_valid()
-    }
-
-    function init() {
-        choices.setChoices(async () => {
-            try {
-                const items = await fetch('/base/search?model=' + model_name + '&search=');
-                const results = await items.json();
-                if (0 === results.length) { // Handle error from result, for example.
-                    throw 'Empty!';
-                }
-                return results;
-            } catch (err) {
-                console.error(err);
-            }
-        }).then(() => {
-            choices.input.element.focus()
-        });
-    }
-
-    init()
-
-}
-
-async function choiceOneBabel() {
-    var display_title = element.getAttribute('display-title')
-    var filter = element.getAttribute('filter')
-    var is_filter = element.getAttribute('is-filter')
-    var model_name = element.getAttribute('model-name')
-    var attrs = {
-        placeholderValue: "Enter " + display_title
-    }
-    if (method === 'get' || element.getAttribute('readonly')) {
-        attrs.removeItemButton = false
-    } else {
-        attrs.removeItemButton = true
-    }
-    let choices = new Choices(element, attrs);
-    if (method === 'get' || element.getAttribute('readonly')) {
-        choices.containerInner.element.classList.add('disabled');
-        choices.disable()
-    }
-    choices.containerInner.element.classList.add('form-control');
-    if (is_filter) {
-
-        function check_valid() {
-            if (element.required) {
-                choices.containerInner.element.classList.add('is-invalid');
-                choices.containerInner.element.classList.remove('is-valid');
-            } else {
-                choices.containerInner.element.classList.remove('is-invalid');
-                choices.containerInner.element.classList.add('is-valid');
-            }
-        }
-
-        check_valid()
-    }
-
-    function init() {
-        choices.setChoices(async () => {
-            try {
-                const items = await fetch('/base/search?model=' + model_name + '&search=');
-                const results = await items.json();
-                if (0 === results.length) { // Handle error from result, for example.
-                    throw 'Empty!';
-                }
-                return results;
-            } catch (err) {
-                console.error(err);
-            }
-        }).then(() => {
-            choices.input.element.focus()
-        });
-    }
-
-    init()
-}
-
-async function choiceMultiEnum(element, method) {
-    var display_title = element.getAttribute('display-title')
-    var filter = element.getAttribute('filter')
-    var is_filter = element.getAttribute('is-filter')
-    var model_name = element.getAttribute('model-name')
-    var attrs = {
-        placeholderValue: "Enter " + display_title
-    }
-    if (method === 'get' || element.getAttribute('readonly')) {
-        attrs.removeItemButton = false
-    } else {
-        attrs.removeItemButton = true
-    }
-    let choices = new Choices(element, attrs);
-    if (method === 'get' || element.getAttribute('readonly')) {
-        choices.containerInner.element.classList.add('disabled');
-        choices.disable()
-    }
-    choices.containerInner.element.classList.add('form-control');
-
-    function check_valid(event) {
-        if (method === 'get' || element.getAttribute('readonly')) { // Если метод get или reanonly, то нет смысла от валидования
-            // Если метод get или reanonly, то нет смысла от валидования
-            return
-        }
-        if (element.required) {
-            if (event) {
-                if (event.type === 'choice') {
-                    if (event.detail.choice.value) {
-                        choices.containerInner.element.classList.remove('is-invalid');
-                        choices.containerInner.element.classList.add('is-valid');
-                    }
-                } else if (event.type === 'removeItem') {
-                    if (event.detail.value) {
-                        if (!choices.containerInner.element.innerText) {
-                            choices.containerInner.element.classList.add('is-invalid');
-                            choices.containerInner.element.classList.remove('is-valid');
-                        } else {
-                            choices.containerInner.element.classList.add('is-valid');
-                            choices.containerInner.element.classList.remove('is-invalid');
-                        }
-
-                    }
-                }
-
-            } else {
-                if (!choices.containerInner.element.innerText) {
-                    choices.containerInner.element.classList.add('is-invalid');
-                    choices.containerInner.element.classList.remove('is-valid');
+            let promises = [];
+            for (let model in this.temp) {
+                if (this.temp[model].length > 0) {
+                    let ids_str = this.temp[model].join(',');
+                    const items = fetch('/base/get_by_ids?model=' + model + '&id__in=' + encodeURIComponent(ids_str));
+                    promises.push(items);
                 } else {
-                    choices.containerInner.element.classList.add('is-valid');
-                    choices.containerInner.element.classList.remove('is-invalid');
+                    continue;
+                }
+                this.temp[model] = [];
+            }
+            for (let i = 0; i < promises.length; i++) {
+                const item = await promises[i];
+                const results = await item.json();
+                for (let j = 0; j < results.length; j++) {
+                    var label = results[j].label || 'No Title';
+                    this.results[results[j].value] = label;
                 }
             }
-        } else if (element.id.includes('__in')) {
-            choices.containerInner.element.classList.remove('is-invalid');
-            choices.containerInner.element.classList.remove('is-invalid');
-        } else {
-            try {
-                choices.containerInner.element.classList.remove('is-invalid');
-            } catch (err) {
-
+            await new Promise(r => setTimeout(r, 300));
+            if (Object.keys(this.results).length > 2000) {
+                this.results = Object.fromEntries(Object.entries(this.results).slice(100));
             }
-            choices.containerInner.element.classList.add('is-valid');
         }
     }
-
-    choices.containerInner.element.classList.add('form-control');
-
-    check_valid()
 }
 
+class AuthHandler {
+    constructor() {
+        this.initEventListeners();
+    }
 
-async function createModal(modal_id) {
-    var modal = new bootstrap.Modal(modal_id)
-    function createDragModal(modal) {
-        var header = modal.querySelector('.modal-header');
-
-        header.onmousedown = function (e) {
-            var offsetX = e.clientX - modal.getBoundingClientRect().left;
-            var offsetY = e.clientY - modal.getBoundingClientRect().top;
-
-            function mouseMoveHandler(e) {
-                modal.style.position = 'absolute';
-                modal.style.left = (e.clientX - offsetX) + 'px';
-                modal.style.top = (e.clientY - offsetY) + 'px';
+    getCookieValue(name) {
+        const nameString = name + "=";
+        const values = document.cookie.split(";").filter(item => item.includes(nameString));
+        if (values.length) {
+            let value = values.find(val => val.trim().startsWith(nameString));
+            if (value) {
+                return value.substring(nameString.length).trim();
             }
+        }
+        return null;
+    }
 
-            function mouseUpHandler() {
-                document.removeEventListener('mousemove', mouseMoveHandler);
-                document.removeEventListener('mouseup', mouseUpHandler);
-            }
+    removeCookie(sKey, sPath, sDomain) {
+        document.cookie = encodeURIComponent(sKey) +
+            "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" +
+            (sDomain ? "; domain=" + sDomain : "") +
+            (sPath ? "; path=" + sPath : "/");
+    }
 
-            document.addEventListener('mousemove', mouseMoveHandler);
-            document.addEventListener('mouseup', mouseUpHandler);
+    parseJwt(token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    }
+
+    async refreshToken() {
+        let user = {
+            token: this.getCookieValue('token').replace('=', ''),
+            refresh_token: this.getCookieValue('refresh_token').replace('=', '')
         };
+        console.log('refreshing token');
+        let response = await fetch('/basic/user/refresh', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        });
+        let result = await response.json();
+        const parsed = this.parseJwt(result.token);
+        const expires = new Date(parsed.exp * 1000);
+        document.cookie = "token=" + result.token + "; expires=" + expires + ";path=/;";
+        document.cookie = "refresh_token=" + result.token + "; expires=" + expires + ";path=/;";
+        return true;
     }
-    modal.show()
-    document.addEventListener('hidden.bs.modal', function (event) {
-        console.log(event)
-        event.target.remove()
-    })
+
+    async checkAuth() {
+        var authToken = this.getCookieValue('token');
+        if (!authToken) {
+            authToken = this.getCookieValue('refresh_token');
+            if (authToken) {
+                await this.refreshToken();
+                authToken = this.getCookieValue('token');
+            }
+        }
+        if (!authToken) {
+            return false;
+        }
+        var tokenData = this.parseJwt(authToken);
+        var now = Date.now() / 1000;
+        if (tokenData.exp <= now) {
+            await this.refreshToken();
+        }
+        return true;
+    }
+
+    initEventListeners() {
+        htmx.on("htmx:confirm", async (e) => {
+            let authToken = this.getCookieValue('token');
+            if (authToken == null && !window.location.pathname.includes('login')) {
+                e.preventDefault();
+                window.history.pushState('Login', 'Login', '/basic/user/login');
+                console.log('redirect login');
+                document.location.replace('/basic/user/login');
+            }
+        });
+
+        htmx.on("htmx:configRequest", async (e) => {
+            console.log('check cookie');
+            await this.checkAuth();
+            e.detail.headers["Authorization"] = this.getCookieValue('token');
+        });
+
+        htmx.on("htmx:afterRequest", (e) => {
+            if (this.authToken == null) {
+                if (e.detail.xhr.status || 200) {
+                    e.detail.shouldSwap = true;
+                    e.detail.isError = false;
+                }
+            }
+        });
+
+        htmx.on('htmx:beforeSwap', (evt) => {
+            if (evt.detail.xhr.status === 200) {
+                // do nothing
+            } else if (evt.detail.xhr.status === 404) {
+                this.showToast(evt.detail.pathInfo.requestPath + ' + ' + evt.detail.xhr.responseText, "#e94e1d");
+            } else if (evt.detail.xhr.status === 403) {
+                console.log('403');
+                this.showToast(evt.detail.xhr.responseText.replace(/\\n/g, '\n'), "red");
+            } else if (evt.detail.xhr.status === 401 && !window.location.pathname.includes('login')) {
+                window.history.pushState('Login', 'Login', '/basic/user/login' + "?next=" + window.location.pathname);
+                htmx.ajax('GET', '/basic/user/login', {
+                    target: '#htmx_content', headers: {
+                        'HX-Replace-Url': 'true'
+                    }
+                });
+            } else if (evt.detail.xhr.status === 418) {
+                evt.detail.shouldSwap = true;
+                evt.detail.target = htmx.find("#teapot");
+            } else {
+                this.showToast(evt.detail.xhr.responseText, "#e94e1d");
+            }
+        });
+
+        htmx.on('htmx:wsConfigReceive', (e) => {
+            console.log('wsConfigReceive');
+            e.detail.headers["Authorization"] = this.getCookieValue('token');
+        });
+
+        htmx.on('htmx:wsConfigSend', (e) => {
+            console.log('wsConfigSend');
+            e.detail.headers["Authorization"] = this.getCookieValue('token');
+        });
+    }
+
+    showToast(message, background) {
+        Toastify({
+            text: message,
+            duration: 3000,
+            close: true,
+            style: {
+                background: background,
+            },
+        }).showToast();
+    }
+    login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const user = {
+            username: username,
+            password: password
+        };
+        fetch('/basic/user/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        }).then(response => {
+            if (response.status === 200) {
+                response.json().then(data => {
+                    this.saveTokensAndRedirect(data.token, data.refresh_token, data.next);
+                });
+            } else {
+                response.json().then(data => {
+                    this.showToast(data.message, "red");
+                });
+            }
+        });
+    }
+
+    // Новая функция для сохранения токенов и редиректа
+    saveTokensAndRedirect(token, refresh_token, next) {
+        const parsedToken = this.parseJwt(token);
+        const parsedRefreshToken = this.parseJwt(refresh_token);
+        const tokenExpires = new Date(parsedToken.exp * 1000);
+        const refreshTokenExpires = new Date(parsedRefreshToken.exp * 1000);
+
+        document.cookie = `token=${token}; expires=${tokenExpires.toUTCString()}; path=/;`;
+        document.cookie = `refresh_token=${refresh_token}; expires=${refreshTokenExpires.toUTCString()}; path=/;`;
+
+        const redirectUrl = next || '/';
+        window.location.replace(redirectUrl);
+    }
 }
+let cache = new CacheHandler();
+// Инициализация обработчика аутентификации
+const authHandler = new AuthHandler();
+

@@ -1,55 +1,110 @@
-htmx.on('htmx:wsBeforeMessage', (e) => {
-    console.log('wsBeforeMessage')
-    const message = JSON.parse(e.detail.message)
-    console.log(message)
-    if (message.message_type === 'COMPANY_CHANGED') {
-        document.location.reload()
-    } else if (message.tag === 'LOGOUT') {
-        debugger
-        document.cookie = "token={{token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;"
-        document.cookie = "refresh_token={{refresh_token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;"
-        document.location.replace('/basic/user/login?/')
-        //document.location.replace('/basic/user/login?/')
-    } else if (message.tag === 'MODEL') {
-        var elements = htmx.findAll(`[ui_key="${message.vars.model}--${message.vars.id}"]`)
-        if (message.vars.method === 'create') {
-            let elements = htmx.findAll('[id^="table--"]');
-            elements.forEach(element => {
-                htmx.trigger(element, 'update')
-            });
-            console.log('create')
-        } else if (message.vars.method === 'update') {
-            // Ловим эвенты если записи изменились
-            // Ищем элементы на странице, и если у них lsn больше  чем  lsn  из  записи  в  базе  данных
-            // то ничего не меняем
-            for (var i = elements.length - 1; i >= 0; i--) {
-                var el = elements[i]
-                console.log(el.attributes.lsn)
-                var elLsn = Number(el.attributes.lsn.nodeValue)
-                el.attributes.lsn.nodeValue = message.vars.lsn
-                htmx.trigger(el, 'backend_update')
-                var myToast = Toastify({
-                    text: message.message,
-                    duration: 3000,
-                    style: {
-                        className: "tost",
-                    },
-                })
-                myToast.showToast();
-            }
-        } else if (message.vars.method === 'delete') {
-            elements.forEach(element => {
-                element.remove(); // Удаляем каждый элемент
-            });
-            var myToast = Toastify({
-                text: 'Object deleted',
-            })
-            myToast.showToast();
+class WebSocketHandler {
+    constructor() {
+        this.initEventListeners();
+    }
+
+    initEventListeners() {
+        htmx.on('htmx:wsBeforeMessage', this.handleMessage.bind(this));
+    }
+
+    handleMessage(e) {
+        console.log('wsBeforeMessage');
+        const message = JSON.parse(e.detail.message);
+        console.log(message);
+
+        switch (message.tag) {
+            case 'COMPANY_CHANGED':
+                this.handleCompanyChanged();
+                break;
+            case 'LOGOUT':
+                this.handleLogout();
+                break;
+            case 'MODEL':
+                this.handleModelMessage(message);
+                break;
+            case 'REFRESH':
+                this.handleRefresh();
+                break;
+            default:
+                console.warn('Unknown message type:', message.tag);
         }
-    } else if (message.tag === 'REFRESH') {
-        refreshToken()
+    }
+
+    handleCompanyChanged() {
+        document.location.reload();
+    }
+
+    handleLogout() {
+        document.cookie = "token={{token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;";
+        document.cookie = "refresh_token={{refresh_token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;";
+        document.location.replace('/basic/user/login?/');
+    }
+
+    handleModelMessage(message) {
+        const elements = htmx.findAll(`[ui_key="${message.vars.model}--${message.vars.id}"]`);
+        switch (message.vars.method) {
+            case 'create':
+                this.handleModelCreate();
+                break;
+            case 'update':
+                this.handleModelUpdate(elements, message);
+                break;
+            case 'delete':
+                this.handleModelDelete(elements);
+                break;
+            default:
+                console.warn('Unknown model method:', message.vars.method);
+        }
+    }
+
+    handleModelCreate() {
+        const elements = htmx.findAll('[id^="table--"]');
+        elements.forEach(element => {
+            htmx.trigger(element, 'update');
+        });
+        console.log('create');
+    }
+
+    handleModelUpdate(elements, message) {
+        elements.forEach(el => {
+            console.log(el.attributes.lsn);
+            const elLsn = Number(el.attributes.lsn.nodeValue);
+            el.attributes.lsn.nodeValue = message.vars.lsn;
+            htmx.trigger(el, 'backend_update');
+            if (message.vars.updated_fields) {
+                this.showToast(message.message);
+            }
+        });
+    }
+
+    handleModelDelete(elements) {
+        elements.forEach(element => {
+            element.remove();
+        });
+        this.showToast('Object deleted');
+    }
+
+    handleRefresh() {
+        this.refreshToken();
         setTimeout(() => {
             location.reload();
-        }, 1000)
+        }, 1000);
     }
-})
+
+    showToast(message) {
+        Toastify({
+            text: message,
+            duration: 3000,
+            style: {
+                className: "tost",
+            },
+        }).showToast();
+    }
+
+    refreshToken() {
+        // Реализация функции обновления токена
+    }
+}
+
+// Инициализация обработчика WebSocket
+new WebSocketHandler();

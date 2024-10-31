@@ -15,9 +15,7 @@
         {% endfor %}
     </select>
     <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceMultiEnum(el, 'update')
+new ChoiceHandler('{{ field.key }}', 'update')
     </script>
 {% endblock %}
 {% block as_create %}
@@ -37,9 +35,7 @@
         {% endfor %}
     </select>
     <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceMultiEnum(el, 'create')
+new ChoiceHandler('{{ field.key }}', 'create')
     </script>
 {% endblock %}
 {% block as_get %}
@@ -58,9 +54,7 @@
         {% endfor %}
     </select>
     <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceMultiEnum(el, 'get')
+new ChoiceHandler('{{ field.key }}', 'get')
     </script>
 {% endblock %}
 
