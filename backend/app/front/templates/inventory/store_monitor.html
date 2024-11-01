@@ -1,0 +1,187 @@
+<div class="row">
+    <div class="col-6">
+        <!-- -------------------------------------------- -->
+        <!-- Your Performance -->
+        <!-- -------------------------------------------- -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold" data-key="t-store-performance">Store Performance</h5>
+                <p class="card-subtitle mb-0 lh-base" data-key="t-store-performance-date">Last check on 25 february</p>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="vstack gap-9 mt-2">
+                            <div class="hstack align-items-center gap-3">
+                                <div class="d-flex align-items-center justify-content-center round-48 rounded bg-primary-subtle flex-shrink-0">
+                                    <iconify-icon icon="solar:shop-2-linear"
+                                                  class="fs-7 text-primary"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-nowrap">64 new orders</h6>
+                                    <span>Processing</span>
+                                </div>
+
+                            </div>
+                            <div class="hstack align-items-center gap-3">
+                                <div class="d-flex align-items-center justify-content-center round-48 rounded bg-danger-subtle">
+                                    <iconify-icon icon="solar:filters-outline"
+                                                  class="fs-7 text-danger"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">4 orders</h6>
+                                    <span>On hold</span>
+                                </div>
+
+                            </div>
+                            <div class="hstack align-items-center gap-3">
+                                <div class="d-flex align-items-center justify-content-center round-48 rounded bg-secondary-subtle">
+                                    <iconify-icon icon="solar:pills-3-linear"
+                                                  class="fs-7 text-secondary"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">12 orders</h6>
+                                    <span>Delivered</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-center mt-sm-n7">
+                            <div id="store-preformance"></div>
+                            <h2 class="fs-8">275</h2>
+                            <p class="mb-0">
+                                Learn insigs how to manage all aspects of your
+                                startup.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="row">
+            <div class="col-md-6">
+                <!-- -------------------------------------------- -->
+                <!-- Customers -->
+                <!-- -------------------------------------------- -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div>
+                                <h5 class="card-title fw-semibold">Customers</h5>
+                                <p class="card-subtitle mb-0">Last 7 days</p>
+                            </div>
+                            <span class="fs-11 text-success fw-semibold lh-lg">+26.5%</span>
+                        </div>
+                        <div class="py-4 my-1">
+                            <div id="customers-area"></div>
+                        </div>
+                        <div class="d-flex flex-column align-items-center gap-2 w-100 mt-3">
+                            <div class="d-flex align-items-center gap-2 w-100">
+                                <span class="d-block flex-shrink-0 round-8 bg-primary rounded-circle"></span>
+                                <h6 class="fs-3 fw-normal text-muted mb-0">April 07 - April 14</h6>
+                                <h6 class="fs-3 fw-normal mb-0 ms-auto text-muted">6,380</h6>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 w-100">
+                                <span class="d-block flex-shrink-0 round-8 bg-light rounded-circle"></span>
+                                <h6 class="fs-3 fw-normal text-muted mb-0">Last Week</h6>
+                                <h6 class="fs-3 fw-normal mb-0 ms-auto text-muted">4,298</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- -------------------------------------------- -->
+                <!-- Sales Overview -->
+                <!-- -------------------------------------------- -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold">Sales Overview</h5>
+                        <p class="card-subtitle mb-1">Last 7 days</p>
+
+                        <div class="position-relative labels-chart">
+                            <span class="fs-11 label-1">0%</span>
+                            <span class="fs-11 label-2">25%</span>
+                            <span class="fs-11 label-3">50%</span>
+                            <span class="fs-11 label-4">75%</span>
+                            <div id="sales-overview"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        // =====================================
+    // Your Preformance
+    // =====================================
+
+    var options = {
+        series: [20, 20, 20, 20, 20],
+        labels: ["245", "45", "14", "78", "95"],
+        chart: {
+            height: 205,
+            fontFamily: "inherit",
+            type: "donut",
+        },
+        plotOptions: {
+            pie: {
+                startAngle: -90,
+                endAngle: 90,
+                offsetY: 10,
+                donut: {
+                    size: "90%",
+                },
+            },
+        },
+        grid: {
+            padding: {
+                bottom: -80,
+            },
+        },
+        legend: {
+            show: false,
+        },
+        dataLabels: {
+            enabled: false,
+            name: {
+                show: false,
+            },
+        },
+        stroke: {
+            width: 2,
+            colors: "var(--bs-card-bg)",
+        },
+        tooltip: {
+            fillSeriesColor: false,
+        },
+        colors: [
+            "var(--bs-danger)",
+            "var(--bs-warning)",
+            "var(--bs-warning-bg-subtle)",
+            "var(--bs-secondary-bg-subtle)",
+            "var(--bs-secondary)",
+        ],
+        responsive: [{
+            breakpoint: 1400,
+            options: {
+                chart: {
+                    height: 170
+                },
+            },
+        }],
+
+    };
+
+    var chart = new ApexCharts(
+        document.querySelector("#store-preformance"),
+        options
+    );
+    chart.render();
+
+</script>

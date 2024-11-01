@@ -7,6 +7,7 @@ class ChoiceHandler {
         this.isFilter = this.element.getAttribute('is-filter');
         this.modelName = this.element.getAttribute('model-name');
         this.attrs = {
+            allowHTML: true,
             placeholder: true,
             searchPlaceholderValue: 'Start typing to search',
             placeholderValue: "Enter " + this.displayTitle,
@@ -25,7 +26,6 @@ class ChoiceHandler {
         }
 
         this.choices.containerInner.element.classList.add('form-control');
-        this.checkValid();
 
         this.element.addEventListener('search', async e => {
             this.element.focus();
@@ -45,6 +45,7 @@ class ChoiceHandler {
         this.choices.removeActiveItems();
         this.choices.clearChoices();
         this.choices.setValue(initValues);
+        this.checkValid();
     }
 
     checkValid(event) {
@@ -108,19 +109,19 @@ class ChoiceHandler {
         }
 
         for (let v in values) {
-            var maybe_cache = cache.results[v]
+            var maybe_cache = app.cache.results[v]
             if (!maybe_cache) {
-                cache.pushUUID(this.modelName, values[v].value)
+                app.pushUUID(this.modelName, values[v].value)
             }
         }
         var result = []
         while (true) {
             for (let v in values) {
                 id__in = values[v].value
-                if (cache.results[id__in]) {
+                if (app.cache.results[id__in]) {
                     result.push({
                         value: values[v].label,
-                        label: cache.results[id__in]
+                        label: app.cache.results[id__in]
                     })
                     values.splice(v, 1)
                 }
@@ -144,18 +145,18 @@ async function choicesMultiBadges(elId, method) {
         let values = str ? str.split(',') : [];
 
         for (let v in values) {
-            var maybe_cache = cache.results[values[v]]
+            var maybe_cache = app.cache.results[values[v]]
             if (!maybe_cache) {
-                cache.pushUUID(model_name, values[v])
+                app.pushUUID(model_name, values[v])
             }
         }
         var result = []
         while (true) {
             for (let v in values) {
-                if (cache.results[values[v]]) {
+                if (app.cache.results[values[v]]) {
                     result.push({
                         value: values[v],
-                        label: cache.results[values[v]]
+                        label: app.cache.results[values[v]]
                     })
                     values.splice(v, 1)
                 }
@@ -181,6 +182,7 @@ async function choiceMultiBabel() {
     var is_filter = element.getAttribute('is-filter')
     var model_name = element.getAttribute('model-name')
     var attrs = {
+        allowHTML: true,
         placeholderValue: "Enter " + display_title
     }
     if (method === 'get' || element.getAttribute('readonly')) {
@@ -235,7 +237,8 @@ async function choiceOneBabel() {
     var is_filter = element.getAttribute('is-filter')
     var model_name = element.getAttribute('model-name')
     var attrs = {
-        placeholderValue: "Enter " + display_title
+        placeholderValue: "Enter " + display_title,
+        allowHTML: true
     }
     if (method === 'get' || element.getAttribute('readonly')) {
         attrs.removeItemButton = false
@@ -289,6 +292,7 @@ async function choiceMultiEnum(element, method) {
     var is_filter = element.getAttribute('is-filter')
     var model_name = element.getAttribute('model-name')
     var attrs = {
+        allowHTML: true,
         placeholderValue: "Enter " + display_title
     }
     if (method === 'get' || element.getAttribute('readonly')) {

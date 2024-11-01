@@ -57,16 +57,13 @@
             "id": "{{ line.p.id }}",
             "key": "{{ line.p.class_key }}"
             }'
-            class="btn btn-soft-primary inline" style="padding: 0px">
+            class="btn btn-soft-primary inline">
         <iconify-icon icon="solar:document-add-bold" class="fs-8"></iconify-icon>
 
     </button>
 {% endblock %}
 
 {% block button_create %}
-    <script>
-        //hideModals()
-    </script>
     <a href="#"
        hx-params="model,method,key,backdrop"
        hx-trigger="click"

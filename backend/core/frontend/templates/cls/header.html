@@ -4,9 +4,12 @@
             <div class="row align-items-center">
                 <div class="col-12">
                     <div class="d-sm-flex align-items-center justify-space-between">
-                        <span>{{ cls.h.button_create }}</span>
-                        <h4 class="card-title"
-                            style="padding-left: 20px" data-key="t-{{ cls.v.model.name }}">{{ cls.v.model.name|capitalize }} </h4>
+                        <div class="d-flex align-items-center">
+                             {{ cls.h.button_create }}
+                            </div>
+
+                        <h5 class="card-title"
+                            style="padding-left: 20px; margin-bottom: 0" data-key="t-{{ cls.v.model.name }}">{{ cls.v.model.name|capitalize }} </h5>
                         <div class="col">
 
                         </div>
@@ -26,57 +29,55 @@
                                         "key": "{{ cls.p.class_key }}",
                                         "method": "get"
                                       }'
-                                >
-                                    <iconify-icon icon="solar:file-send-bold"
-                                                  class="fs-10"></iconify-icon>
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item d-flex align-items-center">
-                                <a class="text-muted text-decoration-none d-flex"
-                                   data-bs-toggle="collapse"
-                                   data-bs-target="{{ '#filter' ~'--'~ cls.p.class_key }}"
-                                   href="#"
-                                >
-                                    <iconify-icon icon="solar:filter-bold-duotone"
-                                                  class="fs-10"></iconify-icon>
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item d-flex align-items-center">
-                                <a href="javascript:void(0)" class="text-muted"
-                                   id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                   aria-expanded="false">
-                                    <iconify-icon icon="solar:menu-dots-bold"
-                                                  class="fs-10"></iconify-icon>
+                                    >
+                                        <iconify-icon icon="solar:file-send-bold"
+                                                      class="fs-8"></iconify-icon>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item d-flex align-items-center">
+                                    <a class="text-muted text-decoration-none d-flex"
+                                       data-bs-toggle="collapse"
+                                       data-bs-target="{{ '#filter' ~'--'~ cls.p.class_key }}"
+                                       href="#"
+                                    >
+                                        <iconify-icon icon="solar:filter-bold-duotone"
+                                                      class="fs-8"></iconify-icon>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item d-flex align-items-center">
+                                    <a href="javascript:void(0)" class="text-muted"
+                                       id="dropdownMenuButton" data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        <iconify-icon icon="solar:menu-dots-bold"
+                                                      class="fs-8"></iconify-icon>
 
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center gap-3"
-                                           href="javascript:void(0)">
-                                            <i class="fs-4 ti ti-plus"></i>Add
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center gap-3"
-                                           href="javascript:void(0)">
-                                            <i class="fs-4 ti ti-edit"></i>Edit
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center gap-3"
-                                           href="javascript:void(0)">
-                                            <i class="fs-4 ti ti-trash"></i>Delete
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-
-
-                        </ol>
-                    </nav>
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-3"
+                                               href="javascript:void(0)">
+                                                <i class="fs-4 ti ti-plus"></i>Add
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-3"
+                                               href="javascript:void(0)">
+                                                <i class="fs-4 ti ti-edit"></i>Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-3"
+                                               href="javascript:void(0)">
+                                                <i class="fs-4 ti ti-trash"></i>Delete
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
 
     {% endautoescape %}

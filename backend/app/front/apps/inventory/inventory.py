@@ -25,7 +25,7 @@ async def order(request: Request):
 
 
 @inventory.get("/store_monitor", response_class=HTMLResponse)
-async def mystore(request: Request):
+async def store_monitor(request: Request):
     """Интерфейс работы со своим складом"""
     store_staff_model = request.scope['env']['store_staff']
     async with store_staff_model.adapter as a:
@@ -33,6 +33,4 @@ async def mystore(request: Request):
         store_staff = data['data']
     if not store_staff:
         return templates.TemplateResponse(request, 'inventory/user_not_attached_store.html')
-    store_cls = await StoreView(request)
-    store_dash = store_cls.get_store_dashboard()
-    return templates.TemplateResponse(request, template, context={'cls': cls})
+    return templates.TemplateResponse(request, 'inventory/store_monitor.html', context={'cls': 1})

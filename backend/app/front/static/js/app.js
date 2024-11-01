@@ -1,58 +1,57 @@
-class CacheHandler {
+class App {
     constructor() {
-        this.temp = [];
-        this.results = {};
-        Object.freeze(this);
-        this.run();
+        this.cache = {
+            temp: [],
+            results: {}
+        };
+        Object.freeze(this.cache);
+        this.initEventListeners();
+        this.runCacheHandler();
     }
 
+    // Методы CacheHandler
     async pushUUID(model, uuid) {
-        let modelList = this.temp[model];
+        let modelList = this.cache.temp[model];
         if (!modelList) {
-            this.temp[model] = [];
-            this.temp[model].push(uuid);
+            this.cache.temp[model] = [];
+            this.cache.temp[model].push(uuid);
         } else {
-            if (!this.temp[model].includes(uuid)) {
-                this.temp[model].push(uuid);
+            if (!this.cache.temp[model].includes(uuid)) {
+                this.cache.temp[model].push(uuid);
             }
         }
     }
 
-    async run() {
+    async runCacheHandler() {
         console.log('Бесконечно идем в цикл');
         while (true) {
             let promises = [];
-            for (let model in this.temp) {
-                if (this.temp[model].length > 0) {
-                    let ids_str = this.temp[model].join(',');
+            for (let model in this.cache.temp) {
+                if (this.cache.temp[model].length > 0) {
+                    let ids_str = this.cache.temp[model].join(',');
                     const items = fetch('/base/get_by_ids?model=' + model + '&id__in=' + encodeURIComponent(ids_str));
                     promises.push(items);
                 } else {
                     continue;
                 }
-                this.temp[model] = [];
+                this.cache.temp[model] = [];
             }
             for (let i = 0; i < promises.length; i++) {
                 const item = await promises[i];
                 const results = await item.json();
                 for (let j = 0; j < results.length; j++) {
                     var label = results[j].label || 'No Title';
-                    this.results[results[j].value] = label;
+                    this.cache.results[results[j].value] = label;
                 }
             }
             await new Promise(r => setTimeout(r, 300));
-            if (Object.keys(this.results).length > 2000) {
-                this.results = Object.fromEntries(Object.entries(this.results).slice(100));
+            if (Object.keys(this.cache.results).length > 2000) {
+                this.cache.results = Object.fromEntries(Object.entries(this.cache.results).slice(100));
             }
         }
     }
-}
 
-class AuthHandler {
-    constructor() {
-        this.initEventListeners();
-    }
-
+    // Методы AuthHandler
     getCookieValue(name) {
         const nameString = name + "=";
         const values = document.cookie.split(";").filter(item => item.includes(nameString));
@@ -123,7 +122,8 @@ class AuthHandler {
     }
 
     initEventListeners() {
-        htmx.on("htmx:confirm", async (e) => {
+        htmx.on("htmx:confirm", (e) => {
+            console.log('htmx:confirm');
             let authToken = this.getCookieValue('token');
             if (authToken == null && !window.location.pathname.includes('login')) {
                 e.preventDefault();
@@ -133,10 +133,8 @@ class AuthHandler {
             }
         });
 
-        htmx.on("htmx:configRequest", async (e) => {
-            console.log('check cookie');
-            await this.checkAuth();
-            e.detail.headers["Authorization"] = this.getCookieValue('token');
+        htmx.on("htmx:afterSwap", (e) => {
+            console.log('htmx:afterSwap');
         });
 
         htmx.on("htmx:afterRequest", (e) => {
@@ -192,6 +190,7 @@ class AuthHandler {
             },
         }).showToast();
     }
+
     login() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
@@ -218,7 +217,6 @@ class AuthHandler {
         });
     }
 
-    // Новая функция для сохранения токенов и редиректа
     saveTokensAndRedirect(token, refresh_token, next) {
         const parsedToken = this.parseJwt(token);
         const parsedRefreshToken = this.parseJwt(refresh_token);
@@ -231,8 +229,27 @@ class AuthHandler {
         const redirectUrl = next || '/';
         window.location.replace(redirectUrl);
     }
-}
-let cache = new CacheHandler();
-// Инициализация обработчика аутентификации
-const authHandler = new AuthHandler();
 
+    // Новый метод для обработки появления определенного класса в DOM-дереве
+    observeDOMClass(className, callback) {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1 && node.classList.contains(className)) {
+                        callback(node);
+                    }
+                });
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    // Метод для обработки появления класса 'my-list'
+    handleMyList(element) {
+        console.log('Элемент с классом my-list добавлен в DOM:', element);
+        // Добавьте здесь обработчик для элемента
+    }
+}
+
+// Инициализация класса App
+const app = new App();
