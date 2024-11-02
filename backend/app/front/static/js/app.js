@@ -1,3 +1,4 @@
+// Initiate the class on page load
 class App {
     constructor() {
         this.userSettings = {
@@ -386,7 +387,7 @@ class App {
     }
 
     async fetchTranslationsFor(newLocale) {
-        const response = await fetch(`/static/js/i18n/${newLocale}.json`);
+        const response = await fetch(`/static/i18n/${newLocale}.json`);
         return await response.json();
     }
 
@@ -971,5 +972,5 @@ class App {
 
 // Инициализация класса App
 const app = new App();
-
+document.write('<script src="/static/js/element_hendlers.js"></script>');
 
