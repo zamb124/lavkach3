@@ -1,37 +1,31 @@
 import asyncio
 import copy
 import enum
-import enum
+import logging
 import uuid
 from collections import defaultdict
 from datetime import datetime
-
 from inspect import isclass
 from typing import Optional, get_args, get_origin, Any
-from starlette.exceptions import HTTPException
-from fastapi import Query
-from fastapi_filter.contrib.sqlalchemy import Filter
+
 from jinja2_fragments import render_block
 from pydantic import BaseModel, UUID4, model_validator
 from pydantic.fields import FieldInfo, ComputedFieldInfo
-from pydantic.v1.schema import schema
 from pydantic_core import ValidationError
 from starlette.datastructures import QueryParams
+from starlette.exceptions import HTTPException
 from starlette.requests import Request
 
-from app.front.utills import BaseClass
 from core.env import Model, Env
-from core.frontend.enviroment import passed_classes, readonly_fields, hidden_fields, table_fields, \
-    reserved_fields, environment, _crud_filter
+from core.frontend.enviroment import passed_classes, reserved_fields, environment, _crud_filter
 from core.frontend.exceptions import HTMXException
 from core.frontend.field import Field, Fields
 from core.frontend.types import LineType, ViewVars, MethodType
 from core.frontend.utils import clean_filter
-from core.schemas import BaseFilter
-from core.schemas.basic_schemes import ActionBaseSchame, BasicField
-from core.utils.timeit import timed
-import importlib
 
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def import_view(service_name):
     components = service_name.split('.')
@@ -502,7 +496,7 @@ class ClassView:
     @property
     def r(self):
         return self.v.request
-    @timed
+
     async def init(self,
                    params: dict | None = None,
                    join_related: bool = False,
@@ -663,7 +657,7 @@ class ClassView:
         fields = sorted(fields, key=lambda x: x[1].sort_idx)
         for field_name, field in fields:
             setattr(self, field_name, field)
-    @timed
+
     async def get_data(self, params: QueryParams | dict | None = None,
                        data: list | dict | None = None, ) -> None:
         """Метод собирает данные для конструктора модели"""
@@ -681,7 +675,7 @@ class ClassView:
         self._view.data = {i['id']: i for i in data}
         await self.fill_lines(self._view.data, self.v.join_related, self.v.join_fields)
 
-    @timed
+
     async def fill_lines(self, data: dict | list, join_related: bool = False,
                          join_fields: list = []):
         if isinstance(data, list):
@@ -905,6 +899,7 @@ class BaseSchema(BaseModel):
 
 
 async def get_view(request: Request, schema: BaseSchema) -> ClassView:
+    logger.info(f'get_view: {schema.model}')
     if view_class := views.get(schema.model):
         return view_class(
             request=request,

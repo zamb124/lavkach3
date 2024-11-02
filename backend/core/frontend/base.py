@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from typing import Optional, Any, Callable
 import io
@@ -15,7 +16,8 @@ from core.frontend.constructor import ClassView, get_view, BaseSchema, Method
 from core.frontend.utils import clean_filter
 from fastapi import FastAPI, File, UploadFile
 
-
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class ExceptionResponseSchema(BaseModel):
     error: str

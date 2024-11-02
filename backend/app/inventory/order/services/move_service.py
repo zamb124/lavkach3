@@ -44,7 +44,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
     async def update(self, id: Any, obj: UpdateSchemaType, commit: bool = True) -> Optional[ModelType]:
         return await super(MoveService, self).update(id, obj, commit)
 
-    @timed
+
     @permit('move_list')
     async def list(self, _filter: FilterSchemaType, size: int):
         return await super(MoveService, self).list(_filter, size)
