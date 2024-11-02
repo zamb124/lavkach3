@@ -5,6 +5,7 @@ from uuid import uuid4
 from taskiq import SimpleRetryMiddleware, TaskiqMiddleware
 from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend, PubSubBroker
 
+from core.db_config import config
 from core.helpers.broker.initializator import init
 
 class TaskSession(TaskiqMiddleware):
@@ -22,7 +23,7 @@ class TaskSession(TaskiqMiddleware):
 
 
 redis_async_result = RedisAsyncResultBackend(
-    redis_url="rediss://default:AVNS_w6X_JVOCj6vbTjwIowO@redis-do-user-15109425-0.c.db.ondigitalocean.com:25061",
+    redis_url=f"redis{'s' if config.REDIS_SSL else ''}://default:{config.REDIS_PASSWORD}@{config.REDIS_HOST}:{config.REDIS_PORT}",
     result_ex_time=60,  # Сколько хранить результаты в секундах
     ssl_cert_reqs=None,
     socket_timeout=360
@@ -30,7 +31,7 @@ redis_async_result = RedisAsyncResultBackend(
 
 # Or you can use PubSubBroker if you need broadcasting
 list_brocker = ListQueueBroker(
-    url="rediss://default:AVNS_w6X_JVOCj6vbTjwIowO@redis-do-user-15109425-0.c.db.ondigitalocean.com:25061",
+    url=f"redis{'s' if config.REDIS_SSL else ''}://default:{config.REDIS_PASSWORD}@{config.REDIS_HOST}:{config.REDIS_PORT}",
     ssl_cert_reqs=None,
     queue_name='model',
     socket_timeout=360
