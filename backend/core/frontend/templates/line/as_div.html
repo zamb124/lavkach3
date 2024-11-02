@@ -177,3 +177,92 @@
     </div>
     {% endautoescape %}
 {% endblock %}
+{% block create %}
+    {% autoescape false %}
+        <div class="row formline was-validated"
+             id="{{ line.p.key }}"
+             lsn="{{ line.p.lsn }}"
+             ui_key="{{ line.p.ui_key }}"
+             hx-trigger="backend_update"
+             hx-post="/base/line"
+             hx-ext="json-enc"
+             hx-swap="outerHTML transition:true"
+             hx-target="#{{ line.p.key }}"
+             hx-vals='{
+                    "model": "{{ line.v.model.name }}",
+                    "method": "{{ method.value }}",
+                    "mode": "div",
+                    "key": "{{ line.p.class_key }}",
+                    "id": "{{ line.p.id }}"
+                    }'
+        >
+
+        <div class="text-start" style="padding-left: 0px;">
+            <a
+                    href="#"
+                    hx-trigger="click"
+                    {% if method.value in ('get', 'create') %}
+                    hx-target="#{{ line.p.key }}"
+                    {% else %}hx-target="this"{% endif %}
+                    hx-include="#{{ line.p.key }}"
+                    hx-ext="json-enc"
+                    hx-swap="outerHTML transition:true"
+                    hx-post="/base/line"
+                    hx-vals='{
+                "model": "{{ line.v.model.name }}",
+                "method": "{% if method.value =='get' %}update{% elif method.value =='create' %}save_create{% else %}save{% endif %}",
+                "mode": "div",
+                "id": "{{ line.p.id }}",
+                "key": "{{ line.p.class_key }}"
+            }'
+                    class="btn btn-soft-primary inline"
+                    style="display: inline-block">
+                <iconify-icon
+                        icon="{% if method.value =='get' %}solar:pen-bold{% else %}solar:diskette-bold{% endif %}"
+                        class="fs-8"></iconify-icon>
+            </a>
+
+        </div>
+        <div class="row">
+            {% for field in line.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' %}
+
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    {{ field.label|safe }}
+                    {% if method =='update' %}
+                        {{ field.as_update }}
+                    {% elif method =='create' %}
+                        {{ field.as_create }}
+                    {% else %}
+                        {{ field.as_get|safe }}
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+        </div>
+        {% for field in line.get_fields() if not field.is_reserved and field.type == 'list_rel' %}
+            <div class="row" style="padding-right: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    margin-left: 0px;">
+            <div class="col">
+            <p style="margin-bottom: 0; margin-top: 1rem"
+               class="sort text-uppercase text-muted text-start"
+               for="{{ field.key }}">{{ field.get.title|capitalize }}:</p>
+            {% if method in ('create', 'update') %}
+                {% if field.type == 'list_rel' %}
+                    {{ field.as_table_update|safe }}
+                {% else %}
+                    {{ field.as_update|safe }}
+                {% endif %}
+            {% else %}
+                {% if field.type == 'list_rel' %}
+                    {{ field.as_table_get|safe }}
+                {% else %}
+                    {{ field.as_get|safe }}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endautoescape %}
+{% endblock %}

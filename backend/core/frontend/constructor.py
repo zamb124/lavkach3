@@ -597,7 +597,8 @@ class ClassView:
             class_types: list = get_types(fielinfo.annotation, [])
         else:
             class_types: list = [str]
-
+        if field_name == 'staff_position__in':
+            a=1
         if fielinfo.json_schema_extra:
             if fielinfo.json_schema_extra.get('model'):  # type: ignore
                 model_name = fielinfo.json_schema_extra.get('model')  # type: ignore

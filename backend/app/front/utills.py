@@ -17,7 +17,7 @@ class BaseClass:
         ...
 
 
-def render(request: Request, template: str, context: dict):
+def render(request: Request, template: str, context: dict = {}):
     if not request.scope['htmx'].hx_request:
         template = template.replace('.html', '-full.html')
     return templates.TemplateResponse(request, template, context)

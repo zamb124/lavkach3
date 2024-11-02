@@ -48,8 +48,8 @@ class StoreStaffScheme(StoreStaffCreateScheme, TimeStampScheme):
 class StoreStaffFilter(BaseFilter):
     store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', model='store')
     user_id__in: Optional[List[UUID4]] = Field(default=None, title='User Inn', model='user')
-    staff_position__in: Optional[List[StaffPosition]] = Field(default=None, title='Class')
-    staff_position__not_in: Optional[List[StaffPosition]] = Field(default=None, title='Class')
+    staff_position__in: Optional[List[StaffPosition]] = Field(default=None, title='Staff position in')
+    staff_position__not_in: Optional[List[StaffPosition]] = Field(default=None, title='Staff position not in')
 
     class Constants(Filter.Constants):
         model = StoreStaff

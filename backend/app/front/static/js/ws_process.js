@@ -11,7 +11,6 @@ class WebSocketHandler {
         console.log('wsBeforeMessage');
         const message = JSON.parse(e.detail.message);
         console.log(message);
-
         switch (message.tag) {
             case 'COMPANY_CHANGED':
                 this.handleCompanyChanged();
@@ -31,6 +30,7 @@ class WebSocketHandler {
     }
 
     handleCompanyChanged() {
+        debugger
         document.location.reload();
     }
 
@@ -102,7 +102,7 @@ class WebSocketHandler {
     }
 
     refreshToken() {
-        // Реализация функции обновления токена
+        app.refreshToken()
     }
 }
 

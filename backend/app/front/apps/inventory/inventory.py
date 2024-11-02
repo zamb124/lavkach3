@@ -40,6 +40,8 @@ async def store_monitor(orders: OrderView = Depends(), order_type: OrderTypeView
     orders._exclude = ['store_id']
     async with store_staff_model.adapter as a:
         data = await a.list(params={'user_id': orders.r.user.user_id})
+        if not data['data']:
+            return render(orders.r, 'inventory/user_not_attached_store.html')
         store_staff = data['data'][0]
         store_staff_cls = StoreStaffView(orders.r)
         await store_staff_cls.init(params={'store_id': store_staff['store_id']})

@@ -286,20 +286,19 @@ async function choiceOneBabel() {
     init()
 }
 
-async function choiceMultiEnum(element, method) {
+async function choiceMultiEnum(elId, method) {
+    let element = document.getElementById(elId);
     var display_title = element.getAttribute('display-title')
     var filter = element.getAttribute('filter')
     var is_filter = element.getAttribute('is-filter')
     var model_name = element.getAttribute('model-name')
-    var attrs = {
-        allowHTML: true,
-        placeholderValue: "Enter " + display_title
-    }
-    if (method === 'get' || element.getAttribute('readonly')) {
-        attrs.removeItemButton = false
-    } else {
-        attrs.removeItemButton = true
-    }
+            let attrs = {
+            allowHTML: true,
+            placeholder: true,
+            searchPlaceholderValue: 'Start typing to search',
+            placeholderValue: "Enter " + display_title,
+            removeItemButton: !(method === 'get' || element.getAttribute('readonly'))
+        };
     let choices = new Choices(element, attrs);
     if (method === 'get' || element.getAttribute('readonly')) {
         choices.containerInner.element.classList.add('disabled');

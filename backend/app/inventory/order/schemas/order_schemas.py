@@ -22,7 +22,7 @@ from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateSchem
 
 class OrderBaseScheme(BasicModel):
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
-    order_type_id: UUID = Field(title='Order type', model='order_type')
+    order_type_id: UUID = Field(title='Order type', form=True, model='order_type')
     store_id: UUID = Field(title='Store', table=True, form=True, model='store')
     partner_id: Optional[UUID] = Field(default=None, title='Partner', table=True, form=True, model='partner', readonly=True)
     lot_id: Optional[UUID] = Field(default=None, title='Lot', model='lot')
@@ -43,7 +43,13 @@ class OrderBaseScheme(BasicModel):
 
 class OrderUpdateScheme(OrderBaseScheme):
     move_list_rel: Optional[list['MoveUpdateScheme']] = Field(default=[], title='Order Movements')
-    order_type_id: Optional[UUID] = Field(default=None, title='Order type', model='order_type', readonly=True, filter={'status__in': OrderStatus.DRAFT.value})
+    order_type_id: Optional[UUID] = Field(
+        default=None,
+        title='Order type',
+        model='order_type',
+        readonly=False,
+        filter={'status__in': OrderStatus.DRAFT.value}
+    )
 
 
 class OrderCreateScheme(OrderBaseScheme):
@@ -60,7 +66,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     created_by: UUID = Field(title='Created By',  model='user')
     edited_by: UUID = Field(title='Edit By', model='user')
     user_ids: Optional[list[UUID]] = Field(default=[], title='Users', readonly=True, model='user')
-    order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=True, readonly=True)
+    order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=False, readonly=True)
     move_list_rel: Optional[list["MoveScheme"]] = Field(default=[], title='Order Movements')
 
     @computed_field(title='Order #', json_schema_extra={'table': True})

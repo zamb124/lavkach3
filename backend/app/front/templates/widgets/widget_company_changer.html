@@ -10,7 +10,7 @@
     {% for company_id, company in companies.items() %}
     <li>
         <a class="dropdown-item"
-           hx-post="/front/company_changer_widget"
+           hx-post="/basic/user/company_change/{{ company.id }}"
            hx-ext="json-enc"
            href="#"
            hx-vals='{

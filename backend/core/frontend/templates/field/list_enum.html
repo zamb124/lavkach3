@@ -4,6 +4,7 @@
             title="{{ field.update.description }}"
             {% if field.update.readonly %} readonly='1' {% endif %}
             name="{{ field.key }}"
+            class="form-control"
             {% if field.update.required %} required {% endif %}
             filter="{{ field.update.filter }}"
             model-name="{{ field.model_name }}"
@@ -15,7 +16,7 @@
         {% endfor %}
     </select>
     <script>
-new ChoiceHandler('{{ field.key }}', 'update')
+choiceMultiEnum('{{ field.key }}', 'update');
     </script>
 {% endblock %}
 {% block as_create %}
@@ -35,7 +36,7 @@ new ChoiceHandler('{{ field.key }}', 'update')
         {% endfor %}
     </select>
     <script>
-new ChoiceHandler('{{ field.key }}', 'create')
+choiceMultiEnum('{{ field.key }}', 'create');
     </script>
 {% endblock %}
 {% block as_get %}
@@ -54,7 +55,7 @@ new ChoiceHandler('{{ field.key }}', 'create')
         {% endfor %}
     </select>
     <script>
-new ChoiceHandler('{{ field.key }}', 'get')
+choiceMultiEnum('{{ field.key }}', 'get');
     </script>
 {% endblock %}
 
