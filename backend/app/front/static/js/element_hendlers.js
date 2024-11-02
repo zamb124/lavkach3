@@ -109,9 +109,10 @@ class ChoiceHandler {
         }
 
         for (let v in values) {
-            var maybe_cache = app.cache.results[v]
+            let val = values[v].value;
+            var maybe_cache = app.cache.results[val]
             if (!maybe_cache) {
-                app.pushUUID(this.modelName, values[v].value)
+                app.pushUUID(this.modelName, val)
             }
         }
         var result = []

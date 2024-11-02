@@ -17,6 +17,7 @@ from core.helpers.broker.tkq import list_brocker
 from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
+from core.utils.timeit import timed
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -43,6 +44,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
     async def update(self, id: Any, obj: UpdateSchemaType, commit: bool = True) -> Optional[ModelType]:
         return await super(MoveService, self).update(id, obj, commit)
 
+    @timed
     @permit('move_list')
     async def list(self, _filter: FilterSchemaType, size: int):
         return await super(MoveService, self).list(_filter, size)

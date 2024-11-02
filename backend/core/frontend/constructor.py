@@ -502,7 +502,7 @@ class ClassView:
     @property
     def r(self):
         return self.v.request
-
+    @timed
     async def init(self,
                    params: dict | None = None,
                    join_related: bool = False,
@@ -663,7 +663,7 @@ class ClassView:
         fields = sorted(fields, key=lambda x: x[1].sort_idx)
         for field_name, field in fields:
             setattr(self, field_name, field)
-
+    @timed
     async def get_data(self, params: QueryParams | dict | None = None,
                        data: list | dict | None = None, ) -> None:
         """Метод собирает данные для конструктора модели"""
@@ -676,11 +676,12 @@ class ClassView:
                     resp_data = await a.list(params=params)
                     data = resp_data['data']
             else:
-                data_obj = await self.cls.model.service.list(_filter=params)
+                data_obj = await self.v.model.service.list(_filter=params)
                 data = [i.__dict__ for i in data_obj]
         self._view.data = {i['id']: i for i in data}
         await self.fill_lines(self._view.data, self.v.join_related, self.v.join_fields)
 
+    @timed
     async def fill_lines(self, data: dict | list, join_related: bool = False,
                          join_fields: list = []):
         if isinstance(data, list):

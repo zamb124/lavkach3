@@ -1,9 +1,11 @@
+from asyncio.log import logger
 from typing import List
 
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi_restful.timing import add_timing_middleware
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
@@ -105,3 +107,4 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+add_timing_middleware(app, record=logger.info, prefix="front", exclude="untimed")
