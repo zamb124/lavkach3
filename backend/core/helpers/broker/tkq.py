@@ -25,14 +25,12 @@ class TaskSession(TaskiqMiddleware):
 redis_async_result = RedisAsyncResultBackend(
     redis_url=f"redis{'s' if config.REDIS_SSL else ''}://default:{config.REDIS_PASSWORD}@{config.REDIS_HOST}:{config.REDIS_PORT}",
     result_ex_time=60,  # Сколько хранить результаты в секундах
-    ssl_cert_reqs=None,
     socket_timeout=360
 )
 
 # Or you can use PubSubBroker if you need broadcasting
 list_brocker = ListQueueBroker(
     url=f"redis{'s' if config.REDIS_SSL else ''}://default:{config.REDIS_PASSWORD}@{config.REDIS_HOST}:{config.REDIS_PORT}",
-    ssl_cert_reqs=None,
     queue_name='model',
     socket_timeout=360
 ).with_result_backend(redis_async_result).with_middlewares(SimpleRetryMiddleware(default_retry_count=3)).with_middlewares(TaskSession())
