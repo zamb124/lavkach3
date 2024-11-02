@@ -1,0 +1,108 @@
+{% block get %}
+    {% autoescape false %}
+        <div class="card" id="{{ line.p.key }}" ui_key="{{ line.p.ui_key }}">
+            <div class="card-header" style="padding-bottom: 0px;">
+                <h5 style="display: block;">{{ line.display_title }}</h5>
+            </div>
+            <div class="card-body text-muted">
+                <div class="row">
+                    {% if line.button_view %}
+                        <div class="col">
+                            <button
+                                    name="{{ line.p.key }}"
+                                    type="button"
+                                    ws-send
+                                    hx-ext="json-enc"
+                                    hx-vals='{
+                            "model": "{{ line.v.model.name }}",
+                            "method": "get",
+                            "id": "{{ line.p.id or "" }}",
+                            "key": "{{ line.p.key }}",
+                            "title":  "{{ line.display_title }}",
+                            "class_key": "{{ line.p.class_key }}",
+                            "ui_key": "{{ line.p.ui_key }}"
+                        }'
+                                    value="{{ line.p.id }}" class="btn btn-light col-12">View
+                            </button>
+                        </div>
+                    {% endif %}
+                    {% if line.button_update %}
+                        <div class="col">
+                            <button
+                                    type="button"
+                                    name="{{ line.p.key }}"
+                                    type="button"
+                                    hx-ext="json-enc"
+                                    hx-vals='{
+                            "model": "{{ line.v.model.name }}",
+                            "method": "update",
+                            "id": "{{ line.p.id or "" }}",
+                            "key": "{{ line.p.key }}",
+                            "title":  "{{ line.display_title }}",
+                            "class_key": "{{ line.p.class_key }}",
+                            "ui_key": "{{ line.p.ui_key }}"
+                        }
+                        }'
+                                    value="{{ line.p.id }}" class="btn btn-secondary col-12">Process
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endautoescape %}
+{% endblock %}
+{% block update %}
+    {% autoescape false %}
+        <div class="card" id="{{ line.p.key }}" ui_key="{{ line.p.ui_key }}">
+            <div class="card-header" style="padding-bottom: 0px;">
+                <h5 style="display: block;">{{ line.display_title }}</h5>
+            </div>
+            <div class="card-body text-muted">
+                <div class="row">
+                    {% if line.button_view %}
+                        <div class="col">
+                            <button
+                                    name="{{ line.p.key }}"
+                                    type="button"
+                                    ws-send
+                                    hx-ext="json-enc"
+                                    hx-vals='{
+                            "model": "{{ line.v.model.name }}",
+                            "method": "get",
+                            "id": "{{ line.p.id or "" }}",
+                            "key": "{{ line.p.key }}",
+                            "title":  "{{ line.display_title }}",
+                            "class_key": "{{ line.p.class_key }}",
+                            "ui_key": "{{ line.p.ui_key }}"
+                        }'
+                                    value="{{ line.p.id }}" class="btn btn-light col-12">View
+                            </button>
+                        </div>
+                    {% endif %}
+                    {% if line.button_update %}
+                        <div class="col">
+                            <button
+                                    type="button"
+                                    name="{{ line.p.key }}"
+                                    type="button"
+                                    hx-ext="json-enc"
+                                    hx-vals='{
+                            "model": "{{ line.v.model.name }}",
+                            "method": "update",
+                            "id": "{{ line.p.id or "" }}",
+                            "key": "{{ line.p.key }}",
+                            "title":  "{{ line.display_title }}",
+                            "class_key": "{{ line.p.class_key }}",
+                            "ui_key": "{{ line.p.ui_key }}"
+                        }
+                        }'
+                                    value="{{ line.p.id }}" class="btn btn-secondary col-12">Process
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endautoescape %}
+{% endblock %}

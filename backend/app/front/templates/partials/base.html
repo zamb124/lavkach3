@@ -1,5 +1,6 @@
 {% extends "partials/wrapper.html" %}
-{% block base %}
+{% block wrapper_content %}
+
     <!-- Sidebar Start " -->
     <div class="sidebar-vertical-wrapper" hx-get="/front/sidebar_vertical" hx-trigger="load">
         {#{% include "/partials/sidebar_vertical.html" %}#}
@@ -44,9 +45,8 @@
         {#            {% include "partials/search_bar.html" %}#}
     </div>
     <!--  Search Bar  END-->
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-    console.log("Hello World!");
-});
-</script>
+
+    {% block base_content %}
+
+    {% endblock %}
 {% endblock %}

@@ -31,7 +31,7 @@ async def _filter(cls: ClassView = Depends(get_view)):
     """
      Универсальный запрос, который отдает фильтр обьекта по его модулю и модели
     """
-    return cls.h.as_filter
+    return cls.h.as_filter_get
 
 
 class SearchSchema(BaseModel):
@@ -111,7 +111,7 @@ async def table(view: ClassView = Depends(get_view)):
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
     await view.init()
-    return view.h.as_table
+    return view.h.as_table_get
 
 
 class LineSchema(BaseSchema):
@@ -145,7 +145,7 @@ async def line(cls: ClassView = Depends(get_view)):
                 """Если это временная запись, то просто удалить"""
                 return
             line = await cls.get_lines(ids=[cls.v.schema.id], join_related=False)
-            return line.h.get_modal_delete
+            return line.h.as_modal_delete
         case Method.UPDATE_SAVE:
             """Сохранение записи при измененнии"""
             data = clean_filter(cls.v.schema.model_extra, cls.v.schema.key)
@@ -175,15 +175,15 @@ async def modal(cls: ClassView = Depends(get_view)):
     match cls.v.schema.method:
         case Method.GET:
             line = await cls.get_lines(ids=[cls.v.schema.id])
-            return line.h.get_modal_get
+            return line.h.as_modal_get
         case Method.UPDATE:
             line = await cls.get_lines(ids=[cls.v.schema.id])
-            return line.h.get_modal_update
+            return line.h.as_modal_update
         case Method.DELETE:
             line = await cls.get_lines(ids=[cls.v.schema.id])
-            return line.h.get_modal_delete
+            return line.h.as_modal_delete
         case Method.CREATE:
-            return cls.h.get_modal_create
+            return cls.h.as_modal_create
 
 
 class ActionSchema(BaseSchema):

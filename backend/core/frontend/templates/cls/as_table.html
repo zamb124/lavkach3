@@ -1,31 +1,30 @@
 {% block widget %}
     {% autoescape false %}
-        <div id="{{ 'table' ~'--'~ cls.p.class_key }}"
+        <div id="{{ 'table' ~'--'~ line.p.class_key }}"
              hx-post="/base/table"
              hx-ext="json-enc"
              hx-target="this"
              hx-swap="innerHTML transition:true"
              hx-vals='{
-        "model": "{{ cls.v.model.name }}",
-        "key": "{{ cls.p.class_key }}",
+        "model": "{{ line.v.model.name }}",
+        "key": "{{ line.p.class_key }}",
         "method": "{{ method.value or "get" }}"
      }'
-             hx-trigger="change from:{{ '#filter' ~'--'~ cls.p.class_key }} delay:500ms, load, update delay:500ms"
-             hx-include="{{ '#filter' ~'--'~ cls.p.class_key }}"
+             hx-trigger="change from:{{ '#filter' ~'--'~ line.p.class_key }} delay:500ms, load, update delay:500ms"
+             hx-include="{{ '#filter' ~'--'~ line.p.class_key }}"
         >
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive scrollable-dropdown" style="white-space: nowrap;"
                          >
-                        <table class="table table-hover" id="{{ 'table' ~'--'~ cls.p.class_key }}"
+                        <table class="table table-hover" id="{{ 'table' ~'--'~ line.p.class_key }}"
                                style="vertical-align: middle;">
                             <thead class="text-muted" style="position: sticky; top: 0px">
-                            {{ cls.h.as_table_header }}
-
+                            {{ line.h.as_tr_header }}
                             </thead>
-                            <tbody id="{{ 'tbody-table' ~'--'~ cls.p.class_key }}">
+                            <tbody id="{{ 'tbody-table' ~'--'~ line.p.class_key }}">
                             {% for i in range(10) %}
-                                {{ cls.h.as_tr_placeholder }}
+                                {{ line.h.as_tr_placeholder }}
                             {% endfor %}
                             </tbody>
                         </table>
@@ -39,20 +38,20 @@
     {% endautoescape %}
 {% endblock %}
 
-{% block as_table %}
+{% block get %}
     {% autoescape false %}
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive scrollable-dropdown"
                      style="width: auto; min-height: 400px; white-space: nowrap;"
                      data-show-columns="true">
-                    <table class="table table-hover" id="{{ 'table' ~'--'~ cls.p.class_key }}"
+                    <table class="table table-hover" id="{{ 'table' ~'--'~ line.p.class_key }}"
                            style="vertical-align: middle;">
                         <thead class="text-muted" style="position: sticky; top: 0px">
-                        {{ cls.h.as_tr_header }}
+                        {{ line.h.as_tr_header }}
                         </thead>
-                        <tbody id="{{ 'tbody-table' ~'--'~ cls.p.class_key }}">
-                        {% for line in cls %}
+                        <tbody id="{{ 'tbody-table' ~'--'~ line.p.class_key }}">
+                        {% for line in line %}
                             {% if  method in ('update', 'create') %}
                                 {{ line.h.as_tr_update }}
                             {% else %}
@@ -66,16 +65,16 @@
                                 <td style="border-width: 0; background-color: var(--bs-border-color) !important;">
                                     <a
                                             hx-boost="true"
-                                            id="{{ cls.field_name~'--create' }}"
+                                            id="{{ line.field_name~'--create' }}"
                                             hx-ext="json-enc"
                                             hx-include="none"
-                                            hx-target="#{{ 'tbody-table' ~'--'~ cls.p.class_key }}"
+                                            hx-target="#{{ 'tbody-table' ~'--'~ line.p.class_key }}"
                                             hx-swap="beforeend transition:true"
                                             hx-params="model,key,method"
                                             hx-post="/base/line"
                                             hx-vals='{
-                                "model": "{{ cls.v.model.name or cls.v.model.name }}",
-                                "key": "{{ cls.p.class_key }}",
+                                "model": "{{ line.v.model.name or line.v.model.name }}",
+                                "key": "{{ line.p.class_key }}",
                                 "method": "create"
                                 }'
                                             class="btn btn-soft-secondary fw-medium form-control">
@@ -93,26 +92,3 @@
         </div>
     {% endautoescape %}
 {% endblock %}
-
-{#{% block badges %}#}
-{#    <div class="d-flex flex-wrap gap-2">#}
-{#        {% for line in cls.lines %}#}
-{#            <a href="#"#}
-{#               hx-params="model, id, prefix, method"#}
-{#               hx-trigger="click"#}
-{#               hx-target="#modal"#}
-{#               hx-ext="json-enc"#}
-{#               hx-post="/base/modal"#}
-{#               hx-vals='{#}
-{#                "model": "{{ line.model_name }}",#}
-{#                "method": "get",#}
-{#                "id": "{{ line.id }}",#}
-{#                "prefix": "{{ line.prefix }}"#}
-{#                }'#}
-{#               class="text-success d-inline-block edit-item-btn">#}
-{#                <span class="badge bg-secondary">{{ line.display_title }}</span>#}
-{#            </a>#}
-{#        {% endfor %}#}
-{#    </div>#}
-{##}
-{#{% endblock %}#}

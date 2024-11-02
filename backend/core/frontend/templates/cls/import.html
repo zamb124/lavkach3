@@ -1,13 +1,13 @@
-{% block import_get %}
+{% block get %}
     {% autoescape false %}
-        <div class="modal" id="{{ 'import_'~cls.p.class_key }}" tabindex="-1" style="display: none;"
+        <div class="modal" id="{{ 'import_'~line.p.class_key }}" tabindex="-1" style="display: none;"
              aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <div class="col-6">
                             <h5 class="modal-title">
-                                {{ method|capitalize }} {{ cls.v.model.name|capitalize }}
+                                {{ method|capitalize }} {{ line.v.model.name|capitalize }}
                                 <span>
                         </span>
                             </h5>
@@ -18,7 +18,7 @@
                                     aria-label="Close"></button>
                         </div>
                     </div>
-                    <div id="{{ 'modal_body'~ cls.p.class_key }}">
+                    <div id="{{ 'modal_body'~ line.p.class_key }}">
                         <div class="modal-body text-center p-5">
                             <lord-icon
                                     src="https://cdn.lordicon.com/yvjimpju.json"
@@ -35,7 +35,7 @@
                                             </div>
                                             <form id="file"
                                                   hx-encoding='multipart/form-data'
-                                                  hx-post='/base/import_upload?model={{ cls.v.model.name }}&key={{ cls.p.class_key }}'
+                                                  hx-post='/base/import_upload?model={{ line.v.model.name }}&key={{ line.p.class_key }}'
                                             >
                                                 <div class="row">
                                                     <div class="col-6">
@@ -65,15 +65,15 @@
                         <button
                                 type="button"
                                 class="btn btn-secondary"
-                                id="{{ 'submit-'~cls.p.class_key }}"
+                                id="{{ 'submit-'~line.p.class_key }}"
                                 hx-post="/base/import"
-                                hx-target="#{{ 'modal_body'~ cls.p.class_key }}"
-                                hx-include="#{{ 'tbody-table' ~'--'~ cls.p.class_key }}"
+                                hx-target="#{{ 'modal_body'~ line.p.class_key }}"
+                                hx-include="#{{ 'tbody-table' ~'--'~ line.p.class_key }}"
                                 hx-ext="json-enc"
                                 hx-vals='{
-                                "model": "{{ cls.v.model.name }}",
+                                "model": "{{ line.v.model.name }}",
                                 "method": "save",
-                                "key": "{{ cls.p.class_key }}"
+                                "key": "{{ line.p.class_key }}"
                             }'
                         >
                             Commit Import
@@ -84,13 +84,13 @@
             </div>
         </div>
         <script>
-            var modal = new bootstrap.Modal('#{{ 'import_'~cls.p.class_key }}')
+            var modal = new bootstrap.Modal('#{{ 'import_'~line.p.class_key }}')
             modal.show()
         </script>
         <script>
             // Modal'ı sürüklenebilir hale getiren JavaScript kodu
             (function () {
-                var modal = document.getElementById('{{ 'import_'~cls.p.class_key }}');
+                var modal = document.getElementById('{{ 'import_'~line.p.class_key }}');
                 var header = modal.querySelector('.modal-header');
 
                 header.onmousedown = function (e) {
@@ -115,9 +115,9 @@
         </script>
     {% endautoescape %}
 {% endblock %}
-{% block import_errors %}
+{% block errors %}
     {% autoescape false %}
-        <div class="card" id="{{ 'import_errors_'~cls.p.class_key }}">
+        <div class="card" id="{{ 'import_errors_'~line.p.class_key }}">
             <div class="card-header" style="padding-bottom: 0px;">
                 <h5 class="form-control bg-danger" style="display: block;">Errors</h5>
             </div>
@@ -132,7 +132,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for error in cls.errors %}
+                    {% for error in line.errors %}
                         <tr>
                             <td><b>{{ error.line }}</b></td>
                             <td><b>{{ error.type }}</b></td>

@@ -10,6 +10,7 @@ class MethodType(str, Enum):
     UPDATE = 'update'
     GET = 'get'
     DELETE = 'delete'
+    PLACEHOLDER = 'placeholder'
 
 
 class LineType(str, Enum):

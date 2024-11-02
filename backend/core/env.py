@@ -109,6 +109,10 @@ class Domain:
     def __getitem__(self, item: str):
         return self.models[item]
 
+    @property
+    def adapter(self):
+        return self._adapter
+
 core_domains = [base_domain, bus_domain]
 
 class Env:

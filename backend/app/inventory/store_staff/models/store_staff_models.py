@@ -23,7 +23,7 @@ class StoreStaff(Base, AllMixin):
     """
     __tablename__ = "store_staff"
     lsn_seq = Sequence(f'store_staff_lsn_seq')
-    user_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
+    user_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, unique=True)
     staff_position: Mapped['StaffPosition'] = mapped_column(default=StaffPosition.STOREKEEPER, index=True)
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     store_ids: Mapped[ids] = mapped_column(index=True)

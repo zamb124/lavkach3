@@ -1,4 +1,48 @@
-{% block modal %}
+{% block get %}
+    {% autoescape false %}
+        <div class="modal" id="{{ 'modal_'~line.p.key }}" tabindex="-1" style="display: none;"
+             aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            {{ method|capitalize }} {{ line.v.model.name|capitalize }}
+                            <span></span>
+                        </h5>
+                        <div class="text-end">
+                            {{ line.h.button_delete|safe }}
+                            {{ line.h.button_actions }}
+                            <button class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div id="{{ 'modal_body'~ line.p.key }}">
+                        <div class="modal-body text-center p-5">
+                            <lord-icon
+                                    src="https://cdn.lordicon.com/ghhwiltn.json"
+                                    trigger="loop"
+                                    style="width:150px;height:150px">
+                            </lord-icon>
+                            {% if method == 'update' %}
+                                {{ line.h.as_div_update }}
+                            {% elif method == 'create' %}
+                                {{ line.h.as_div_create }}
+                            {% else %}
+                                {{ line.h.as_div_get }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <script>
+            new ModalHandler('#{{ 'modal_'~line.p.key }}')
+        </script>
+    {% endautoescape %}
+{% endblock %}
+{% block create %}
     {% autoescape false %}
         <div class="modal" id="{{ 'modal_'~line.p.key }}" tabindex="-1" style="display: none;"
              aria-hidden="true">
@@ -45,7 +89,53 @@
         </script>
     {% endautoescape %}
 {% endblock %}
+{% block update %}
+    {% autoescape false %}
+        <div class="modal" id="{{ 'modal_'~line.p.key }}" tabindex="-1" style="display: none;"
+             aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
+                <div class="modal-content">
+                    <div class="modal-header">
 
+                        <h5 class="modal-title">
+                            {{ method|capitalize }} {{ line.v.model.name|capitalize }}
+                            <span></span>
+
+                        </h5>
+
+                        <div class="text-end">
+                            {{ line.h.button_delete|safe }}
+                            {{ line.h.button_actions }}
+                            <button class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div id="{{ 'modal_body'~ line.p.key }}">
+                        <div class="modal-body text-center p-5">
+                            <lord-icon
+                                    src="https://cdn.lordicon.com/ghhwiltn.json"
+                                    trigger="loop"
+                                    style="width:150px;height:150px">
+                            </lord-icon>
+                            {% if method == 'update' %}
+                                {{ line.h.as_div_update }}
+                            {% elif method == 'create' %}
+                                {{ line.h.as_div_create }}
+                            {% else %}
+                                {{ line.h.as_div_get }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <script>
+            new ModalHandler('#{{ 'modal_'~line.p.key }}')
+        </script>
+    {% endautoescape %}
+{% endblock %}
 {% block delete %}
     <div class="modal" id="{{ 'modal_'~line.p.key }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

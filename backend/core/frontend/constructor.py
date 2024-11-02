@@ -30,6 +30,21 @@ from core.frontend.utils import clean_filter
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import ActionBaseSchame, BasicField
 from core.utils.timeit import timed
+import importlib
+
+
+def import_view(service_name):
+    components = service_name.split('.')
+    mod = __import__(components[0])
+    for comp in components[1:]:
+        mod = getattr(mod, comp)
+    return mod
+
+
+# Во views нужно регистрировать вьюхи  {'имя модели': 'класс'}
+views = {
+
+}
 
 
 def _get_key() -> str:
@@ -65,8 +80,8 @@ class View:
     request: Request = None  # Реквест - TODO: надо потом убрать
     model: Model = None  # Имя поля
     vars: Optional[dict] = {
-        'button_update': True,
-        'button_view': True,
+        'as_button_update': True,
+        'as_button_get': True,
     }  # Переменные если нужно передать контекст
     params: Optional[QueryParams] | dict | None  # Параметры на вхрде
     join_related: Optional[bool] | None = None  # Джойнить рилейшен столбцы
@@ -134,202 +149,189 @@ class P:
 
 class H:
     """
-        Класс инкапсулирует все htmx вызовы шаблонов
+        Класс инкапсулирует работу с шаблонизатором и htmx
     """
     cls: 'ClassView'
+    templates = {
+        'as_tr': 'line/as_tr.html',
+        'as_div': 'line/as_div.html',
+        'as_card': 'line/as_card.html',
+        'as_modal': 'line/as_modal.html',
+        'as_button': 'line/as_button.html',
+        'as_table': 'cls/as_table.html',
+        'as_filter': 'cls/as_filter.html',
+        'as_header': 'cls/as_header.html',
+        'as_import': 'cls/as_import.html',
+    }
 
-    @property
-    def button_view(self) -> str:
-        """Сгенерировать кнопку на просмотр обьекта"""
-        return self.cls.render_line('button_view')
-
-    @property
-    def button_update(self) -> str:
-        """Сгенерировать кнопку на редактирование обьекта"""
-        return self.cls.render_line('button_update')
-
-    @property
-    def button_create(self) -> str:
-        """Сгенерировать кнопку на создание обьекта"""
-        return self.cls.render_line('button_create')
-
-    @property
-    def button_delete(self) -> str:
-        """Сгенерировать кнопку на удаление обьекта"""
-        return self.cls.render_line(block_name='button_delete')
-
-    @property
-    def button_save(self) -> str:
-        """Кнопка сохранения обьекта"""
-        return self.cls.render_line(block_name='button_save')
-
-    @property
-    def button_actions(self) -> str:
-        """Сгенерировать кнопку на меню доступных методов обьекта"""
-        return self.cls.render_line(block_name='button_actions')
+    def as_tr(self, template: str = 'as_tr', block_name: str = 'get', method: MethodType = MethodType.GET,
+              exclude: list = []) -> str:
+        """Гибкий метод отдачи строки таблицы"""
+        self.cls._exclude = exclude
+        template = self.templates.get(template)
+        return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
     def as_tr_get(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.cls.render_line(block_name='as_tr', method=MethodType.GET)
-
-    @property
-    def as_table_header(self) -> str:
-        return self.cls.render_line('as_tr_header')  # type: ignore
+        return self.as_tr()
 
     @property
     def as_tr_header(self) -> str:
         """Отобразить обьект как строку заголовок таблицы"""
-        return self.cls.render_line(block_name='as_tr_header', method=MethodType.GET)
+        return self.as_tr(block_name='header')
 
     @property
     def as_tr_placeholder(self) -> str:
         """Отобразить обьект как строку заголовок таблицы"""
-        return self.cls.render_line(block_name='as_tr_placeholder', method=MethodType.GET)
+        return self.as_tr(block_name='placeholder')
 
     @property
     def as_tr_update(self) -> str:
         """Отобразить обьект как строку таблицы на редактирование"""
-        return self.cls.render_line(block_name='as_tr', method=MethodType.UPDATE)
+        return self.as_tr(block_name='update', method=MethodType.UPDATE)
 
     @property
     def as_tr_create(self) -> str:
         """Отобразить обьект как строку таблицы на создание"""
-        return self.cls.render_line(block_name='as_tr', method=MethodType.CREATE)
+        return self.as_tr(block_name='create', method=MethodType.CREATE)
 
-    @property
-    def as_item(self) -> str:
-        """Отобразить обьект как айтем с заголовком"""
-        return self.cls.render_line(block_name='as_item', method=MethodType.CREATE)
+    def as_div(self, template: str = 'as_div', block_name: str = 'get', method: MethodType = MethodType.GET,
+               exclude: list = []) -> str:
+        """Гибкий метод отдачи строки таблицы"""
+        self.cls._exclude = exclude
+        template = self.templates.get(template)
+        return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
     def as_div_get(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.cls.render_line(block_name='as_div', method=MethodType.GET)
+        return self.as_div()
 
     @property
     def as_div_update(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.cls.render_line(block_name='as_div', method=MethodType.UPDATE)
+        return self.as_div(block_name='update', method=MethodType.UPDATE)
 
     @property
     def as_div_create(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.cls.render_line(block_name='as_div', method=MethodType.CREATE)
+        return self.as_div(block_name='create', method=MethodType.CREATE)
+
+    def as_card(self, template: str = 'as_card', block_name: str = 'get', method: MethodType = MethodType.GET,
+                exclude: list = []) -> str:
+        """Гибкий метод отдачи строки таблицы"""
+        self.cls._exclude = exclude
+        template = self.templates.get(template)
+        return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def as_card(self) -> str:
+    def as_card_get(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.cls.render_line(block_name='as_card', method=MethodType.GET)
+        return self.as_card()
+
+    def as_modal(self, template: str = 'as_modal', block_name: str = 'get', method: MethodType = MethodType.GET,
+                 exclude: list = []) -> str:
+        """Гибкий метод отдачи строки таблицы"""
+        self.cls._exclude = exclude
+        template = self.templates.get(template)
+        return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def get_modal_update(self) -> str:
-        """Метод отдает модалку на редактирование обьекта"""
-        return render_block(
-            environment=environment,
-            template_name=f'line/modal.html',
-            method=MethodType.UPDATE,
-            block_name='modal',
-            line=self.cls
-        )
+    def as_modal_get(self) -> str:
+        """Отобразить обьект как строку таблицы на просмотр"""
+        return self.as_modal()
 
     @property
-    def get_modal_get(self) -> str:
-        """Метод отдает модалку на просмотр обьекта"""
-        return render_block(
-            environment=environment,
-            template_name=f'line/modal.html',
-            method=MethodType.GET,
-            block_name='modal',
-            line=self.cls
-        )
+    def as_modal_update(self) -> str:
+        """Отобразить обьект как строку таблицы на просмотр"""
+        return self.as_modal(block_name='update', method=MethodType.UPDATE)
 
     @property
-    def get_modal_delete(self) -> str:
-        """Метод отдает модалку на удаление обьекта"""
-        return render_block(
-            environment=environment,
-            template_name=f'line/modal.html',
-            method=MethodType.DELETE,
-            block_name='delete',
-            line=self.cls,
-        )
+    def as_modal_delete(self) -> str:
+        """Отобразить обьект как строку таблицы на просмотр"""
+        return self.as_modal(block_name='delete', method=MethodType.DELETE)
 
     @property
-    def get_modal_create(self) -> str:
-        """Метод отдает модалку на создание нового обьекта"""
-        return render_block(
-            environment=environment,
-            template_name=f'line/modal.html',
-            method=MethodType.CREATE,
-            block_name='modal',
-            line=self.cls,
-        )
+    def as_modal_create(self) -> str:
+        """Отобразить обьект как строку таблицы на просмотр"""
+        return self.as_modal(block_name='create', method=MethodType.CREATE)
+
+    def as_button(self, template: str = 'as_button', block_name: str = 'get', method: MethodType = MethodType.GET,
+                  exclude: list = []) -> str:
+        """Гибкий метод отдачи строки таблицы"""
+        self.cls._exclude = exclude
+        template = self.templates.get(template)
+        return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def get_button_view(self) -> str:
+    def as_button_get(self) -> str:
         """Сгенерировать кнопку на просмотр обьекта"""
-        return self.cls.render_line('button_view')
+        return self.as_button(block_name='get')
 
     @property
-    def get_button_update(self) -> str:
+    def as_button_update(self) -> str:
         """Сгенерировать кнопку на редактирование обьекта"""
-        return self.cls.render('button_update')
+        return self.as_button(block_name='update')
 
     @property
-    def get_button_create(self) -> str:
+    def as_button_create(self) -> str:
         """Сгенерировать кнопку на создание обьекта"""
-        return self.cls.render('button_create')
+        return self.as_button(block_name='create')
 
     @property
-    def get_button_delete(self) -> str:
+    def as_button_delete(self) -> str:
         """Сгенерировать кнопку на удаление обьекта"""
-        return self.cls.render(block_name='button_delete')
+        return self.as_button(block_name='delete')
 
     @property
-    def get_button_save(self) -> str:
+    def as_button_save(self) -> str:
         """Кнопка сохранения обьекта"""
-        return self.cls.render(block_name='button_save')
+        return self.as_button(block_name='save')
 
     @property
-    def get_button_actions(self) -> str:
+    def as_button_actions(self) -> str:
         """Сгенерировать кнопку на меню доступных методов обьекта"""
-        return self.cls.render(block_name='button_actions')
+        return self.as_button(block_name='actions')
+
+    def as_filter(self, template: str = 'as_filter', block_name: str = 'get', method: MethodType = MethodType.GET,
+                  exclude: list = []) -> str:
+        """Гибкий метод отдачи строки таблицы"""
+        self.cls._exclude = exclude
+        template = self.templates.get(template)
+        return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def as_filter(self) -> str:
+    def as_filter_widget(self) -> str:
+        """Отдает виджет HTMX для построение фильтра"""
+        return self.as_filter(block_name='widget')
+
+    @property
+    def as_filter_get(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
-        return render_block(
-            environment=environment, template_name=f'cls/filter.html',
-            block_name='filter', method=MethodType.UPDATE, cls=self.cls
-        )
+        return self.as_filter()
 
-    @property
-    def as_table(self) -> str:
-        """Метод отдает Таблицу с хидером на просмотр"""
-        return render_block(
-            environment=environment, template_name=f'cls/table.html',
-            block_name='as_table', method=MethodType.GET, cls=self.cls
-        )
-
-    @property
-    def as_table_update(self) -> str:
-        """Метод отдает Таблицу с хидером на редакетирование"""
-        return render_block(
-            environment=environment, template_name=f'cls/table.html',
-            block_name='as_table', method=MethodType.UPDATE, cls=self
-        )
+    def as_table(self, template: str = 'as_table', block_name: str = 'get', method: MethodType = MethodType.GET,
+                 exclude: list = []) -> str:
+        """Гибкий метод отдачи строки таблицы"""
+        self.cls._exclude = exclude
+        template = self.templates.get(template)
+        return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
     def as_table_widget(self) -> str:
-        """Отдает виджет HTMX для построение таблицы"""
-        return render_block(
-            environment=environment,
-            template_name=f'cls/table.html',
-            block_name='widget',
-            method=MethodType.GET,
-            cls=self.cls
-        )
+        """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
+        return self.as_table(block_name='widget')
+
+    @property
+    def as_table_get(self) -> str:
+        """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
+        return self.as_table()
+
+    @property
+    def as_table_update(self) -> str:
+        """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
+        return self.as_table(method=MethodType.UPDATE)
 
     @property
     def as_card_kanban(self) -> str:
@@ -342,39 +344,29 @@ class H:
         return f'<div class="row" id="{self.key}">{self.lines.as_card_list}</div>'
 
     @property
-    def as_filter_widget(self) -> str:
-        """Отдает виджет HTMX для построение фильтра"""
-        return render_block(
-            environment=environment,
-            template_name=f'cls/filter.html',
-            block_name='widget',
-            cls=self.cls
-        )
-
-    @property
     def as_header_widget(self) -> str:
         """Отдает виджет HTMX для построения заголовка страницы обьекта"""
         return render_block(
             environment=environment,
-            template_name=f'cls/header.html',
+            template_name=f'cls/as_header.html',
             block_name='widget',
-            cls=self.cls
+            line=self.cls
         )
 
     @property
-    def get_import(self) -> str:
+    def as_import(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
         return render_block(
-            environment=environment, template_name=f'cls/import.html',
-            block_name='import_get', method=MethodType.GET, cls=self.cls
+            environment=environment, template_name=f'cls/as_import.html',
+            block_name='get', method=MethodType.GET, line=self.cls
         )
 
     @property
-    def get_import_errors(self) -> str:
+    def as_import_errors(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
         return render_block(
-            environment=environment, template_name=f'cls/import.html',
-            block_name='import_errors', method=MethodType.GET, cls=self.cls
+            environment=environment, template_name=f'cls/as_import.html',
+            block_name='errors', method=MethodType.GET, line=self.cls
         )
 
 
@@ -385,19 +377,49 @@ class ClassView:
     _id: str | int = None
     _lsn: int | None = None
     _view: View = None
+    _exclude: list = []
     _lines: list = []
     __state: int = 0
+    _templates = {
+        'as_tr_': 'line/as_tr.html',
+    }
     p: P = None
     h: H = None
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
 
+    def __hash__(self):
+        return hash(self._id)
+
+    def __eq__(self, other):
+        if isinstance(other, ClassView):
+            return self._id == other._id
+        return False
+
     def __iter__(self):
         return self
 
     def reset_key(self):
         self._view.key = _get_key()
+
+    def append(self, instance: object):
+        if not self._lines:
+            self.__dict__.update(instance.__dict__)
+        elif isinstance(instance, ClassView):
+            self._lines.append(instance)
+        elif isinstance(instance, Field):
+            self._lines.append(instance.cls)
+
+    def delete_dublicates(self):
+        ids: [str] = []
+        to_del_inxs: [int] = []
+        for indx, line in enumerate(self._lines):
+            if line._id in ids:
+                to_del_inxs.append(indx)
+            else:
+                ids.append(line._id)
+        self._lines = [item for i, item in enumerate(self._lines) if i not in to_del_inxs]
 
     def copy(self):
         instance = copy.copy(self)
@@ -448,6 +470,8 @@ class ClassView:
         self.h.cls = self
         self._id = id(self)
         self._view = View()
+        if not schema:
+            schema = BaseSchema(model=model, key=key or _get_key())
         self._view.request = request
         if vars:
             self._view.vars = vars
@@ -457,9 +481,9 @@ class ClassView:
         self._view.is_rel = is_rel
         self._view.actions = self._view.model.adapter.get_actions()
         self._view.env = request.scope['env']
-        self._view.key = key or _get_key()
+        self._view.key = key or schema.key
         self._view.exclude = exclude or []
-        self._view.params = params or {}
+        self._view.params = params or schema.params or {}
         self._view.join_related = join_related
         self._view.join_fields = join_fields or []
         self._view.schema = schema
@@ -472,20 +496,32 @@ class ClassView:
         self._view.is_inline = is_inline
         ##=======--------
         self._lines = []
+        self._exclude = exclude
         self._get_schema_fields(exclude=exclude)
 
     @property
     def r(self):
         return self.v.request
 
-    async def init(self, params: dict | None = None, join_related: bool = False,
-                   data: list | dict = None, schema: BaseModel = None) -> None:
+    async def init(self,
+                   params: dict | None = None,
+                   join_related: bool = False,
+                   data: list | dict = None,
+                   exclude: list = [],
+                   schema: BaseModel = None) -> None:
         """Майнинг данных по params"""
+        self._exclude = exclude
         if not params:
-            request_data = await self._view.request.json()
-            qp = clean_filter(request_data, self._view.key)
+            if self.v.request.method == 'POST':
+                request_data = await self._view.request.json()
+                qp = clean_filter(request_data, self._view.key)
+            elif self.v.request.method == 'GET':
+                qp = self._view.request.query_params
             if qp:
-                params = {i: v for i, v in qp[0].items() if v}
+                if isinstance(qp, list):
+                    params = {i: v for i, v in qp[0].items() if v}
+                else:
+                    params = {i: v for i, v in qp.items() if v}
         if isinstance(data, list):
             data = {i['id']: i for i in data}
         await self.get_data(params=params, data=data)
@@ -522,15 +558,13 @@ class ClassView:
                                                     False) if fielinfo.json_schema_extra else False,
 
             'form': fielinfo.json_schema_extra.get('form',
-                                                    False) if fielinfo.json_schema_extra else False,
+                                                   False) if fielinfo.json_schema_extra else False,
             # type: ignore
             'description': fielinfo.description,
         })
 
     def _get_view_vars(self, fieldname: str, is_filter: bool) -> dict[str, ViewVars]:
         """Костыльный метод собирания ViewVars"""
-        if fieldname == 'id':
-            a = 1
         create_fields = self._view.model.schemas.create.model_fields | self._view.model.schemas.create.model_computed_fields
         update_fields = self._view.model.schemas.update.model_fields | self._view.model.schemas.update.model_computed_fields
         get_fields = self._view.model.schemas.get.model_fields | self._view.model.schemas.get.model_computed_fields
@@ -739,27 +773,14 @@ class ClassView:
         return self
 
     def get_fields(self, display_view: str = None, method: MethodType = MethodType.GET) -> Fields:
-        fields = [k for i, k in self.__dict__.items() if isinstance(k, Field)]
+        fields = [k for i, k in self.__dict__.items() if isinstance(k, Field) and k.field_name not in self._exclude]
         return _crud_filter(fields, method, display_view)
 
-    def render(self, template_name: str, block_name: str,
-               method: MethodType = MethodType.GET) -> str:
-        """
-            Рендер всего
-        """
+    def render_line(self, template: str, block_name: str, method: MethodType = MethodType.GET) -> str:
+        """Рендеринг подразумеваем 1 лайны из шаблона"""
         return render_block(
             environment=environment,
-            template_name=template_name,
-            block_name=block_name,
-            method=method,
-            line=self
-        )
-
-    def render_line(self, block_name: str, method: MethodType = MethodType.GET) -> str:
-        """Рендеринг подразумеваем 1 лайны из шаблога line"""
-        return render_block(
-            environment=environment,
-            template_name='/line/line.html',
+            template_name=template,
             block_name=block_name,
             method=method,
             line=self,
@@ -838,7 +859,6 @@ class ClassView:
         )
 
 
-
 class Method(str, enum.Enum):
     GET: str = 'get'  # Дать запись на чтение
     CREATE: str = 'create'  # Дать запись на создание
@@ -863,6 +883,7 @@ class BaseSchema(BaseModel):
     ids: list[str] = []
     schema: Any = None
     commit: Optional[bool] = False
+    params: Optional[dict] = None
 
     @model_validator(mode='before')
     def _filter(cls, value):
@@ -882,10 +903,13 @@ class BaseSchema(BaseModel):
 
 
 async def get_view(request: Request, schema: BaseSchema) -> ClassView:
-    body = await request.json() or {}
+    if view_class := views.get(schema.model):
+        return view_class(
+            request=request,
+            schema=schema
+        )
     return ClassView(
         request=request,
         model=schema.model,
-        key=schema.key,
-        schema=schema
+        schema=schema,
     )

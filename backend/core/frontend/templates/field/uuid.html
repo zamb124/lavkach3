@@ -1,14 +1,18 @@
 {% block as_update %}
-    <select class="uuid form-control text-start"
+    <select class="uuid as-update"
             id="{{ field.key }}"
             display-title="{{ field.update.title }}"
             title="{{ field.update.description }}"
-            {% if field.update.readonly %} readonly='1' {% endif %}
-            name="{{ field.key }}"
-            {% if field.update.required %} required {% endif %}
             filter="{{ field.update.filter }}"
             model-name="{{ field.model_name }}"
+            name="{{ field.key }}"
             data-choices
+            {% if field.update.readonly %}
+            readonly='1'
+            {% endif %}
+            {% if field.update.required %}
+            required
+            {% endif %}
     >
         {% if field.val %}
             <option value="{{ field.val }}" selected label="Loading"></option>
@@ -19,16 +23,21 @@
     </script>
 {% endblock %}
 {% block as_create %}
-    <select class="uuid form-control text-start"
+    <select class="uuid as-create"
             id="{{ field.key }}"
             display-title="{{ field.create.title }}"
             title="{{ field.create.description }}"
-            {% if field.create.readonly %} readonly='1' {% endif %}
             name="{{ field.key }}"
-            {% if field.create.required %} required {% endif %}
             filter="{{ field.create.filter }}"
             model-name="{{ field.model_name }}"
             data-choices
+            {% if field.create.readonly %}
+            readonly='1'
+            {% endif %}
+            {% if field.create.required %}
+            required
+            {% endif %}
+
     >
         {% if field.val %}
             <option value="{{ field.val }}" selected></option>
@@ -39,23 +48,38 @@
     </script>
 {% endblock %}
 {% block as_get %}
-    <select class="uuid form-control text-start"
+    <select class="uuid as-get"
             id="{{ field.key }}"
+            name="{{ field.key }}"
             display-title="{{ field.get.title }}"
             title="{{ field.get.description }}"
             disabled
-            {% if field.get.readonly %} readonly='1' {% endif %}
-            name="{{ field.key }}"
-            {% if field.get.required %} required {% endif %}
             filter="{{ field.get.filter }}"
             model-name="{{ field.model_name }}"
             data-choices
+            {% if field.get.readonly %}
+            readonly='1'
+            {% endif %}
+            {% if field.get.required %}
+            required
+            {% endif %}
     >
         {% if field.val %}
             <option value="{{ field.val }}" selected></option>
         {% endif %}
     </select>
-        <script>
+    <script>
         new ChoiceHandler('{{ field.key }}', 'get')
+    </script>
+{% endblock %}
+{% block as_card_title %}
+    <h4
+            class="uuid as-card-title"
+            id="{{ field.key }}"
+            model-name="{{ field.model_name }}"
+    > {{ field.val }}
+    </h4>
+    <script>
+        setTitle('{{ field.key }}', 'get')
     </script>
 {% endblock %}

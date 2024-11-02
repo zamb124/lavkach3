@@ -1,0 +1,131 @@
+{% block get %}
+    <a href="#"
+       hx-params="model,method,id,key,backdrop"
+       hx-trigger="click"
+       hx-target="#htmx_content"
+       hx-ext="json-enc"
+       hx-post="/base/modal"
+       hx-swap="beforeend transition:true"
+       hx-vals='{
+"model": "{{ line.v.model.name }}",
+"method": "get",
+"id": "{{ line.p.id or "" }}",
+"key": "{{ line.p.key }}"
+}'
+       class="btn btn-soft-success inline" style="padding: 0px">
+        <iconify-icon icon="solar:document-bold" class="fs-8"></iconify-icon>
+
+    </a>
+{% endblock %}
+{% block save %}
+    <button
+            id="{{ 'submit-'~line.p.key }}"
+            class="btn btn-success"
+            hx-boost="true"
+            hx-include="#{{ line.p.key }}"
+            hx-post="/base/line"
+            hx-ext="json-enc"
+            hx-target="#htmx_content"
+            hx-swap="{% if line.type == 'new' %}outerHTML{% else %}none{% endif %} transition:true"
+            hx-vals='{
+                {% if line.p.id %}"id": "{{ line.p.id }}",{% endif %}
+                "model": "{{ line.v.model.name }}",
+                "method": "{% if line.type == 'new' %}save_create{% else %}save{% endif %}",
+                "key": "{{ line.p.key }}"
+                }'
+    >
+        Save
+    </button>
+{% endblock %}
+{% block update %}
+    <button
+            href="#"
+            hx-params="model,method,id,key,backdrop"
+            hx-trigger="click"
+            hx-target="#htmx_content"
+            hx-ext="json-enc"
+            hx-swap="beforeend transition:true"
+            hx-post="/base/modal"
+            hx-vals='{
+            "model": "{{ line.v.model.name }}",
+            "method": "update",
+            "id": "{{ line.p.id }}",
+            "key": "{{ line.p.class_key }}"
+            }'
+            class="btn btn-soft-primary inline">
+        <iconify-icon icon="solar:document-add-bold" class="fs-8"></iconify-icon>
+
+    </button>
+{% endblock %}
+{% block create %}
+    <a href="#"
+       hx-params="model,method,key,backdrop"
+       hx-trigger="click"
+       hx-target="#htmx_content"
+       hx-ext="json-enc"
+       hx-swap="beforeend transition:true"
+       hx-post="/base/modal"
+       hx-vals='{
+"model": "{{ line.v.model.name }}",
+"method": "create",
+{% if line.p.id %}"id": "{{ line.p.id }}", {% endif %}
+"key": "{{ line.p.class_key }}"
+}'
+    >
+        <iconify-icon icon="solar:add-square-broken" class="fs-8"></iconify-icon>
+    </a>
+{% endblock %}
+{% block delete %}
+    <script>
+        //hideModals()
+    </script>
+    <a href="#"
+       hx-params="model,method,id,key,target_id,backdrop"
+       hx-trigger="click"
+       hx-target="#{{ line.p.key }}"
+       hx-ext="json-enc"
+       hx-swap="outerHTML transition:true"
+       hx-post="/base/line"
+       hx-vals='{
+"model": "{{ line.v.model.name }}",
+"method": "delete",
+"id": "{{ line.p.id or "" }}",
+"key": "{{ line.p.key }}"
+}'
+       class="btn btn-soft-danger" style="padding: 0px">
+        <iconify-icon icon="solar:trash-bin-2-bold" class="fs-8"></iconify-icon>
+    </a>
+{% endblock %}
+{% block actions %}
+    <a class="btn btn-soft-info" style="padding: 0px" id="{{ "actions-" ~'--'~ line.p.key }}"
+       aria-expanded="false" data-bs-toggle="dropdown">
+        <i class="ti ti-dots-vertical fs-8"></i>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="{{ "actions-" ~'--'~ line.p.key }}">
+        {% for action_name, action_vals in line.v.actions.items() %}
+            <li class="dropdown-item">
+                <a
+                        data-bs-toggle="{{ action_vals.doc }}"
+                        data-key="{{ action_vals.tkey }}"
+                        hx-params="model,action,method,ids,key"
+                        hx-trigger="click"
+                        hx-ext="json-enc"
+                        hx-target="#htmx_content"
+                        hx-swap="beforeend transition:true"
+                        hx-post="/base/action"
+                        hx-vals='{
+                                "model": "{{ line.v.model.name }}",
+                                "action": "{{ action_name }}",
+                                "method": "{% if action_vals.schema %}get{% else %}update{% endif %}",
+                                "ids": ["{{ line.p.id }}"],
+                                "key": "{{ line.p.key }}"
+                            }'
+                        class="dropdown-item remove-item-btn">
+                    <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> {{ action_name }}
+                </a>
+            </li>
+        {% endfor %}
+
+    </ul>
+
+{% endblock %}

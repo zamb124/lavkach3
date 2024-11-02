@@ -359,6 +359,44 @@ async function choiceMultiEnum(element, method) {
     check_valid()
 }
 
+async function setTitle(elId) {
+    let element = document.getElementById(elId);
+    var model_name = element.getAttribute('model-name')
+
+    async function getValues() {
+        var id__in = ''
+        var str = element.innerText.replace(/[\s\n\t]+/g, ' ').trim()
+        element.innerHTML = '<span class="spinner-border text-primary" role="status">\n' +
+            '                    <span class="visually-hidden">Loading...</span>\n' +
+            '                  </span>'
+        let values = str ? str.split(',') : [];
+
+        for (let v in values) {
+            var maybe_cache = app.cache.results[values[v]]
+            if (!maybe_cache) {
+                app.pushUUID(model_name, values[v])
+            }
+        }
+        var result = []
+        while (true) {
+            for (let v in values) {
+                if (app.cache.results[values[v]]) {
+                    result.push({
+                        value: values[v],
+                        label: app.cache.results[values[v]]
+                    })
+                    values.splice(v, 1)
+                }
+            }
+            if (values.length === 0) {
+                return result
+            }
+            await new Promise(r => setTimeout(r, 50));
+        }
+    }
+    let res = await getValues()
+    element.innerText = res[0].label
+}
 
 class ModalHandler {
     constructor(modalId) {

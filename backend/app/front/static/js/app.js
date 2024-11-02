@@ -6,6 +6,7 @@ class App {
         };
         Object.freeze(this.cache);
         this.initEventListeners();
+        this.observeDOMClass('uuid', this.handleMyClass);
         this.runCacheHandler();
     }
 
@@ -245,8 +246,8 @@ class App {
     }
 
     // Метод для обработки появления класса 'my-list'
-    handleMyList(element) {
-        console.log('Элемент с классом my-list добавлен в DOM:', element);
+    handleMyClass(element) {
+        console.log('Элемент с классом my-class добавлен в DOM:', element);
         // Добавьте здесь обработчик для элемента
     }
 }

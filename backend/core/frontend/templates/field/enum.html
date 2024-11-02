@@ -4,9 +4,9 @@
 
             {% if field.update.readonly %}
             style="pointer-events: none;"
-            class="enum form-control disabled"
+            class="enum form-control disabled  text-center"
             {% else %}
-            class="enum form-control is-valid"
+            class="enum form-control is-valid  text-center"
             {% endif %}
 
             aria-label="Default select example"
@@ -27,7 +27,7 @@
             {% if field.create.readonly %}
             style="pointer-events: none;"
             {% else %}
-            class="enum form-control is-valid"
+            class="enum form-control is-valid text-center"
             {% endif %}
 
             aria-label="Default select example"
@@ -49,7 +49,7 @@
         </div>
     {% else %}
         <input type="text"
-               class="form-control"
+               class="form-control  text-center"
                 {% if field.get.required %} required {% endif %}
                disabled
                name="{{ field.key }}"

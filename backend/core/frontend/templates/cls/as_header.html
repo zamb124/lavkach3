@@ -5,11 +5,11 @@
                 <div class="col-12">
                     <div class="d-sm-flex align-items-center justify-space-between">
                         <div class="d-flex align-items-center">
-                             {{ cls.h.button_create }}
+                             {{ line.h.button_create }}
                             </div>
 
                         <h5 class="card-title"
-                            style="padding-left: 20px; margin-bottom: 0" data-key="t-{{ cls.v.model.name }}">{{ cls.v.model.name|capitalize }} </h5>
+                            style="padding-left: 20px; margin-bottom: 0" data-key="t-{{ line.v.model.name }}">{{ line.v.model.name|capitalize }} </h5>
                         <div class="col">
 
                         </div>
@@ -18,15 +18,15 @@
                                 <li class="breadcrumb-item d-flex align-items-center">
                                     <a class="text-muted text-decoration-none d-flex"
                                        href="/"
-                                       id="{{ 'filter' ~'--'~ cls.p.class_key }}"
+                                       id="{{ 'filter' ~'--'~ line.p.class_key }}"
                                        hx-ext="json-enc"
                                        hx-post="/base/import"
                                        hx-trigger="click"
                                        hx-target="#htmx_content"
                                        hx-swap="beforeend transition:true"
                                        hx-vals='{
-                                        "model": "{{ cls.v.model.name }}",
-                                        "key": "{{ cls.p.class_key }}",
+                                        "model": "{{ line.v.model.name }}",
+                                        "key": "{{ line.p.class_key }}",
                                         "method": "get"
                                       }'
                                     >
@@ -37,7 +37,7 @@
                                 <li class="breadcrumb-item d-flex align-items-center">
                                     <a class="text-muted text-decoration-none d-flex"
                                        data-bs-toggle="collapse"
-                                       data-bs-target="{{ '#filter' ~'--'~ cls.p.class_key }}"
+                                       data-bs-target="{{ '#filter' ~'--'~ line.p.class_key }}"
                                        href="#"
                                     >
                                         <iconify-icon icon="solar:filter-bold-duotone"

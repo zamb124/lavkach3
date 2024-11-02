@@ -1,5 +1,5 @@
-{% block action %}
-    <div class="modal" id="{{ 'action--'~cls.p.class_key }}" tabindex="-1" style="display: none;"aria-hidden="true">
+{% block get %}
+    <div class="modal" id="{{ 'action--'~line.p.class_key }}" tabindex="-1" style="display: none;"aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -15,9 +15,9 @@
                       hx-target="this"
                       hx-swap="none"
                       hx-vals='{
-                "model": "{{ cls.v.model.name }}",
+                "model": "{{ line.v.model.name }}",
                 "action": "{{ action }}",
-                "key": "{{ cls.p.class_key }}",
+                "key": "{{ line.p.class_key }}",
                 "method": "update",
                 "commit": "true"
               }'
@@ -31,7 +31,7 @@
                         <div class="card">
                             <h3 class="card-header" data-key="t-{{ action }}"> {{ action }} </h3>
                             <div class="card-body">
-                            {% for line in cls.action_lines.lines %}
+                            {% for line in line.action_lines.lines %}
                                 <div class="row">
                                     {% for field_name, field in line.fields %}
                                         {% if loop.length % 3 != 0 and loop.first %}
@@ -53,7 +53,7 @@
                                     <div class="modal-footer">
                                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
                 </button>
-                                        <button id="{{ 'submit'~cls.p.class_key }}" type="submit" class="btn btn-success">
+                                        <button id="{{ 'submit'~line.p.class_key }}" type="submit" class="btn btn-success">
                                             Save
                                         </button>
 
@@ -65,7 +65,7 @@
         </div>
     </div>
     <script>
-        var modal = new bootstrap.Modal('#{{ 'action--'~cls.p.class_key }}')
+        var modal = new bootstrap.Modal('#{{ 'action--'~line.p.class_key }}')
         modal.show()
     </script>
 {% endblock %}

@@ -29,8 +29,8 @@ class OrderBaseScheme(BasicModel):
     origin_type: Optional[str] = Field(default=None, title='Original Type', form=True)
     origin_number: Optional[str] = Field(default=None, title='Original', table=True, form=True)
     planned_datetime: Optional[datetime] = Field(default=None, title='Planned Date', table=True)
-    expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=True)
-    description: Optional[str] = Field(default=None, title='Description', table=True)
+    expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=False)
+    description: Optional[str] = Field(default=None, title='Description', table=False)
     status: OrderStatus = Field(default=OrderStatus.DRAFT, title='Status', readonly=True, table=True)
     order_id: Optional[UUID] = Field(default=None, title='Parent', readonly=True)
 
@@ -55,7 +55,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     id: UUID4 = Field(title='ID', table=True, readonly=True)
     company_id: UUID = Field(title='Company', model='company')
     vars: Optional[dict] = None
-    number: str = Field(title='Order #', readonly=True, description="Internal number of order")
+    number: str = Field(title='Order #', readonly=False, description="Internal number of order")
     actual_datetime: Optional[datetime] = Field(title='Actual Date')
     created_by: UUID = Field(title='Created By',  model='user')
     edited_by: UUID = Field(title='Edit By', model='user')

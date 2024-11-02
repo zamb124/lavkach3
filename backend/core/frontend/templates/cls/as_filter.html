@@ -1,22 +1,22 @@
 {% block widget %}
-<div id="{{ 'filter' ~'--'~ cls.p.class_key }}"
+<div id="{{ 'filter' ~'--'~ line.p.class_key }}"
       hx-ext="json-enc"
       hx-post="/base/filter"
       hx-trigger="load"
       hx-vals='{
-        "model": "{{ cls.v.model.name }}",
-        "key": "{{ cls.p.class_key }}",
+        "model": "{{ line.v.model.name }}",
+        "key": "{{ line.p.class_key }}",
         "method": "get"
       }'
 class="collapse">
     <!--HTMX CONTENT-->
 </div>
 {% endblock %}
-{% block filter %}
+{% block get %}
 <div class="card">
     <div class="card-body">
         <div class="row g-3">
-            {% for field in cls.get_fields(display_view='filter') if field.is_filter %}
+            {% for field in line.get_fields(display_view='filter') if field.is_filter %}
                 {% if field.field_name not in ('order_by', 'lsn__gt', 'lsn__lt', 'id__in' )%}
                     <div class="col-xxl-2 col-sm-4">
                         {{ field.as_update|safe }}

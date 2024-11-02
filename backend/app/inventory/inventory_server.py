@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
-from app.inventory.inventory_router import inventory_router
+from app.inventory.inventory_router import router
 from core.db_config import config
 from core.env import Env
 from app.inventory import __domain__ as inventory_domain
@@ -38,7 +38,7 @@ class EnvMidlleWare:
 
 
 def init_routers(app_: FastAPI) -> None:
-    app_.include_router(inventory_router)
+    app_.include_router(router)
 
 
 def init_listeners(app_: FastAPI) -> None:

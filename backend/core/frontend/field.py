@@ -96,6 +96,11 @@ class Field:
         return self.render(block_name='as_get')
 
     @property
+    def as_card_title(self) -> str:
+        """Отобразить поле только на чтение"""
+        return self.render(block_name='as_card_title')
+
+    @property
     def as_table_get(self) -> str:
         """Отобразить поле как Таблицу (Если поле является list_rel)"""
         return render_block(
