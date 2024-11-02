@@ -1,16 +1,125 @@
 class App {
     constructor() {
+        this.userSettings = {
+            Layout: "vertical", // vertical | horizontal
+            SidebarType: "mini-sidebar", // full | mini-sidebar
+            BoxedLayout: true, // true | false
+            Direction: "ltr", // ltr | rtl
+            Theme: "light", // light | dark
+            ColorTheme: "Cyan_Theme", // Blue_Theme | Aqua_Theme | Purple_Theme | Green_Theme | Cyan_Theme | Orange_Theme
+            cardBorder: true, // true | false
+            locale: "en"
+        };
         this.cache = {
             temp: [],
             results: {}
         };
+        this.loaded = false;
+        this.userSettings = Object.assign({}, this.userSettings);
+        this.locale = this.userSettings.locale;
+        this.translations = {};
         Object.freeze(this.cache);
         this.initEventListeners();
         this.observeDOMClass('uuid', this.handleMyClass);
         this.runCacheHandler();
+        this.initUserSettings();
+        this.initTheme();
+        this.initSidebarMenu();
+        this.AdminSettingsInit();
+        this.setSsettings();
+
+        document.addEventListener("DOMContentLoaded", () => {
+            this.onDocumentLoaded();
+        });
     }
 
-    // Методы CacheHandler
+    handleMessage(e) {
+        console.log('wsBeforeMessage');
+        const message = JSON.parse(e.detail.message);
+        console.log(message);
+        switch (message.tag) {
+            case 'COMPANY_CHANGED':
+                this.handleCompanyChanged();
+                break;
+            case 'LOGOUT':
+                this.handleLogout();
+                break;
+            case 'MODEL':
+                this.handleModelMessage(message);
+                break;
+            case 'REFRESH':
+                this.handleRefresh();
+                break;
+            default:
+                console.warn('Unknown message type:', message.tag);
+        }
+    }
+    handleCompanyChanged() {
+        document.location.reload();
+    }
+    handleLogout() {
+        document.cookie = "token={{token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;";
+        document.cookie = "refresh_token={{refresh_token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;";
+        document.location.replace('/basic/user/login?/');
+    }
+    handleModelMessage(message) {
+        const elements = htmx.findAll(`[ui_key="${message.vars.model}--${message.vars.id}"]`);
+        switch (message.vars.method) {
+            case 'create':
+                this.handleModelCreate();
+                break;
+            case 'update':
+                this.handleModelUpdate(elements, message);
+                break;
+            case 'delete':
+                this.handleModelDelete(elements);
+                break;
+            default:
+                console.warn('Unknown model method:', message.vars.method);
+        }
+    }
+    handleModelCreate() {
+        const elements = htmx.findAll('[id^="table--"]');
+        elements.forEach(element => {
+            htmx.trigger(element, 'update');
+        });
+        console.log('create');
+    }
+    handleModelUpdate(elements, message) {
+        elements.forEach(el => {
+            console.log(el.attributes.lsn);
+            const elLsn = Number(el.attributes.lsn.nodeValue);
+            el.attributes.lsn.nodeValue = message.vars.lsn;
+            htmx.trigger(el, 'backend_update');
+            if (message.vars.updated_fields) {
+                this.showToast(message.message);
+            }
+        });
+    }
+    handleModelDelete(elements) {
+        elements.forEach(element => {
+            element.remove();
+        });
+        this.showToast('Object deleted');
+    }
+    handleRefresh() {
+        this.refreshToken();
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+    }
+
+    AdminSettingsInit() {
+        this.ManageThemeLayout();
+        this.ManageSidebarType();
+        this.ManageBoxedLayout();
+        this.ManageDirectionLayout();
+        this.ManageDarkThemeLayout();
+        this.ManageColorThemeLayout();
+        this.ManageCardLayout();
+    }
+
+    // Методы Cache
     async pushUUID(model, uuid) {
         let modelList = this.cache.temp[model];
         if (!modelList) {
@@ -52,14 +161,17 @@ class App {
         }
     }
 
-    // Методы AuthHandler
+    // ------------
+
+
+    // Методы Auth
     getCookieValue(name) {
         const nameString = name + "=";
         const values = document.cookie.split(";").filter(item => item.includes(nameString));
         if (values.length) {
             let value = values.find(val => val.trim().startsWith(nameString));
             if (value) {
-                return value.substring(nameString.length).trim();
+                return value.substring(nameString.length + 1).trim();
             }
         }
         return null;
@@ -79,6 +191,45 @@ class App {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
         return JSON.parse(jsonPayload);
+    }
+
+    login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const user = {
+            username: username,
+            password: password
+        };
+        fetch('/basic/user/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        }).then(response => {
+            if (response.status === 200) {
+                response.json().then(data => {
+                    this.saveTokensAndRedirect(data.token, data.refresh_token, data.next);
+                });
+            } else {
+                response.json().then(data => {
+                    this.showToast(data.message, "red");
+                });
+            }
+        });
+    }
+
+    saveTokensAndRedirect(token, refresh_token, next) {
+        const parsedToken = this.parseJwt(token);
+        const parsedRefreshToken = this.parseJwt(refresh_token);
+        const tokenExpires = new Date(parsedToken.exp * 1000);
+        const refreshTokenExpires = new Date(parsedRefreshToken.exp * 1000);
+
+        document.cookie = `token=${token}; expires=${tokenExpires.toUTCString()}; path=/;`;
+        document.cookie = `refresh_token=${refresh_token}; expires=${refreshTokenExpires.toUTCString()}; path=/;`;
+
+        const redirectUrl = next || '/';
+        window.location.replace(redirectUrl);
     }
 
     async refreshToken() {
@@ -122,6 +273,31 @@ class App {
         return true;
     }
 
+    async onDocumentLoaded() {
+        htmx.onLoad(function (elt) {
+            if (!app.loaded) {
+                // Смотрим, если все элементы прогрузились
+                var ver = document.getElementsByClassName('with-vertical')
+                var hor = document.getElementsByClassName('with-horizontal')
+                var themeEditor = document.getElementById('offcanvasExample')
+                if (ver.length > 1 && hor.length > 1 && themeEditor) {
+                    //app.AdminSettingsInit() // Применяем пользовательские настройки фронта
+                    app.setSsettings() // Применяем скрипты темы
+                    //app.initSidebarMenu() // Прогружаем navbar
+                    app.loaded = true; // Устанавливаем флаг, что все прогрузили
+                }
+            }
+            var elements = elt.querySelectorAll('[data-key]');
+            if (elements) {
+                elements.forEach(app.translateElement);
+            }
+
+        })
+        await this.setLocale(this.userSettings.locale);
+        // Здесь можно вызвать любые другие методы или выполнить нужные действия
+
+    }
+    // Htmx
     initEventListeners() {
         htmx.on("htmx:confirm", (e) => {
             console.log('htmx:confirm');
@@ -179,6 +355,8 @@ class App {
             console.log('wsConfigSend');
             e.detail.headers["Authorization"] = this.getCookieValue('token');
         });
+        htmx.on('htmx:wsBeforeMessage', this.handleMessage.bind(this));
+
     }
 
     showToast(message, background) {
@@ -192,44 +370,41 @@ class App {
         }).showToast();
     }
 
-    login() {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const user = {
-            username: username,
-            password: password
-        };
-        fetch('/basic/user/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
-        }).then(response => {
-            if (response.status === 200) {
-                response.json().then(data => {
-                    this.saveTokensAndRedirect(data.token, data.refresh_token, data.next);
-                });
-            } else {
-                response.json().then(data => {
-                    this.showToast(data.message, "red");
-                });
-            }
-        });
+    // Методы интернацианализации
+    async setLocale(newLocale) {
+        document.getElementsByTagName('html')[0].setAttribute('lang', newLocale);
+        this.userSettings.locale = newLocale;
+        document.cookie = "locale=" + this.userSettings.locale + ";path=/;";
+        if (newLocale === this.locale) return;
+
+        const newTranslations = await this.fetchTranslationsFor(newLocale);
+
+        this.locale = newLocale;
+        this.translations = newTranslations;
+
+        this.translatePage();
     }
 
-    saveTokensAndRedirect(token, refresh_token, next) {
-        const parsedToken = this.parseJwt(token);
-        const parsedRefreshToken = this.parseJwt(refresh_token);
-        const tokenExpires = new Date(parsedToken.exp * 1000);
-        const refreshTokenExpires = new Date(parsedRefreshToken.exp * 1000);
-
-        document.cookie = `token=${token}; expires=${tokenExpires.toUTCString()}; path=/;`;
-        document.cookie = `refresh_token=${refresh_token}; expires=${refreshTokenExpires.toUTCString()}; path=/;`;
-
-        const redirectUrl = next || '/';
-        window.location.replace(redirectUrl);
+    async fetchTranslationsFor(newLocale) {
+        const response = await fetch(`/static/js/i18n/${newLocale}.json`);
+        return await response.json();
     }
+
+    translatePage() {
+        document.querySelectorAll("[data-key]").forEach(element => this.translateElement(element));
+    }
+
+    translateElement(element) {
+        const key = element.getAttribute("data-key");
+        const translation = app.translations[key];
+        if (!translation) {
+            console.warn(`No translation found for key: ${key}`);
+            return;
+        }
+        element.innerText = translation;
+    }
+
+    // -------
 
     // Новый метод для обработки появления определенного класса в DOM-дереве
     observeDOMClass(className, callback) {
@@ -242,15 +417,548 @@ class App {
                 });
             });
         });
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, {childList: true, subtree: true});
     }
 
-    // Метод для обработки появления класса 'my-list'
     handleMyClass(element) {
-        console.log('Элемент с классом my-class добавлен в DOM:', element);
+        //console.log('Элемент с классом my-class добавлен в DOM:', element);
         // Добавьте здесь обработчик для элемента
+    }
+
+    // Методы работы со стилем и прочим
+    initTheme() {
+        document.addEventListener("DOMContentLoaded", () => {
+            "use strict";
+            // Tooltip
+            const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+            // Popover
+            const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            popoverTriggerList.map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+
+            // Hide preloader
+            const preloader = document.querySelector(".preloader");
+            if (preloader) {
+                preloader.style.display = "none";
+            }
+
+            // Increment & Decrement
+            const quantityButtons = document.querySelectorAll(".minus, .add");
+            if (quantityButtons) {
+                quantityButtons.forEach(button => {
+                    button.addEventListener("click", () => {
+                        const qtyInput = button.closest("div").querySelector(".qty");
+                        let currentVal = parseInt(qtyInput.value);
+                        const isAdd = button.classList.contains("add");
+
+                        if (!isNaN(currentVal)) {
+                            qtyInput.value = isAdd ? ++currentVal : currentVal > 0 ? --currentVal : currentVal;
+                        }
+                    });
+                });
+            }
+        });
+    }
+
+    initSidebarMenu() {
+        const sidebarMenu = () => {
+            const at = document.documentElement.getAttribute("data-layout");
+            if (at === "vertical") {
+                this.loadSidebarPagesVertical();
+            } else if (at === "horizontal") {
+                this.loadSidebarPagesHorizontal();
+            }
+        };
+
+        sidebarMenu();
+    }
+
+    loadSidebarPagesVertical() {
+        "use strict";
+        const isSidebar = document.getElementsByClassName("side-mini-panel");
+        if (isSidebar.length > 0) {
+            const url = window.location + "";
+            const path = url.replace(window.location.protocol + "//" + window.location.host + "/", "");
+
+            const findMatchingElement = () => {
+                const currentUrl = window.location.href;
+                const anchors = document.querySelectorAll("#sidebarnav a");
+                for (let i = 0; i < anchors.length; i++) {
+                    if (anchors[i].href === currentUrl) {
+                        return anchors[i];
+                    }
+                }
+                document.location.replace('/inventory/order');
+            };
+
+            const elements = findMatchingElement();
+            if (elements) {
+                elements.classList.add("active");
+            }
+
+            document.querySelectorAll("#sidebarnav a").forEach(link => {
+                link.addEventListener("click", function (e) {
+                    const isActive = this.classList.contains("active");
+                    const parentUl = this.closest("ul");
+
+                    if (!isActive) {
+                        parentUl.querySelectorAll("ul").forEach(submenu => submenu.classList.remove("in"));
+                        parentUl.querySelectorAll("a").forEach(navLink => navLink.classList.remove("active"));
+
+                        const submenu = this.nextElementSibling;
+                        if (submenu) {
+                            submenu.classList.add("in");
+                        }
+                        this.classList.add("active");
+                    } else {
+                        this.classList.remove("active");
+                        parentUl.classList.remove("active");
+                        const submenu = this.nextElementSibling;
+                        if (submenu) {
+                            submenu.classList.remove("in");
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll("#sidebarnav > li > a.has-arrow").forEach(link => {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault();
+                });
+            });
+
+            const closestNav = elements.closest("nav[class^=sidebar-nav]");
+            const menuid = (closestNav && closestNav.id) || "menu-right-mini-1";
+            const menu = menuid.split('-').pop();
+
+            document.getElementById("menu-right-" + menu).classList.add("d-block");
+            document.getElementById("mini-" + menu).classList.add("selected");
+
+            document.querySelectorAll("ul#sidebarnav ul li a.active").forEach(link => {
+                link.closest("ul").classList.add("in");
+                link.closest("ul").parentElement.classList.add("selected");
+            });
+
+            document.querySelectorAll(".mini-nav .mini-nav-item").forEach(item => {
+                item.addEventListener("click", function () {
+                    const id = this.id.split('-').pop();
+                    document.querySelectorAll(".mini-nav .mini-nav-item").forEach(navItem => navItem.classList.remove("selected"));
+                    this.classList.add("selected");
+                    document.querySelectorAll(".sidebarmenu nav").forEach(nav => nav.classList.remove("d-block"));
+                    document.getElementById("menu-right-" + id).classList.add("d-block");
+                    document.body.setAttribute("data-sidebartype", "full");
+                });
+            });
+        }
+    }
+
+    loadSidebarPagesHorizontal() {
+        const findMatchingElement = () => {
+            const currentUrl = window.location.href;
+            const anchors = document.querySelectorAll("#sidebarnavh ul#sidebarnav a");
+            for (let i = 0; i < anchors.length; i++) {
+                if (anchors[i].href === currentUrl) {
+                    return anchors[i];
+                }
+            }
+            return null;
+        };
+
+        const elements = findMatchingElement();
+        if (elements) {
+            elements.classList.add("active");
+        }
+
+        document.querySelectorAll("#sidebarnavh ul#sidebarnav a.active").forEach(link => {
+            link.closest("a").parentElement.classList.add("selected");
+            link.closest("ul").parentElement.classList.add("selected");
+        });
+    }
+
+    initUserSettings() {
+        const settings = ["Layout", "SidebarType", "BoxedLayout", "Direction", "Theme", "ColorTheme", "cardBorder", "locale"];
+        settings.forEach(setting => {
+            const value = this.getCookieValue(setting);
+            if (value) {
+                this.userSettings[setting] = value;
+            } else {
+                document.cookie = `${setting}=${this.userSettings[setting]};path=/;`;
+            }
+        });
+    }
+
+    ManageThemeLayout() {
+        const horizontalLayoutElement = document.getElementById("horizontal-layout");
+        const verticalLayoutElement = document.getElementById("vertical-layout");
+
+        switch (this.userSettings.Layout) {
+            case "horizontal":
+                if (horizontalLayoutElement) {
+                    horizontalLayoutElement.checked = true;
+                }
+                document.documentElement.setAttribute("data-layout", "horizontal");
+                break;
+            case "vertical":
+                if (verticalLayoutElement) {
+                    verticalLayoutElement.checked = true;
+                }
+                document.documentElement.setAttribute("data-layout", "vertical");
+                break;
+            default:
+                break;
+        }
+    }
+
+    ManageSidebarType() {
+        switch (this.userSettings.SidebarType) {
+            case "full":
+                const fullSidebarElement = document.querySelector("#full-sidebar");
+                if (fullSidebarElement) {
+                    fullSidebarElement.checked = true;
+                }
+                document.body.setAttribute("data-sidebartype", "full");
+
+                const setSidebarType = () => {
+                    const width = window.innerWidth > 0 ? window.innerWidth : screen.width;
+                    if (width < 1300) {
+                        document.body.setAttribute("data-sidebartype", "mini-sidebar");
+                    } else {
+                        document.body.setAttribute("data-sidebartype", "full");
+                    }
+                };
+                window.addEventListener("DOMContentLoaded", setSidebarType);
+                window.addEventListener("resize", setSidebarType);
+                break;
+
+            case "mini-sidebar":
+                const miniSidebarElement = document.querySelector("#mini-sidebar");
+                if (miniSidebarElement) {
+                    miniSidebarElement.checked = true;
+                }
+                document.body.setAttribute("data-sidebartype", "mini-sidebar");
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    ManageBoxedLayout() {
+        const boxedLayoutElement = document.getElementById("boxed-layout");
+        const fullLayoutElement = document.getElementById("full-layout");
+        if (boxedLayoutElement) boxedLayoutElement.checked = true;
+        switch (this.userSettings.BoxedLayout) {
+            case true:
+                document.documentElement.setAttribute("data-boxed-layout", "boxed");
+                if (boxedLayoutElement) boxedLayoutElement.checked = true;
+                break;
+            case false:
+                document.documentElement.setAttribute("data-boxed-layout", "full");
+                if (fullLayoutElement) fullLayoutElement.checked = true;
+                break;
+            default:
+                break;
+        }
+    }
+
+    ManageDirectionLayout() {
+        const ltrLayoutElement = document.getElementById("ltr-layout");
+        const rtlLayoutElement = document.getElementById("rtl-layout");
+
+        switch (this.userSettings.Direction) {
+            case "ltr":
+                if (ltrLayoutElement) {
+                    ltrLayoutElement.checked = true;
+                }
+                document.documentElement.setAttribute("dir", "ltr");
+                const offcanvasStart = document.querySelector(".offcanvas-start");
+                if (offcanvasStart) {
+                    offcanvasStart.classList.toggle("offcanvas-end");
+                    offcanvasStart.classList.remove("offcanvas-start");
+                }
+                break;
+            case "rtl":
+                document.documentElement.setAttribute("dir", "rtl");
+                const offcanvasEnd = document.querySelector(".offcanvas-end");
+                if (offcanvasEnd) {
+                    offcanvasEnd.classList.toggle("offcanvas-start");
+                    offcanvasEnd.classList.remove("offcanvas-end");
+                }
+                if (rtlLayoutElement) {
+                    rtlLayoutElement.checked = true;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    ManageCardLayout() {
+        const cardWithoutBorderElement = document.getElementById("card-without-border");
+        const cardWithBorderElement = document.getElementById("card-with-border");
+
+        if (cardWithoutBorderElement) cardWithoutBorderElement.checked = true;
+        switch (this.userSettings.cardBorder) {
+            case true:
+                document.documentElement.setAttribute("data-card", "border");
+                if (cardWithBorderElement) cardWithBorderElement.checked = true;
+                break;
+            case false:
+                document.documentElement.setAttribute("data-card", "shadow");
+                if (cardWithoutBorderElement) cardWithoutBorderElement.checked = true;
+                break;
+            default:
+                break;
+        }
+    }
+
+    ManageDarkThemeLayout() {
+        const setTheme = (theme, hideElements, showElements, hideElements2) => {
+            document.documentElement.setAttribute("data-bs-theme", theme);
+            const themeLayoutElement = document.getElementById(`${theme}-layout`);
+            if (themeLayoutElement) {
+                themeLayoutElement.checked = true;
+            }
+
+            hideElements.forEach((el) =>
+                document.querySelectorAll(`.${el}`).forEach((e) => (e.style.display = "none"))
+            );
+            showElements.forEach((el) =>
+                document.querySelectorAll(`.${el}`).forEach((e) => (e.style.display = "flex"))
+            );
+            hideElements2.forEach((el) =>
+                document.querySelectorAll(`.${el}`).forEach((e) => (e.style.display = "none"))
+            );
+        };
+
+        switch (this.userSettings.Theme) {
+            case "light":
+                setTheme("light", ["light-logo"], ["moon"], ["sun"]);
+                break;
+            case "dark":
+                setTheme("dark", ["dark-logo"], ["sun"], ["moon"]);
+                break;
+            default:
+                break;
+        }
+    }
+
+    ManageColorThemeLayout() {
+        const {ColorTheme} = this.userSettings;
+        const colorThemeElement = document.getElementById(ColorTheme);
+        document.documentElement.setAttribute("data-color-theme", ColorTheme);
+    }
+
+    setSsettings() {
+        // Theme Direction RTL LTR click
+        function handleDirection() {
+            const rtlLayoutElement = document.getElementById("rtl-layout");
+            const ltrLayoutElement = document.getElementById("ltr-layout");
+
+            if (rtlLayoutElement) {
+                rtlLayoutElement.addEventListener("click", function () {
+                    document.documentElement.setAttribute("dir", "rtl");
+                    const offcanvasEnd = document.querySelector(".offcanvas-end");
+                    if (offcanvasEnd) {
+                        offcanvasEnd.classList.toggle("offcanvas-start");
+                        offcanvasEnd.classList.remove("offcanvas-end");
+                    }
+                });
+                document.cookie = "Direction=" + "rtl" + ";path=/;"
+            }
+
+            if (ltrLayoutElement) {
+                ltrLayoutElement.addEventListener("click", function () {
+                    document.documentElement.setAttribute("dir", "ltr");
+                    const offcanvasStart = document.querySelector(".offcanvas-start");
+                    if (offcanvasStart) {
+                        offcanvasStart.classList.toggle("offcanvas-end");
+                        offcanvasStart.classList.remove("offcanvas-start");
+                    }
+                });
+                document.cookie = "Direction=" + "ltr" + ";path=/;"
+            }
+        }
+
+        handleDirection();
+
+        // Theme Layout Box or Full
+        function handleBoxedLayout() {
+            const boxedLayout = document.getElementById("boxed-layout");
+            const fullLayout = document.getElementById("full-layout");
+            const containerFluid = document.querySelectorAll(".container-fluid");
+            if (boxedLayout) {
+                boxedLayout.addEventListener("click", function () {
+                    containerFluid.forEach((element) => element.classList.remove("mw-100"));
+                    document.documentElement.setAttribute("data-boxed-layout", "boxed");
+                    this.checked;
+                    document.cookie = "BoxedLayout=" + "true" + ";path=/;"
+                });
+            }
+
+            if (fullLayout) {
+                fullLayout.addEventListener("click", function () {
+                    containerFluid.forEach((element) => element.classList.add("mw-100"));
+                    document.documentElement.setAttribute("data-boxed-layout", "full");
+                    this.checked;
+                    document.cookie = "BoxedLayout=" + "false" + ";path=/;"
+                });
+            }
+        }
+
+        handleBoxedLayout();
+
+        // Theme Layout Vertical or Horizontal
+        function handleLayout() {
+            const verticalLayout = document.getElementById("vertical-layout");
+            const horizontalLayout = document.getElementById("horizontal-layout");
+
+            if (verticalLayout) {
+                verticalLayout.addEventListener("click", function () {
+                    document.documentElement.setAttribute("data-layout", "vertical");
+                    this.checked;
+                    document.cookie = "Layout=" + "vertical" + ";path=/;"
+                });
+            }
+
+            if (horizontalLayout) {
+                horizontalLayout.addEventListener("click", function () {
+                    document.documentElement.setAttribute("data-layout", "horizontal");
+                    this.checked;
+                    document.cookie = "Layout=" + "horizontal" + ";path=/;"
+                });
+            }
+        }
+
+        handleLayout();
+
+        // Theme mode Dark or Light
+        function handleTheme() {
+            function setThemeAttributes(
+                theme,
+                darkDisplay,
+                lightDisplay,
+                sunDisplay,
+                moonDisplay
+            ) {
+                document.documentElement.setAttribute("data-bs-theme", theme);
+                const themeLayoutElement = document.getElementById(`${theme}-layout`);
+                if (themeLayoutElement) {
+                    themeLayoutElement.checked = true;
+                }
+                if (theme == 'dark') {
+                    document.cookie = "Theme=" + "dark" + ";path=/;"
+                } else {
+                    document.cookie = "Theme=" + "light" + ";path=/;"
+                }
+
+                document.querySelectorAll(`.${darkDisplay}`)
+                    .forEach((el) => (el.style.display = "none"));
+                document.querySelectorAll(`.${lightDisplay}`)
+                    .forEach((el) => (el.style.display = "flex"));
+                document.querySelectorAll(`.${sunDisplay}`)
+                    .forEach((el) => (el.style.display = "none"));
+                document.querySelectorAll(`.${moonDisplay}`)
+                    .forEach((el) => (el.style.display = "flex"));
+            }
+
+            document.querySelectorAll(".dark-layout").forEach((element) => {
+                element.addEventListener("click", () =>
+                    setThemeAttributes("dark", "dark-logo", "light-logo", "moon", "sun")
+                );
+            });
+
+            document.querySelectorAll(".light-layout").forEach((element) => {
+                element.addEventListener("click", () =>
+                    setThemeAttributes("light", "light-logo", "dark-logo", "sun", "moon")
+                );
+            });
+        }
+
+        handleTheme();
+
+        // Theme card with Border or Shadow
+        function handleCardLayout() {
+            function setCardAttribute(cardType) {
+                document.documentElement.setAttribute("data-card", cardType);
+            }
+
+            const cardWithBorderElement = document.getElementById("card-with-border");
+            const cardWithoutBorderElement = document.getElementById(
+                "card-without-border"
+            );
+
+            if (cardWithBorderElement) {
+                cardWithBorderElement.addEventListener("click", () =>
+                    setCardAttribute("border")
+                );
+            }
+            if (cardWithoutBorderElement) {
+                cardWithoutBorderElement.addEventListener("click", () =>
+                    setCardAttribute("shadow")
+                );
+            }
+        }
+
+        handleCardLayout();
+
+        // Theme Sidebar
+        function handleSidebarToggle() {
+            function setSidebarType(sidebarType) {
+                document.body.setAttribute("data-sidebartype", sidebarType);
+            }
+
+            const fullSidebarElement = document.getElementById("full-sidebar");
+            const miniSidebarElement = document.getElementById("mini-sidebar");
+
+            if (fullSidebarElement) {
+                fullSidebarElement.addEventListener("click", () =>
+                    setSidebarType("full")
+                );
+                document.cookie = "SidebarType=" + "full" + ";path=/;"
+            }
+            if (miniSidebarElement) {
+                miniSidebarElement.addEventListener("click", () =>
+                    setSidebarType("mini-sidebar")
+                );
+                document.cookie = "SidebarType=" + "mini-sidebar" + ";path=/;"
+            }
+        }
+
+        handleSidebarToggle();
+
+        // Toggle Sidebar
+        function handleSidebar() {
+            document.querySelectorAll(".sidebartoggler").forEach((element) => {
+                element.addEventListener("click", function () {
+                    document.querySelectorAll(".sidebartoggler").forEach((el) => {
+                        el.checked = true;
+                    });
+                    document
+                        .getElementById("main-wrapper")
+                        .classList.toggle("show-sidebar");
+                    document.querySelectorAll(".sidebarmenu").forEach((el) => {
+                        el.classList.toggle("close");
+                    });
+                    const dataTheme = document.body.getAttribute("data-sidebartype");
+                    if (dataTheme === "full") {
+                        document.body.setAttribute("data-sidebartype", "mini-sidebar");
+                        document.cookie = "SidebarType=" + "mini-sidebar" + ";path=/;"
+                    } else {
+                        document.body.setAttribute("data-sidebartype", "full");
+                        document.cookie = "SidebarType=" + "full" + ";path=/;"
+                    }
+                });
+            });
+        }
+
+        handleSidebar();
     }
 }
 
+
 // Инициализация класса App
 const app = new App();
+
+

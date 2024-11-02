@@ -48,10 +48,10 @@
 <script src="{{ url_for('static' ,path='js/plugins/choices.min.js') }}"></script>
 <script src="{{ url_for('static' ,path='libs/simplebar/dist/simplebar.min.js') }}"></script>
 
-<!-- Import Js Files -->
+<!-- Import Js Files
 <script src="{{ url_for('static' ,path='js/theme/app.init.js') }}"></script>
 <script src="{{ url_for('static' ,path='js/theme/theme.js') }}"></script>
-<script src="{{ url_for('static' ,path='js/theme/app.min.js') }}"></script>
+<script src="{{ url_for('static' ,path='js/theme/app.min.js') }}"></script>-->
 
 <!-- solar icons -->
 <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
@@ -62,32 +62,7 @@
 <script src="{{ url_for('static' ,path='js/ws.js') }}"></script>
 <script src="{{ url_for('static' ,path='js/json-enc.js') }}"></script>
 <script src="{{ url_for('static' ,path='js/app.js') }}"></script>
-<script src="{{ url_for('static' ,path='js/ws_process.js') }}"></script>
-<script src="{{ url_for('static' ,path='js/theme/sidebarmenu.js') }}"></script>
 <script src="{{ url_for('static' ,path='js/element_hendlers.js') }}"></script>
-<script src="{{ url_for('static' ,path='js/i18n.js') }}"></script>
-<script>
-    console.log('wrapper')
-    var loaded = false;
-    htmx.onLoad(function (elt) {
-        if (!loaded) {
-            // Смотрим, если все элементы прогрузились
-            var ver = document.getElementsByClassName('with-vertical')
-            var hor = document.getElementsByClassName('with-horizontal')
-            var themeEditor = document.getElementById('offcanvasExample')
-            if (ver.length > 1 && hor.length > 1 && themeEditor) {
-                AdminSettings.AdminSettingsInit() // Применяем пользовательские настройки фронта
-                set_settings() // Применяем скрипты темы
-                SideBarMenu.sidebarMenu() // Прогружаем navbar
-                loaded = true; // Устанавливаем флаг, что все прогрузили
-            }
-        }
-        var elements = elt.querySelectorAll('[data-key]');
-        if (elements){
-            elements.forEach(translateElement);
-        }
-    })
-</script>
 </body>
 
 </html>
