@@ -105,22 +105,22 @@ class Field:
         """Отобразить поле как Таблицу (Если поле является list_rel)"""
         return render_block(
             environment=environment,
-            template_name=f'cls/table.html',
-            block_name='as_table',
+            template_name=f'cls/as_table.html',
+            block_name='get',
             method=MethodType.GET,
-            cls=self.val
+            line=self.val
         )
 
     @property
     def as_table_update(self) -> str:
         """Отобразить поле как Таблицу на редактирование (Если поле является list_rel)"""
-        block_name = 'as_table'
+        block_name = 'get'
         return render_block(
             environment=environment,
-            template_name=f'cls/table.html',
+            template_name=f'cls/as_table.html',
             block_name=block_name,
             method=MethodType.UPDATE,
-            cls=self.val
+            line=self.val
         )
 
     def filter_as_string(self) -> str:
