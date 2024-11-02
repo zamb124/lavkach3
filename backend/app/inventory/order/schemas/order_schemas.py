@@ -69,7 +69,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=False, readonly=True)
     move_list_rel: Optional[list["MoveScheme"]] = Field(default=[], title='Order Movements')
 
-    @computed_field(title='Order #', json_schema_extra={'table': True})
+    @computed_field(title='Order #', json_schema_extra={'table': False})
     def title(self) -> str:
         "some title"
         return f'{self.number}'

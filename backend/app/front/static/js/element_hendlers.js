@@ -415,6 +415,9 @@ class ModalHandler {
 
     createDragModal() {
         const header = this.modal._element.querySelector('.modal-header');
+        if (!header) {
+            return;
+        }
         header.onmousedown = (e) => {
             const offsetX = e.clientX - this.modal._element.getBoundingClientRect().left;
             const offsetY = e.clientY - this.modal._element.getBoundingClientRect().top;

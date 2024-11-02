@@ -1,7 +1,6 @@
 {% block get %}
     {% autoescape false %}
-        <div class="modal" id="{{ 'modal_'~line.p.key }}" tabindex="-1" style="display: none;"
-             aria-hidden="true">
+        <div class="modal" id="{{ 'modal_'~line.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -55,10 +54,9 @@
                             <span></span>
 
                         </h5>
-
                         <div class="text-end">
-                            {{ line.h.button_delete|safe }}
-                            {{ line.h.button_actions }}
+                            {{ line.h.as_button_delete|safe }}
+                            {{ line.h.as_button_actions }}
                             <button class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                         </div>
@@ -137,47 +135,41 @@
     {% endautoescape %}
 {% endblock %}
 {% block delete %}
-    <div class="modal" id="{{ 'modal_'~line.p.key }}" tabindex="-1" aria-hidden="true">
+    <div class="modal" id="{{ 'modal_'~line.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center p-5">
-                    <lord-icon
-                            src="https://cdn.lordicon.com/drxwpfop.json"
-                            trigger="loop"
-                            style="width:150px;height:150px">
-                    </lord-icon>
-
-                    <div class="mt-4">
-                        <h4 class="mb-3" style="padding-bottom: 0">Are you sure you want to
-                            delete {{ line.v.model.name|capitalize }}
-                            -> {{ line.display_title }}</h4>
-                        <p class="text-muted mb-1 text-center" style="padding-top: 0"> With
-                            id {{ line.p.id }} </p>
-                        <p class="text-muted mb-10"> The record will be permanently deleted, did you
-                            really think? </p>
-                        <div class="hstack gap-2 justify-content-center">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                Close
-                            </button>
-                            <button type="button"
-                                    hx-trigger="click"
-                                    hx-post="/base/line"
-                                    hx-ext="json-enc"
-                                    hx-target="this"
-                                    hx-swap="outerHTML"
-                                    hx-vals='{
+            <div class="modal-content text-center">
+            <div class="modal-body">
+                <div class="mt-4">
+                    <h4 class="mb-3" style="padding-bottom: 0">Are you sure you want to
+                        delete {{ line.v.model.name|capitalize }}
+                        -> {{ line.display_title }}</h4>
+                    <p class="text-muted mb-1 text-center" style="padding-top: 0"> With
+                        id {{ line.p.id }} </p>
+                    <p class="text-muted mb-10"> The record will be permanently deleted, did you
+                        really think? </p>
+                    <div class="hstack gap-2 justify-content-center">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                        <button type="button"
+                                hx-trigger="click"
+                                hx-post="/base/line"
+                                hx-ext="json-enc"
+                                hx-target="this"
+                                hx-swap="outerHTML"
+                                hx-vals='{
                                 "model": "{{ line.v.model.name }}",
                                 "method": "delete_delete",
                                 "id": "{{ line.p.id }}",
                                 "key": "{{ line.p.key }}"
                             }'
 
-                                    class="btn btn-danger">Delete
-                            </button>
-                        </div>
+                                class="btn btn-danger">Delete
+                        </button>
                     </div>
                 </div>
-            </div><!-- /.modal-content -->
+            </div>
+
         </div><!-- /.modal-dialog -->
     </div>
     <script>

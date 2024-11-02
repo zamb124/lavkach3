@@ -76,15 +76,12 @@
     </a>
 {% endblock %}
 {% block delete %}
-    <script>
-        //hideModals()
-    </script>
     <a href="#"
        hx-params="model,method,id,key,target_id,backdrop"
        hx-trigger="click"
-       hx-target="#{{ line.p.key }}"
+       hx-target="#htmx_content"
        hx-ext="json-enc"
-       hx-swap="outerHTML transition:true"
+       hx-swap="beforeend transition:true"
        hx-post="/base/line"
        hx-vals='{
 "model": "{{ line.v.model.name }}",
@@ -99,7 +96,8 @@
 {% block actions %}
     <a class="btn btn-soft-info" style="padding: 0px" id="{{ "actions-" ~'--'~ line.p.key }}"
        aria-expanded="false" data-bs-toggle="dropdown">
-        <i class="ti ti-dots-vertical fs-8"></i>
+        <iconify-icon icon="solar:menu-dots-square-bold" class="fs-8"></iconify-icon>
+
     </a>
     <ul class="dropdown-menu" aria-labelledby="{{ "actions-" ~'--'~ line.p.key }}">
         {% for action_name, action_vals in line.v.actions.items() %}
