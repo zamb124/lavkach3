@@ -33,91 +33,6 @@ class App {
         });
     }
 
-    handleMessage(e) {
-        console.log('wsBeforeMessage');
-        const message = JSON.parse(e.detail.message);
-        console.log(message);
-        switch (message.tag) {
-            case 'COMPANY_CHANGED':
-                this.handleCompanyChanged();
-                break;
-            case 'LOGOUT':
-                this.handleLogout();
-                break;
-            case 'MODEL':
-                this.handleModelMessage(message);
-                break;
-            case 'REFRESH':
-                this.handleRefresh();
-                break;
-            default:
-                console.warn('Unknown message type:', message.tag);
-        }
-    }
-    handleCompanyChanged() {
-        document.location.reload();
-    }
-    handleLogout() {
-        document.cookie = "token={{token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;";
-        document.cookie = "refresh_token={{refresh_token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;";
-        document.location.replace('/basic/user/login?/');
-    }
-    handleModelMessage(message) {
-        const elements = htmx.findAll(`[ui_key="${message.vars.model}--${message.vars.id}"]`);
-        switch (message.vars.method) {
-            case 'create':
-                this.handleModelCreate();
-                break;
-            case 'update':
-                this.handleModelUpdate(elements, message);
-                break;
-            case 'delete':
-                this.handleModelDelete(elements);
-                break;
-            default:
-                console.warn('Unknown model method:', message.vars.method);
-        }
-    }
-    handleModelCreate() {
-        const elements = htmx.findAll('[id^="table--"]');
-        elements.forEach(element => {
-            htmx.trigger(element, 'update');
-        });
-        console.log('create');
-    }
-    handleModelUpdate(elements, message) {
-        elements.forEach(el => {
-            console.log(el.attributes.lsn);
-            const elLsn = Number(el.attributes.lsn.nodeValue);
-            el.attributes.lsn.nodeValue = message.vars.lsn;
-            htmx.trigger(el, 'backend_update');
-            if (message.vars.updated_fields) {
-                this.showToast(message.message);
-            }
-        });
-    }
-    handleModelDelete(elements) {
-        elements.forEach(element => {
-            element.remove();
-        });
-        this.showToast('Object deleted');
-    }
-    handleRefresh() {
-        this.refreshToken();
-        setTimeout(() => {
-            location.reload();
-        }, 1000);
-    }
-
-    AdminSettingsInit() {
-        this.ManageThemeLayout();
-        this.ManageSidebarType();
-        this.ManageBoxedLayout();
-        this.ManageDirectionLayout();
-        this.ManageDarkThemeLayout();
-        this.ManageColorThemeLayout();
-        this.ManageCardLayout();
-    }
 
     // Методы Cache
     async pushUUID(model, uuid) {
@@ -163,6 +78,162 @@ class App {
 
     // ------------
 
+    // Htmx
+    initEventListeners() {
+        htmx.on("htmx:confirm", (e) => {
+            console.log('htmx:confirm');
+            let authToken = this.getCookieValue('token');
+            if (authToken == null && !window.location.pathname.includes('login')) {
+                e.preventDefault();
+                window.history.pushState('Login', 'Login', '/basic/user/login');
+                console.log('redirect login');
+                document.location.replace('/basic/user/login');
+            }
+        });
+
+        htmx.on("htmx:afterSwap", (e) => {
+            console.log('htmx:afterSwap');
+        });
+
+        htmx.on("htmx:afterRequest", (e) => {
+            if (this.authToken == null) {
+                if (e.detail.xhr.status || 200) {
+                    e.detail.shouldSwap = true;
+                    e.detail.isError = false;
+                }
+            }
+        });
+
+        htmx.on('htmx:beforeSwap', (evt) => {
+            if (evt.detail.xhr.status === 200) {
+                // do nothing
+            } else if (evt.detail.xhr.status === 404) {
+                this.showToast(evt.detail.pathInfo.requestPath + ' + ' + evt.detail.xhr.responseText, "#e94e1d");
+            } else if (evt.detail.xhr.status === 403) {
+                console.log('403');
+                this.showToast(evt.detail.xhr.responseText.replace(/\\n/g, '\n'), "red");
+            } else if (evt.detail.xhr.status === 401 && !window.location.pathname.includes('login')) {
+                window.history.pushState('Login', 'Login', '/basic/user/login' + "?next=" + window.location.pathname);
+                htmx.ajax('GET', '/basic/user/login', {
+                    target: '#htmx_content', headers: {
+                        'HX-Replace-Url': 'true'
+                    }
+                });
+            } else if (evt.detail.xhr.status === 418) {
+                evt.detail.shouldSwap = true;
+                evt.detail.target = htmx.find("#teapot");
+            } else {
+                this.showToast(evt.detail.xhr.responseText, "#e94e1d");
+            }
+        });
+
+        htmx.on('htmx:wsConfigReceive', (e) => {
+            console.log('wsConfigReceive');
+            e.detail.headers["Authorization"] = this.getCookieValue('token');
+        });
+
+        htmx.on('htmx:wsConfigSend', (e) => {
+            console.log('wsConfigSend');
+            e.detail.headers["Authorization"] = this.getCookieValue('token');
+        });
+        htmx.on('htmx:wsBeforeMessage', this.handleMessage.bind(this));
+
+    }
+
+    showToast(message, background) {
+        Toastify({
+            text: message,
+            duration: 3000,
+            close: true,
+            style: {
+                background: background,
+            },
+        }).showToast();
+    }
+
+    // Методы работы с Websockets
+    handleMessage(e) {
+        console.log('wsBeforeMessage');
+        const message = JSON.parse(e.detail.message);
+        console.log(message);
+        switch (message.tag) {
+            case 'COMPANY_CHANGED':
+                this.handleCompanyChanged();
+                break;
+            case 'LOGOUT':
+                this.handleLogout();
+                break;
+            case 'MODEL':
+                this.handleModelMessage(message);
+                break;
+            case 'REFRESH':
+                this.handleRefresh();
+                break;
+            default:
+                console.warn('Unknown message type:', message.tag);
+        }
+    }
+
+    handleCompanyChanged() {
+        document.location.reload();
+    }
+
+    handleLogout() {
+        document.cookie = "token={{token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;";
+        document.cookie = "refresh_token={{refresh_token}};expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;";
+        document.location.replace('/basic/user/login?/');
+    }
+
+    handleModelMessage(message) {
+        const elements = htmx.findAll(`[ui_key="${message.vars.model}--${message.vars.id}"]`);
+        switch (message.vars.method) {
+            case 'create':
+                this.handleModelCreate();
+                break;
+            case 'update':
+                this.handleModelUpdate(elements, message);
+                break;
+            case 'delete':
+                this.handleModelDelete(elements);
+                break;
+            default:
+                console.warn('Unknown model method:', message.vars.method);
+        }
+    }
+
+    handleModelCreate() {
+        const elements = htmx.findAll('[id^="table--"]');
+        elements.forEach(element => {
+            htmx.trigger(element, 'update');
+        });
+        console.log('create');
+    }
+
+    handleModelUpdate(elements, message) {
+        elements.forEach(el => {
+            console.log(el.attributes.lsn);
+            const elLsn = Number(el.attributes.lsn.nodeValue);
+            el.attributes.lsn.nodeValue = message.vars.lsn;
+            htmx.trigger(el, 'backend_update');
+            if (message.vars.updated_fields) {
+                this.showToast(message.message);
+            }
+        });
+    }
+
+    handleModelDelete(elements) {
+        elements.forEach(element => {
+            element.remove();
+        });
+        this.showToast('Object deleted');
+    }
+
+    handleRefresh() {
+        this.refreshToken();
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+    }
 
     // Методы Auth
     getCookieValue(name) {
@@ -297,78 +368,7 @@ class App {
         // Здесь можно вызвать любые другие методы или выполнить нужные действия
 
     }
-    // Htmx
-    initEventListeners() {
-        htmx.on("htmx:confirm", (e) => {
-            console.log('htmx:confirm');
-            let authToken = this.getCookieValue('token');
-            if (authToken == null && !window.location.pathname.includes('login')) {
-                e.preventDefault();
-                window.history.pushState('Login', 'Login', '/basic/user/login');
-                console.log('redirect login');
-                document.location.replace('/basic/user/login');
-            }
-        });
 
-        htmx.on("htmx:afterSwap", (e) => {
-            console.log('htmx:afterSwap');
-        });
-
-        htmx.on("htmx:afterRequest", (e) => {
-            if (this.authToken == null) {
-                if (e.detail.xhr.status || 200) {
-                    e.detail.shouldSwap = true;
-                    e.detail.isError = false;
-                }
-            }
-        });
-
-        htmx.on('htmx:beforeSwap', (evt) => {
-            if (evt.detail.xhr.status === 200) {
-                // do nothing
-            } else if (evt.detail.xhr.status === 404) {
-                this.showToast(evt.detail.pathInfo.requestPath + ' + ' + evt.detail.xhr.responseText, "#e94e1d");
-            } else if (evt.detail.xhr.status === 403) {
-                console.log('403');
-                this.showToast(evt.detail.xhr.responseText.replace(/\\n/g, '\n'), "red");
-            } else if (evt.detail.xhr.status === 401 && !window.location.pathname.includes('login')) {
-                window.history.pushState('Login', 'Login', '/basic/user/login' + "?next=" + window.location.pathname);
-                htmx.ajax('GET', '/basic/user/login', {
-                    target: '#htmx_content', headers: {
-                        'HX-Replace-Url': 'true'
-                    }
-                });
-            } else if (evt.detail.xhr.status === 418) {
-                evt.detail.shouldSwap = true;
-                evt.detail.target = htmx.find("#teapot");
-            } else {
-                this.showToast(evt.detail.xhr.responseText, "#e94e1d");
-            }
-        });
-
-        htmx.on('htmx:wsConfigReceive', (e) => {
-            console.log('wsConfigReceive');
-            e.detail.headers["Authorization"] = this.getCookieValue('token');
-        });
-
-        htmx.on('htmx:wsConfigSend', (e) => {
-            console.log('wsConfigSend');
-            e.detail.headers["Authorization"] = this.getCookieValue('token');
-        });
-        htmx.on('htmx:wsBeforeMessage', this.handleMessage.bind(this));
-
-    }
-
-    showToast(message, background) {
-        Toastify({
-            text: message,
-            duration: 3000,
-            close: true,
-            style: {
-                background: background,
-            },
-        }).showToast();
-    }
 
     // Методы интернацианализации
     async setLocale(newLocale) {
@@ -406,7 +406,7 @@ class App {
 
     // -------
 
-    // Новый метод для обработки появления определенного класса в DOM-дереве
+    // Новый метод для обработки появления определенного класса в DOM-дереве (пригодиться)
     observeDOMClass(className, callback) {
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
@@ -426,6 +426,16 @@ class App {
     }
 
     // Методы работы со стилем и прочим
+    AdminSettingsInit() {
+        this.ManageThemeLayout();
+        this.ManageSidebarType();
+        this.ManageBoxedLayout();
+        this.ManageDirectionLayout();
+        this.ManageDarkThemeLayout();
+        this.ManageColorThemeLayout();
+        this.ManageCardLayout();
+    }
+
     initTheme() {
         document.addEventListener("DOMContentLoaded", () => {
             "use strict";
@@ -587,6 +597,7 @@ class App {
             }
         });
     }
+
 
     ManageThemeLayout() {
         const horizontalLayoutElement = document.getElementById("horizontal-layout");
