@@ -31,7 +31,7 @@
                 {% if line.p.id %}"id": "{{ line.p.id }}",{% endif %}
                 "model": "{{ line.v.model.name }}",
                 "method": "{% if line.type == 'new' %}save_create{% else %}save{% endif %}",
-                "key": "{{ line.p.key }}"
+                "key": "{{ line.p.class_key }}"
                 }'
     >
         Save

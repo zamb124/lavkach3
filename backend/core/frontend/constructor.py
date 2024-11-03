@@ -90,6 +90,7 @@ class View:
         'as_button_get': True,
     }  # Переменные если нужно передать контекст
     params: Optional[QueryParams] | dict | None  # Параметры на вхрде
+    parent_field: 'Field'
     join_related: Optional[bool] | None = None  # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
     submodels: dict
@@ -117,7 +118,7 @@ class P:
     @property
     def key(self) -> str:
         """Ключ лайна"""
-        key = f'{self.cls.v.key}--{self.cls._id}'
+        key = f'{self.cls.p.class_key}--{self.cls._id}'
         return key
 
     @property
@@ -150,6 +151,8 @@ class P:
     @property
     def class_key(self):
         """Ключ класса"""
+        if self.cls.v.parent_field:
+            return self.cls.v.parent_field.key
         return self.cls.v.key
 
     @property
@@ -466,6 +469,7 @@ class ClassView:
                  vars: dict | None = None,
                  schema: BaseModel = None,
                  permits: list = [],
+                 parent_field: 'Field' = None
                  ):
         self.p = P()
         self.p.cls = self
@@ -491,6 +495,7 @@ class ClassView:
         self._view.join_fields = join_fields or []
         self._view.schema = schema
         self._view.submodels = {}
+        self._view.parent_field = parent_field
         config_sort = self._view.model.sort
         if config_sort:
             self._view.sort = {v: i for i, v in enumerate(config_sort)}
@@ -626,7 +631,7 @@ class ClassView:
                 submodel = ClassView(
                     request=self._view.request,
                     model=model_name,
-                    key=self._view.key,
+                    key=self.p.class_key
                 )
                 self._view.submodels.update({field_name: submodel})
             else:
@@ -651,6 +656,8 @@ class ClassView:
             'cls': self,
             'val': submodel
         })
+        if submodel:
+            submodel.v.parent_field = field
         return field
 
     def _get_schema_fields(self, exclude: list = []) -> Fields:
