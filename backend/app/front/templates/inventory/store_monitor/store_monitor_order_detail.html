@@ -70,112 +70,103 @@
                                 <a class="nav-link dropdown-toggle dropdown btn bg-primary-subtle text-primary "
                                    data-bs-toggle="dropdown" href="javascript:void(0)"
                                    role="button" aria-expanded="false">
-                                    <span>Dropdown</span>
+                                    <span>Actions</span>
                                 </a>
                                 <ul class="dropdown-menu" style="">
+                                    {% if order.status.val == 'draft' %}
+                                        {% set action_start = order.v.actions['order_start'] %}
+                                        <li>
+                                            <a
+                                                    data-bs-toggle="{{ action_start.doc }}"
+                                                    data-key="{{ action_start.tkey }}"
+                                                    hx-params="model,action,method,ids,key"
+                                                    hx-trigger="click"
+                                                    hx-ext="json-enc"
+                                                    hx-target="#htmx_content"
+                                                    hx-swap="beforeend transition:true"
+                                                    hx-post="/base/action"
+                                                    hx-vals='{
+                                                    "model": "{{ order.v.model.name }}",
+                                                    "action": "{{ action_start.name }}",
+                                                    "method": "{% if action_start.schema %}get{% else %}update{% endif %}",
+                                                    "ids": ["{{ order.p.id }}"],
+                                                    "key": "{{ order.p.key }}"
+                                                }'
+                                                    class="dropdown-item remove-item-btn">
+                                                <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> {{ action_start.name }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
                                     <li>
-                                        <a class="dropdown-item" id="dropdown1-tab" href="#dropdown1" role="tab"
-                                           data-bs-toggle="tab" aria-controls="dropdown1" aria-selected="false"
-                                           tabindex="-1">@fat</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" id="dropdown2-tab" href="#dropdown2" role="tab"
+                                        <a class="dropdown-item"
+                                           id="dropdown2-tab" href="#dropdown2" role="tab"
                                            data-bs-toggle="tab" aria-controls="dropdown2" aria-selected="false"
                                            tabindex="-1">@mdo</a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
-
-                            <div class="tab-content" id="moves-tab">
-                                <div role="tabpanel" class="tab-pane fade active show" id="moves"
-                                     aria-labelledby="home-tab">
-                                    <table class="table text-nowrap align-middle table-custom mb-0 last-items-borderless text-uppercase">
-                                        <thead>
-                                        <tr class="fs-5 text-center" style="text-align: center">
-                                            <th scope="col">
-                                                <p>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                           id="{{ order.p.class_key ~'--'~ 'checkAll' }}"
-                                                           value="option">
-                                                </div>
-                                                </p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.type.data_key }}">{{ order.move_list_rel.val.type.field_name }}</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="t-move-name">Name</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.edited_by.data_key }}">
-                                                    {{ order.move_list_rel.val.edited_by.field_name }}
-                                                </p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.location_src_id.data_key }}">{{ order.move_list_rel.val.location_src_id.field_name }}</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.location_dest_id.data_key }}">{{ order.move_list_rel.val.location_dest_id.field_name }}</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.quantity.data_key }}">{{ order.move_list_rel.val.quantity.field_name }}</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.uom_id.data_key }}">{{ order.move_list_rel.val.uom_id.field_name }}</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.status.data_key }}">{{ order.move_list_rel.val.status.field_name }}</p>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for move in  order.move_list_rel.val %}
-                                            {% include 'inventory/store_monitor/store_monitor_move_line.html' %}
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
-
-                                </div>
-                                <div class="tab-pane fade" id="suggests" role="tabpanel" aria-labelledby="suggests-tab">
-                                    {% for move in order.move_list_rel.val %}
-                                        {{ move.suggest_list_rel.as_table_get }}
+                        <div class="tab-content" id="moves-tab">
+                            <div role="tabpanel" class="tab-pane fade active show" id="moves"
+                                 aria-labelledby="home-tab">
+                                <table class="table align-middle table-hover mb-0 last-items-borderless text-uppercase">
+                                    <thead>
+                                    <tr class="fs-5 text-center" style="text-align: center">
+                                        <th scope="col">
+                                            <p>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                       id="{{ order.p.class_key ~'--'~ 'checkAll' }}"
+                                                       value="option">
+                                            </div>
+                                            </p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.type.data_key }}">{{ order.move_list_rel.val.type.field_name }}</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="t-move-name">Name</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.edited_by.data_key }}">
+                                                {{ order.move_list_rel.val.edited_by.field_name }}
+                                            </p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.location_src_id.data_key }}">{{ order.move_list_rel.val.location_src_id.field_name }}</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.location_dest_id.data_key }}">{{ order.move_list_rel.val.location_dest_id.field_name }}</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.quantity.data_key }}">{{ order.move_list_rel.val.quantity.field_name }}</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.uom_id.data_key }}">{{ order.move_list_rel.val.uom_id.field_name }}</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="t-move-suggests">Suggests</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.status.data_key }}">{{ order.move_list_rel.val.status.field_name }}</p>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for move in  order.move_list_rel.val %}
+                                        {% include 'inventory/store_monitor/store_monitor_move_line.html' %}
                                     {% endfor %}
-                                </div>
-                                <div class="tab-pane fade" id="dropdown1" role="tabpanel"
-                                     aria-labelledby="dropdown1-tab">
-                                    <p>
-                                        Etsy mixtape wayfarers, ethical wes anderson tofu
-                                        before they sold out mcsweeney's organic lomo retro
-                                        fanny pack lo-fi farm-to-table readymade. Messenger
-                                        bag gentrify pitchfork tattooed craft beer, iphone
-                                        skateboard locavore carles etsy salvia banksy hoodie
-                                        helvetica. DIY synth PBR banksy irony. Leggings
-                                        gentrify squid 8-bit cred pitchfork. Williamsburg banh
-                                        mi whatever gluten-free, carles pitchfork biodiesel
-                                        fixie etsy retro mlkshk vice blog. Scenester cred you
-                                        probably haven't heard of them, vinyl craft beer blog
-                                        stumptown. Pitchfork sustainable tofu synth chambray
-                                        yr.
-                                    </p>
-                                </div>
-                                <div class="tab-pane fade" id="dropdown2" role="tabpanel"
-                                     aria-labelledby="dropdown2-tab">
-                                    <p>
-                                        Trust fund seitan letterpress, keytar raw denim
-                                        keffiyeh etsy art party before they sold out master
-                                        cleanse gluten-free squid scenester freegan cosby
-                                        sweater. Fanny pack portland seitan DIY, art party
-                                        locavore wolf cliche high life echo park Austin. Cred
-                                        vinyl keffiyeh DIY salvia PBR, banh mi before they
-                                        sold out farm-to-table VHS viral locavore cosby
-                                        sweater. Lomo wolf viral, mustache readymade
-                                        thundercats keffiyeh craft beer marfa ethical. Wolf
-                                        salvia freegan, sartorial keffiyeh echo park vegan.
-                                    </p>
-                                </div>
+                                    </tbody>
+                                </table>
+
                             </div>
+                            <div class="tab-pane fade" id="suggests" role="tabpanel" aria-labelledby="suggests-tab">
+                                {% for move in order.move_list_rel.val %}
+                                    {{ move.suggest_list_rel.as_table_get }}
+                                {% endfor %}
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>

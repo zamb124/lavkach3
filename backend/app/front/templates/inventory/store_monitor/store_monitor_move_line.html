@@ -4,7 +4,7 @@
             class="line"
             ui_key="{{ move.p.ui_key }}"
             lsn="{{ move.p.lsn }}"
-            hx-trigger="backend_update,click"
+            hx-trigger="backend_update"
             hx-get="/inventory/store_monitor/move?move_id={{ move._id }}"
             hx-swap="outerHTML transition:true"
             hx-target="#{{ move.p.key }}"
@@ -53,6 +53,17 @@
             {% else %}
                 <p data-key="t-bin">Bin</p>
             {% endif %}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            <a
+            class="text-muted text-decoration-none d-flex justify-content-center"
+            href="/store_monitor/order/suggests?move_id={{ move._id }}"
+            hx-push-url="false"
+            hx-target="#htmx_content"
+            hx-swap="beforeend transition:true"
+            >
+        <iconify-icon icon="solar:hamburger-menu-broken" class="fs-8"></iconify-icon></p>
+    </a>
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {% if move.status.val == 'created' %}
