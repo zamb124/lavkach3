@@ -4,8 +4,8 @@
             class="line"
             ui_key="{{ order.p.ui_key }}"
             lsn="{{ order.p.lsn }}"
-            hx-trigger="backend_update,click"
-            hx-get="/inventory/store_monitor/line?order_id={{ order._id }}"
+            hx-trigger="backend_update"
+            hx-get="/inventory/store_monitor/order?order_id={{ order._id }}"
             hx-swap="outerHTML transition:true"
             hx-target="#{{ order.p.key }}"
     >

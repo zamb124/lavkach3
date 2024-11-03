@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
-from app.front.apps.inventory.views import OrderView, StoreStaffView, OrderTypeView
+from app.front.apps.inventory.views import OrderView, StoreStaffView, OrderTypeView, MoveView
 from app.front.template_spec import templates
 from app.front.utills import BasePermit, render
 from core.frontend.constructor import ClassView
@@ -18,12 +18,14 @@ inventory = APIRouter()
 class OrderPermit(BasePermit):
     permits = ['order_list']
 
+
 class Temp:
     def __init__(self, request: Request, template=None):
         self.request = request
 
     async def __call__(self):
         return self.request
+
 
 @inventory.get("/dashboard", response_class=HTMLResponse, dependencies=[Depends(OrderPermit)])
 async def order(request: Request):
@@ -62,16 +64,33 @@ async def store_monitor_otders(orders: OrderView = Depends(), order_types: Order
     for order in orders:
         order_types_map[order.order_type_rel.val].append(order)
     return render(orders.r, 'inventory/store_monitor/store_monitor_orders.html',
-        context={'order_types_map': order_types_map}
-    )
-@inventory.get("/store_monitor/line", response_class=HTMLResponse)
-async def store_monitor_line(order_id: UUID, order_view: OrderView = Depends()):
+                  context={'order_types_map': order_types_map}
+                  )
+
+
+@inventory.get("/store_monitor/order", response_class=HTMLResponse)
+async def store_monitor_order(order_id: UUID, order_view: OrderView = Depends()):
     """Отдает лайну для монитора склада"""
     order = await order_view.get_lines(ids=[order_id])
     return render(order_view.r, 'inventory/store_monitor/store_monitor_order_line.html', context={'order': order})
+
 
 @inventory.get("/store_monitor/order_detail", response_class=HTMLResponse)
 async def store_monitor_line(order_id: UUID, order_view: OrderView = Depends()):
     """Отдает лайну для монитора склада"""
     order = await order_view.get_lines(ids=[order_id])
     return render(order_view.r, 'inventory/store_monitor/store_monitor_order_detail.html', context={'order': order})
+
+
+@inventory.get("/store_monitor/move", response_class=HTMLResponse)
+async def store_monitor_move(move_id: UUID, move_view: MoveView = Depends()):
+    """Отдает лайну для монитора склада"""
+    move = await move_view.get_lines(ids=[move_id])
+    return render(move_view.r, 'inventory/store_monitor/store_monitor_move_line.html', context={'move': move})
+
+
+@inventory.get("/store_monitor/move_detail", response_class=HTMLResponse)
+async def store_monitor_line(move_id: UUID, move_view: OrderView = Depends()):
+    """Отдает лайну для монитора склада"""
+    move = await move_view.get_lines(ids=[move_id])
+    return render(move_view.r, 'inventory/store_monitor/store_monitor_move_detail.html', context={'move': move})

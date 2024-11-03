@@ -38,12 +38,12 @@ class MoveType(str, Enum):
 
 
 class OrderStatus(str, Enum):
-    DRAFT: str = 'draft'
-    WAITING: str = 'waiting'
-    CONFIRMED: str = 'confirmed'
-    ASSIGNED: str = 'assigned'
-    DONE: str = 'done'
-    CANCELED: str = 'canceled'
+    DRAFT: str = 'draft'           # Черновик
+    WAITING: str = 'waiting'       # Ожидает подтверждения
+    CONFIRMED: str = 'confirmed'   # Подтвержден
+    ASSIGNED: str = 'assigned'     # Назначен исполнитель
+    DONE: str = 'done'             # Выполнен
+    CANCELED: str = 'canceled'     # Отменен
 
 
 class OrderClass(str, Enum):
@@ -68,10 +68,10 @@ class ReservationMethod(str, Enum):
     """
     Тип медода резервирования
     """
-    AT_CONFIRM: str = 'at_confirm'  # При утверждении
-    MANUAL: str = 'manual'  # Вручную запустить резервирование
-    AT_DATE: str = 'at_date'  # В определенную дату, но она должна быть не меньше planned_date, иначе запустится само
-    TIME_BEFORE_DATE: str = 'time_before_date'  # За определенное количество минут до начала planned_date
+    AT_CONFIRM: str = 'at_confirm'                  # При утверждении
+    MANUAL: str = 'manual'                          # Вручную запустить резервирование
+    AT_DATE: str = 'at_date'                        # В определенную дату, но она должна быть не меньше planned_date, иначе запустится само
+    TIME_BEFORE_DATE: str = 'time_before_date'      # За определенное количество минут до начала planned_date
 
 
 class MoveLogType(str, Enum):
