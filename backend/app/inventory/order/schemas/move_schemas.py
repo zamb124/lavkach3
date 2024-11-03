@@ -23,6 +23,7 @@ class MoveBaseScheme(BasicModel):
     order_id: Optional[UUID4] = Field(default=None, title='Order ID', model='order')
     order_type_id: UUID4 = Field(title='Order type', model='order_type', table=True)
     store_id: UUID4 = Field(title='Store', table=True, form=True, model='store')
+
     partner_id: Optional[UUID4] = Field(default=None, title='Partner ID', model='partner')
     location_src_id: Optional[UUID4] = Field(default=None, title='Location src', model='location', table=True, filter={'location_class__not_in': LocationClass.PACKAGE.value})
     location_dest_id: Optional[UUID4] = Field(default=None, title='Location dest', model='location', table=True, filter={'location_class__not_in': LocationClass.PACKAGE.value})
@@ -54,6 +55,8 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
     company_id: UUID4 = Field(model='company', title='Company')
     lsn: int
     id: UUID4
+    created_by: UUID4 = Field(title='Created By',  model='user')
+    edited_by: UUID4 = Field(title='Edit By', model='user')
     move_id: Optional[UUID4] = Field(default=None, model='move', title='Parent Move')
     suggest_list_rel: Optional[list[SuggestScheme]] = Field(default=[], title='Suggests', form=True)
 

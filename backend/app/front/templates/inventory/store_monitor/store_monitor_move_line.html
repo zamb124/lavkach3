@@ -1,0 +1,73 @@
+{% autoescape false %}
+    <tr
+            id="{{ move.p.key }}"
+            class="line"
+            ui_key="{{ move.p.ui_key }}"
+            lsn="{{ move.p.lsn }}"
+            hx-trigger="backend_update,click"
+            hx-get="/inventory/store_monitor/move?move_id={{ move._id }}"
+            hx-swap="outerHTML transition:true"
+            hx-target="#{{ move.p.key }}"
+    >
+        <th scope="row" style="white-space: nowrap; vertical-align: middle;">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-check fs-5" style="display: inline-block;">
+                        <input class="form-check-input" type="checkbox"
+                               name="{{ move.p.key ~ '--check' }}" value="">
+                    </div>
+                </div>
+            </div>
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            <a href="/inventory/store_monitor/order_detail?order_id={{ move._id }}"
+               hx-trigger="click"
+               hx-push-url="false"
+               hx-target="#htmx_content"
+               hx-swap="beforeend transition:true"
+               class="text-danger form-control">
+            {{ move.type.val }}</a>
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {% if move.type.val == 'product' %}
+                {{ move.product_id.as_get }}
+            {% else %}
+                {{ move.location_id.as_get }}
+            {% endif %}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ move.edited_by.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ move.location_src_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ move.location_dest_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ move.quantity.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {% if move.type.val =='product' %}
+                {{ move.uom_id.as_get }}
+            {% else %}
+                <p data-key="t-bin">Bin</p>
+            {% endif %}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {% if move.status.val == 'created' %}
+                <span class="mb-1 badge text-bg-light">{{ move.status.val }}</span>
+            {% elif move.status.val == 'waiting' %}
+                <span class="mb-1 badge text-bg-info">{{ move.status.val }}</span>
+            {% elif move.status.val == 'confirmed' %}
+                <span class="mb-1 badge text-bg-secondary">{{ move.status.val }}</span>
+                {% elif move.status.val == 'processing' %}
+                <span class="mb-1 badge text-bg-primary">{{ move.status.val }}</span>
+            {% elif move.status.val == 'done' %}
+                <span class="mb-1 badge text-bg-success">{{ move.status.val }}</span>
+            {% elif move.status.val == 'canceled' %}
+                <span class="mb-1 badge text-bg-dark">{{ move.status.val }}</span>
+            {% endif %}
+        </th>
+    </tr>
+{% endautoescape %}
