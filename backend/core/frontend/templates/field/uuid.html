@@ -1,5 +1,5 @@
 {% block as_update %}
-    <select class="uuid as-update"
+    <select class="uuid as-update text-center"
             id="{{ field.key }}"
             display-title="{{ field.update.title }}"
             title="{{ field.update.description }}"
@@ -23,7 +23,7 @@
     </script>
 {% endblock %}
 {% block as_create %}
-    <select class="uuid as-create"
+    <select class="uuid as-create text-center"
             id="{{ field.key }}"
             display-title="{{ field.create.title }}"
             title="{{ field.create.description }}"
@@ -48,7 +48,7 @@
     </script>
 {% endblock %}
 {% block as_get %}
-    <select class="uuid as-get"
+    <select class="uuid as-get text-center"
             id="{{ field.key }}"
             name="{{ field.key }}"
             display-title="{{ field.get.title }}"

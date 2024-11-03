@@ -1,0 +1,171 @@
+{% autoescape false %}
+    <div class="modal" id="{{ 'modal_'~order.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-12">
+                                <div class="d-sm-flex align-items-center justify-space-between">
+                                    <h4 class="mb-4 mb-sm-0 card-title" data-key="t-order">Order
+                                        #{{ order.number.val }}</h4>
+                                    <nav aria-label="breadcrumb" class="ms-auto">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                <a class="text-muted text-decoration-none d-flex"
+                                                   href="../main/index.html">
+                                                    <iconify-icon icon="solar:home-2-line-duotone"
+                                                                  class="fs-6"></iconify-icon>
+                                                </a>
+                                            </li>
+                                            <li class="breadcrumb-item" aria-current="page">
+                                            <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
+                                              Modals
+                                            </span>
+                                            </li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-md-4 col-lg-2 col-6 small-padding">
+                                {{ order.number.as_card }}
+                            </div>
+                            <div class="col-md-3 col-lg-2 col-6 small-padding">
+                                <div class="card text-bg-light rounded modal-card">
+                                    <div class="card-body p-3">
+                                        <p class="card-text  opacity-75 fs-3 fw-normal mb-0"
+                                           data-key="{{ order.created_at.data_key }}">
+                                            {{ order.created_at.field_name }}
+                                        </p>
+                                        <h4 class="card-title mb-0  mt-0">{{ order.created_at.val.strftime('%Y-%m-%d') if order.created_at.val else '' }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-lg-2 col-12 small-padding">
+                                <div class="card  text-bg-light rounded modal-card">
+                                    <div class="card-body p-3">
+                                        <p class="card-text  opacity-75 fs-3 fw-normal mb-0"
+                                           data-key="{{ order.partner_id.data_key }}">
+                                            {{ order.partner_id.field_name }}
+                                        </p>
+                                        <h4 class="card-title mb-0  mt-0">{{ order.partner_id.val or '-' }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-lg-2 col-6 small-padding">
+                                <div class="card  text-bg-light rounded modal-card">
+                                    <div class="card-body p-3">
+                                        <p class="card-text  opacity-75 fs-3 fw-normal mb-0"
+                                           data-key="{{ order.order_type_rel.data_key }}">
+                                            {{ order.order_type_rel.field_name }}
+                                        </p>
+                                        <h4 class="card-title mb-0  mt-0">{{ order.order_type_rel.as_get }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-lg-2  small-padding">
+                                <div class="card  text-bg-light rounded modal-card">
+                                    <div class="card-body p-3">
+                                        <p class="card-text  opacity-75 fs-3 fw-normal mb-0"
+                                           data-key="{{ order.user_ids.data_key }}">
+                                            {{ order.user_ids.field_name }}
+                                        </p>
+                                        <h4 class="card-title mb-0  mt-0">{{ order.user_ids.as_get or '-' }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-2">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item p-2" role="presentation">
+                                <a class="nav-link active primary" id="tab-moves" data-bs-toggle="tab" href="#moves"
+                                   role="tab"
+                                   aria-controls="moves" aria-expanded="true" aria-selected="true">
+                                    <span data-key="t-moves">Moves</span>
+                                </a>
+                            </li>
+                            <li class="nav-item p-2" role="presentation">
+                                <a class="nav-link primary" id="suggests-tab" data-bs-toggle="tab" href="#suggests"
+                                   role="tab"
+                                   aria-controls="suggests" aria-selected="false" tabindex="-1">
+                                    <span data-key="t-suggests">Suggests</span>
+                                </a>
+                            </li>
+                            <li class="nav-item p-2" role="presentation">
+                                <a class="nav-link dropdown-toggle dropdown btn bg-primary-subtle text-primary "
+                                   data-bs-toggle="dropdown" href="javascript:void(0)"
+                                   role="button" aria-expanded="false">
+                                    <span>Dropdown</span>
+                                </a>
+                                <ul class="dropdown-menu" style="">
+                                    <li>
+                                        <a class="dropdown-item" id="dropdown1-tab" href="#dropdown1" role="tab"
+                                           data-bs-toggle="tab" aria-controls="dropdown1" aria-selected="false"
+                                           tabindex="-1">@fat</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" id="dropdown2-tab" href="#dropdown2" role="tab"
+                                           data-bs-toggle="tab" aria-controls="dropdown2" aria-selected="false"
+                                           tabindex="-1">@mdo</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="tab-content tabcontent-border" id="moves-tab">
+                            <div role="tabpanel" class="tab-pane fade active show" id="moves"
+                                 aria-labelledby="home-tab">
+                                {{ order.move_list_rel.as_table_get }}
+                            </div>
+                            <div class="tab-pane fade" id="suggests" role="tabpanel" aria-labelledby="suggests-tab">
+                                {% for move in order.move_list_rel.val %}
+                                    {{  move.suggest_list_rel.as_table_get }}
+                                {% endfor %}
+                            </div>
+                            <div class="tab-pane fade" id="dropdown1" role="tabpanel" aria-labelledby="dropdown1-tab">
+                                <p>
+                                    Etsy mixtape wayfarers, ethical wes anderson tofu
+                                    before they sold out mcsweeney's organic lomo retro
+                                    fanny pack lo-fi farm-to-table readymade. Messenger
+                                    bag gentrify pitchfork tattooed craft beer, iphone
+                                    skateboard locavore carles etsy salvia banksy hoodie
+                                    helvetica. DIY synth PBR banksy irony. Leggings
+                                    gentrify squid 8-bit cred pitchfork. Williamsburg banh
+                                    mi whatever gluten-free, carles pitchfork biodiesel
+                                    fixie etsy retro mlkshk vice blog. Scenester cred you
+                                    probably haven't heard of them, vinyl craft beer blog
+                                    stumptown. Pitchfork sustainable tofu synth chambray
+                                    yr.
+                                </p>
+                            </div>
+                            <div class="tab-pane fade" id="dropdown2" role="tabpanel" aria-labelledby="dropdown2-tab">
+                                <p>
+                                    Trust fund seitan letterpress, keytar raw denim
+                                    keffiyeh etsy art party before they sold out master
+                                    cleanse gluten-free squid scenester freegan cosby
+                                    sweater. Fanny pack portland seitan DIY, art party
+                                    locavore wolf cliche high life echo park Austin. Cred
+                                    vinyl keffiyeh DIY salvia PBR, banh mi before they
+                                    sold out farm-to-table VHS viral locavore cosby
+                                    sweater. Lomo wolf viral, mustache readymade
+                                    thundercats keffiyeh craft beer marfa ethical. Wolf
+                                    salvia freegan, sartorial keffiyeh echo park vegan.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new ModalHandler('#{{ 'modal_'~order.p.key }}')
+    </script>
+{% endautoescape %}

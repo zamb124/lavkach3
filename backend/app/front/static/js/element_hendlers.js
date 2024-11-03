@@ -142,7 +142,7 @@ async function choicesMultiBadges(elId, method) {
 
     async function getValues() {
         var id__in = ''
-        var str = element.innerText.replace(/[\s\n\t]+/g, ' ').trim()
+        var str = element.innerText.replace(/[\s\n\t]+/g, ' ').trim().toLowerCase();
         let values = str ? str.split(',') : [];
 
         for (let v in values) {
@@ -172,9 +172,11 @@ async function choicesMultiBadges(elId, method) {
     let res = await getValues()
     element.innerText = ''
     res.forEach(function (line) {
-
         element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary">' + line.label + '</span>');
     });
+    if (!element.innerText && method==='get') {
+        element.innerText = '-'
+    }
 }
 
 async function choiceMultiBabel() {

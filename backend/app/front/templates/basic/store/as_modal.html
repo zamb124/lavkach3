@@ -5,12 +5,13 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">
+
                             {{ method|capitalize }} {{ line.v.model.name|capitalize }}
                             <span></span>
                         </h5>
                         <div class="text-end">
-                            {{ line.h.as_button_delete|safe }}
-                            {{ line.h.as_button_actions }}
+                            {{ line.h.button_delete|safe }}
+                            {{ line.h.button_actions }}
                             <button class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                         </div>

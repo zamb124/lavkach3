@@ -40,6 +40,18 @@ views = {
 
 }
 
+default_templates = {
+        'as_tr': 'line/as_tr.html',
+        'as_div': 'line/as_div.html',
+        'as_card': 'line/as_card.html',
+        'as_modal': 'line/as_modal.html',
+        'as_button': 'line/as_button.html',
+        'as_table': 'cls/as_table.html',
+        'as_filter': 'cls/as_filter.html',
+        'as_header': 'cls/as_header.html',
+        'as_import': 'cls/as_import.html',
+}
+
 
 def _get_key() -> str:
     """Генерирует уникальный идетификатор для конструктора модели"""
@@ -90,6 +102,10 @@ class View:
     is_rel: bool = False  # True, если
     env: Env  # Среда выполнения
     schema: BaseModel
+    create = True
+    delete = True
+    actions = True
+    update = True
 
 
 class P:
@@ -146,22 +162,15 @@ class H:
         Класс инкапсулирует работу с шаблонизатором и htmx
     """
     cls: 'ClassView'
-    templates = {
-        'as_tr': 'line/as_tr.html',
-        'as_div': 'line/as_div.html',
-        'as_card': 'line/as_card.html',
-        'as_modal': 'line/as_modal.html',
-        'as_button': 'line/as_button.html',
-        'as_table': 'cls/as_table.html',
-        'as_filter': 'cls/as_filter.html',
-        'as_header': 'cls/as_header.html',
-        'as_import': 'cls/as_import.html',
-    }
+    templates = None
+
+    def __init__(self):
+        self.templates = default_templates.copy()
 
     def as_tr(self, template: str = 'as_tr', block_name: str = 'get', method: MethodType = MethodType.GET,
               exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
-        self.cls._exclude = exclude
+        self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template)
         return self.cls.render_line(template, block_name=block_name, method=method)
 
@@ -193,7 +202,7 @@ class H:
     def as_div(self, template: str = 'as_div', block_name: str = 'get', method: MethodType = MethodType.GET,
                exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
-        self.cls._exclude = exclude
+        self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template)
         return self.cls.render_line(template, block_name=block_name, method=method)
 
@@ -215,7 +224,7 @@ class H:
     def as_card(self, template: str = 'as_card', block_name: str = 'get', method: MethodType = MethodType.GET,
                 exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
-        self.cls._exclude = exclude
+        self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template)
         return self.cls.render_line(template, block_name=block_name, method=method)
 
@@ -227,7 +236,7 @@ class H:
     def as_modal(self, template: str = 'as_modal', block_name: str = 'get', method: MethodType = MethodType.GET,
                  exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
-        self.cls._exclude = exclude
+        self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template)
         return self.cls.render_line(template, block_name=block_name, method=method)
 
@@ -254,7 +263,7 @@ class H:
     def as_button(self, template: str = 'as_button', block_name: str = 'get', method: MethodType = MethodType.GET,
                   exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
-        self.cls._exclude = exclude
+        self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template)
         return self.cls.render_line(template, block_name=block_name, method=method)
 
@@ -291,7 +300,7 @@ class H:
     def as_filter(self, template: str = 'as_filter', block_name: str = 'get', method: MethodType = MethodType.GET,
                   exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
-        self.cls._exclude = exclude
+        self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template)
         return self.cls.render_line(template, block_name=block_name, method=method)
 
@@ -308,7 +317,7 @@ class H:
     def as_table(self, template: str = 'as_table', block_name: str = 'get', method: MethodType = MethodType.GET,
                  exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
-        self.cls._exclude = exclude
+        self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template)
         return self.cls.render_line(template, block_name=block_name, method=method)
 
@@ -371,8 +380,8 @@ class ClassView:
     _id: str | int = None
     _lsn: int | None = None
     _view: View = None
-    _exclude: list = []
-    _lines: list = []
+    _exclude: list
+    _lines: list
     __state: int = 0
     _templates = {
         'as_tr_': 'line/as_tr.html',
@@ -490,9 +499,9 @@ class ClassView:
         self._view.is_inline = is_inline
         ##=======--------
         self._lines = []
+        self._exclude = []
         self._exclude = exclude
         self._get_schema_fields(exclude=exclude)
-
     @property
     def r(self):
         return self.v.request
@@ -516,6 +525,7 @@ class ClassView:
                     params = {i: v for i, v in qp[0].items() if v}
                 else:
                     params = {i: v for i, v in qp.items() if v}
+
         if isinstance(data, list):
             data = {i['id']: i for i in data}
         await self.get_data(params=params, data=data)

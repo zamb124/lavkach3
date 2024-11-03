@@ -1,13 +1,13 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, field_validator
 from pydantic.types import UUID
 
 from app.basic.store.models.store_models import Store
 from app.basic.store.models.store_models import StoreType
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import BasicModel
+from core.schemas.basic_schemes import BasicModel, BasicField as Field
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
@@ -43,7 +43,7 @@ class StoreCreateScheme(StoreBaseScheme):
 class StoreScheme(StoreCreateScheme, TimeStampScheme):
     company_id: UUID = Field(title='Company ID', model='company')
     lsn: int
-    id: UUID
+    id: UUID = Field(title='ID', table=True)
 
 
 

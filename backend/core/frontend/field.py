@@ -6,7 +6,6 @@ from typing import Optional, Any
 from jinja2_fragments import render_block
 from pydantic import BaseModel
 
-
 from core.frontend.enviroment import environment
 from core.frontend.types import MethodType, ViewVars
 
@@ -40,7 +39,6 @@ class Field:
     update: ViewVars
     val: Any = None
 
-
     def copy(self) -> 'Field':
         instance = copy.copy(self)
         instance.val = None
@@ -53,12 +51,12 @@ class Field:
     def key(self) -> str:
         """Отдает уникальный идентификатор для поля"""
         if self.field_name == 'quantity':
-            a=1
+            a = 1
         # if self.cls.v.parent_field:
         #     return f'{self.cls.v.parent_field.key}--{self.cls._id}--{self.field_name}'
         return f'{self.cls.p.key}--{self.field_name}'
 
-    def render(self, block_name: str, type: str = '', method: MethodType=MethodType.GET) -> str:
+    def render(self, block_name: str, type: str = '', method: MethodType = MethodType.GET) -> str:
         """Метод рендера шаблона"""
         type = type or self.type
         rendered_html = render_block(
@@ -79,6 +77,21 @@ class Field:
             block_name='label',
             field=self,
         )
+
+    @property
+    def as_card(self):
+        """Отобразить как маленькую карточку"""
+        return render_block(
+            environment=environment,
+            template_name=f'field/as_card.html',
+            block_name='as_card',
+            field=self,
+        )
+
+    @property
+    def data_key(self) -> str:
+        """Отдать Label for шаблон для поля"""
+        return f't-{self.cls.v.model.name}-{self.field_name}'
 
     @property
     def as_update(self) -> str:
@@ -102,25 +115,31 @@ class Field:
 
     @property
     def as_table_get(self) -> str:
-        """Отобразить поле как Таблицу (Если поле является list_rel)"""
+        """Отобразить поле как Таблицу (Если поле является list_rel)
+            Нужно обязательно передавать какому обьекту принадлежит лайна
+        """
         return render_block(
             environment=environment,
             template_name=f'cls/as_table.html',
             block_name='get',
             method=MethodType.GET,
-            line=self.val
+            line=self.val,
+            parent=self.cls.v.parent_field
         )
 
     @property
     def as_table_update(self) -> str:
-        """Отобразить поле как Таблицу на редактирование (Если поле является list_rel)"""
+        """Отобразить поле как Таблицу на редактирование (Если поле является list_rel)
+            Нужно обязательно передавать какому обьекту принадлежит лайна
+        """
         block_name = 'get'
         return render_block(
             environment=environment,
             template_name=f'cls/as_table.html',
             block_name=block_name,
             method=MethodType.UPDATE,
-            line=self.val
+            line=self.val,
+            parent=self.cls.v.parent_field
         )
 
     def filter_as_string(self) -> str:

@@ -1,47 +1,49 @@
 {% block as_update %}
     <input
-           type="text"
-           name="{{ field.key }}"
+            type="text"
+            name="{{ field.key }}"
             {% if field.update.required %} aria-required="true" {% endif %}
             {% if field.update.readonly %}
-                readonly
-                class="datetime form-control disabled"
+            readonly
+            class="datetime form-control disabled"
             {% else %}
-                class="datetime form-control"
+            class="datetime form-control text-center"
             {% endif %}
-           onfocus="(this.type='date')"
-           placeholder="{{ field.update.title or field.field_name }}" id="{{ field.field_name }}"
-           value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
+            onfocus="(this.type='date')"
+            placeholder="{{ field.update.title or field.field_name }}" id="{{ field.field_name }}"
+            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
 {% endblock %}
 {% block as_create %}
     <input
-           type="text"
-           name="{{ field.key }}"
+            type="text"
+            name="{{ field.key }}"
             {% if field.create.required %} aria-required="true" {% endif %}
             {% if field.create.readonly %}
-                readonly
-                class="datetime form-control disabled"
+            readonly
+            class="datetime form-control disabled text-center"
             {% else %}
-                class="datetime form-control"
+            class="datetime form-control"
             {% endif %}
-           onfocus="(this.type='date')"
-           placeholder="{{ field.create.title or field.field_name }}" id="{{ field.field_name }}"
-           value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
+            onfocus="(this.type='date')"
+            placeholder="{{ field.create.title or field.field_name }}" id="{{ field.field_name }}"
+            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}">
 {% endblock %}
 {% block as_get %}
-    <input  type="text"
-                    class="form-control"
-                    {% if field.required %} required {% endif %}
-                    disabled
-                    data-bs-placement="bottom"
-                    data-bs-toggle="tooltip"
-                    title="{{ field.get.description}}"
-                    name="{{ field.key }}"
-                    placeholder=""
-                    value="{{field.val.strftime('%Y-%m-%d') if field.val else ''}}"
-            >
+    <input type="text"
+           class="form-control text-center"
+            {% if field.required %} required {% endif %}
+           disabled
+           data-bs-placement="bottom"
+           data-bs-toggle="tooltip"
+           title="{{ field.get.description }}"
+           name="{{ field.key }}"
+           placeholder=""
+           value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}"
+    >
 
 {% endblock %}
 {% block as_table %}
-{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}<small class="text-muted"> {{ field.val.strftime('%H-%M') if field.val else '' }}</small>
+    {{ field.val.strftime('%Y-%m-%d') if field.val else '' }}
+    <small class="text-muted"> {{ field.val.strftime('%H-%M') if field.val else '' }}</small>
 {% endblock %}
+

@@ -222,47 +222,48 @@
         <!-- -------------------------------------------- -->
         <!-- Revenue by Product -->
         <!-- -------------------------------------------- -->
-    <div class="card">
-        <div class="card-body">
-            <div class="d-flex flex-wrap gap-3 mb-9 justify-content-between align-items-center">
-                <h5 class="card-title fw-semibold mb-0" data-key="t-orders">Orders</h5>
-                <select class="form-select w-auto fw-semibold">
-                    <option value="1">Sep 2024</option>
-                    <option value="2">Oct 2024</option>
-                    <option value="3">Nov 2024</option>
-                </select>
-            </div>
-            <div class="table-responsive">
-                <ul class="nav nav-tabs theme-tab gap-3 flex-nowrap col-6" role="tablist">
-                    {% for rand in range(1, 4) %}
-                        <li class="nav-item">
-                            <a class="nav-link btn btn-primary disabled" data-bs-toggle="tab" href="#{{ order_type._id }}" role="tab">
-                                <div class="hstack gap-2">
-                                    <iconify-icon icon="solar:smartphone-line-duotone" class="fs-4"></iconify-icon>
-                                    <span class="placeholder col-6 form-control"></span>
-                                </div>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="tab-content mb-n3">
-                <div class="tab-pane active" id="{{ order_type._id }}" role="tabpanel">
-                    <div class="table-responsive" data-simplebar>
-                        <table class="table text-nowrap align-middle table-custom mb-0 last-items-borderless">
-                            <thead>
-                            {{ orders.h.as_tr_header|safe }}
-                            </thead>
-                            <tbody>
-                            {% for r in range(1, 4) %}
-                                {{ orders.h.as_tr_placeholder|safe }}
-                            {% endfor %}
-                            </tbody>
-                        </table>
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-3 mb-9 justify-content-between align-items-center">
+                    <h5 class="card-title fw-semibold mb-0" data-key="t-orders">Orders</h5>
+                    <select class="form-select w-auto fw-semibold">
+                        <option value="1">Sep 2024</option>
+                        <option value="2">Oct 2024</option>
+                        <option value="3">Nov 2024</option>
+                    </select>
+                </div>
+                <div class="table-responsive">
+                    <ul class="nav nav-tabs theme-tab gap-3 flex-nowrap col-6" role="tablist">
+                        {% for rand in range(1, 4) %}
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-primary disabled" data-bs-toggle="tab"
+                                   href="#{{ order_type._id }}" role="tab">
+                                    <div class="hstack gap-2">
+                                        <iconify-icon icon="solar:smartphone-line-duotone" class="fs-4"></iconify-icon>
+                                        <span class="placeholder col-6 form-control"></span>
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="tab-content mb-n3">
+                    <div class="tab-pane active" id="{{ order_type._id }}" role="tabpanel">
+                        <div class="table-responsive" data-simplebar>
+                            <table class="table text-nowrap align-middle table-custom mb-0 last-items-borderless">
+                                <thead>
+                                {{ orders.h.as_tr_header|safe }}
+                                </thead>
+                                <tbody>
+                                {% for r in range(1, 4) %}
+                                    {{ orders.h.as_tr_placeholder|safe }}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 {% endblock %}

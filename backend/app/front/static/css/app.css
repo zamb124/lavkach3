@@ -142,3 +142,13 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
     background-color:transparent;
     opacity: 1
 }
+
+.small-padding {
+    padding-left: 5px; /* Установите нужное значение отступа */
+    padding-right: 5px; /* Установите нужное значение отступа */
+}
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: var(--bs-nav-tabs-link-active-color);
+    background-color: var(--bs-primary);
+    border-color: var(--bs-nav-tabs-link-active-border-color);
+}

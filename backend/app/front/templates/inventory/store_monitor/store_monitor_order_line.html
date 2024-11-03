@@ -1,0 +1,52 @@
+{% autoescape false %}
+    <tr
+            id="{{ order.p.key }}"
+            class="line"
+            ui_key="{{ order.p.ui_key }}"
+            lsn="{{ order.p.lsn }}"
+            hx-trigger="backend_update,click"
+            hx-get="/inventory/store_monitor/line?order_id={{ order._id }}"
+            hx-swap="outerHTML transition:true"
+            hx-target="#{{ order.p.key }}"
+    >
+        <th scope="row" style="white-space: nowrap; vertical-align: middle;">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-check fs-5" style="display: inline-block;">
+                        <input class="form-check-input" type="checkbox"
+                               name="{{ order.p.key ~ '--check' }}" value="">
+                    </div>
+                </div>
+            </div>
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            <a href="/inventory/store_monitor/order_detail?order_id={{ order._id }}"
+               hx-trigger="click"
+               hx-push-url="false"
+               hx-target="#htmx_content"
+               hx-swap="beforeend transition:true"
+               class="text-danger form-control">
+            {{ order.number.val }}</a>
+        </th>
+        <th class="line-col text-center"
+            style="padding-left: 2px; padding-right: 2px;">{{ order.created_at.as_get }}</th>
+        <th class="line-col text-center"
+            style="padding-left: 2px; padding-right: 2px;">{{ order.order_type_rel.as_get }}</th>
+        <th class="line-col text-center"
+            style="padding-left: 2px; padding-right: 2px;">{{ order.partner_id.as_get }}</th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">{{ order.user_ids.as_get }}</th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {% if order.status.val == 'draft' %}
+                <span class="mb-1 badge text-bg-light">{{ order.status.val }}</span>
+            {% elif order.status.val == 'waiting' %}
+                <span class="mb-1 badge text-bg-info">{{ order.status.val }}</span>
+            {% elif order.status.val == 'confirmed' %}
+                <span class="mb-1 badge text-bg-secondary">{{ order.status.val }}</span>
+            {% elif order.status.val == 'done' %}
+                <span class="mb-1 badge text-bg-success">{{ order.status.val }}</span>
+            {% elif order.status.val == 'canceled' %}
+                <span class="mb-1 badge text-bg-dark">{{ order.status.val }}</span>
+            {% endif %}
+        </th>
+    </tr>
+{% endautoescape %}

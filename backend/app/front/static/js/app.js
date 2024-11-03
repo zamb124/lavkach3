@@ -376,7 +376,7 @@ class App {
         document.getElementsByTagName('html')[0].setAttribute('lang', newLocale);
         this.userSettings.locale = newLocale;
         document.cookie = "locale=" + this.userSettings.locale + ";path=/;";
-        if (newLocale === this.locale) return;
+        //if (newLocale === this.locale) return;
 
         const newTranslations = await this.fetchTranslationsFor(newLocale);
 

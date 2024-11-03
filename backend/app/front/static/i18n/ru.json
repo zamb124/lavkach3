@@ -9,5 +9,6 @@
   "t-assign_order": "Назначить",
   "t-order_start": "Выполнить",
   "t-active": "Действия",
-  "t-store_id": "Магазин"
+  "t-store_id": "Магазин",
+  "t-order-created_at": "Создан"
 }

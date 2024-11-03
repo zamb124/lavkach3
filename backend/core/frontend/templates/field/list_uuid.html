@@ -1,5 +1,5 @@
 {% block as_update %}
-    <select class="list-uuid form-control"
+    <select class="list-uuid form-control text-center"
             id="{{ field.key }}"
             {% if field.update.required and not field.is_filter %} required {% endif %}
             {% if field.update.readonly %} readonly="1" {% endif %}
@@ -22,7 +22,7 @@
 
 {% endblock %}
 {% block as_create %}
-    <select class="list-uuid form-control is-valid"
+    <select class="list-uuid form-control is-valid text-center"
             id="{{ field.key }}"
             {% if field.create.required and not field.is_filter %} required {% endif %}
             {% if field.create.readonly %} readonly="1" {% endif %}
@@ -46,8 +46,11 @@ new ChoiceHandler('{{ field.key }}', 'update')
 {% endblock %}
 
 {% block as_get %}
-        <div  model-name="{{ field.model_name }}" class="text-start form-control" style="min-height: 37px" id="{{ field.key }}">
-            {% if field.val %}{{ ','.join(field.val)|safe }}{% endif %}</div>
+        <div  model-name="{{ field.model_name }}" class="text-start text-center"  id="{{ field.key }}">
+            {% if field.val %}
+                {{ ','.join(field.val)|safe }}
+            {% endif %}
+        </div>
         <script>
             choicesMultiBadges('{{ field.key }}', 'get')
     </script>

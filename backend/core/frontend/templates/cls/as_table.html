@@ -14,7 +14,7 @@
              hx-include="{{ '#filter' ~'--'~ line.p.class_key }}"
         >
             <div class="card">
-                <div class="card-body">
+                <div class="card-body  rounded">
                     <div class="table-responsive scrollable-dropdown" style="white-space: nowrap;"
                          >
                         <table class="table table-hover" id="{{ 'table' ~'--'~ line.p.class_key }}"
@@ -41,8 +41,8 @@
 {% block get %}
     {% autoescape false %}
         <div class="card">
-            <div class="card-body">
-                <div class="table-responsive scrollable-dropdown"
+            <div class="card-body   border rounded">
+                <div class="table-responsive scrollable-dropdown "
                      style="width: auto; min-height: 400px; white-space: nowrap;"
                      data-show-columns="true">
                     <table class="table table-hover" id="{{ 'table' ~'--'~ line.p.class_key }}"

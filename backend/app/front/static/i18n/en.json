@@ -8,5 +8,6 @@
   "t-sa": "Arabic",
   "t-assign_order": "Assign Order",
   "t-order_start": "Order Start",
-  "t-store_id": "Store"
+  "t-store_id": "Store",
+  "t-order-number": "Order Number"
 }

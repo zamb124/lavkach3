@@ -55,12 +55,23 @@ async def store_monitor(orders: OrderView = Depends(), order_type: OrderTypeView
 async def store_monitor_otders(orders: OrderView = Depends(), order_types: OrderTypeView = Depends()):
     """Интерфейс работы со своим складом"""
     await orders.init(exclude=['store_id'])
+    orders.v.update = False
     order_types_map = defaultdict(list)
     for order in orders:
         order_types.append(order.order_type_rel.val)
-
     for order in orders:
         order_types_map[order.order_type_rel.val].append(order)
     return render(orders.r, 'inventory/store_monitor/store_monitor_orders.html',
         context={'order_types_map': order_types_map}
     )
+@inventory.get("/store_monitor/line", response_class=HTMLResponse)
+async def store_monitor_line(order_id: UUID, order_view: OrderView = Depends()):
+    """Отдает лайну для монитора склада"""
+    order = await order_view.get_lines(ids=[order_id])
+    return render(order_view.r, 'inventory/store_monitor/store_monitor_order_line.html', context={'order': order})
+
+@inventory.get("/store_monitor/order_detail", response_class=HTMLResponse)
+async def store_monitor_line(order_id: UUID, order_view: OrderView = Depends()):
+    """Отдает лайну для монитора склада"""
+    order = await order_view.get_lines(ids=[order_id])
+    return render(order_view.r, 'inventory/store_monitor/store_monitor_order_detail.html', context={'order': order})

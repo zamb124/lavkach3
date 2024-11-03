@@ -2,17 +2,17 @@
     <div class="card-body">
         <div class="d-flex flex-wrap gap-3 mb-9 justify-content-between align-items-center">
             <h5 class="card-title fw-semibold mb-0" data-key="t-orders">Orders</h5>
-            <select class="form-select w-auto fw-semibold">
-                <option value="1">Sep 2024</option>
-                <option value="2">Oct 2024</option>
-                <option value="3">Nov 2024</option>
-            </select>
+            <a href="javascript:void(0)" id="btn-add-contact" class="btn btn-primary d-flex align-items-center">
+                <iconify-icon icon="solar:add-circle-broken" class="me-1 fs-5" data_key="t-add-order"></iconify-icon>
+                Add Order
+            </a>
         </div>
         <div class="table-responsive">
             <ul class="nav nav-tabs theme-tab gap-3 flex-nowrap" role="tablist">
                 {% for order_type, ords in order_types_map.items() %}
                     <li class="nav-item ">
-                        <a class="nav-link {% if loop.first %} active {% endif %}" data-bs-toggle="tab" href="#{{ order_type._id }}" role="tab">
+                        <a class="nav-link {% if loop.first %} active {% endif %}" data-bs-toggle="tab"
+                           href="#{{ order_type._id }}" role="tab">
                             <div class="hstack gap-2">
                                 <iconify-icon icon="solar:smartphone-line-duotone" class="fs-4"></iconify-icon>
                                 <span>{{ order_type.title.val }}</span>
@@ -26,13 +26,44 @@
             {% for order_type, orders in order_types_map.items() %}
                 <div class="tab-pane {% if loop.first %} active {% endif %}" id="{{ order_type._id }}" role="tabpanel">
                     <div class="table-responsive" data-simplebar>
-                        <table class="table text-nowrap align-middle table-custom mb-0 last-items-borderless">
+                        <table class="table text-nowrap align-middle table-custom mb-0 last-items-borderless text-uppercase">
                             <thead>
-                            {{ orders[0].h.as_tr_header|safe }}
+                            <tr class="text-uppercase fs-5 text-center" style="text-align: center">
+                                <th scope="col">
+                                    <p>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox"
+                                               id="{{ orders[0].p.class_key ~'--'~ 'checkAll' }}"
+                                               value="option">
+                                    </div>
+                                    </p>
+                                </th>
+                                <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                    <p data-key="{{ orders[0].id.data_key }}">{{ orders[0].id.field_name }}</p>
+                                </th>
+                                <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                    <p data-key="{{ orders[0].created_at.data_key }}">{{ orders[0].created_at.field_name }}</p>
+                                </th>
+                                <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                    <p data-key="{{ orders[0].order_type_rel.data_key }}">{{ orders[0].order_type_rel.field_name }}</p>
+                                </th>
+                                <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                    <p data-key="{{ orders[0].partner_id.data_key }}">{{ orders[0].partner_id.field_name }}</p>
+                                </th>
+                                <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                    <p data-key="{{ orders[0].user_ids.data_key }}">{{ orders[0].user_ids.field_name }}</p>
+                                </th>
+                                <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                    <p data-key="{{ orders[0].status.data_key }}">{{ orders[0].status.field_name }}</p>
+                                </th>
+
+                            </tr>
                             </thead>
                             <tbody>
                             {% for order in orders %}
-                                {{ order.h.as_tr_get|safe }}
+                                {% with order=order %}
+                                    {% include 'inventory/store_monitor/store_monitor_order_line.html' %}
+                                {% endwith %}
                             {% endfor %}
                             </tbody>
                         </table>

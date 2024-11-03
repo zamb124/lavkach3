@@ -29,6 +29,9 @@ class StoreView(ClassView):
     def __init__(self, request: Request, schema: BaseSchema = None):
         permits = ['store_list']
         super().__init__(request=request, model='store', schema=schema,  permits=permits)
+        self.h.templates.update({
+            'as_modal': 'basic/store/as_modal.html',
+        })
 
 class StoreStaffView(ClassView):
     """Переопределяем модель"""
