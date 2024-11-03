@@ -5,7 +5,46 @@
                data-key="{{ field.data_key }}">
                 {{ field.field_name }}
             </p>
-            <h4 class="card-title mb-0  mt-0">{{ field.val }}</h4>
+
+            <h4 class="card-title mb-0 mt-0" id="{{ field.key }}" model-name="{{ field.model_name }}">
+                {% if field.type == 'datetime' %}
+                    {{ field.val.strftime('%Y-%m-%d') if field.val else '' }}
+                {% elif field.type == 'uuid' %}
+                    {{ field.val or '' }}
+                {% elif field.type == 'rel' %}
+                    {{ field.val }}
+                    <a class="text-danger text-center disabled"
+                       href="#"
+                       hx-include="none"
+                       hx-trigger="click"
+                       hx-params="model,method,id,key"
+                       hx-target="#htmx_content"
+                       hx-swap="beforeend transition:true"
+                       hx-ext="json-enc"
+                       hx-post="/base/modal"
+                       hx-vals='{
+                        "model": "{{ field.model_name }}",
+                        "method": "get",
+                        "id": "{{ field.val.p.id }}",
+                        "key": "{{ field.key }}"
+                        }'
+                    >{{ field.val.p.display_title }}
+                    </a>
+                {% elif field.type == 'list_uud' %}
+                    {% if field.val %}
+                        {{ ','.join(field.val)|safe }}
+                    {% endif %}
+                {% else %}
+                    {{ field.val or '' }}
+                {% endif %}
+            </h4>
         </div>
     </div>
+    <script>
+        {% if field.type == 'uuid' %}
+            setTitle('{{ field.key }}', 'get')
+        {% elif field.type == 'list_uuid' %}
+            choicesMultiBadges('{{ field.key }}', 'get')
+        {% endif %}
+    </script>
 {% endblock %}

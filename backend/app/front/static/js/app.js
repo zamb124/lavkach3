@@ -54,7 +54,7 @@ class App {
             let promises = [];
             for (let model in this.cache.temp) {
                 if (this.cache.temp[model].length > 0) {
-                    let ids_str = this.cache.temp[model].join(',');
+                    let ids_str = this.cache.temp[model].join(',').toLowerCase();
                     const items = fetch('/base/get_by_ids?model=' + model + '&id__in=' + encodeURIComponent(ids_str));
                     promises.push(items);
                 } else {

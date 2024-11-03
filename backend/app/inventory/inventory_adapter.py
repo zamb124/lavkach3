@@ -75,12 +75,10 @@ class InventoryAdapter(BaseAdapter):
         return responce.json()
 
     @action(model='order', multiple=False, permits=[])
-    async def assign_order(self, order_id, user_id: UUID):
+    async def assign_order(self, payload: dict):
         """Назначение пользователя на заказ, если не указан, то возьется из запроса"""
-        if isinstance(user_id, UUID):
-            user_id = user_id.__str__()
-        if isinstance(order_id, UUID):
-            order_id = order_id.__str__()
+        user_id = payload['user_id']
+        order_id = payload['order_id']
         path = f'/api/inventory/order/assign_order'
         payload = {
             'order_id': order_id,

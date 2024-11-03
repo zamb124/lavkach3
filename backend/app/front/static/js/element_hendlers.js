@@ -1,3 +1,11 @@
+function extractUUIDs(input) {
+    // Удаляем все символы табуляции, пробелы, скобки и прочее
+    let cleanedInput = input.replace(/[\s\[\]\'\,]+/g, '');
+    // Выделяем UUID через запятую
+    let uuids = cleanedInput.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/g);
+    return uuids ? uuids.join(',') : '';
+}
+
 class ChoiceHandler {
     constructor(elId, method) {
         this.element = document.getElementById(elId);
@@ -142,7 +150,7 @@ async function choicesMultiBadges(elId, method) {
 
     async function getValues() {
         var id__in = ''
-        var str = element.innerText.replace(/[\s\n\t]+/g, ' ').trim().toLowerCase();
+        var str = extractUUIDs(element.innerText).toLowerCase();
         let values = str ? str.split(',') : [];
 
         for (let v in values) {
@@ -367,7 +375,7 @@ async function setTitle(elId) {
 
     async function getValues() {
         var id__in = ''
-        var str = element.innerText.replace(/[\s\n\t]+/g, ' ').trim()
+        var str = extractUUIDs(element.innerText).toLowerCase() ;
         element.innerHTML = '<span class="spinner-border text-primary" role="status">\n' +
             '                    <span class="visually-hidden">Loading...</span>\n' +
             '                  </span>'
@@ -397,7 +405,12 @@ async function setTitle(elId) {
         }
     }
     let res = await getValues()
-    element.innerText = res[0].label
+    if (res.length > 0){
+        element.innerText = res[0].label
+    } else {
+        element.innerText = '-'
+    }
+
 }
 
 class ModalHandler {

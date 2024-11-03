@@ -1,13 +1,18 @@
+import asyncio
+import json
+import os
 import uuid
 from collections import defaultdict
 from lib2to3.fixes.fix_input import context
 from typing import Optional
+import re
 
+import aiofiles
 from fastapi import APIRouter, Query
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, JSONResponse
 from starlette.websockets import WebSocket
 from urllib3 import request
 
@@ -17,6 +22,8 @@ from app.front.utills import BasePermit
 from distributed_websocket import WebSocketProxy
 
 from app.front.front_config import config
+from core.frontend.constructor import BaseSchema
+from core.frontend.enviroment import template_dirs
 
 
 class ExceptionResponseSchema(BaseModel):
@@ -168,3 +175,66 @@ async def widget_user_profile(request: Request) -> dict:
         request,
         'widgets/widget_user_profile.html'
     )
+
+
+
+
+async def find_data_keys_in_file(file_path):
+    data_keys = set()
+    pattern = re.compile(r'data-key="([^"]+)"')
+
+    async with aiofiles.open(file_path, mode='r', encoding='utf-8') as file:
+        try:
+            content = await file.read()
+        except Exception as ex:
+            return set()
+        matches = pattern.findall(content)
+        data_keys.update(matches)
+
+    return data_keys
+
+
+async def find_data_keys(directories):
+    data_keys = set()
+
+    async def process_directory(directory):
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if file.endswith(".html"):
+                    file_path = os.path.join(root, file)
+                    file_data_keys = await find_data_keys_in_file(file_path)
+                    data_keys.update(file_data_keys)
+
+    tasks = [process_directory(directory) for directory in directories]
+    await asyncio.gather(*tasks)
+
+    return [i for i in data_keys if '{' not in i]
+
+
+@index_router.get("/front/translate_keys", response_class=JSONResponse)
+async def geterate_translate_keys(request: Request, locale: str) -> dict:
+    env = request.scope['env']
+    path = f'app/front/static/i18n/{locale}.json'
+    async with aiofiles.open(path, mode='r') as file:
+        content = await file.read()
+        keys = json.loads(content)
+    init_keys = {}
+    for domain_name, domain in env.domains.items():
+        for model_name, model in domain.models.items():
+            schema_keys = []
+            for shema_name, schema in model.schemas.__dict__.items():
+                try:
+                    if issubclass(schema, BaseModel):
+                        fields = (schema.model_fields | schema.model_computed_fields).keys()
+                        schema_keys += fields
+                except Exception as ex:
+                    continue
+            cleaned_schema_keys = list(set(schema_keys))
+            for key in cleaned_schema_keys:
+                init_keys.update({f't-{model_name}-{key}': None})
+    init_keys.update(keys)
+    data = await find_data_keys(template_dirs)
+    for data_key in data:
+        if to_add_key := not init_keys.get(data_key):
+            init_keys.update({data_key: None})
+    return init_keys

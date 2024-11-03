@@ -76,7 +76,7 @@ class Base(metaclass=DeclarativeMeta):
             'company_id': entity.company_id if hasattr(entity,  'company_id') else entity.id,
             'vars': {
                 'id': entity.id,
-                'lsn': entity.lsn,
+                'lsn': entity.lsn if method == 'update' else None,
                 'model': self.__tablename__,
                 'method': method,
                 'updated_fields': updated_fields

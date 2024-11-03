@@ -809,7 +809,7 @@ class ClassView:
             environment=environment,
             template_name=f'components/message.html',
             block_name='success',
-            cls=self.cls,
+            cls=self,
             message=message
         )
 

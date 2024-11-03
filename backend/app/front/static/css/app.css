@@ -96,7 +96,7 @@ input[type="date"] {
 
 .form-control {
     font-weight: 600;
-    color: #29343d
+    color: #29343d;
 }
 
 .form-control.disabled {
