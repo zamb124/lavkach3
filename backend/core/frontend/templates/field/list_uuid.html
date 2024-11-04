@@ -46,7 +46,7 @@ new ChoiceHandler('{{ field.key }}', 'update')
 {% endblock %}
 
 {% block as_get %}
-        <div  model-name="{{ field.model_name }}" class="text-start text-center"  id="{{ field.key }}">
+        <div  model-name="{{ field.model_name }}" class="text-start text-center form-control"  id="{{ field.key }}">
             {% if field.val %}
                 {{ ','.join(field.val) }}
             {% endif %}

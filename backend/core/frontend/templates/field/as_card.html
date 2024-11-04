@@ -1,19 +1,41 @@
 {% block as_card %}
     <div class="card text-bg-light rounded modal-card">
-        <div class="card-body p-3">
+        <div class="card-body p-3" style="white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;">
             <p class="card-text opacity-75 fs-2 fw-normal mb-0"
                data-key="{{ field.data_key }}">
                 {{ field.field_name }}
             </p>
-
-            <h4 class="card-title mb-0 mt-0" id="{{ field.key }}" model-name="{{ field.model_name }}">
                 {% if field.type == 'datetime' %}
+                    <h4 class="card-title mb-0 mt-0" id="{{ field.key }}" model-name="{{ field.model_name }}">
                     {{ field.val.strftime('%Y-%m-%d') if field.val else '' }}
+                    </h4>
                 {% elif field.type == 'uuid' %}
-                    {{ field.val or '' }}
+                    <h4 class="card-title mb-0 mt-0">
+                    <a class="text-danger text-center"
+                       id="{{ field.key }}"
+                       model-name="{{ field.model_name }}"
+                       href="#"
+                       hx-include="none"
+                       hx-trigger="click"
+                       hx-params="model,method,id,key"
+                       hx-target="#htmx_content"
+                       hx-swap="beforeend transition:true"
+                       hx-ext="json-enc"
+                       hx-post="/base/modal"
+                       hx-vals='{
+                        "model": "{{ field.model_name }}",
+                        "method": "get",
+                        "id": "{{ field.val }}",
+                        "key": "{{ field.key }}"
+                        }'
+                    >{{ field.val }}</a>
+                    </h4>
                 {% elif field.type == 'rel' %}
                     {{ field.val }}
-                    <a class="text-danger text-center disabled"
+                    <h4 class="card-title mb-0 mt-0" id="{{ field.key }}" model-name="{{ field.model_name }}">
+                    <a class="text-danger text-center"
                        href="#"
                        hx-include="none"
                        hx-trigger="click"
@@ -30,14 +52,18 @@
                         }'
                     >{{ field.val.p.display_title }}
                     </a>
-                {% elif field.type == 'list_uud' %}
+                    </h4>
+                {% elif field.type == 'list_uuid' %}
+                    <h4 class="card-title mb-0 mt-0" id="{{ field.key }}" model-name="{{ field.model_name }}">
                     {% if field.val %}
                         {{ ','.join(field.val)|safe }}
                     {% endif %}
+                    </h4>
                 {% else %}
+                    <h4 class="card-title mb-0 mt-0" id="{{ field.key }}" model-name="{{ field.model_name }}">
                     {{ field.val or '' }}
+                    </h4>
                 {% endif %}
-            </h4>
         </div>
     </div>
     <script>

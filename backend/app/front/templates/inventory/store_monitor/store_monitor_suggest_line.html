@@ -1,0 +1,60 @@
+{% autoescape false %}
+    <tr
+            id="{{ suggest.p.key }}"
+            class="line"
+            ui_key="{{ suggest.p.ui_key }}"
+            lsn="{{ suggest.p.lsn }}"
+            hx-trigger="backend_update,click"
+            hx-get="/inventory/store_monitor/suggest?suggest_id={{ suggest._id }}"
+            hx-swap="outerHTML transition:true"
+            hx-target="#{{ suggest.p.key }}"
+    >
+        <th scope="row" style="white-space: nowrap; vertical-align: middle;">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-check fs-5" style="display: inline-block;">
+                        <input class="form-check-input" type="checkbox"
+                               name="{{ suggest.p.key ~ '--check' }}" value="">
+                    </div>
+                </div>
+            </div>
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            <a href="/inventory/store_monitor/move_detail?move_id={{ suggest._id }}"
+               hx-trigger="click"
+               hx-push-url="false"
+               hx-target="#htmx_content"
+               hx-swap="beforeend transition:true"
+               class="text-danger form-control">
+            {{ suggest.type.val }}</a>
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ suggest.priority.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ suggest.value.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ suggest.result_value.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ suggest.user_id.as_get }}
+
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {% if suggest.status.val == 'created' %}
+                <span class="mb-1 badge text-bg-light">{{ suggest.status.val }}</span>
+            {% elif suggest.status.val == 'waiting' %}
+                <span class="mb-1 badge text-bg-info">{{ suggest.status.val }}</span>
+            {% elif suggest.status.val == 'confirmed' %}
+                <span class="mb-1 badge text-bg-secondary">{{ suggest.status.val }}</span>
+                {% elif suggest.status.val == 'processing' %}
+                <span class="mb-1 badge text-bg-primary">{{ suggest.status.val }}</span>
+            {% elif suggest.status.val == 'done' %}
+                <span class="mb-1 badge text-bg-success">{{ suggest.status.val }}</span>
+            {% elif suggest.status.val == 'canceled' %}
+                <span class="mb-1 badge text-bg-dark">{{ suggest.status.val }}</span>
+            {% endif %}
+        </th>
+    </tr>
+{% endautoescape %}

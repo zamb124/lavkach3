@@ -46,7 +46,7 @@ class UserBaseScheme(BaseModel):
 
 
 class UserUpdateScheme(UserBaseScheme):
-    ...
+    email: str = Field(title="Email")
 
 
 class UserCreateScheme(UserBaseScheme):

@@ -52,6 +52,36 @@ default_templates = {
         'as_import': 'cls/as_import.html',
 }
 
+default_field_templates = {
+    'as_card': 'as_card.html',
+    'babel':'babel.html',
+    'bool':'bool.html',
+    'daterange': 'daterange.html',
+    'datetime': 'datetime.html',
+    'dict': 'dict.html',
+    'enum': 'enum.html',
+    'float': 'float.html',
+    'id':'id.html',
+    'int': 'int.html',
+    'label': 'label.html',
+    'list_enum': 'list_enum.html',
+    'list_rel': 'list_rel.html',
+    'list_str': 'list_str.html',
+    'list_typecountry': 'list_typecountry.html',
+    'list_typecurrency': 'list_typecurrency.html',
+    'list_typelocale': 'list_typelocale.html',
+    'list_uuid': 'list_uuid.html',
+    'other': 'other.html',
+    'rel': 'rel.html',
+    'search': 'search.html',
+    'str': 'str.html',
+    'typecountry': 'typecountry.html',
+    'typecurrency': 'typecurrency.html',
+    'typelocale': 'typelocale.html',
+    'typephone': 'typephone.html',
+    'uuid': 'uuid.html'
+}
+
 
 def _get_key() -> str:
     """Генерирует уникальный идетификатор для конструктора модели"""

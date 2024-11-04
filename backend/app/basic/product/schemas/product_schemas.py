@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import Optional, List, Any
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, model_validator
 from pydantic.types import UUID4
 
 from app.basic.product.models.product_models import Product, ProductType
 from app.basic.uom.schemas import UomScheme
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import BasicModel
+from core.schemas.basic_schemes import BasicModel, BasicField as Field
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
@@ -20,14 +20,12 @@ class ProductBaseScheme(BasicModel):
     description: Optional[str] = Field(default=None, title='Description', table=True, form=True)
     external_number: Optional[str] = Field(default=None, title='External #', table=True, form=True)
     product_type: ProductType = Field(default=ProductType.STORABLE, title='Type', table=True, form=True)
-    uom_id: UUID4 = Field(title='Uom', model='uom')
+    uom_id: UUID4 = Field(title='Uom', model='uom', form=True)
     image_url: Optional[str]  = Field(default=None, title='Image Url')
     product_category_id: UUID4 = Field(title='Product Category', table=True, form=True, model='product_category')
     barcode_list: list[str] = Field(default=None, title='Barcodes', table=True, form=True)
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = Product
 
     @model_validator(mode='before')

@@ -187,6 +187,50 @@ async function choicesMultiBadges(elId, method) {
     }
 }
 
+async function choicesUuidBadge(elId, method) {
+    let element = document.getElementById(elId);
+    var model_name = element.getAttribute('model-name')
+
+    async function getValues() {
+        var id__in = ''
+        var str = extractUUIDs(element.innerText).toLowerCase();
+        let values = str ? str.split(',') : [];
+
+        for (let v in values) {
+            var maybe_cache = app.cache.results[values[v]]
+            if (!maybe_cache) {
+                app.pushUUID(model_name, values[v])
+            }
+        }
+        var result = []
+        while (true) {
+            for (let v in values) {
+                if (app.cache.results[values[v]]) {
+                    result.push({
+                        value: values[v],
+                        label: app.cache.results[values[v]]
+                    })
+                    values.splice(v, 1)
+                }
+            }
+            if (values.length === 0) {
+                return result
+            }
+            await new Promise(r => setTimeout(r, 50));
+        }
+    }
+
+    let res = await getValues()
+    if (res.length > 0){
+        element.innerText = res[0].label;
+    } else {
+        element.innerText = ''
+    }
+    if (!element.innerText && method==='get') {
+        element.innerText = '-'
+    }
+}
+
 async function choiceMultiBabel() {
     var display_title = element.getAttribute('display-title')
     var filter = element.getAttribute('filter')
@@ -242,7 +286,8 @@ async function choiceMultiBabel() {
 
 }
 
-async function choiceOneBabel() {
+async function choiceOneBabel(elId, method) {
+    var element = document.getElementById(elId);
     var display_title = element.getAttribute('display-title')
     var filter = element.getAttribute('filter')
     var is_filter = element.getAttribute('is-filter')

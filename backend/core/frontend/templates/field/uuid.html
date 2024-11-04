@@ -48,28 +48,27 @@
     </script>
 {% endblock %}
 {% block as_get %}
-    <select class="uuid as-get text-center"
+    <a class="uuid text-center text-danger fw-bold form-control"
             id="{{ field.key }}"
-            name="{{ field.key }}"
+            href="#"
+            hx-ext="json-enc"
+            hx-post="/base/modal"
             display-title="{{ field.get.title }}"
             title="{{ field.get.description }}"
-            disabled
             filter="{{ field.get.filter }}"
             model-name="{{ field.model_name }}"
-            data-choices
-            {% if field.get.readonly %}
-            readonly='1'
-            {% endif %}
-            {% if field.get.required %}
-            required
-            {% endif %}
-    >
-        {% if field.val %}
-            <option value="{{ field.val }}" selected></option>
-        {% endif %}
-    </select>
+            hx-target="#htmx_content"
+            hx-swap="beforeend transition:true"
+
+           hx-vals='{
+            "model": "{{ field.model_name }}",
+            "method": "get",
+            "id": "{{ field.val }}",
+            "key": "{{ field.cls.v.key }}"
+            }'
+    >{{ field.val }}</a>
     <script>
-        new ChoiceHandler('{{ field.key }}', 'get')
+        choicesUuidBadge('{{ field.key }}', 'get')
     </script>
 {% endblock %}
 {% block as_card_title %}

@@ -3,29 +3,26 @@ from __future__ import annotations
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, UUID4
+from pydantic import BaseModel, UUID4
 
 from app.basic.uom.models.uom_models import Uom
 from app.basic.uom.models.uom_models import UomType
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import BasicModel
+from core.schemas.basic_schemes import BasicModel, BasicField as Field
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
 class UomBaseScheme(BasicModel):
-    title: str = Field(title="Title", table=True)
-    uom_category_id: UUID4 = Field(title="Uom Category", table=True, description='Select category of UOM Category', model='uom_category')
-    type: 'UomType' = Field(title="Uom Type", table=True,
+    title: str = Field(title="Title", table=True, form=True)
+    uom_category_id: UUID4 = Field(title="Uom Category", table=True, form=True,description='Select category of UOM Category', model='uom_category')
+    type: 'UomType' = Field(title="Uom Type", table=True, form=True,
                             description='Select type \n SMALLER: this category is smaller \n BIGGER... STANDART')
-    ratio: float = Field(title="Ratio", table=True, description='Ratio')
-    precision: float = Field(title="Presicion", table=True, description='Rouding Precision')
+    ratio: float = Field(title="Ratio", table=True, form=True, description='Ratio')
+    precision: float = Field(title="Presicion", table=True, form=True, description='Rouding Precision')
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = Uom
-        service = 'app.basic.uom.services.UomService'
 
 
 class UomUpdateScheme(UomBaseScheme):

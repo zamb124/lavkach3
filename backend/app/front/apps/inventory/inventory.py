@@ -76,7 +76,7 @@ async def store_monitor_order(order_id: UUID, order_view: OrderView = Depends())
 
 
 @inventory.get("/store_monitor/order_detail", response_class=HTMLResponse)
-async def store_monitor_line(order_id: UUID, order_view: OrderView = Depends()):
+async def store_monitor_order_detail(order_id: UUID, order_view: OrderView = Depends()):
     """Отдает лайну для монитора склада"""
     order = await order_view.get_lines(ids=[order_id])
     return render(order_view.r, 'inventory/store_monitor/store_monitor_order_detail.html', context={'order': order})
@@ -90,7 +90,7 @@ async def store_monitor_move(move_id: UUID, move_view: MoveView = Depends()):
 
 
 @inventory.get("/store_monitor/move_detail", response_class=HTMLResponse)
-async def store_monitor_line(move_id: UUID, move_view: OrderView = Depends()):
+async def store_monitor_move_detail(move_id: UUID, move_view: MoveView = Depends()):
     """Отдает лайну для монитора склада"""
     move = await move_view.get_lines(ids=[move_id])
     return render(move_view.r, 'inventory/store_monitor/store_monitor_move_detail.html', context={'move': move})

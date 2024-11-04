@@ -17,9 +17,7 @@
                 {% endif %}
     </select>
     <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceOneBabel(el)
+        choiceOneBabel('{{ field.key }}', 'update')
     </script>
 {% endblock %}
 {% block as_create %}
@@ -41,9 +39,7 @@
                 {% endif %}
     </select>
         <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceOneBabel(el)
+        choiceOneBabel('{{ field.key }}', 'create')
     </script>
 {% endblock %}
 {% block as_get %}

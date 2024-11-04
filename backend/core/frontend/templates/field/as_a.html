@@ -1,0 +1,27 @@
+{% block as_a %}
+<a
+   {% if url %}
+       href="{{ url }}?{{ field.field_name }}={{ field.val }}"
+    {% else %}
+        href="#"
+        hx-ext="json-enc"
+        hx-post="/base/modal"
+        hx-vals='{
+            "model": "{{ field.model_name }}",
+            "method": "get",
+            "id": "{{ field.val }}",
+            "key": "{{ field.cls.v.key }}"
+            }'
+    {% endif %}
+   id="{{ field.key }}"
+   hx-trigger="click"
+   hx-push-url="false"
+   model-name="{{ field.model_name }}"
+   hx-target="#htmx_content"
+   hx-swap="beforeend transition:true"
+   class="text-danger">
+    {{ field.val }}</a>
+<script>
+    setTitle('{{ field.key }}', 'get')
+</script>
+{% endblock %}
