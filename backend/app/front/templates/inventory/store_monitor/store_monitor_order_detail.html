@@ -120,7 +120,7 @@
                                 </ul>
                             </li>
                         </ul>
-                        <div class="tab-content" id="moves-tab">
+                        <div class="tab-content" style="min-height: 300px" id="moves-tab">
                             <div role="tabpanel" class="tab-pane fade active show" id="moves"
                                  aria-labelledby="home-tab">
                                 <table class="table align-middle table-hover mb-0 last-items-borderless text-uppercase">
@@ -154,9 +154,6 @@
                                         </th>
                                         <th data-bs-toggle="tooltip" data-bs-html="true" title="">
                                             <p data-key="{{ order.move_list_rel.val.quantity.data_key }}">{{ order.move_list_rel.val.quantity.field_name }}</p>
-                                        </th>
-                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                            <p data-key="{{ order.move_list_rel.val.uom_id.data_key }}">{{ order.move_list_rel.val.uom_id.field_name }}</p>
                                         </th>
                                         <th data-bs-toggle="tooltip" data-bs-html="true" title="">
                                             <p data-key="t-move-suggests">Suggests</p>

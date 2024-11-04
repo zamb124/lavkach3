@@ -61,9 +61,12 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
     suggest_list_rel: Optional[list[SuggestScheme]] = Field(default=[], title='Suggests', form=True)
 
     @computed_field
-    @property
     def title(self) -> str:
         return f'[{self.type.name}] - {self.quantity} - {self.status.name}'
+
+    @computed_field(title='Suggests', json_schema_extra={'table': True})
+    def suggest_list_count(self) -> str:
+        return f'{len(self.suggest_list_rel)}'
 
 
 class MoveFilter(BaseFilter):

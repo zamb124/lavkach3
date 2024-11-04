@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
-from app.front.apps.inventory.views import OrderView, StoreStaffView, OrderTypeView, MoveView
+from app.front.apps.inventory.views import OrderView, StoreStaffView, OrderTypeView, MoveView, SuggestView
 from app.front.template_spec import templates
 from app.front.utills import BasePermit, render
 from core.frontend.constructor import ClassView
@@ -94,3 +94,10 @@ async def store_monitor_move_detail(move_id: UUID, move_view: MoveView = Depends
     """Отдает лайну для монитора склада"""
     move = await move_view.get_lines(ids=[move_id])
     return render(move_view.r, 'inventory/store_monitor/store_monitor_move_detail.html', context={'move': move})
+
+
+@inventory.get("/store_monitor/suggest", response_class=HTMLResponse)
+async def store_monitor_move(suggest_id: UUID, move_view: SuggestView = Depends()):
+    """Отдает лайну для монитора склада"""
+    suggest = await move_view.get_lines(ids=[suggest_id])
+    return render(move_view.r, 'inventory/store_monitor/store_monitor_suggest_line.html', context={'suggest': suggest})

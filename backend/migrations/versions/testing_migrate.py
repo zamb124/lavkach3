@@ -18,9 +18,9 @@ from sqlalchemy_utils.types import PasswordType
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'
-down_revision = 'c91e663a5810'
+down_revision = 'fef12b13198a'
 branch_labels = None
-depends_on = 'c91e663a5810'
+depends_on = 'fef12b13198a'
 
 
 def upgrade():

@@ -1,5 +1,6 @@
 import datetime
 import uuid
+from operator import index
 from typing import Optional
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint, ARRAY, \
@@ -10,7 +11,7 @@ from sqlalchemy.orm import relationship, mapped_column, Mapped
 from app.inventory.location.enums import LocationClass, PutawayStrategy
 from app.inventory.location.models import Location
 from app.inventory.order.enums.order_enum import MoveStatus, OrderClass, BackOrderAction, ReservationMethod, \
-    OrderStatus, MoveType, SuggestType, SuggestStatus
+    OrderStatus, MoveType, SuggestType, SuggestStatus, MoveLogType
 from app.inventory.quant.models import Lot, Quant
 from core.db import Base
 from core.db.mixins import AllMixin, CreatedEdited
@@ -92,10 +93,10 @@ class Order(Base, AllMixin, CreatedEdited):
     )
     lsn_seq = Sequence(f'order_lsn_seq')
     number: Mapped[str] = mapped_column(index=True)    # Человекочитаемый номер присвается по формуле - {ГОД(2)}-{МЕСЯЦ}-{ДЕНЬ}-{LSN}
-    order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='CASCADE'))
+    order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='RESTRICT'), index=True)
     order_type_rel: Mapped[OrderType] = relationship(lazy='selectin')
-    order_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order.id", ondelete="CASCADE"))
-    external_number: Mapped[Optional[str]]
+    order_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order.id", ondelete="RESTRICT"), index=True)
+    external_number: Mapped[Optional[str]] = mapped_column(index=True)
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
     lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
@@ -106,7 +107,7 @@ class Order(Base, AllMixin, CreatedEdited):
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     user_ids: Mapped[Optional[ids]] = mapped_column(index=True)
     description: Mapped[Optional[str]]
-    status: Mapped['OrderStatus'] = mapped_column(default=OrderStatus.DRAFT)
+    status: Mapped['OrderStatus'] = mapped_column(default=OrderStatus.DRAFT, index=True)
     move_list_rel: Mapped[Optional[list["Move"]]] = relationship(back_populates="order_rel", lazy="selectin")
 
     def __init__(self, **kwargs):
@@ -132,17 +133,17 @@ class Move(Base, AllMixin, CreatedEdited):
     order_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order_type.id', ondelete='RESTRICT'), nullable=True)
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('order.id', ondelete='RESTRICT'), nullable=True)
     order_rel: Mapped[Order] = relationship(back_populates='move_list_rel')
-    location_src_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
-    location_dest_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
-    lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"))
-    location_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"))
+    location_src_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="RESTRICT"))
+    location_dest_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="RESTRICT"))
+    lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="RESTRICT"))
+    location_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="RESTRICT"))
     # ONE OF Возможно либо location_id либо product_id
     product_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     quantity: Mapped[float]     # Если перемещение кпаковки, то всегда 0
     uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=False) # Если перемещение упаковкой то None
-    quant_src_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="SET NULL"), index=True)
-    quant_dest_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="SET NULL"), index=True)
+    quant_src_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="NO ACTION"), index=True)
+    quant_dest_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="NO ACTION"), index=True)
     status: Mapped[MoveStatus] = mapped_column(default=MoveStatus.CREATED)
     suggest_list_rel: Mapped[Optional[list["Suggest"]]] = relationship(lazy="selectin")
 
@@ -154,7 +155,7 @@ class Suggest(Base, AllMixin):
     """
     __tablename__ = "suggest"
     lsn_seq = Sequence(f'suggest_lsn_seq')
-    move_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('move.id', ondelete='CASCADE'), index=True)
+    move_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('move.id', ondelete='RESTRICT'), index=True)
     priority: Mapped[int]
     type: Mapped[SuggestType]
     value: Mapped[Optional[str]]            # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
@@ -162,7 +163,7 @@ class Suggest(Base, AllMixin):
     user_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
     status: Mapped[SuggestStatus] = mapped_column(default=SuggestStatus.WAITING, index=True)
 
-class MoveLog(Base, AllMixin):
+class MoveLog(Base, AllMixin, CreatedEdited):
     """
     MoveLog - это любое изменение остатка товаров как с точки зрения резервирования остатка, так и с точки зрения прибытия/выбития
     MoveLog создается при действиях Move, когда обьект изменяет расчет
@@ -179,13 +180,15 @@ class MoveLog(Base, AllMixin):
     """
     __tablename__ = "move_log"
     lsn_seq = Sequence(f'move_log_lsn_seq')
+    type: Mapped[MoveLogType] = mapped_column(index=True)
+    order_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey('order.id', ondelete='RESTRICT'), index=True)
+    move_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('move.id', ondelete='RESTRICT'), index=True)
     product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.product.id")
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.project.id")
-    location_class: Mapped[LocationClass] = mapped_column(index=True)
-    location_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('location_type.id', ondelete='SET NULL'), index=True)
-    location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="SET NULL"), index=True)
-    lot_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("lot.id", ondelete="SET NULL"), index=True)
+    location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="RESTRICT"), index=True)
+    lot_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("lot.id", ondelete="RESTRICT"), index=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
+    uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.uom.id")
     quantity: Mapped[float]
     reserved_quantity: Mapped[float]
 

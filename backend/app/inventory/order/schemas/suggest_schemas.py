@@ -66,5 +66,5 @@ class SuggestListSchema(GenericListSchema):
 
 
 class SuggestConfirmScheme(ActionBaseSchame):
-    value: str = Field(title='Result value')
+    value: str = Field(title='Result value', form=True)
 

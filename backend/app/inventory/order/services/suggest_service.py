@@ -88,10 +88,16 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
             if is_last:
                 move.status = MoveStatus.DONE
                 #await self.env['move'].service.set_done.kiq(move_id=move.id)
-                task__set_done = list_brocker.register_task(self.env['move'].service.set_done)
-                task = await task__set_done.kiq(move_id=move.id)
+                #task__set_done = list_brocker.register_task(self.env['move'].service.set_done)
+                #task = await task__set_done.kiq(move_id=move.id)
+                task = await self.env['move'].service.set_done.kiq(move_id=move.id)
                 task_result = await task.wait_result()
-                a=1
+                if task_result.error:
+                    raise ModuleException(
+                        status_code=406,
+                        enum=None,
+                        message='Task Error'
+                    )
         if commit:
             try:
                 await self.session.commit()

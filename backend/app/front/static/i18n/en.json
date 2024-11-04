@@ -617,5 +617,7 @@
 "t-sales-dashboard": "Sales Dashboard",
 "t-store-monitor": "Store Monitor",
 "t-active": "Active",
-"t-logistics-dashboard": "Logistics Dashboard"
+"t-logistics-dashboard": "Logistics Dashboard",
+"t-action_suggest_confirm": "Confirm suggest"
+
 }

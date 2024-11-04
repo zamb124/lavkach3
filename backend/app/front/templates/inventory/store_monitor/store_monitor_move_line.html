@@ -26,7 +26,7 @@
                hx-target="#htmx_content"
                hx-swap="beforeend transition:true"
                class="text-danger form-control">
-            {{ move.type.val }}</a>
+                {{ move.type.val }}</a>
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {% if move.type.val == 'product' %}
@@ -45,25 +45,22 @@
             {{ move.location_dest_id.as_get }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ move.quantity.as_get }}
-        </th>
-        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {% if move.type.val =='product' %}
-                {{ move.uom_id.as_get }}
-            {% else %}
-                <p data-key="t-bin">Bin</p>
-            {% endif %}
+            <b>{{ move.quantity.val }}
+                <span class="small">{{ move.uom_id.as_a() }}</span>
+            </b>
+
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             <a
-            class="text-muted text-decoration-none d-flex justify-content-center"
-            href="/inventory/store_monitor/move_detail?move_id={{ move._id }}"
-            hx-push-url="false"
-            hx-target="#htmx_content"
-            hx-swap="beforeend transition:true"
+                    class="text-muted text-decoration-none d-flex justify-content-center"
+                    href="/inventory/store_monitor/move_detail?move_id={{ move._id }}"
+                    hx-push-url="false"
+                    hx-target="#htmx_content"
+                    hx-swap="beforeend transition:true"
             >
-        <iconify-icon icon="solar:hamburger-menu-broken" class="fs-8"></iconify-icon>
-    </a>
+                <iconify-icon icon="solar:hamburger-menu-broken" class="fs-8"></iconify-icon>
+                {{ move.suggest_list_count.val }}
+            </a>
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {% if move.status.val == 'created' %}
@@ -72,7 +69,7 @@
                 <span class="mb-1 badge text-bg-info">{{ move.status.val }}</span>
             {% elif move.status.val == 'confirmed' %}
                 <span class="mb-1 badge text-bg-secondary">{{ move.status.val }}</span>
-                {% elif move.status.val == 'processing' %}
+            {% elif move.status.val == 'processing' %}
                 <span class="mb-1 badge text-bg-primary">{{ move.status.val }}</span>
             {% elif move.status.val == 'done' %}
                 <span class="mb-1 badge text-bg-success">{{ move.status.val }}</span>

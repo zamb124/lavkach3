@@ -13,6 +13,7 @@ from app.inventory.inventory_router import router
 from core.db_config import config
 from core.env import Env
 from app.inventory import __domain__ as inventory_domain
+from app.basic import __domain__ as basic_domain
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -35,7 +36,7 @@ class EnvMidlleWare:
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
         if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
-            scope['env'] = Env([inventory_domain], conn)
+            scope['env'] = Env([inventory_domain, basic_domain], conn)
         await self.app(scope, receive, send)
 
 

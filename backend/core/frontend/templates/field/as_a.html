@@ -7,7 +7,7 @@
         hx-ext="json-enc"
         hx-post="/base/modal"
         hx-vals='{
-            "model": "{{ field.model_name }}",
+            "model": "{{ model or field.model_name }}",
             "method": "get",
             "id": "{{ field.val }}",
             "key": "{{ field.cls.v.key }}"
@@ -16,7 +16,7 @@
    id="{{ field.key }}"
    hx-trigger="click"
    hx-push-url="false"
-   model-name="{{ field.model_name }}"
+   model-name="{{ model or field.model_name }}"
    hx-target="#htmx_content"
    hx-swap="beforeend transition:true"
    class="text-danger">

@@ -13,7 +13,7 @@ from app.inventory.order.models.order_models import Move, MoveType, Order, Order
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
 #from app.inventory.order.services.move_tkq import move_set_done
-from core.helpers.broker.tkq import list_brocker
+from core.helpers.broker import list_brocker
 from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
@@ -358,15 +358,51 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         await self.create_suggests(move)
         return move
 
-    async def set_done(self, move_id: uuid.UUID, sync=False):
+    @list_brocker.task(queue_name='model')
+    async def set_done(self=None, move_id: uuid.UUID = None, sync=False):
         """
-            Метод пытается завершить мув, если все саджесты закончены
+            Здесь создается mov_log, когда все саджесты выполнены
         """
-        if not sync:
-            await move_set_done.kiq(move_id)
+        self = self or list_brocker.state.data['env'].get_env()['move'].service
+        move_log_service = self.env['quant'].service
+        move = await self.get(move_id)
+        if move.type == 'product':
+            """Создаем MoveLog только для записей, когда товар меняет одно из свойств таблицы, """
+            """если движение на перемещение упаковки, то нет нужны """
+            total_quantity = sum(s.value for s in move.suggest_list_rel if s.type == SuggestType.IN_QUANTITY)
+            # - Движение src
+            src_log = await move_log_service.create(obj={
+                "order_id": move.order_id,
+                "move_id": move.store_id,
+                "product_id": move.product_id,
+                "store_id": move.store_id,
+                "location_id": move.location_src_id,
+                "lot_id": move.lot_id if move.lot_id else None,
+                "partner_id": move.partner_id if move.partner_id else None,
+                "quantity": -total_quantity,
+                "reserved_quantity": -total_quantity,
+                "incoming_quantity": 0.0,
+                "uom_id": move.uom_id,
+            }, commit=False)
+            self.session.add(src_log)
 
-        return True
-    list_brocker.register_task(set_done)
+            dest_log = await move_log_service.create(obj={
+                "order_id": move.order_id,
+                "move_id": move.store_id,
+                "product_id": move.product_id,
+                "store_id": move.store_id,
+                "location_id": move.location_dest_id,
+                "lot_id": move.lot_id if move.lot_id else None,
+                "partner_id": move.partner_id if move.partner_id else None,
+                "quantity": total_quantity,
+                "reserved_quantity": 0.0,
+                "incoming_quantity": -total_quantity,
+                "uom_id": move.uom_id,
+            }, commit=False)
+            self.session.add(dest_log)
+        move.status = MoveStatus.DONE
+        await self.session.commit()
+        return move
 
     @permit('move_create')
     async def create(self, obj: CreateSchemaType, parent: Order | Move | None = None, commit=True) -> ModelType:

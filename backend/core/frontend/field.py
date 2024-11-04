@@ -85,14 +85,15 @@ class Field:
             field=self,
         )
 
-    def as_a(self, url):
+    def as_a(self, url=None, model=None):
         """Отдать ссылку, только для uuid и rel"""
         return render_block(
             environment=environment,
             template_name=f'field/as_a.html',
             block_name='as_a',
             field=self,
-            url=url
+            url=url,
+            model=model
         )
 
     @property

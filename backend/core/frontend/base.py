@@ -214,6 +214,7 @@ async def action(cls: ClassView = Depends(get_view)):
                 obj = action_schema(**line)
                 res = await func(obj)
                 result += res
+        return cls.send_message(message=f'Action {cls.v.schema.action} done')
     elif cls.v.schema.method == 'update':
         res = await func(payload=cls.v.schema.model_dump_json())
         return cls.send_message(message=f'Action {cls.v.schema.action} done')

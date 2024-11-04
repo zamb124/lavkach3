@@ -96,3 +96,15 @@ class SuggestType(str, Enum):
 class SuggestStatus(str, Enum):
     WAITING: str = 'waiting'  # Ожидает подверждения
     DONE: str = 'done'  # Выполнен
+
+
+class MoveLogType(str, Enum):
+    RECEIPT: str = 'receipt_in'         # Приемка товара от внешнего источника (поставщика) или принимаем возврат от покупателя
+    SHIPMENT: str = 'shipment_out'      # Отгрузка товара во внешний источник (покупателю) или возврат поставщику
+    WRITE_OFF: str = 'writeoff_in'      # Списание товара
+    LOST: str = 'lost_out'              # Потеря товара
+    FOUND: str = 'found_in'             # Найден товар
+    RECLASS_IN: str = 'reclass_in'      # Пересортица товара
+    RECLASS_OUT: str = 'reclass_out'    # Пересортица товара
+    PUT_IN: str = 'put_in'              # Положил товар (перемещение)
+    PUT_OUT: str = 'put_out'            # Взял товар (перемещение)

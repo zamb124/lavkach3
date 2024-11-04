@@ -19,3 +19,8 @@ permits:
   suggest_delete: Может удалять саджест
   suggest_get: Может смотреть на саджест
   suggest_confirm: Может подтверждать саджест
+  move_log_create: Может создавать квант
+  move_log_update: Может редактировать квант
+  move_log_list: Может получать список квант
+  move_log_delete: Может удалять квант
+  move_log get: Может смотреть на квант

@@ -64,11 +64,11 @@
             "model": "{{ field.model_name }}",
             "method": "get",
             "id": "{{ field.val }}",
-            "key": "{{ field.cls.v.key }}"
+            "key": "{{ field.key }}"
             }'
     >{{ field.val }}</a>
     <script>
-        choicesUuidBadge('{{ field.key }}', 'get')
+        setTitle('{{ field.key }}', 'get')
     </script>
 {% endblock %}
 {% block as_card_title %}

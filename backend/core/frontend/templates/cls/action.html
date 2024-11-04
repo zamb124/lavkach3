@@ -1,12 +1,8 @@
-{% block get %}
-    <div class="modal" id="{{ 'action--'~line.p.class_key }}" tabindex="-1" style="display: none;"aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
+{% block action %}
+    <div class="modal" id="{{ 'action--'~cls.p.class_key }}" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-
-                    <div class="bx-pull-right">
-                         <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
                 </div>
                 <form class="was-validated"
                       hx-post="/base/action"
@@ -15,57 +11,40 @@
                       hx-target="this"
                       hx-swap="none"
                       hx-vals='{
-                "model": "{{ line.v.model.name }}",
+                "model": "{{ cls.p.class_key }}",
                 "action": "{{ action }}",
-                "key": "{{ line.p.class_key }}",
+                "key": "{{ cls.p.class_key }}",
                 "method": "update",
                 "commit": "true"
               }'
                 >
                     <div class="modal-body text-center p-5">
-                        <lord-icon
-                                src="https://cdn.lordicon.com/ghhwiltn.json"
-                                trigger="loop"
-                                style="width:150px;height:150px">
-                        </lord-icon>
                         <div class="card">
-                            <h3 class="card-header" data-key="t-{{ action }}"> {{ action }} </h3>
-                            <div class="card-body">
-                            {% for line in line.action_lines.lines %}
-                                <div class="row">
-                                    {% for field_name, field in line.fields %}
-                                        {% if loop.length % 3 != 0 and loop.first %}
-                                            <div class="row">
-                                        {% endif %}
-                                        {% if loop.index0 % 3 == 0 %}
-                                            <div class="row">
-                                        {% endif %}
-                                    <div class="col" {% if field.field_name in ('id', 'ids', 'lsn', 'vars') %} style="display: none" {% endif %}>
+                            <h3 class="card-title" data-key="t-{{ action }}"> {{ action }} </h3>
+                                {% for field in cls.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' %}
+                                    {% if field.field_name in ('ids', 'id') %}
+                                        <div style="display: none">{{ field.as_update }}</div>
+                                        {% else %}
                                         {{ field.label|safe }}
-                                        {{ field.as_update|safe }}
-                                    </div>
-                                    {% if loop.index % 3 == 0 %}
-                                        </div>
+                                            {{ field.as_update }}
                                     {% endif %}
-                                    {% endfor %}
-                                    </div>
-                                {% endfor %}
-                                    <div class="modal-footer">
-                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
-                </button>
-                                        <button id="{{ 'submit'~line.p.class_key }}" type="submit" class="btn btn-success">
-                                            Save
-                                        </button>
 
-                                    </div>
+
+                                {% endfor %}
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                    </button>
+                                    <button id="{{ 'submit'~cls.p.class_key }}" type="submit" class="btn btn-success">
+                                        Save
+                                    </button>
+
                                 </div>
-                            </div>
+                        </div>
                 </form>
             </div>
         </div>
     </div>
     <script>
-        var modal = new bootstrap.Modal('#{{ 'action--'~line.p.class_key }}')
-        modal.show()
+        new ModalHandler('#{{ 'action--'~cls.p.class_key }}')
     </script>
 {% endblock %}

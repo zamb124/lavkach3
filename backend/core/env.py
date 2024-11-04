@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from core.db import Base
 from .core_apps.base import __domain__ as base_domain
 from .core_apps.bus import __domain__ as bus_domain
+from app.inventory import __domain__ as inventory_domain
 
 class DeleteSchema(BaseModel):
     delete_id: uuid.UUID
@@ -113,7 +114,7 @@ class Domain:
     def adapter(self):
         return self._adapter
 
-core_domains = [base_domain, bus_domain]
+core_domains = [base_domain, bus_domain, inventory_domain]
 
 class Env:
     domains: dict[str, Domain]

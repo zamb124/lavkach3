@@ -16,7 +16,7 @@ from starlette.datastructures import QueryParams
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 
-from core.env import Model, Env
+from core.env import Model, Env, Schemas
 from core.frontend.enviroment import passed_classes, reserved_fields, environment, _crud_filter
 from core.frontend.exceptions import HTMXException
 from core.frontend.field import Field, Fields
@@ -488,7 +488,7 @@ class ClassView:
 
     def __init__(self,
                  request: Request,
-                 model: str,
+                 model: str | BaseModel,
                  params: dict = None,
                  exclude: list = [],
                  join_related: bool = False,
@@ -507,16 +507,36 @@ class ClassView:
         self.h.cls = self
         self._id = id(self)
         self._view = View()
+        if not isinstance(model, str):
+            if issubclass(model, BaseModel):
+                action_name = model.__name__
+                self._view.model = Model(
+                    name=action_name,
+                    _adapter=None,
+                    _service=None,
+                    domain=None,
+                    schemas={
+                        'create':model,
+                        'update': model,
+                        'get':model,
+                        'filter':model,
+                        'delete':model
+                    },
+                    model=action_name
+                )
+        else:
+            self._view.model = request.scope['env'][model]
+            self._view.actions = self._view.model.adapter.get_actions()
         if not schema:
-            schema = BaseSchema(model=model, key=key or _get_key())
+            schema = BaseSchema(model=self._view.model.name, key=key or _get_key())
         self._view.request = request
         if vars:
             self._view.vars = vars
-        self._view.model = request.scope['env'][model]
+
         assert self._view.model, 'Model is not defined'
         self._view.model_name = self._view.model.name
         self._view.is_rel = is_rel
-        self._view.actions = self._view.model.adapter.get_actions()
+
         self._view.env = request.scope['env']
         self._view.key = key or schema.key
         self._view.exclude = exclude or []
@@ -680,7 +700,7 @@ class ClassView:
             'is_reserved': True if field_name in reserved_fields else False,
             'type': res,
             'model_name': model.name,
-            'domain_name': model.domain.name,
+            #'domain_name': model.domain.name,
             'enums': enums,
             'sort_idx': self._view.sort.get(field_name, 999),
             'cls': self,
@@ -719,7 +739,10 @@ class ClassView:
             else:
                 data_obj = await self.v.model.service.list(_filter=params)
                 data = [i.__dict__ for i in data_obj]
-        self._view.data = {i['id']: i for i in data}
+        if isinstance(data, list):
+            self._view.data = {i['id']: i for i in data}
+        else:
+            self._view.data = data
         await self.fill_lines(self._view.data, self.v.join_related, self.v.join_fields)
 
 
@@ -885,20 +908,16 @@ class ClassView:
     async def get_action(self, action: str, ids: list[uuid.UUID], schema: BaseModel) -> str:
         """Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов"""
         data = {k: ids if k == 'ids' else None for k, v in schema.model_fields.items()}
-        self.action_line = await self._get_line(schema=schema, type=LineType.ACTION)
-        self.action_lines = Lines(cls=self, class_key=self.key, line_header=self.action_line,
-                                  line_new=self.action_line)
-        await self.action_lines.get_data(
-            params={},
-            data=[data],
-            key='action--0',
-            join_related=False,
+        cls = ClassView(
+            request=self.v.request,
+            model=schema,
+            key=self.v.model.name,
         )
-
+        await cls.init(data=[data])
         return render_block(
             environment=environment,
             template_name=f'cls/action.html',
-            block_name='action', cls=self, action=action
+            block_name='action', cls=cls, action=action
         )
 
 
