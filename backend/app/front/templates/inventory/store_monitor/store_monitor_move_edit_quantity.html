@@ -1,0 +1,12 @@
+<th class="line-col text-center" id="{{ move.quantity.key }}">
+    <div style="display: flex; align-items: center;max-width: 140px">
+        <input class="form-control fs-5" type="number" name="{{ move.quantity }}" value="{{ move.quantity.val }}">
+        <a href="/inventory/store_monitor/move_edit_quantity?move_id={{ move._id }}"
+           hx-trigger="click"
+           hx-push-url="false"
+           hx-swap="outerHTML"
+           hx-target="#{{ move.quantity.key }}"
+           class="text-muted text-decoration-none">
+            <iconify-icon icon="solar:diskette-bold" class="fs-7"></iconify-icon>
+    </div>
+</th>

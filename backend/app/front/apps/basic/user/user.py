@@ -50,7 +50,6 @@ class LoginSchema(BaseModel):
     responses={"404": {"model": ExceptionResponseSchema}},
 )
 async def login(request: Request, schema: LoginSchema):
-    request.scope['env']
     async with request.scope['env']['user'].adapter as a:
         data = await a.login(schema.username, schema.password)
     return {

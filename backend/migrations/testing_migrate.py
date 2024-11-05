@@ -18,9 +18,9 @@ from sqlalchemy_utils.types import PasswordType
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'
-down_revision = '614e1673cb90'
+down_revision = 'df3eae2e5fd8'
 branch_labels = None
-depends_on = '614e1673cb90'
+depends_on = 'df3eae2e5fd8'
 
 
 def upgrade():
@@ -1220,7 +1220,10 @@ def upgrade():
             'expiration_date': datetime.now(),
             'users_ids': None,
             'description': 'description',
-            'status': 'draft'
+            'status': 'draft',
+            'processing_steps': {
+                'order_start': {},
+            }
         },
         {
             'id': order_out_company_1,
@@ -1241,7 +1244,10 @@ def upgrade():
             'expiration_date': datetime.now(),
             'users_ids': None,
             'description': 'description',
-            'status': 'draft'
+            'status': 'draft',
+            'processing_steps': {
+                'order_start': {},
+            }
         },
         {
             'id': order_int_company_1,
@@ -1262,7 +1268,10 @@ def upgrade():
             'expiration_date': datetime.now(),
             'users_ids': None,
             'description': 'description',
-            'status': 'draft'
+            'status': 'draft',
+            'processing_steps': {
+                'order_start': {},
+            }
         },
         # Company 2
         {
@@ -1284,7 +1293,10 @@ def upgrade():
             'expiration_date': datetime.now(),
             'users_ids': None,
             'description': 'description',
-            'status': 'draft'
+            'status': 'draft',
+            'processing_steps': {
+                'order_start': {},
+            }
         },
         {
             'id': order_out_company_2,
@@ -1305,7 +1317,10 @@ def upgrade():
             'expiration_date': datetime.now(),
             'users_ids': None,
             'description': 'description',
-            'status': 'draft'
+            'status': 'draft',
+            'processing_steps': {
+                'order_start': {},
+            }
         },
         {
             'id': order_int_company_2,
@@ -1326,7 +1341,10 @@ def upgrade():
             'expiration_date': datetime.now(),
             'users_ids': None,
             'description': 'description',
-            'status': 'draft'
+            'status': 'draft',
+            'processing_steps': {
+                'order_start': {},
+            }
         },
 
     ])

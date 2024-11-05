@@ -151,7 +151,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         entity = await self._get(id, for_update)
         return entity
 
-    async def _list(self, _filter: FilterSchemaType | dict, size: int = 100):
+    async def _list(self, _filter: FilterSchemaType | dict, size: int = 100, for_update=False):
         if not isinstance(_filter, BaseFilter):
             if isinstance(_filter, dict):
                 _filter = self.env[self.model.__tablename__].schemas.filter(**_filter)
@@ -160,7 +160,9 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 setattr(_filter, 'company_id__in', [self.user.company_id])
         query_filter = _filter.filter(select(self.model)).limit(size)  # type: ignore
         if getattr(_filter, 'order_by'):
-            query_filter = _filter.sort(query_filter)  # type: ignore
+            query_filter = _filter.sort(query_filter)
+        if for_update:
+            query_filter.with_for_update()
         executed_data = await self.session.execute(query_filter)
         result = executed_data.scalars().all()
         return result
@@ -188,7 +190,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                         if hasattr(_obj, 'id') and _obj.id:
                             rel_entity = await rel_service.update(id=_obj.id, obj=_obj, commit=False)
                         else:
-                            _dump = _obj.model_dump()
+                            _dump = _obj.model_dump(exclude=_obj.model_extra.keys())
                             create_obj = rel_service.create_schema(**_dump)
                             relcations_to_create.append((rel_service.create, create_obj))
                         exclude_rel.append(key)
@@ -249,7 +251,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                             self.session.add(rel_entity)
                             updated_fields.append(key)
                         else:
-                            _dump = _obj.model_dump()
+                            _dump = _obj.model_dump(exclude=_obj.model_extra.keys())
                             _dump[f'{self.model.__tablename__}_id'] = id
                             create_obj = rel_service.create_schema(**_dump)
                             await rel_service.create(obj=create_obj, parent=entity, commit=False)

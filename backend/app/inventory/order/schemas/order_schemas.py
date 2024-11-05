@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional, List, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING, Dict
 
 from celery.worker.strategy import default
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -31,8 +31,9 @@ class OrderBaseScheme(BasicModel):
     planned_datetime: Optional[datetime] = Field(default=None, title='Planned Date', table=True)
     expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=False)
     description: Optional[str] = Field(default=None, title='Description', table=False)
-    status: OrderStatus = Field(default=OrderStatus.DRAFT, title='Status', readonly=True, table=True)
+    status: OrderStatus = Field(default=OrderStatus.CREATED, title='Status', readonly=True, table=True)
     order_id: Optional[UUID] = Field(default=None, title='Parent', readonly=True)
+    processing_steps: Optional[Dict[str, dict]] = Field(default={}, title='Processing Steps', readonly=True)
 
 
     class Config:
@@ -48,7 +49,7 @@ class OrderUpdateScheme(OrderBaseScheme):
         title='Order type',
         model='order_type',
         readonly=False,
-        filter={'status__in': OrderStatus.DRAFT.value}
+        filter={'status__in': OrderStatus.CREATED.value}
     )
 
 

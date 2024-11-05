@@ -4,7 +4,7 @@
             class="line"
             ui_key="{{ move.p.ui_key }}"
             lsn="{{ move.p.lsn }}"
-            hx-trigger="backend_update,click"
+            hx-trigger="backend_update"
             hx-get="/inventory/store_monitor/move?move_id={{ move._id }}"
             hx-swap="outerHTML transition:true"
             hx-target="#{{ move.p.key }}"
@@ -44,11 +44,8 @@
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {{ move.location_dest_id.as_get }}
         </th>
-        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            <b>{{ move.quantity.val }}
-                <span class="small">{{ move.uom_id.as_a() }}</span>
-            </b>
-
+        <th class="line-col text-center">
+            {{ move.quantity.as_(method='get', button=True) }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             <a

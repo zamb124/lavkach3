@@ -1,0 +1,39 @@
+{% block get %}
+    <a href="#"
+       id="{{ field.key~'_link' }}"
+       hx-trigger="click"
+       hx-post="/base/field"
+       hx-target="#{{ field.key }}"
+       hx-swap="outerHTML"
+       hx-ext="json-enc"
+       hx-vals='{
+        "model": "{{ field.model_name }}",
+        "field": "{{ field.field_name }}",
+        "id": "{{ field.cls.p.id }}",
+        "method": "get",
+        "key": "{{ field.key }}"
+        }'
+    >
+        <iconify-icon icon="majesticons:edit-pen-2" class="fs-6"></iconify-icon>
+    </a>
+{% endblock %}
+{% block update %}
+    <a href="#"
+       id="{{ field.key~'_link' }}"
+       hx-trigger="click"
+       hx-post="/base/field"
+       hx-include="closest div"
+       hx-target="#{{ field.key }}"
+       hx-swap="none"
+       hx-ext="json-enc"
+       hx-vals='{
+        "model": "{{ field.model_name }}",
+        "field": "{{ field.field_name }}",
+        "id": "{{ field.cls.p.id }}",
+        "method": "update",
+        "key": "{{ field.key }}"
+        }'
+    >
+        <iconify-icon icon="solar:diskette-bold" class="fs-6"></iconify-icon>
+    </a>
+{% endblock %}

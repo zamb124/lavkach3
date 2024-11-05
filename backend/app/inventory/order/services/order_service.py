@@ -2,12 +2,15 @@ import asyncio
 import datetime
 import uuid
 from typing import Any, Optional, List
+
+from fastapi import HTTPException
 from starlette.requests import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.inventory.order.enums.order_enum import OrderStatus
 from app.inventory.order.models.order_models import Order
 from app.inventory.order.schemas.order_schemas import OrderCreateScheme, OrderUpdateScheme, OrderFilter
+from core.exceptions.module import ModuleException
 from core.helpers.broker.tkq import list_brocker
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
@@ -68,22 +71,22 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         return order_entity
 
     @permit('order_start')
-    async def order_start(self, ids: List[uuid.UUID], user_id: uuid.UUID = None) -> List[ModelType]:
-        """ Стартует ордера, конфермит все мувы и ставит статус Confirmed"""
+    async def order_start(self, ids: List[uuid.UUID], user_id: uuid.UUID) -> List[ModelType]:
+        """Ставим статус CONFIRMING и запускаем процесс подтверждения по каждому таску"""
         res = []
         for order_id in ids:
-            order_entity = await self.get(order_id)
-            for move in order_entity.move_list_rel:
-                await self.env['move'].service._confirm(move=move)
-            if user_id:
-                order_entity.user_ids.append(user_id)
-            else:
-                order_entity.user_ids.append(self.user.user_id)
-            order_entity.status = OrderStatus.CONFIRMED
-            await self.session.commit()
-            await self.session.refresh(order_entity)
+            try:
+                order_entity = await self.get(order_id, for_update=True)
+                if order_entity.status != OrderStatus.CREATED:
+                    raise HTTPException(status_code=401, detail=f"Order {order_entity.number} is not in CREATED status")
+                move_ids = [move.id for move in order_entity.move_list_rel]
+                '''Отправляем таски по каждому муву'''
+                await self.env['move'].service.confirm.kiq(None, move_ids=move_ids, user_id=user_id)
+                order_entity.status = OrderStatus.CONFIRMING
+                await self.session.commit()
+                await self.session.refresh(order_entity)
+            except Exception as ex:
+                await self.session.rollback()
+                raise HTTPException(status_code=500, detail=f"ERROR:  {str(ex)}")
             await order_entity.notify('update')
-            for move in order_entity.move_list_rel:
-                await self.session.refresh(move)
-            res.append(order_entity)
         return res

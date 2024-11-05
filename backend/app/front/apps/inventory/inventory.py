@@ -88,6 +88,12 @@ async def store_monitor_move(move_id: UUID, move_view: MoveView = Depends()):
     move = await move_view.get_lines(ids=[move_id])
     return render(move_view.r, 'inventory/store_monitor/store_monitor_move_line.html', context={'move': move})
 
+@inventory.get("/store_monitor/move_edit_quantity", response_class=HTMLResponse)
+async def store_monitor_move(move_id: UUID, move_view: MoveView = Depends()):
+    """Отдает лайну для редактирования количества"""
+    move = await move_view.get_lines(ids=[move_id])
+    return render(move_view.r, 'inventory/store_monitor/store_monitor_move_edit_quantity.html', context={'move': move})
+
 
 @inventory.get("/store_monitor/move_detail", response_class=HTMLResponse)
 async def store_monitor_move_detail(move_id: UUID, move_view: MoveView = Depends()):

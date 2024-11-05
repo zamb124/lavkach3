@@ -53,6 +53,21 @@ class Field:
         """Отдает уникальный идентификатор для поля"""
         return f'{self.cls.p.key}--{self.field_name}'
 
+    def as_(self, method='get', button=False, model=None):
+        """Отдает виджет поля в зависимости от метода"""
+        widget = None
+        match method:
+            case 'get':
+                widget = self.as_get
+            case 'update':
+                widget = self.as_update
+            case 'create':
+                widget = self.as_create
+        if button:
+            return f"""<div id="{self.key}" style="display: flex; justify-content: center; align-items: center;">{widget}{self.as_update_link(method)}</div>"""
+        else:
+            return widget
+
     def render(self, block_name: str, type: str = '', method: MethodType = MethodType.GET) -> str:
         """Метод рендера шаблона"""
         type = type or self.type
@@ -72,6 +87,15 @@ class Field:
             environment=environment,
             template_name=f'field/label.html',
             block_name='label',
+            field=self,
+        )
+
+    def as_update_link(self, method='get') -> str:
+        """Отдать кнопку для запросы формы as_update"""
+        return render_block(
+            environment=environment,
+            template_name=f'field/as_update_link.html',
+            block_name=method,
             field=self,
         )
 

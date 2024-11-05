@@ -11,17 +11,21 @@
                                         # {{ order.number.val }}-
                                     </h4>
                                     <th class="line-col text-center align-items-center" style="padding-left: 2px; padding-right: 2px;">
-                                            {% if order.status.val == 'draft' %}
-                                                <span class="mb-0 badge text-bg-light">{{ order.status.val }}</span>
-                                            {% elif order.status.val == 'waiting' %}
-                                                <span class="mb-0 badge text-bg-info">{{ order.status.val }}</span>
-                                            {% elif order.status.val == 'confirmed' %}
-                                                <span class="mb-0 badge text-bg-secondary">{{ order.status.val }}</span>
-                                            {% elif order.status.val == 'done' %}
-                                                <span class="mb-0 badge text-bg-success">{{ order.status.val }}</span>
-                                            {% elif order.status.val == 'canceled' %}
-                                                <span class="mb-0 badge text-bg-dark">{{ order.status.val }}</span>
-                                            {% endif %}
+                                            {% if order.status.val == 'created' %}
+                                        <span class="mb-0 badge text-bg-light">{{ order.status.val }}</span>
+                                    {% elif order.status.val == 'waiting' %}
+                                        <span class="mb-0 badge text-bg-info">{{ order.status.val }}</span>
+                                    {% elif order.status.val == 'confirmed' %}
+                                        <span class="mb-0 badge text-bg-secondary">{{ order.status.val }}</span>
+                                    {% elif order.status.val == 'processing' %}
+                                        <span class="mb-0 badge text-bg-primary">{{ order.status.val }}</span>
+                                    {% elif order.status.val == 'done' %}
+                                        <span class="mb-0 badge text-bg-success">{{ order.status.val }}</span>
+                                    {% elif order.status.val == 'canceled' %}
+                                        <span class="mb-0 badge text-bg-dark">{{ order.status.val }}</span>
+                                    {% else %}
+                                        <span class="mb-0 badge text-bg-warning">{{ order.status.val }}</span>
+                                    {% endif %}
                                         </th>
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
@@ -87,7 +91,7 @@
                                     <span>Actions</span>
                                 </a>
                                 <ul class="dropdown-menu" style="">
-                                    {% if order.status.val == 'draft' %}
+                                    {% if order.status.val == 'created' %}
                                         {% set action_start = order.v.actions['order_start'] %}
                                         <li>
                                             <a

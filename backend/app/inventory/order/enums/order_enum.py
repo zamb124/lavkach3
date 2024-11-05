@@ -10,23 +10,16 @@ class StoreEnum(BaseEnum):
 
 class MoveStatus(str, Enum):
     CREATED: str = 'created'       # Мув создан, но не подтвержден
+    CONFIRMING: str = 'confirming' # Мув в процессе утверждения, кванты еще не зарезервированы, резервируются
+    RESERVATION_FAILED: str = 'reservation_failed'  # Резервирование не удалось
     CONFIRMED: str = 'confirmed'   # Мув пдтвержден и нужные кванты найдены и зарезервированы
     WAITING: str = 'waiting'       # Ожидает назначения оператора
     ASSIGNED: str = 'assigned'     # Оператор найден и назначен
     PROCESSING: str = 'processing' # Оператор начал действия
+    COMPLETING: str = 'completing' # Завершение ордера
     DONE: str = 'done'             # Оператор завершил действия
+    CANCELING: str = 'canceled'    # Отменяется, кванты при этом разрезерируются
     CANCELED: str = 'canceled'     # Отменен, кванты при этом разрезерируются
-
-
-move_color_map = {
-    MoveStatus.CREATED: TextColorEnum.LIGHT,
-    MoveStatus.CONFIRMED: TextColorEnum.DARK,
-    MoveStatus.WAITING: TextColorEnum.WARNING,
-    MoveStatus.ASSIGNED: TextColorEnum.INFO,
-    MoveStatus.PROCESSING: TextColorEnum.SECONDARY,
-    MoveStatus.DONE: TextColorEnum.SUCCESS,
-    MoveStatus.CANCELED: TextColorEnum.DANGER,
-}
 
 
 class MoveType(str, Enum):
@@ -38,11 +31,16 @@ class MoveType(str, Enum):
 
 
 class OrderStatus(str, Enum):
-    DRAFT: str = 'draft'           # Черновик
-    WAITING: str = 'waiting'       # Ожидает подтверждения
+    CREATED: str = 'created'         # Просто создан
+    CONFIRMING: str = 'confirming' # Ордер в процессе утверждения
+    RESERVATION_FAILED: str = 'reservation_failed'  # Резервирование не удалось
     CONFIRMED: str = 'confirmed'   # Подтвержден
+    WAITING: str = 'waiting'       # Ожидает взятия на исполнение
     ASSIGNED: str = 'assigned'     # Назначен исполнитель
+    PROCESSING: str = 'processing' # Оператор начал действия
+    COMPLETING: str = 'completing' # Завершение ордера
     DONE: str = 'done'             # Выполнен
+    CANCELING: str = 'canceled'    # Отменяется, ожидает отмену всех(не done) мувов
     CANCELED: str = 'canceled'     # Отменен
 
 
@@ -108,3 +106,5 @@ class MoveLogType(str, Enum):
     RECLASS_OUT: str = 'reclass_out'    # Пересортица товара
     PUT_IN: str = 'put_in'              # Положил товар (перемещение)
     PUT_OUT: str = 'put_out'            # Взял товар (перемещение)
+    INVENROTY_IN: str = 'inventory_in'  # Инвентаризация
+    INVENROTY_OUT: str = 'inventory_out'  # Инвентаризация

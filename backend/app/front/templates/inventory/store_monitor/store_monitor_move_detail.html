@@ -9,17 +9,19 @@
                                 <div class="d-sm-flex align-items-center justify-space-between">
                                     <h4 class="mb-4 mb-sm-0 card-title" data-key="t-move">Move</h4>
                                     {% if move.status.val == 'created' %}
-                                        <span class="mb-1 badge text-bg-light">{{ move.status.val }}</span>
+                                        <span class="mb-0 badge text-bg-light">{{ move.status.val }}</span>
                                     {% elif move.status.val == 'waiting' %}
-                                        <span class="mb-1 badge text-bg-info">{{ move.status.val }}</span>
+                                        <span class="mb-0 badge text-bg-info">{{ move.status.val }}</span>
                                     {% elif move.status.val == 'confirmed' %}
-                                        <span class="mb-1 badge text-bg-secondary">{{ move.status.val }}</span>
+                                        <span class="mb-0 badge text-bg-secondary">{{ move.status.val }}</span>
                                     {% elif move.status.val == 'processing' %}
-                                        <span class="mb-1 badge text-bg-primary">{{ move.status.val }}</span>
+                                        <span class="mb-0 badge text-bg-primary">{{ move.status.val }}</span>
                                     {% elif move.status.val == 'done' %}
-                                        <span class="mb-1 badge text-bg-success">{{ move.status.val }}</span>
+                                        <span class="mb-0 badge text-bg-success">{{ move.status.val }}</span>
                                     {% elif move.status.val == 'canceled' %}
-                                        <span class="mb-1 badge text-bg-dark">{{ move.status.val }}</span>
+                                        <span class="mb-0 badge text-bg-dark">{{ move.status.val }}</span>
+                                    {% else %}
+                                        <span class="mb-0 badge text-bg-warning">{{ move.status.val }}</span>
                                     {% endif %}
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
@@ -52,9 +54,9 @@
                                            data-key="{{ move.order_id.data_key }}">
                                             {{ move.order_id.field_name }}
                                         </p>
-                                            <h4 class="card-title mb-0 mt-0" >
-                                                {{ move.order_id.as_a(url='/inventory/store_monitor/order_detail') }}
-                                            </h4>
+                                        <h4 class="card-title mb-0 mt-0">
+                                            {{ move.order_id.as_a(url='/inventory/store_monitor/order_detail') }}
+                                        </h4>
                                     </div>
                                 </div>
                             </div>

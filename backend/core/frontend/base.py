@@ -187,6 +187,23 @@ async def modal(cls: ClassView = Depends(get_view)):
         case Method.CREATE:
             return cls.h.as_modal_create
 
+@router.post("/field", response_class=HTMLResponse)
+async def modal(cls: ClassView = Depends(get_view)):
+    """
+     Универсальный запрос на получение as_update поля
+    """
+    cls.reset_key()
+    match cls.v.schema.method:
+        case Method.GET:
+            line = await cls.get_lines(ids=[cls.v.schema.id])
+            return getattr(line, cls.v.schema.field).as_('update', button=True)
+        case Method.UPDATE:
+            async with cls.v.model.adapter as a:
+                line = await a.get(id=cls.v.schema.id)
+                line[cls.v.schema.field] = getattr(cls.v.schema, cls.v.schema.key)
+                await cls.update_lines(id=line['id'], data=[line])
+            return
+
 
 class ActionSchema(BaseSchema):
     action: str

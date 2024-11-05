@@ -4,7 +4,7 @@ from operator import index
 from typing import Optional
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint, ARRAY, \
-    String
+    String, JSON
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 # from app.inventory.location.models import Location, LocationClass
@@ -107,8 +107,9 @@ class Order(Base, AllMixin, CreatedEdited):
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     user_ids: Mapped[Optional[ids]] = mapped_column(index=True)
     description: Mapped[Optional[str]]
-    status: Mapped['OrderStatus'] = mapped_column(default=OrderStatus.DRAFT, index=True)
+    status: Mapped['OrderStatus'] = mapped_column(default=OrderStatus.CREATED, index=True)
     move_list_rel: Mapped[Optional[list["Move"]]] = relationship(back_populates="order_rel", lazy="selectin")
+    processing_steps: Mapped[dict] = mapped_column(JSON)
 
     def __init__(self, **kwargs):
         """
@@ -146,7 +147,7 @@ class Move(Base, AllMixin, CreatedEdited):
     quant_dest_id: Mapped[Optional['Quant']] = mapped_column(ForeignKey("quant.id", ondelete="NO ACTION"), index=True)
     status: Mapped[MoveStatus] = mapped_column(default=MoveStatus.CREATED)
     suggest_list_rel: Mapped[Optional[list["Suggest"]]] = relationship(lazy="selectin")
-
+    processing_steps: Mapped[dict] = mapped_column(JSON)
 
 
 class Suggest(Base, AllMixin):
@@ -185,10 +186,12 @@ class MoveLog(Base, AllMixin, CreatedEdited):
     move_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('move.id', ondelete='RESTRICT'), index=True)
     product_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.product.id")
     store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.project.id")
+    location_class: Mapped[LocationClass] = mapped_column(index=True)
     location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id", ondelete="RESTRICT"), index=True)
     lot_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("lot.id", ondelete="RESTRICT"), index=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.uom.id")
     quantity: Mapped[float]
     reserved_quantity: Mapped[float]
+    incoming_quantity: Mapped[float]
 

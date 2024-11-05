@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from typing import Optional, List, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING, Dict
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import computed_field
 from pydantic.types import UUID4
+from pygments.lexer import default
 
 from app.inventory.location.enums import LocationClass
-from app.inventory.order.enums.order_enum import MoveStatus, MoveType, move_color_map
+from app.inventory.order.enums.order_enum import MoveStatus, MoveType
 from app.inventory.order.models import Move
 from app.inventory.order.schemas.suggest_schemas import SuggestScheme, SuggestCreateScheme, SuggestUpdateScheme
 
@@ -35,7 +36,8 @@ class MoveBaseScheme(BasicModel):
     uom_id: Optional[UUID4] = Field(default=None, title='Uom', table=True, model='uom')
     quant_src_id: Optional[UUID4] = Field(default=None, title='Quant source', table=True, model='quant')
     quant_dest_id: Optional[UUID4] = Field(default=None, title='Quant dest', table=True, model='quant')
-    status: MoveStatus = Field(title='Status', table=True, readonly=True, color_map=move_color_map)
+    status: MoveStatus = Field(title='Status', table=True, readonly=True)
+    processing_steps: Optional[Dict[str, dict]] = Field(default={},title='Processing Steps', readonly=True)
 
     class Config:
         orm_model = Move

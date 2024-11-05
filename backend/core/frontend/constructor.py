@@ -876,7 +876,7 @@ class ClassView:
         await self.get_data(params={'id__in': ids})
         return self
 
-    async def update_lines(self, data: dict, id: uuid.UUID) -> 'ClassView':
+    async def update_lines(self, data: list, id: uuid.UUID) -> 'ClassView':
         """Метод обновления обьектов"""
         new_data = []
         for raw_line in data:

@@ -29,6 +29,8 @@ class MoveLogService(BaseService[MoveLog, MoveLogCreateScheme, MoveLogUpdateSche
 
     @permit('move_log_create')
     async def create(self, obj: CreateSchemaType, parent: Order | MoveLog | None = None, commit=True) -> ModelType:
+        if isinstance(obj, dict):
+            obj = self.create_schema(**obj)
         obj.created_by = self.user.user_id
         obj.edited_by = self.user.user_id
         return await super(MoveLogService, self).create(obj)
