@@ -1,7 +1,18 @@
 {% autoescape false %}
-    <div class="modal" id="{{ 'modal_'~order.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal" id="{{ 'modal_'~order.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true"
+         ui_key="{{ order.p.ui_key }}"
+        lsn="{{ order.p.lsn }}"
+         hx-swap="outerHTML"
+        hx-trigger="backend_update"
+        hx-get="/inventory/order/detail?order_id={{ order._id }}"
+        hx-target="#{{ 'modal_content_'~order.p.key }}"
+         hx-select=".modal-content"
+         hx-disinherit="*"
+
+    >
         <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
-            <div class="modal-content">
+            <div class="modal-content" id="{{ 'modal_content_'~order.p.key }}"
+                 >
                 <div class="modal-header">
                     <div class="card-body">
                         <div class="row align-items-center">

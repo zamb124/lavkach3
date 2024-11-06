@@ -21,28 +21,29 @@
                     <div class="modal-body">
                         <div class="card">
                             <h3 class="card-title" data-key="t-{{ action }}"> {{ action }} </h3>
-                                {% for field in cls.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' %}
-                                    {% if field.field_name in ('ids', 'id') %}
-                                        <div style="display: none">{{ field.as_update }}</div>
-                                        {% else %}
-                                        {{ field.label|safe }}
-                                            {{ field.as_update }}
-                                    {% endif %}
+                            {% for field in cls.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' %}
+                                {% if field.field_name in ('ids', 'id') %}
+                                    <div style="display: none">{{ field.as_update }}</div>
+                                {% else %}
+                                    {{ field.label|safe }}
+                                    {{ field.as_update }}
+                                {% endif %}
 
 
-                                {% endfor %}
+                            {% endfor %}
 
                         </div>
-                    <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
-                                    </button>
-                                    <button id="{{ 'submit'~cls.p.class_key }}" type="submit" class="btn btn-success">
-                                        Save
-                                    </button>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                            </button>
+                            <button id="{{ 'submit'~cls.p.class_key }}" type="submit" class="btn btn-success">
+                                Save
+                            </button>
 
-                                </div>
+                        </div>
                 </form>
             </div>
+
         </div>
     </div>
     <script>

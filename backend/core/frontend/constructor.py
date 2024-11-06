@@ -693,6 +693,8 @@ class ClassView:
             elif model_name != self._view.model.name:
                 model = self._view.env[model_name]
         assert model, f'Model for field {field_name} is not defined'
+        if field_name == 'ids':
+            a=1
         field = Field(**{
             **self._get_view_vars(field_name, is_filter),
             'is_filter': is_filter,

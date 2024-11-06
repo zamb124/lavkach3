@@ -63,6 +63,8 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         order_entity = await self.get(order_id)
         if user_id:
             order_entity.user_ids.append(user_id)
+            new_users = set(order_entity.user_ids)
+            order_entity.user_ids = list(new_users)
         else:
             order_entity.user_ids.append(self.user.user_id)
         await self.session.commit()
