@@ -5,7 +5,7 @@
             ui_key="{{ move.p.ui_key }}"
             lsn="{{ move.p.lsn }}"
             hx-trigger="backend_update"
-            hx-get="/inventory/store_monitor/move?move_id={{ move._id }}"
+            hx-get="/inventory/move/line?move_id={{ move._id }}"
             hx-swap="outerHTML transition:true"
             hx-target="#{{ move.p.key }}"
     >
@@ -20,7 +20,7 @@
             </div>
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            <a href="/inventory/store_monitor/move_detail?move_id={{ move._id }}"
+            <a href="/inventory/move/detail?move_id={{ move._id }}"
                hx-trigger="click"
                hx-push-url="false"
                hx-target="#htmx_content"
@@ -50,7 +50,7 @@
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             <a
                     class="text-muted text-decoration-none d-flex justify-content-center"
-                    href="/inventory/store_monitor/move_detail?move_id={{ move._id }}"
+                    href="/inventory/move/detail?move_id={{ move._id }}"
                     hx-push-url="false"
                     hx-target="#htmx_content"
                     hx-swap="beforeend transition:true"

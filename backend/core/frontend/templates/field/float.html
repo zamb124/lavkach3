@@ -29,7 +29,7 @@
                     class="form-control"
                     {% if field.required %} required {% endif %}
                     disabled
-            style="width: 50%"
+                    style="width: 50%"
                     name="{{ field.key }}"
                     placeholder="Enter {{ field.title }}"
                     value="{{ field.val.english_name or field.val.name or field.val}}"

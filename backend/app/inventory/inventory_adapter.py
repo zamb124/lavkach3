@@ -3,6 +3,7 @@ from uuid import UUID
 
 from app.inventory.inventory_config import config
 from app.inventory.order.schemas import SuggestConfirmScheme
+from app.inventory.order.schemas.order_schemas import AssignUser
 from core.fastapi.adapters import BaseAdapter
 from core.fastapi.adapters.action_decorator import action
 from core.types import UUIDEncoder
@@ -74,17 +75,12 @@ class InventoryAdapter(BaseAdapter):
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()
 
-    @action(model='order', multiple=False, permits=[])
-    async def assign_order(self, payload: dict):
+    @action(model='order',schema=AssignUser, multiple=False, permits=[])
+    async def assign_order(self, schema: AssignUser):
         """Назначение пользователя на заказ, если не указан, то возьется из запроса"""
-        user_id = payload['user_id']
-        order_id = payload['order_id']
         path = f'/api/inventory/order/assign_order'
-        payload = {
-            'order_id': order_id,
-            'user_id': user_id if user_id else None
-        }
-        responce = await self.client.post(self.host + path, json=payload, params={})
+        schema_body = schema.model_dump_json()
+        responce = await self.client.post(self.host + path, json=schema_body, params={})
         return responce.json()
 
     @action(model='order', multiple=False, permits=['store_assign'])

@@ -5,7 +5,7 @@
             ui_key="{{ order.p.ui_key }}"
             lsn="{{ order.p.lsn }}"
             hx-trigger="backend_update"
-            hx-get="/inventory/store_monitor/order?order_id={{ order._id }}"
+            hx-get="/inventory/order/line?order_id={{ order._id }}"
             hx-swap="outerHTML transition:true"
             hx-target="#{{ order.p.key }}"
     >
@@ -20,7 +20,7 @@
             </div>
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            <a href="/inventory/store_monitor/order_detail?order_id={{ order._id }}"
+            <a href="/inventory/order/detail?order_id={{ order._id }}"
                hx-trigger="click"
                hx-push-url="false"
                hx-target="#htmx_content"

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional, List, TYPE_CHECKING, Dict
+from typing import Optional, List, TYPE_CHECKING, Dict, Self
 
 from celery.worker.strategy import default
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, computed_field, model_validator
 from pydantic.types import UUID4
 from core.schemas.basic_schemes import BasicField as Field, ActionBaseSchame
 
@@ -17,14 +17,15 @@ from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from core.types import UUID
-from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme,MoveUpdateScheme
+from app.inventory.order.schemas.move_schemas import MoveScheme, MoveCreateScheme, MoveUpdateScheme
 
 
 class OrderBaseScheme(BasicModel):
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
     order_type_id: UUID = Field(title='Order type', form=True, model='order_type')
     store_id: UUID = Field(title='Store', table=True, form=True, model='store')
-    partner_id: Optional[UUID] = Field(default=None, title='Partner', table=True, form=True, model='partner', readonly=True)
+    partner_id: Optional[UUID] = Field(default=None, title='Partner', table=True, form=True, model='partner',
+                                       readonly=True)
     lot_id: Optional[UUID] = Field(default=None, title='Lot', model='lot')
     origin_type: Optional[str] = Field(default=None, title='Original Type', form=True)
     origin_number: Optional[str] = Field(default=None, title='Original', table=True, form=True)
@@ -35,11 +36,9 @@ class OrderBaseScheme(BasicModel):
     order_id: Optional[UUID] = Field(default=None, title='Parent', readonly=True)
     processing_steps: Optional[Dict[str, dict]] = Field(default={}, title='Processing Steps', readonly=True)
 
-
     class Config:
         orm_model = Order
-        readonly = [('status', '==', 'draft')]            # Переопределяет readonly для всех полей модели для UI
-
+        readonly = [('status', '==', 'draft')]  # Переопределяет readonly для всех полей модели для UI
 
 
 class OrderUpdateScheme(OrderBaseScheme):
@@ -64,7 +63,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     vars: Optional[dict] = None
     number: str = Field(title='Order #', readonly=False, description="Internal number of order")
     actual_datetime: Optional[datetime] = Field(title='Actual Date')
-    created_by: UUID = Field(title='Created By',  model='user')
+    created_by: UUID = Field(title='Created By', model='user')
     edited_by: UUID = Field(title='Edit By', model='user')
     user_ids: Optional[list[UUID]] = Field(default=[], title='Users', readonly=True, model='user', table=True)
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=False, readonly=True)
@@ -94,4 +93,21 @@ class OrderListSchema(GenericListSchema):
 
 
 class AssignUser(ActionBaseSchame):
-    user_id: Optional[UUID] = Field(default=None, title='User')
+    user_id: Optional[UUID] = Field(
+        default=None,
+        title='User',
+        form=True,
+        model='user'
+    )
+    order_id: Optional[UUID] = Field(
+        default=None,
+        title='Order',
+        form=False,
+        model='order'
+    )
+
+    @model_validator(mode='after')
+    def check_passwords_match(self) -> Self:
+        if self.ids and not self.order_id:
+            self.order_id = self.ids[0]
+        return self

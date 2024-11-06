@@ -18,7 +18,7 @@
                 "commit": "true"
               }'
                 >
-                    <div class="modal-body text-center p-5">
+                    <div class="modal-body">
                         <div class="card">
                             <h3 class="card-title" data-key="t-{{ action }}"> {{ action }} </h3>
                                 {% for field in cls.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' %}
@@ -31,7 +31,9 @@
 
 
                                 {% endfor %}
-                                <div class="modal-footer">
+
+                        </div>
+                    <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
                                     </button>
                                     <button id="{{ 'submit'~cls.p.class_key }}" type="submit" class="btn btn-success">
@@ -39,7 +41,6 @@
                                     </button>
 
                                 </div>
-                        </div>
                 </form>
             </div>
         </div>

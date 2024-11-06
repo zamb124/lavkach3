@@ -62,7 +62,7 @@
                             <tbody>
                             {% for order in orders %}
                                 {% with order=order %}
-                                    {% include 'inventory/store_monitor/store_monitor_order_line.html' %}
+                                    {% include 'inventory/order/order_line.html' %}
                                 {% endwith %}
                             {% endfor %}
                             </tbody>

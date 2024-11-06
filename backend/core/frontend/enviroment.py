@@ -10,7 +10,11 @@ if TYPE_CHECKING:
 
 path = os.path.dirname(os.path.abspath(__file__))
 
-template_dirs = ['app/front/templates', 'core/frontend/templates']
+template_dirs = [
+    'app/front/templates',
+    'core/frontend/templates',
+    'app/front/apps/',
+]
 
 # Создайте загрузчик файловой системы с несколькими директориями
 loader = FileSystemLoader(template_dirs)
