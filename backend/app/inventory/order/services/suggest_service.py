@@ -1,3 +1,5 @@
+import logging
+import traceback
 import uuid
 from typing import Any, Optional, List
 
@@ -12,6 +14,9 @@ from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 from core.helpers.broker.tkq import list_brocker
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateScheme, SuggestFilter]):
     def __init__(self, request: Request):
@@ -38,6 +43,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
         suggest_entities = await self.list({'id__in': suggest_ids}, 999)
         for suggest_entity in suggest_entities:
             is_last = True
+            move_id = suggest_entity.move_id
             if suggest_entity.status == SuggestStatus.DONE:
                 raise ModuleException(
                     status_code=406,
@@ -85,28 +91,21 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
             for suggest in move.suggest_list_rel:
                 if suggest.id != suggest_entity.id and suggest.status != SuggestStatus.DONE:
                     is_last = False
-            if is_last:
-                move.status = MoveStatus.DONE
-                #await self.env['move'].service.set_done.kiq(move_id=move.id)
-                #task__set_done = list_brocker.register_task(self.env['move'].service.set_done)
-                #task = await task__set_done.kiq(move_id=move.id)
-                task = await self.env['move'].service.set_done.kiq(move_id=move.id)
-                task_result = await task.wait_result()
-                if task_result.error:
-                    raise ModuleException(
-                        status_code=406,
-                        enum=None,
-                        message='Task Error'
-                    )
-        if commit:
-            try:
-                await self.session.commit()
-                for suggest_entity in suggest_entities:
-                    await self.session.refresh(suggest_entity)
-                    await suggest_entity.notify('update')
-            except Exception as e:
-                await self.session.rollback()
-                raise HTTPException(status_code=500, detail=f"Some Error entity {str(e)}")
+            if commit:
+                try:
+                    if is_last:
+                        move.status = MoveStatus.COMPLETING
+                    await self.session.commit()
+                    if is_last:
+                        await self.env['move'].service.set_done.kiq(None, move_id=move_id, user_id=self.user.user_id)
+                    for suggest_entity in suggest_entities:
+                        await self.session.refresh(suggest_entity)
+                        await suggest_entity.notify('update')
+                except Exception as e:
+                    await self.session.rollback()
+                    logging.error("Произошла ошибка: %s", e)
+                    logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
+                    raise HTTPException(status_code=500, detail=f"Some Error entity {str(e)}")
         else:
             await self.session.flush(suggest_entities)
 

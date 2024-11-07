@@ -104,7 +104,7 @@ class InventoryAPP:
         'move': 'suggest_scan_method'
     }
     actions: dict = {
-        'order_start': 'action_order_start',
+        'order_confirm': 'action_order_confirm',
         'order_finish': 'action_order_finish',
         'suggest_done': 'action_suggest_done'
     }
@@ -165,14 +165,14 @@ class InventoryAPP:
                 return await self.get_moves_by_order_id(order_id=move['order_id'])
         return await self.get_move_card(move=move, barcode=barcode)
 
-    async def action_order_start(self, message: Message):
+    async def action_order_confirm(self, message: Message):
         adapter = self.websocket.scope['env']['order'].adapter
-        await adapter.order_start(payload={'ids': [message.id], 'user_id':self.user.user_id})
+        await adapter.order_confirm(payload={'ids': [message.id], 'user_id':self.user.user_id})
         return await self.get_moves_by_order_id(order_id=message.id)
 
     async def action_order_finish(self, message: Message):
         adapter = self.websocket.scope['env']['order'].adapter
-        order = await adapter.assign_order(order_id=message.id, user_id=self.user.user_id)
+        order = await adapter.order_assign(order_id=message.id, user_id=self.user.user_id)
         return await self.get_moves_by_order_id(order)
 
     async def get_move_card(self, move: dict | UUID4 | str, barcode: str = None):

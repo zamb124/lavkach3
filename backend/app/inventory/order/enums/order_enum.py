@@ -14,9 +14,8 @@ class MoveStatus(str, Enum):
     RESERVATION_FAILED: str = 'reservation_failed'  # Резервирование не удалось
     CONFIRMED: str = 'confirmed'   # Мув пдтвержден и нужные кванты найдены и зарезервированы
     WAITING: str = 'waiting'       # Ожидает назначения оператора
-    ASSIGNED: str = 'assigned'     # Оператор найден и назначен
     PROCESSING: str = 'processing' # Оператор начал действия
-    COMPLETING: str = 'completing' # Завершение ордера
+    COMPLETING: str = 'completing' # Завершение Мува
     DONE: str = 'done'             # Оператор завершил действия
     CANCELING: str = 'canceled'    # Отменяется, кванты при этом разрезерируются
     CANCELED: str = 'canceled'     # Отменен, кванты при этом разрезерируются
@@ -36,7 +35,6 @@ class OrderStatus(str, Enum):
     RESERVATION_FAILED: str = 'reservation_failed'  # Резервирование не удалось
     CONFIRMED: str = 'confirmed'   # Подтвержден
     WAITING: str = 'waiting'       # Ожидает взятия на исполнение
-    ASSIGNED: str = 'assigned'     # Назначен исполнитель
     PROCESSING: str = 'processing' # Оператор начал действия
     COMPLETING: str = 'completing' # Завершение ордера
     DONE: str = 'done'             # Выполнен

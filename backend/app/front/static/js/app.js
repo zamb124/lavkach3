@@ -63,12 +63,19 @@ class App {
                 this.cache.temp[model] = [];
             }
             for (let i = 0; i < promises.length; i++) {
-                const item = await promises[i];
-                const results = await item.json();
-                for (let j = 0; j < results.length; j++) {
-                    var label = results[j].label || 'No Title';
-                    this.cache.results[results[j].value] = label;
+                var prom = promises[i];
+                try {
+                    const item = await prom;
+                    const results = await item.json();
+                    for (let j = 0; j < results.length; j++) {
+                        var label = results[j].label || 'No Title';
+                        this.cache.results[results[j].value] = label;
+                    }
+                } catch (e) {
+                    console.error(e);
                 }
+
+
             }
             await new Promise(r => setTimeout(r, 300));
             if (Object.keys(this.cache.results).length > 2000) {

@@ -5,7 +5,7 @@
             ui_key="{{ suggest.p.ui_key }}"
             lsn="{{ suggest.p.lsn }}"
             hx-trigger="backend_update"
-            hx-get="/inventory/store_monitor/suggest?suggest_id={{ suggest._id }}"
+            hx-get="/inventory/suggest/line?suggest_id={{ suggest._id }}"
             hx-swap="outerHTML transition:true"
             hx-target="#{{ suggest.p.key }}"
     >
@@ -20,7 +20,7 @@
             </div>
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            <a href="/inventory/store_monitor/move_detail?move_id={{ suggest._id }}"
+            <a href="/inventory/move/detail?move_id={{ suggest._id }}"
                hx-trigger="click"
                hx-push-url="false"
                hx-target="#htmx_content"

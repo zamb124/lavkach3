@@ -1,11 +1,15 @@
 import logging
 import logging
+import traceback
 import uuid
 from typing import Any, Optional, List
 
+from docutils.languages.he import labels
 from sqlalchemy import select
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
+from watchfiles import awatch
+
 from app.inventory.location.enums import VirtualLocationClass, PhysicalLocationClass
 from app.inventory.order import MoveLog
 from app.inventory.order.enums.exceptions_move_enums import MoveErrors
@@ -59,62 +63,78 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return await super(MoveService, self).update(id, obj, commit)
 
     @permit('move_list')
-    async def list(self, _filter: FilterSchemaType, size: int=100):
+    async def list(self, _filter: FilterSchemaType, size: int = 100):
         return await super(MoveService, self).list(_filter, size)
 
     @list_brocker.task(queue_name='model')
-    async def create_suggests(self=None, move: str = None):
+    async def create_suggests(self, move_ids: list, user_id: str):
         """
             Создаются саджесты в зависимости от OrderType и Product
         """
         self = self or list_brocker.state.data['env'].get_env()['move'].service
-        if isinstance(move, str):
-            move = await self.get(move)
-        suggest_service = self.env['suggest'].service
+        moves = await self.list({'id__in': move_ids}, size=9999)
+        suggest_model = self.env['suggest'].model
         location_service = self.env['location'].service
-        if move.type == MoveType.PRODUCT:
-            """Если это перемещение товара из виртуальцой локации, то идентификация локации не нужна"""
-            location_src = await location_service.get(move.location_src_id)
-            location_dest = await location_service.get(move.location_dest_id)
-            if not location_src.location_class in VirtualLocationClass:
-                await suggest_service.create(obj={
+        for move in moves:
+            if move.suggest_list_rel:
+                raise ModuleException(status_code=406, enum=MoveErrors.SUGGESTS_ALREADY_CREATED)
+            if move.type == MoveType.PRODUCT:
+                """Если это перемещение товара из виртуальцой локации, то идентификация локации не нужна"""
+                location_src = await location_service.get(move.location_src_id)
+                location_dest = await location_service.get(move.location_dest_id)
+                if not location_src.location_class in VirtualLocationClass:
+                    in_location_suggest_one = suggest_model(**{
+                        "move_id": move.id,
+                        "priority": 1,
+                        "type": SuggestType.IN_LOCATION,
+                        "value": f'{location_src.id}',
+                        "company_id": move.company_id,
+                        # "user_id": self.user.user_id
+                    })
+                    self.session.add(in_location_suggest_one)
+                """Ввод Партии"""  # TODO:  пока хз как праильное
+                """Далее саджест на идентификацию товара"""
+                in_product_suggest = suggest_model(**{
                     "move_id": move.id,
-                    "priority": 1,
-                    "type": SuggestType.IN_LOCATION,
-                    "value": f'{location_src.id}',
+                    "priority": 2,
+                    "type": SuggestType.IN_PRODUCT,
+                    "value": f'{move.product_id}',
                     "company_id": move.company_id,
                     # "user_id": self.user.user_id
-                }, commit=False)
-            """Ввод Партии"""  # TODO:  пока хз как праильное
-            """Далее саджест на идентификацию товара"""
-            await suggest_service.create(obj={
-                "move_id": move.id,
-                "priority": 2,
-                "type": SuggestType.IN_PRODUCT,
-                "value": f'{move.product_id}',
-                "company_id": move.company_id,
-                # "user_id": self.user.user_id
-            }, commit=False)
-            """Далее саджест ввода количества"""
-            await suggest_service.create(obj={
-                "move_id": move.id,
-                "priority": 3,
-                "type": SuggestType.IN_QUANTITY,
-                "value": f'{move.quantity}',
-                "company_id": move.company_id,
-                # "user_id": self.user.user_id
-            }, commit=False)
-            """Далее саджест на ввод срока годности"""  # TODO:  пока хз как праильное
-            """Далее саджест идентификации локации назначения"""
-            await suggest_service.create(obj={
-                "move_id": move.id,
-                "priority": 4,
-                "type": SuggestType.IN_LOCATION,
-                "value": f'{location_dest.id}',
-                "company_id": move.company_id,
-                # "user_id": self.user.user_id
-            }, commit=False)
-            await suggest_service.session.commit()
+                })
+                self.session.add(in_product_suggest)
+                """Далее саджест ввода количества"""
+                in_quantity_suggest = suggest_model(**{
+                    "move_id": move.id,
+                    "priority": 3,
+                    "type": SuggestType.IN_QUANTITY,
+                    "value": f'{move.quantity}',
+                    "company_id": move.company_id,
+                    # "user_id": self.user.user_id
+                })
+                self.session.add(in_quantity_suggest)
+                """Далее саджест на ввод срока годности"""  # TODO:  пока хз как праильное
+                """Далее саджест идентификации локации назначения"""
+                in_location_suggest_two = suggest_model(**{
+                    "move_id": move.id,
+                    "priority": 4,
+                    "type": SuggestType.IN_LOCATION,
+                    "value": f'{location_dest.id}',
+                    "company_id": move.company_id,
+                    # "user_id": self.user.user_id
+                })
+                self.session.add(in_location_suggest_two)
+                move.status = MoveStatus.PROCESSING
+        try:
+            order = await self.env['order'].service.get(moves[0].order_id)
+            order.status = OrderStatus.PROCESSING
+            await self.session.commit()
+            for _move in moves:
+                await _move.notify('update')
+            await order.notify('update')
+        except Exception as ex:
+            self.session.rollback()
+            raise HTTPException(status_code=500, detail=f"ERROR:  {str(ex)}")
             # Итого простой кейс, отсканировал локацию-источник, отсканировал товар, отсканировал локацию-назначения
 
     @permit('move_user_assign')
@@ -128,30 +148,30 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         await self.session.commit()
         return move
 
+
     @list_brocker.task(queue_name='model')
     async def confirm(self, move_ids: str, user_id: str):
         self = self or list_brocker.state.data['env'].get_env()['move'].service
         moves = await self.list({'id__in': move_ids}, size=9999)
+        order = await self.env['order'].service.get(moves[0].order_id, for_update=True)
         try:
             for move in moves:
                 await self._confirm(move=move, user_id=user_id)
-                a=1
+            order.status = OrderStatus.CONFIRMED
             await self.session.commit()
+            await self.session.refresh(order)
+            await order.notify('update')
         except Exception as ex:
             await self.session.rollback()
-            try:
-                order = await self.env['order'].service.get(moves[0].order_id, for_update=True)
-                order.status = OrderStatus.RESERVATION_FAILED
-                await self.session.commit()
-            except Exception as ex:
-                self.session.rollback()
-                raise HTTPException(status_code=500, detail=f"ERROR:  {str(ex)}")
-            raise HTTPException(status_code=500, detail=f"ERROR:  {str(ex)}")
+            for move in moves:
+                move.status = MoveStatus.RESERVATION_FAILED
+            order.status = OrderStatus.RESERVATION_FAILED
+            await self.session.commit()
+            raise ModuleException(status_code=500, enum=MoveErrors.RESERVATION_FAILED)
         return {
             "status": "OK",
             "detail": "Move is confirmed"
         }
-
 
     async def _confirm(self, move: Move, user_id: str):
         """
@@ -168,7 +188,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         """
         if move.status == MoveStatus.CONFIRMED:
             return move
-        if move.status != MoveStatus.CREATED:
+        if move.status != MoveStatus.CONFIRMING:
             raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
         location_service = self.env['location'].service
         order_type_service = self.env['order_type'].service
@@ -356,8 +376,12 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 raise ModuleException(status_code=406, enum=MoveErrors.EQUAL_QUANT_ERROR)
 
             # TODO: это надо убрать в отдельный вызов
-            move_logs = await self.set_reserve(move=move, src_quant=quant_src_entity, dest_quant=quant_dest_entity,
-                                               qty_to_move=qty_to_move)
+            move_logs = await self.set_reserve(
+                move=move, src_quant=quant_src_entity,
+                dest_quant=quant_dest_entity,
+                qty_to_move=qty_to_move
+            )
+
         return move
 
     async def set_reserve(self, move: Move, src_quant: Quant, dest_quant: Quant, qty_to_move: float):
@@ -368,23 +392,41 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         if move.type == 'product':
             type_map = {
                 (VirtualLocationClass.PARTNER, PhysicalLocationClass.PLACE): (
-                MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
+                    MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
                 (VirtualLocationClass.PARTNER, PhysicalLocationClass.BUFFER): (
-                MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
+                    MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
                 (PhysicalLocationClass.PLACE, PhysicalLocationClass.PLACE): (MoveLogType.PUT_OUT, MoveLogType.PUT_IN),
                 (PhysicalLocationClass.PLACE, VirtualLocationClass.PARTNER): (
-                MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
+                    MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
                 (PhysicalLocationClass.PLACE, VirtualLocationClass.INVENTORY): (
-                MoveLogType.INVENROTY_OUT, MoveLogType.INVENROTY_IN),
+                    MoveLogType.INVENROTY_OUT, MoveLogType.INVENROTY_IN),
                 (VirtualLocationClass.INVENTORY, PhysicalLocationClass.PLACE): (
-                MoveLogType.INVENROTY_OUT, MoveLogType.INVENROTY_IN),
+                    MoveLogType.INVENROTY_OUT, MoveLogType.INVENROTY_IN),
                 (VirtualLocationClass.LOST, PhysicalLocationClass.PLACE): (MoveLogType.LOST, MoveLogType.FOUND),
                 (PhysicalLocationClass.PLACE, VirtualLocationClass.LOST): (MoveLogType.LOST, MoveLogType.FOUND),
             }
+            """Берем обьекты на изменение"""
+            self.session.refresh(src_quant, with_for_update=True)
+            self.session.refresh(dest_quant, with_for_update=True)
+            self.session.refresh(move, with_for_update=True)
             """Создаем MoveLog на резервирование товара, когда товар меняет одно из свойств таблицы, """
             """если движение на перемещение упаковки, то нет нужны """
             src_type, dest_type = type_map.get((src_quant.location_class, dest_quant.location_class))
             total_quantity = qty_to_move
+            # Пепепроверяем, что остатка в кванте источнике достаточно для движения
+            if not src_quant.available_quantity >= total_quantity:
+                locations_src = await self.env['location'].service.get(src_quant.location_id)
+                if not locations_src.is_can_negative:
+                    raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
+            # Перепроверяем, что мув не был подтвержден
+            if not move.status == MoveStatus.CONFIRMING:
+                raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
+            # Проверяем, что у мува уже не созданы саджесты
+            if move.suggest_list_rel:
+                raise ModuleException(status_code=406, enum=MoveErrors.SUGGESTS_ALREADY_CREATED)
+            # Проверяем, что не созданы уже резервы для этого мува
+            if await self.env['move_log'].service.list({'move_id': move.id}):
+                raise ModuleException(status_code=406, enum=MoveErrors.RESERVATION_ALREADY_CREATED)
 
             move.quant_src_id = src_quant.id
             move.location_src_id = src_quant.location_id
@@ -405,12 +447,12 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "lot_id": move.lot_id if move.lot_id else None,
                 "partner_id": move.partner_id if move.partner_id else None,
                 "quantity": 0.0,
-                "reserved_quantity": -total_quantity,
+                "reserved_quantity": total_quantity,
                 "incoming_quantity": 0.0,
                 "uom_id": move.uom_id,
             })
-            src_quant.reserved_quantity += total_quantity
 
+            src_quant.reserved_quantity += total_quantity
             move.quant_dest_id = dest_quant.id
             move.location_dest_id = dest_quant.location_id
 
@@ -453,10 +495,30 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return move
 
     @list_brocker.task(queue_name='model')
-    async def set_done(self, move: Move, sync=False):
+    async def set_done(self, move_id: str, user_id: str):
+        self = self or list_brocker.state.data['env'].get_env()['move'].service
+        move = await self.get(move_id, for_update=True)
+        try:
+            await self._set_done(move=move, user_id=user_id)
+            move.status = MoveStatus.DONE
+            await self.session.commit()
+            await self.session.refresh(move)
+            await move.notify('update')
+        except Exception as e:
+            await self.session.rollback()
+            self.session.refresh(move, with_for_update=True)
+            move.status = MoveStatus.PROCESSING
+            await self.session.commit()
+            await move.notify('update')
+            logging.error("Произошла ошибка: %s", e)
+            logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
+            raise ModuleException(status_code=500, enum=MoveErrors.SET_DONE_ERROR)
+
+    async def _set_done(self, move: str, user_id: str=False):
         """
             Здесь создается mov_log, когда все саджесты выполнены
         """
+        raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
         move_log_model = self.env['move_log'].model
         type_map = {
             (VirtualLocationClass.PARTNER, PhysicalLocationClass.PLACE): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
@@ -470,17 +532,18 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             (VirtualLocationClass.LOST, PhysicalLocationClass.PLACE): (MoveLogType.LOST, MoveLogType.FOUND),
             (PhysicalLocationClass.PLACE, VirtualLocationClass.LOST): (MoveLogType.LOST, MoveLogType.FOUND),
         }
-        location_service = self.env['location'].service
-        quant_service = self.env['quant'].service
-        src_quant = await quant_service.get(move.quant_src_id)
-        dest_quant = await quant_service.get(move.quant_dest_id)
-        location_src = await location_service.get(move.location_src_id)
-        location_dest = await location_service.get(move.location_dest_id)
+        src_quant = await self.env['quant'].service.get(move.quant_src_id, for_update=True)
+        dest_quant = await self.env['quant'].service.get(move.quant_dest_id, for_update=True)
+        location_src = await self.env['location'].service.get(move.location_src_id)
+        location_dest = await self.env['location'].service.get(move.location_dest_id)
         src_type, dest_type = type_map.get((location_src.location_class, location_dest.location_class))
         if move.type == 'product':
             """Создаем MoveLog только для записей, когда товар меняет одно из свойств таблицы, """
             """если движение на перемещение упаковки, то нет нужны """
             total_quantity = sum(float(s.value) for s in move.suggest_list_rel if s.type == SuggestType.IN_QUANTITY)
+            move_logs = await self.env['move_log'].service.list({'move_id__in': [move.id]})
+            reserve_quantity = sum(float(s.reserved_quantity) for s in move_logs)
+            incoming_quantity = sum(float(s.incoming_quantity) for s in move_logs)
             # - Движение src
             src_log = move_log_model(**{
                 "company_id": move.company_id,
@@ -496,11 +559,11 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "lot_id": move.lot_id if move.lot_id else None,
                 "partner_id": move.partner_id if move.partner_id else None,
                 "quantity": -total_quantity,
-                "reserved_quantity": -total_quantity,
+                "reserved_quantity": -reserve_quantity,
                 "incoming_quantity": 0.0,
                 "uom_id": move.uom_id,
             })
-            src_quant.reserved_quantity -= total_quantity
+            src_quant.reserved_quantity -= reserve_quantity
             src_quant.quantity -= total_quantity
             self.session.add(src_quant)
             self.session.add(src_log)
@@ -520,16 +583,14 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "partner_id": move.partner_id if move.partner_id else None,
                 "quantity": total_quantity,
                 "reserved_quantity": 0.0,
-                "incoming_quantity": -total_quantity,
+                "incoming_quantity": -incoming_quantity,
                 "uom_id": move.uom_id,
             })
-            dest_quant.incoming_quantity -= total_quantity
+            dest_quant.incoming_quantity -= incoming_quantity
             dest_quant.quantity += total_quantity
             self.session.add(dest_quant)
             self.session.add(dest_log)
 
-        move.status = MoveStatus.DONE
-        return move
 
     @permit('move_create')
     async def create(self, obj: CreateSchemaType, parent: Order | Move | None = None, commit=True) -> ModelType:

@@ -24,7 +24,7 @@ class MoveLogService(BaseService[MoveLog, MoveLogCreateScheme, MoveLogUpdateSche
         return await super(MoveLogService, self).update(id, obj, commit)
 
     @permit('move_log_list')
-    async def list(self, _filter: FilterSchemaType, size: int):
+    async def list(self, _filter: FilterSchemaType, size: int=100):
         return await super(MoveLogService, self).list(_filter, size)
 
     @permit('move_log_create')

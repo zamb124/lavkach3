@@ -67,8 +67,17 @@ class InventoryAdapter(BaseAdapter):
         return responce.json()
 
     @action(model='order', multiple=False, permits=[])
+    async def order_confirm(self, payload: dict, **kwargs):
+        """Подтверждает ордер и резервирует мувы"""
+        if isinstance(payload, dict):
+            payload = json.dumps(payload, cls=UUIDEncoder)
+        path = f'/api/inventory/order/order_confirm'
+        responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()
+
+    @action(model='order', multiple=False, permits=[])
     async def order_start(self, payload: dict, **kwargs):
-        """Назначение пользователя на заказ, если не указан, то возьется из запроса"""
+        """Переводит ордер из CONFIRMED в WAITING"""
         if isinstance(payload, dict):
             payload = json.dumps(payload, cls=UUIDEncoder)
         path = f'/api/inventory/order/order_start'
@@ -76,24 +85,18 @@ class InventoryAdapter(BaseAdapter):
         return responce.json()
 
     @action(model='order',schema=AssignUser, multiple=False, permits=[])
-    async def assign_order(self, schema: AssignUser):
+    async def order_assign(self, schema: AssignUser):
         """Назначение пользователя на заказ, если не указан, то возьется из запроса"""
-        path = f'/api/inventory/order/assign_order'
+        path = f'/api/inventory/order/order_assign'
         schema_body = schema.model_dump_json()
         responce = await self.client.post(self.host + path, json=schema_body, params={})
         return responce.json()
 
-    @action(model='order', multiple=False, permits=['store_assign'])
-    async def store_assign(self, store_id, user_id: UUID = None):
-        """Назначение пользователя на cклад"""
-        if isinstance(store_id, UUID):
-            store_id = store_id.__str__()
-        if isinstance(user_id, UUID):
-            user_id = user_id.__str__()
-        path = f'/api/inventory/store_staff/actions/store_assign'
-        payload = {
-            'store_id': store_id,
-            'user_id': user_id
-        }
+    @action(model='order', multiple=False, permits=[])
+    async def order_complete(self, payload: dict, **kwargs):
+        """Переводит ордер из CONFIRMED в WAITING"""
+        if isinstance(payload, dict):
+            payload = json.dumps(payload, cls=UUIDEncoder)
+        path = f'/api/inventory/order/order_complete'
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()

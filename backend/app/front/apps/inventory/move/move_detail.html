@@ -99,7 +99,7 @@
                                 </a>
                                 <ul class="dropdown-menu" style="">
                                     {% if move.status.val == 'draft' %}
-                                        {% set action_start = move.v.actions['order_start'] %}
+                                        {% set action_start = move.v.actions['order_confirm'] %}
                                         <li>
                                             <a
                                                     data-bs-toggle="{{ action_start.doc }}"
@@ -175,7 +175,7 @@
                                     </thead>
                                     <tbody>
                                     {% for suggest in  move.suggest_list_rel.val %}
-                                        {% include 'inventory/store_monitor/store_monitor_suggest_line.html' %}
+                                        {% include 'inventory/suggest/suggest_line.html' %}
                                     {% endfor %}
                                     </tbody>
                                 </table>

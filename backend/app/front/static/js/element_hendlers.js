@@ -465,7 +465,7 @@ class ModalHandler {
     }
 
     init() {
-        this.createDragModal();
+        //this.createDragModal();
         this.modal.show();
         document.addEventListener('hidden.bs.modal', (event) => {
             console.log(event);
@@ -479,8 +479,8 @@ class ModalHandler {
             return;
         }
         header.onmousedown = (e) => {
-            const offsetX = e.clientX - this.modal._element.getBoundingClientRect().left;
-            const offsetY = e.clientY - this.modal._element.getBoundingClientRect().top;
+            var offsetX = e.clientX - this.modal._element.getBoundingClientRect().left;
+            var offsetY = e.clientY - this.modal._element.getBoundingClientRect().top;
 
             const mouseMoveHandler = (e) => {
                 this.modal._element.style.position = 'absolute';

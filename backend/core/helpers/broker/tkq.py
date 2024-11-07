@@ -1,7 +1,7 @@
 import asyncio
 from contextvars import ContextVar
 from uuid import uuid4
-
+import importlib
 from taskiq import SimpleRetryMiddleware, TaskiqMiddleware
 from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend, PubSubBroker
 
@@ -20,6 +20,13 @@ class TaskSession(TaskiqMiddleware):
     ) -> "Union[TaskiqMessage, Coroutine[Any, Any, TaskiqMessage]]":
         return message
 
+    async def on_error(
+        self,
+        message: "TaskiqMessage",
+        result: "TaskiqResult[Any]",
+        exception: BaseException,
+    ) -> "Union[None, Coroutine[Any, Any, None]]":
+        ...
 
 
 redis_async_result = RedisAsyncResultBackend(

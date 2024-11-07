@@ -4,8 +4,10 @@ permits:
   order_list: Может получать список квант
   order_delete: Может удалять квант
   order_get: Может смотреть на квант
+  order_confirm: Может подтвердить ордер
   order_start: Может стартовать ордер
-  assign_order: Может назначится на ордер
+  order_assign: Может назначится на ордер
+  order_complete: Может завершить ордер
   move_create: Может создавать квант
   move_update: Может редактировать квант
   move_list: Может получать список квант

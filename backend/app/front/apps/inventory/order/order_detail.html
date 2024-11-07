@@ -1,18 +1,18 @@
 {% autoescape false %}
     <div class="modal" id="{{ 'modal_'~order.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true"
-      ui_key="{{ order.p.ui_key }}"
-      lsn="{{ order.p.lsn }}"
-      hx-swap="outerHTML"
-      hx-trigger="backend_update"
-      hx-get="/inventory/order/detail?order_id={{ order._id }}"
-      hx-target="#modal_content_{{ order.p.id }}"
-      hx-select=".modal-content"
-      hx-disinherit="*"
+         ui_key="{{ order.p.ui_key }}"
+         lsn="{{ order.p.lsn }}"
+         hx-swap="outerHTML"
+         hx-trigger="backend_update"
+         hx-get="/inventory/order/detail?order_id={{ order._id }}"
+         hx-target="#modal_content_{{ order.p.id }}"
+         hx-select=".modal-content"
+         hx-disinherit="*"
 
     >
         <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
             <div class="modal-content" id="modal_content_{{ order.p.id }}"
-                 >
+            >
                 <div class="modal-header">
                     <div class="card-body">
                         <div class="row align-items-center">
@@ -39,19 +39,113 @@
                                             <span class="mb-0 badge text-bg-warning">{{ order.status.val }}</span>
                                         {% endif %}
                                     </th>
+
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                                <a class="text-muted text-decoration-none d-flex"
-                                                   href="../main/index.html">
-                                                    <iconify-icon icon="solar:home-2-line-duotone"
-                                                                  class="fs-6"></iconify-icon>
+                                            {% if order.status.val == 'created' %}
+                                                {% set order_confirm = order.v.actions['order_confirm'] %}
+                                                <a
+                                                        data-bs-toggle="{{ order_confirm.doc }}"
+                                                        data-key="{{ order_confirm.tkey }}"
+                                                        hx-params="model,action,method,ids,key,id"
+                                                        hx-trigger="click"
+                                                        hx-ext="json-enc"
+                                                        hx-target="#htmx_content"
+                                                        hx-swap="beforeend transition:true"
+                                                        hx-post="/base/action"
+                                                        hx-vals='{
+                                                    "model": "{{ order.v.model.name }}",
+                                                    "action": "{{ order_confirm.name }}",
+                                                    "method": "{% if order_confirm.schema %}get{% else %}update{% endif %}",
+                                                    "ids": ["{{ order.p.id }}"],
+                                                    "key": "{{ order.p.key }}"
+                                                }'
+                                                        class="btn btn-sm btn-primary">
+                                                    {{ order_confirm.name }}
                                                 </a>
                                             </li>
-                                            <li class="breadcrumb-item" aria-current="page">
-                                            <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
-                                              Modals
-                                            </span>
+                                        {% endif %}
+                                        {% if order.status.val in ('waiting', 'processing') %}
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                {% set order_assign = order.v.actions['order_assign'] %}
+                                                <a
+                                                        data-bs-toggle="{{ order_assign.doc }}"
+                                                        data-key="{{ order_assign.tkey }}"
+                                                        hx-params="model,action,method,ids,key,id"
+                                                        hx-trigger="click"
+                                                        hx-ext="json-enc"
+                                                        hx-target="#htmx_content"
+                                                        hx-swap="beforeend transition:true"
+                                                        hx-post="/base/action"
+                                                        hx-vals='{
+                                                    "model": "{{ order.v.model.name }}",
+                                                    "action": "{{ order_assign.name }}",
+                                                    "id": "{{ order.p.id }}",
+                                                    "method": "{% if order_assign.schema %}get{% else %}update{% endif %}",
+                                                    "ids": ["{{ order.p.id }}"],
+                                                    "key": "{{ order.p.key }}"
+                                                }'
+                                                        class="btn btn-sm btn-secondary">
+                                                     {{ order_assign.name }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        {% if order.status.val == 'confirmed' %}
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                {% set order_start = order.v.actions['order_start'] %}
+                                                <a
+                                                        data-bs-toggle="{{ order_start.doc }}"
+                                                        data-key="{{ order_start.tkey }}"
+                                                        hx-params="model,action,method,ids,key,id"
+                                                        hx-trigger="click"
+                                                        hx-ext="json-enc"
+                                                        hx-target="#htmx_content"
+                                                        hx-swap="beforeend transition:true"
+                                                        hx-post="/base/action"
+                                                        hx-vals='{
+                                                    "model": "{{ order.v.model.name }}",
+                                                    "action": "{{ order_start.name }}",
+                                                    "id": "{{ order.p.id }}",
+                                                    "method": "{% if order_start.schema %}get{% else %}update{% endif %}",
+                                                    "ids": ["{{ order.p.id }}"],
+                                                    "key": "{{ order.p.key }}"
+                                                }'
+                                                        class="btn btn-sm btn-secondary">
+                                                    {{ order_start.name }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        {% if order.status.val =='processing' %}
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                {% set order_complete = order.v.actions['order_complete'] %}
+                                                <a
+                                                        data-bs-toggle="{{ order_complete.doc }}"
+                                                        data-key="{{ order_complete.tkey }}"
+                                                        hx-params="model,action,method,ids,key,id"
+                                                        hx-trigger="click"
+                                                        hx-ext="json-enc"
+                                                        hx-target="#htmx_content"
+                                                        hx-swap="beforeend transition:true"
+                                                        hx-post="/base/action"
+                                                        hx-vals='{
+                                                    "model": "{{ order.v.model.name }}",
+                                                    "action": "{{ order_complete.name }}",
+                                                    "id": "{{ order.p.id }}",
+                                                    "method": "{% if order_complete.schema %}get{% else %}update{% endif %}",
+                                                    "ids": ["{{ order.p.id }}"],
+                                                    "key": "{{ order.p.key }}"
+                                                }'
+                                                        class="btn btn-sm btn-success">
+                                                     {{ order_complete.name }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                <a href="#" data-bs-dismiss="modal">
+                                                    <iconify-icon icon="solar:close-circle-outline"
+                                                                  class="fs-7"></iconify-icon>
+                                                </a>
                                             </li>
                                         </ol>
                                     </nav>
@@ -104,118 +198,82 @@
                                 </a>
                                 <ul class="dropdown-menu" style="">
                                     {% if order.status.val == 'created' %}
-                                        {% set action_start = order.v.actions['order_start'] %}
-                                        <li>
-                                            <a
-                                                    data-bs-toggle="{{ action_start.doc }}"
-                                                    data-key="{{ action_start.tkey }}"
-                                                    hx-params="model,action,method,ids,key,id"
-                                                    hx-trigger="click"
-                                                    hx-ext="json-enc"
-                                                    hx-target="#htmx_content"
-                                                    hx-swap="beforeend transition:true"
-                                                    hx-post="/base/action"
-                                                    hx-vals='{
-                                                    "model": "{{ order.v.model.name }}",
-                                                    "action": "{{ action_start.name }}",
-                                                    "method": "{% if action_start.schema %}get{% else %}update{% endif %}",
-                                                    "ids": ["{{ order.p.id }}"],
-                                                    "key": "{{ order.p.key }}"
-                                                }'
-                                                        class="dropdown-item remove-item-btn">
-                                                    <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> {{ action_start.name }}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                        {% set assign_order = order.v.actions['assign_order'] %}
-                                        <li>
-                                            <a
-                                                    data-bs-toggle="{{ assign_order.doc }}"
-                                                    data-key="{{ assign_order.tkey }}"
-                                                    hx-params="model,action,method,ids,key,id"
-                                                    hx-trigger="click"
-                                                    hx-ext="json-enc"
-                                                    hx-target="#htmx_content"
-                                                    hx-swap="beforeend transition:true"
-                                                    hx-post="/base/action"
-                                                    hx-vals='{
-                                                    "model": "{{ order.v.model.name }}",
-                                                    "action": "{{ assign_order.name }}",
-                                                    "id": "{{ order.p.id }}",
-                                                    "method": "{% if assign_order.schema %}get{% else %}update{% endif %}",
-                                                    "ids": ["{{ order.p.id }}"],
-                                                    "key": "{{ order.p.key }}"
-                                                }'
-                                                        class="dropdown-item remove-item-btn">
-                                                    <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> {{ assign_order.name }}
-                                                </a>
-                                            </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            <div class="tab-content" style="min-height: 300px" id="moves-tab">
-                                <div role="tabpanel" class="tab-pane fade active show" id="moves"
-                                     aria-labelledby="home-tab">
-                                    <table class="table align-middle table-hover mb-0 last-items-borderless text-uppercase">
-                                        <thead>
-                                        <tr class="fs-5 text-center" style="text-align: center">
-                                            <th scope="col">
-                                                <p>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                           id="{{ order.p.class_key ~'--'~ 'checkAll' }}"
-                                                           value="option">
-                                                </div>
-                                                </p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.type.data_key }}">{{ order.move_list_rel.val.type.field_name }}</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="t-move-name">Name</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.edited_by.data_key }}">
-                                                    {{ order.move_list_rel.val.edited_by.field_name }}
-                                                </p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.location_src_id.data_key }}">{{ order.move_list_rel.val.location_src_id.field_name }}</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.location_dest_id.data_key }}">{{ order.move_list_rel.val.location_dest_id.field_name }}</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.quantity.data_key }}">{{ order.move_list_rel.val.quantity.field_name }}</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="t-move-suggests">Suggests</p>
-                                            </th>
-                                            <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                                <p data-key="{{ order.move_list_rel.val.status.data_key }}">{{ order.move_list_rel.val.status.field_name }}</p>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for move in  order.move_list_rel.val %}
-                                            {% include 'inventory/move/move_line.html' %}
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
 
-                                </div>
-                                <div class="tab-pane fade" id="suggests" role="tabpanel" aria-labelledby="suggests-tab">
-                                    ...
-                                </div>
+                                        <li>
+
+                                        </li>
+                                    {% endif %}
+
+
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="tab-content" style="min-height: 300px" id="moves-tab">
+                            <div role="tabpanel" class="tab-pane fade active show" id="moves"
+                                 aria-labelledby="home-tab">
+                                <table class="table align-middle table-hover mb-0 last-items-borderless text-uppercase">
+                                    <thead>
+                                    <tr class="fs-5 text-center" style="text-align: center">
+                                        <th scope="col">
+                                            <p>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                       id="{{ order.p.class_key ~'--'~ 'checkAll' }}"
+                                                       value="option">
+                                            </div>
+                                            </p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.type.data_key }}">{{ order.move_list_rel.val.type.field_name }}</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="t-move-name">Name</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.edited_by.data_key }}">
+                                                {{ order.move_list_rel.val.edited_by.field_name }}
+                                            </p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.location_src_id.data_key }}">{{ order.move_list_rel.val.location_src_id.field_name }}</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.location_dest_id.data_key }}">{{ order.move_list_rel.val.location_dest_id.field_name }}</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.quantity.data_key }}">{{ order.move_list_rel.val.quantity.field_name }}</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="t-move-suggests">Suggests</p>
+                                        </th>
+                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
+                                            <p data-key="{{ order.move_list_rel.val.status.data_key }}">{{ order.move_list_rel.val.status.field_name }}</p>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for move in  order.move_list_rel.val %}
+                                        {% include 'inventory/move/move_line.html' %}
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
 
                             </div>
+                            <div class="tab-pane fade" id="suggests" role="tabpanel" aria-labelledby="suggests-tab">
+                                ...
+                            </div>
+
                         </div>
                     </div>
                 </div>
+                <div class="modal-footer">
+
+                </div>
             </div>
         </div>
+    </div>
 
-        <script>
-            new ModalHandler('#{{ 'modal_'~order.p.key }}')
-        </script>
+    <script>
+        new ModalHandler('#{{ 'modal_'~order.p.key }}')
+    </script>
 {% endautoescape %}
