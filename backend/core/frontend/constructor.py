@@ -23,9 +23,9 @@ from core.frontend.field import Field, Fields
 from core.frontend.types import LineType, ViewVars, MethodType
 from core.frontend.utils import clean_filter
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 def import_view(service_name):
     components = service_name.split('.')
@@ -41,27 +41,27 @@ views = {
 }
 
 default_templates = {
-        'as_tr': 'line/as_tr.html',
-        'as_div': 'line/as_div.html',
-        'as_card': 'line/as_card.html',
-        'as_modal': 'line/as_modal.html',
-        'as_button': 'line/as_button.html',
-        'as_table': 'cls/as_table.html',
-        'as_filter': 'cls/as_filter.html',
-        'as_header': 'cls/as_header.html',
-        'as_import': 'cls/as_import.html',
+    'as_tr': 'line/as_tr.html',
+    'as_div': 'line/as_div.html',
+    'as_card': 'line/as_card.html',
+    'as_modal': 'line/as_modal.html',
+    'as_button': 'line/as_button.html',
+    'as_table': 'cls/as_table.html',
+    'as_filter': 'cls/as_filter.html',
+    'as_header': 'cls/as_header.html',
+    'as_import': 'cls/as_import.html',
 }
 
 default_field_templates = {
     'as_card': 'as_card.html',
-    'babel':'babel.html',
-    'bool':'bool.html',
+    'babel': 'babel.html',
+    'bool': 'bool.html',
     'daterange': 'daterange.html',
     'datetime': 'datetime.html',
     'dict': 'dict.html',
     'enum': 'enum.html',
     'float': 'float.html',
-    'id':'id.html',
+    'id': 'id.html',
     'int': 'int.html',
     'label': 'label.html',
     'list_enum': 'list_enum.html',
@@ -347,6 +347,18 @@ class H:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
         return self.as_filter()
 
+    def as_action(self, action_name, block_name: str = 'button', css_class: str = 'btn btn-primary') -> str:
+        """Отдаем кнопку действия"""
+        action = self.cls.v.actions[action_name]
+        return render_block(
+            environment=environment,
+            template_name=f'cls/action.html',
+            block_name=block_name,
+            action=action,
+            line=self.cls,
+            css_class=css_class
+        )
+
     def as_table(self, template: str = 'as_table', block_name: str = 'get', method: MethodType = MethodType.GET,
                  exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
@@ -516,11 +528,11 @@ class ClassView:
                     _service=None,
                     domain=None,
                     schemas={
-                        'create':model,
+                        'create': model,
                         'update': model,
-                        'get':model,
-                        'filter':model,
-                        'delete':model
+                        'get': model,
+                        'filter': model,
+                        'delete': model
                     },
                     model=action_name
                 )
@@ -557,6 +569,10 @@ class ClassView:
         self._exclude = []
         self._exclude = exclude
         self._get_schema_fields(exclude=exclude)
+
+    def __repr__(self):
+        return f'<ClassView {self.v.model.name}'
+
     @property
     def r(self):
         return self.v.request
@@ -640,7 +656,7 @@ class ClassView:
             'get': self._get_view_vars_by_fieldinfo(get_fieldinfo),
         }
 
-    def _get_field(self, field_name: str, fields_merged: dict) -> Field:
+    def _get_field(self, field_name: str, fields_merged: dict) -> 'Field':
         """
             Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
@@ -657,7 +673,7 @@ class ClassView:
         else:
             class_types: list = [str]
         if field_name == 'staff_position__in':
-            a=1
+            a = 1
         if fielinfo.json_schema_extra:
             if fielinfo.json_schema_extra.get('model'):  # type: ignore
                 model_name = fielinfo.json_schema_extra.get('model')  # type: ignore
@@ -694,7 +710,7 @@ class ClassView:
                 model = self._view.env[model_name]
         assert model, f'Model for field {field_name} is not defined'
         if field_name == 'ids':
-            a=1
+            a = 1
         field = Field(**{
             **self._get_view_vars(field_name, is_filter),
             'is_filter': is_filter,
@@ -702,7 +718,7 @@ class ClassView:
             'is_reserved': True if field_name in reserved_fields else False,
             'type': res,
             'model_name': model.name,
-            #'domain_name': model.domain.name,
+            # 'domain_name': model.domain.name,
             'enums': enums,
             'sort_idx': self._view.sort.get(field_name, 999),
             'cls': self,
@@ -746,7 +762,6 @@ class ClassView:
         else:
             self._view.data = data
         await self.fill_lines(self._view.data, self.v.join_related, self.v.join_fields)
-
 
     async def fill_lines(self, data: dict | list, join_related: bool = False,
                          join_fields: list = []):

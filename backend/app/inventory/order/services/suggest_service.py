@@ -2,6 +2,7 @@ import logging
 import traceback
 import uuid
 from typing import Any, Optional, List
+from zoneinfo import available_timezones
 
 from fastapi.exceptions import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -42,6 +43,8 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
     async def suggest_confirm(self, suggest_ids: List[uuid.UUID], value: Any, commit: bool = True) -> Optional[ModelType]:
         suggest_entities = await self.list({'id__in': suggest_ids}, 999)
         for suggest_entity in suggest_entities:
+            move_service = self.env['move'].service
+            move = await move_service.get(suggest_entity.move_id)
             is_last = True
             move_id = suggest_entity.move_id
             if suggest_entity.status == SuggestStatus.DONE:
@@ -66,7 +69,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                 if product_obj:
                     suggest_entity.result_value = value
                     suggest_entity.status = SuggestStatus.DONE
-            elif suggest_entity.type == SuggestType.IN_LOCATION:
+            elif suggest_entity.type == SuggestType.IN_LOCATION_SRC:
                 try:
                     val_in_cleaned = uuid.UUID(value)  # type: ignore
                 except ValueError as e:
@@ -75,9 +78,35 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                         enum=SuggestErrors.SUGGEST_INVALID_VALUE,
                         message=str(e)
                     )
-                location_entity = await self.env['location'].service.list(_filter={'id__in': [val_in_cleaned]})
+                location_entity = await self.env['location'].service.get(val_in_cleaned)
                 if location_entity:
                     #TODO: Здесь нужно вставить проверки на проверку подходящего места назначения
+                    suggest_entity.result_value = value
+                    suggest_entity.status = SuggestStatus.DONE
+            elif suggest_entity.type == SuggestType.IN_LOCATION_DEST:
+                try:
+                    val_in_cleaned = uuid.UUID(value)  # type: ignore
+                except ValueError as e:
+                    raise ModuleException(
+                        status_code=406,
+                        enum=SuggestErrors.SUGGEST_INVALID_VALUE,
+                        message=str(e)
+                    )
+                location_entity = await self.env['location'].service.get(val_in_cleaned)
+                if location_entity:
+                    if move.location_dest_id != location_entity.id:
+                        available_quants = await move_service.get_product_destination_quants_by_move(move=move)
+                        if not available_quants:
+                            raise ModuleException(
+                                status_code=406,
+                                enum=SuggestErrors.LOCATION_IS_NOT_AVALIBLE
+                            )
+
+                        move.vars.update({
+                            'origin_location_dest_id': move.location_dest_id
+                        })
+                        move.quant_dest_id = available_quants[0].id
+                        move.location_dest_id = location_entity.id
                     suggest_entity.result_value = value
                     suggest_entity.status = SuggestStatus.DONE
             else:
@@ -87,7 +116,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                 )
             suggest_entity.user_id = self.user.user_id
         # КОСТЫЛЬ: Проверяем не последний ли это саджест, если последний окаем Мув
-            move = await self.env['move'].service.get(suggest_entity.move_id)
+
             for suggest in move.suggest_list_rel:
                 if suggest.id != suggest_entity.id and suggest.status != SuggestStatus.DONE:
                     is_last = False
@@ -105,8 +134,6 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                     await self.session.rollback()
                     logging.error("Произошла ошибка: %s", e)
                     logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
-                    raise HTTPException(status_code=500, detail=f"Some Error entity {str(e)}")
-        else:
-            await self.session.flush(suggest_entities)
+                    raise e
 
         return suggest_entities

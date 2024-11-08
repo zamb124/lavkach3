@@ -50,3 +50,24 @@
         new ModalHandler('#{{ 'action--'~cls.p.class_key }}')
     </script>
 {% endblock %}
+{% block as_a %}
+<a
+        data-bs-toggle="{{ action.doc }}"
+        data-key="{{ action.tkey }}"
+        hx-params="model,action,method,ids,key,id"
+        hx-trigger="click"
+        hx-ext="json-enc"
+        hx-target="#htmx_content"
+        hx-swap="beforeend transition:true"
+        hx-post="/base/action"
+        hx-vals='{
+            "model": "{{ line.v.model.name }}",
+            "action": "{{ action.name }}",
+            "method": "{% if action.schema %}get{% else %}update{% endif %}",
+            "ids": ["{{ line.p.id }}"],
+            "key": "{{ line.p.key }}"
+        }'
+        class="{{ css_class }}">
+    {{ action.name }}
+</a>
+{% endblock %}

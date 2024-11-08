@@ -38,7 +38,7 @@ guid = mapped_column(
         server_default=text("gen_random_uuid()")
     )
 class VarsMixin:
-    vars: Mapped[Optional[dict]] = mapped_column(JSONType)
+    vars: Mapped[dict] = mapped_column(JSONType, nullable=False, default={})
 
 class TimestampMixin:
     created_at: Mapped[datetime.datetime] = Column(

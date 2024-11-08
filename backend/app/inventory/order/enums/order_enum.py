@@ -2,6 +2,7 @@ from enum import Enum
 
 from core.frontend.enums import TextColorEnum
 from . import BaseEnum
+from ...location.enums import VirtualLocationClass, PhysicalLocationClass
 
 
 class StoreEnum(BaseEnum):
@@ -81,7 +82,8 @@ class SuggestType(str, Enum):
     IN_QUANTITY: str = 'in_quantity'  # Саджест ввода количества (те на экране нужно ввести какуюто цифру)
     IN_PRODUCT: str = 'in_product'  # саджест ввода/сканирования идентификатора товара
     IN_PACKAGE: str = 'in_package'  # саджест ввода/сканирования идентификатора упаковки
-    IN_LOCATION: str = 'in_location'  # саджест ввода/сканирования местоположения(location)
+    IN_LOCATION_SRC: str = 'in_location_src'  # саджест ввода/сканирования местоположения источника
+    IN_LOCATION_DEST: str = 'in_location_dest'  # саджест ввода/сканирования местоположения источника
     IN_LOT: str = 'in_lot'  # ввод даты КСГ партии
     IN_RESOURCE: str = 'in_resource'  # сканирование ресурса
     IN_VALID: str = 'in_valid'  # ввод даны истечения срока годности, когда просто ввод а не создание партии
@@ -106,3 +108,18 @@ class MoveLogType(str, Enum):
     PUT_OUT: str = 'put_out'            # Взял товар (перемещение)
     INVENROTY_IN: str = 'inventory_in'  # Инвентаризация
     INVENROTY_OUT: str = 'inventory_out'  # Инвентаризация
+
+
+TYPE_MAP = {
+    (VirtualLocationClass.PARTNER, PhysicalLocationClass.PLACE): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
+    (VirtualLocationClass.PARTNER, PhysicalLocationClass.BUFFER): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
+    (PhysicalLocationClass.PLACE, PhysicalLocationClass.PLACE): (MoveLogType.PUT_OUT, MoveLogType.PUT_IN),
+    (PhysicalLocationClass.PLACE, VirtualLocationClass.PARTNER): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
+    (PhysicalLocationClass.PLACE, VirtualLocationClass.INVENTORY): (
+        MoveLogType.INVENROTY_OUT, MoveLogType.INVENROTY_IN),
+    (VirtualLocationClass.INVENTORY, PhysicalLocationClass.PLACE): (
+        MoveLogType.INVENROTY_OUT, MoveLogType.INVENROTY_IN),
+    (VirtualLocationClass.LOST, PhysicalLocationClass.PLACE): (MoveLogType.LOST, MoveLogType.FOUND),
+    (PhysicalLocationClass.PLACE, VirtualLocationClass.LOST): (MoveLogType.LOST, MoveLogType.FOUND),
+    (PhysicalLocationClass.BUFFER, VirtualLocationClass.PARTNER): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
+}

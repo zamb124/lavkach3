@@ -1,14 +1,13 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import Field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import PutawayStrategy, LocationClass
 from app.inventory.order.models import OrderType
 from app.inventory.order.models.order_models import OrderClass, BackOrderAction, ReservationMethod
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import BasicModel, bollean
+from core.schemas.basic_schemes import BasicModel, bollean, BasicField as Field
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
@@ -21,51 +20,63 @@ class OrderTypeBaseScheme(BasicModel):
         default=[], model='location',
         title='Allowed locations source',
         description='Allowed locations for the source of this order type',
-        filter={'location_class__not_in': LocationClass.PACKAGE.value}
+        filter={'location_class__not_in': LocationClass.PACKAGE.value},
+        form=True
     )
     exclude_location_src_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
-        title='Exclude locations source'
+        title='Exclude locations source',
+        form=True
     )
     allowed_location_dest_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
-        title='Allowed locations dest'
+        title='Allowed locations dest',
+        form=True
     )
     exclude_location_dest_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
-        title='Exclude locations dest'
+        title='Exclude locations dest',
+        form=True
     )
     allowed_location_type_src_ids: Optional[list[UUID4]] = Field(
         default=[], model='location_type',
         title='Allowed locations type source',
+        form=True
     )
     exclude_location_type_src_ids: Optional[list[UUID4]] = Field(
         default=[], model='location_type',
-        title='Exclude locations type source'
+        title='Exclude locations type source',
+        form=True
     )
     allowed_location_type_dest_ids: Optional[list[UUID4]] = Field(
         default=[], model='location_type',
         title='Allowed locations type dest',
+        form=True
     )
     exclude_location_type_dest_ids: Optional[list[UUID4]] = Field(
         default=[], model='location_type',
-        title='Exclude locations type dest '
+        title='Exclude locations type dest',
+        form=True
     )
     allowed_location_class_src_ids: Optional[list[LocationClass]] = Field(
         default=[],
-        title='Allowed locations class source'
+        title='Allowed locations class source',
+        form=True
     )
     exclude_location_class_src_ids: Optional[list[LocationClass]] = Field(
         default=[],
         title='Exclude locations class source',
+        form=True
     )
     allowed_location_class_dest_ids: Optional[list[LocationClass]] = Field(
         default=[],
-        title='Allowed locations class dest '
+        title='Allowed locations class dest ',
+        form=True
     )
     exclude_location_class_dest_ids: Optional[list[LocationClass]] = Field(
         default=[],
         title='Exclude locations class dest ',
+        form=True
     )
     order_type_id: Optional[UUID4] = Field(default=None, title='Back Order', form=True, model='order_type')
     backorder_action_type: BackOrderAction = Field(default=BackOrderAction.ASK, title='Backorder action', form=True)

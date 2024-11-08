@@ -45,7 +45,7 @@
             {{ move.location_dest_id.as_get }}
         </th>
         <th class="line-col text-center">
-            {% if move.status.val == 'created' %}
+            {% if move.status.val in ('created', 'reservation_failed') %}
             {{ move.quantity.as_(method='get', button=True) }}
                 {% else %}
              {{ move.quantity.as_get }}

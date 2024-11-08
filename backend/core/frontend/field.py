@@ -6,7 +6,6 @@ from typing import Optional, Any
 from jinja2_fragments import render_block
 from pydantic import BaseModel
 
-
 from core.frontend.enviroment import environment
 from core.frontend.types import MethodType, ViewVars
 
@@ -44,6 +43,23 @@ class Field:
         instance = copy.copy(self)
         instance.val = None
         return instance
+
+    def __call__(self, *args, **kwargs):
+        return self.val
+
+    def __getattr__(self, name):
+        from core.frontend.constructor import ClassView
+        if isinstance(self.val, ClassView):
+            return getattr(self.val, name)
+        if name == 'val':
+            return self.val
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+
+    def __str__(self):
+        return str(self.val)
+
+    def __repr__(self):
+        return f'<Field {self.cls.v.model.name} - {self.field_name}>'
 
     def __init__(self, *args, **kwargs):
         self.__dict__.update(kwargs)

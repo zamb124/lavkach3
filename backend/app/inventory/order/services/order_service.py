@@ -93,10 +93,13 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         for order_id in ids:
             try:
                 order_entity = await self.get(order_id, for_update=True)
-                if order_entity.status != OrderStatus.CREATED:
-                    raise HTTPException(status_code=401, detail=f"Order {order_entity.number} is not in CREATED status")
+                if order_entity.status not in (OrderStatus.CREATED, OrderStatus.RESERVATION_FAILED):
+                    raise HTTPException(
+                        status_code=401,
+                        detail=f"Order {order_entity.number} is not in CREATED status"
+                    )
                 for move in order_entity.move_list_rel:
-                    if not move.status == MoveStatus.CREATED:
+                    if not move.status in (MoveStatus.CREATED, MoveStatus.RESERVATION_FAILED):
                         raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
                     move.status = MoveStatus.CONFIRMING
                 move_ids = [move.id for move in order_entity.move_list_rel]
@@ -138,8 +141,9 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         return res
 
     @permit('order_complete')
-    async def order_complete(self, ids: List[uuid.UUID], user_id: uuid.UUID) -> None:
+    async def order_complete(self, ids: List[uuid.UUID], user_id: uuid.UUID) -> list:
         """Ставим статус DONE"""
+        res = []
         for order_id in ids:
             try:
                 order_entity = await self.get(order_id, for_update=True)
@@ -151,11 +155,15 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
                     )
                 for move in order_entity.move_list_rel:
                     if move.status != MoveStatus.DONE:
-                        raise ModuleException(
-                            status_code=406,
-                            enum=MoveErrors.WRONG_STATUS,
-                            message=f'Move {move.move_id} is not in DONE status'
-                        )
+                       """ Пытаемся синхронно завершить все мувы"""
+                       task = await self.env['move'].service.set_done.kiq(None, move_id=move.id, user_id=self.user.user_id)
+                       result = await task.wait_result()
+                       if result.error:
+                           raise ModuleException(
+                                status_code=406,
+                                enum=MoveErrors.WRONG_STATUS,
+                                message=f'Move {move.id} is not in DONE status'
+                            )
                 order_entity.status = OrderStatus.DONE
                 await self.session.commit()
                 await self.session.refresh(order_entity)
@@ -165,3 +173,4 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
                 logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
             await order_entity.notify('update')
+        return res

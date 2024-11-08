@@ -43,102 +43,23 @@
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                            {% if order.status.val == 'created' %}
-                                                {% set order_confirm = order.v.actions['order_confirm'] %}
-                                                <a
-                                                        data-bs-toggle="{{ order_confirm.doc }}"
-                                                        data-key="{{ order_confirm.tkey }}"
-                                                        hx-params="model,action,method,ids,key,id"
-                                                        hx-trigger="click"
-                                                        hx-ext="json-enc"
-                                                        hx-target="#htmx_content"
-                                                        hx-swap="beforeend transition:true"
-                                                        hx-post="/base/action"
-                                                        hx-vals='{
-                                                    "model": "{{ order.v.model.name }}",
-                                                    "action": "{{ order_confirm.name }}",
-                                                    "method": "{% if order_confirm.schema %}get{% else %}update{% endif %}",
-                                                    "ids": ["{{ order.p.id }}"],
-                                                    "key": "{{ order.p.key }}"
-                                                }'
-                                                        class="btn btn-sm btn-primary">
-                                                    {{ order_confirm.name }}
-                                                </a>
+                                            {% if order.status.val in ('created', 'reservation_failed') %}
+                                                {{ order.h.as_action('order_confirm', 'as_a', css_class="btn btn-sm btn-primary") }}
                                             </li>
                                         {% endif %}
                                         {% if order.status.val in ('waiting', 'processing') %}
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                                {% set order_assign = order.v.actions['order_assign'] %}
-                                                <a
-                                                        data-bs-toggle="{{ order_assign.doc }}"
-                                                        data-key="{{ order_assign.tkey }}"
-                                                        hx-params="model,action,method,ids,key,id"
-                                                        hx-trigger="click"
-                                                        hx-ext="json-enc"
-                                                        hx-target="#htmx_content"
-                                                        hx-swap="beforeend transition:true"
-                                                        hx-post="/base/action"
-                                                        hx-vals='{
-                                                    "model": "{{ order.v.model.name }}",
-                                                    "action": "{{ order_assign.name }}",
-                                                    "id": "{{ order.p.id }}",
-                                                    "method": "{% if order_assign.schema %}get{% else %}update{% endif %}",
-                                                    "ids": ["{{ order.p.id }}"],
-                                                    "key": "{{ order.p.key }}"
-                                                }'
-                                                        class="btn btn-sm btn-secondary">
-                                                     {{ order_assign.name }}
-                                                </a>
+                                                {{ order.h.as_action('order_assign', 'as_a', css_class="btn btn-sm btn-primary") }}
                                             </li>
                                         {% endif %}
                                         {% if order.status.val == 'confirmed' %}
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                                {% set order_start = order.v.actions['order_start'] %}
-                                                <a
-                                                        data-bs-toggle="{{ order_start.doc }}"
-                                                        data-key="{{ order_start.tkey }}"
-                                                        hx-params="model,action,method,ids,key,id"
-                                                        hx-trigger="click"
-                                                        hx-ext="json-enc"
-                                                        hx-target="#htmx_content"
-                                                        hx-swap="beforeend transition:true"
-                                                        hx-post="/base/action"
-                                                        hx-vals='{
-                                                    "model": "{{ order.v.model.name }}",
-                                                    "action": "{{ order_start.name }}",
-                                                    "id": "{{ order.p.id }}",
-                                                    "method": "{% if order_start.schema %}get{% else %}update{% endif %}",
-                                                    "ids": ["{{ order.p.id }}"],
-                                                    "key": "{{ order.p.key }}"
-                                                }'
-                                                        class="btn btn-sm btn-secondary">
-                                                    {{ order_start.name }}
-                                                </a>
+                                                {{ order.h.as_action('order_start', 'as_a', css_class="btn btn-sm btn-primary") }}
                                             </li>
                                         {% endif %}
                                         {% if order.status.val =='processing' %}
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                                {% set order_complete = order.v.actions['order_complete'] %}
-                                                <a
-                                                        data-bs-toggle="{{ order_complete.doc }}"
-                                                        data-key="{{ order_complete.tkey }}"
-                                                        hx-params="model,action,method,ids,key,id"
-                                                        hx-trigger="click"
-                                                        hx-ext="json-enc"
-                                                        hx-target="#htmx_content"
-                                                        hx-swap="beforeend transition:true"
-                                                        hx-post="/base/action"
-                                                        hx-vals='{
-                                                    "model": "{{ order.v.model.name }}",
-                                                    "action": "{{ order_complete.name }}",
-                                                    "id": "{{ order.p.id }}",
-                                                    "method": "{% if order_complete.schema %}get{% else %}update{% endif %}",
-                                                    "ids": ["{{ order.p.id }}"],
-                                                    "key": "{{ order.p.key }}"
-                                                }'
-                                                        class="btn btn-sm btn-success">
-                                                     {{ order_complete.name }}
-                                                </a>
+                                                {{ order.h.as_action('order_complete', 'as_a', css_class="btn btn-sm btn-primary") }}
                                             </li>
                                         {% endif %}
                                             <li class="breadcrumb-item d-flex align-items-center">
