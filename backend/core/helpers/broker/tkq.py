@@ -1,8 +1,9 @@
 import asyncio
+import os
 from contextvars import ContextVar
 from uuid import uuid4
 import importlib
-from taskiq import SimpleRetryMiddleware, TaskiqMiddleware
+from taskiq import SimpleRetryMiddleware, TaskiqMiddleware, InMemoryBroker
 from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend, PubSubBroker
 
 from core.db_config import config
@@ -41,6 +42,9 @@ list_brocker = ListQueueBroker(
     queue_name='model',
     socket_timeout=360
 ).with_result_backend(redis_async_result).with_middlewares(SimpleRetryMiddleware(default_retry_count=3)).with_middlewares(TaskSession())
+
+if os.environ.get('ENV') == 'test':
+    list_brocker = InMemoryBroker().with_middlewares(SimpleRetryMiddleware(default_retry_count=3)).with_middlewares(TaskSession())
 init(list_brocker, 'core.env:Env')
 #
 # async def main():

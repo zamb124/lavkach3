@@ -16,7 +16,7 @@ class CompanyBaseScheme(BasicModel):
     external_number: Optional[str] = Field(default=None, title='External ID', table=True, form=True)
     locale: Optional[TypeLocale] = Field(default='en_US', title='Locale', table=True, form=True, model='locale')
     country: Optional[TypeCountry] = Field(default='US', title='Country', table=True, form=True, model='country')
-    currency: TypeCurrency | str = Field(default='USD', title='Currency', table=True, form=True, model='currency')
+    currency: TypeCurrency = Field(default='USD', title='Currency', table=True, form=True, model='currency')
 
     class Config:
         orm_model = Company
@@ -37,9 +37,9 @@ class CompanyScheme(CompanyCreateScheme, TimeStampScheme):
 
 class CompanyFilter(BaseFilter):
     title__in: Optional[str] = Field(description="title", default=None)
-    country__in: Optional[List[TypeCountry]] = Field(default=None, model='country')
-    currency__in: Optional[List[TypeCurrency]] = Field(default=None, model='currency')
-    locale__in: Optional[list[TypeLocale]] = Field(default=None, model='locale')
+    country__in: Optional[list[str]] = Field(default=None, model='country')
+    currency__in: Optional[list[str]] = Field(default=None, model='currency')
+    locale__in: Optional[list[str]] = Field(default=None, model='locale')
 
 
     class Config:

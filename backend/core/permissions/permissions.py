@@ -6,6 +6,7 @@ import yaml
 from sqlalchemy import select
 from starlette.exceptions import HTTPException
 
+
 #from app.basic.user.models import Role
 #from core.service.base import BaseService
 
@@ -97,7 +98,10 @@ def permit(*arg):
                 if not res:
                     raise HTTPException(status_code=403,
                                         detail=f"The user ({service.user}) does not have permission to {arg}")
-            response = f(*args, **kwargs)
+            try:
+                response = f(*args, **kwargs)
+            except Exception as e:
+                raise e
             return await response
 
         return wrapped

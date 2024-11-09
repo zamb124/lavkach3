@@ -53,7 +53,7 @@ async def countries_code(request: Request, code: str):
             status_code=404,
             detail=f"Country {str(ex)} not found"
         )
-    return {'name': country, 'code': code}
+    return {'name': country, 'code': code, 'id': code}
 
 
 @fundamental_router.get("/currency", response_model=CurrencyListSchema)
@@ -71,7 +71,7 @@ async def currencies_code(request: Request, code: str):
             status_code=404,
             detail=f"currency {str(ex)} not found"
         )
-    return {'name': currency, 'code': code}
+    return {'name': currency, 'code': code, 'id': code}
 
 
 @fundamental_router.get("/locale", response_model=LocaleListSchema)

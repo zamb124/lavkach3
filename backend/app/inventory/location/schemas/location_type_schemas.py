@@ -45,13 +45,10 @@ class LocationTypeScheme(LocationTypeCreateScheme, TimeStampScheme):
 class LocationTypeFilter(BaseFilter):
     ...
 
-    class Config:
-        populate_by_name = True
 
     class Constants(Filter.Constants):
         model = LocationType
         ordering_field_name = "order_by"
-        search_field_name = "search"
         search_model_fields = ["title",]
 
 

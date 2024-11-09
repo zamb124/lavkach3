@@ -52,6 +52,9 @@ class DockerConfig(Config):
 class LocalConfig(Config):
     ...
 
+class TestConfig(Config):
+    ...
+
 
 class ProductionConfig(Config):
     ...
@@ -59,13 +62,10 @@ class ProductionConfig(Config):
 
 def get_config():
     env = os.getenv("ENV", "local")
-    for name, value in os.environ.items():
-        # logging.info("{0}: {1}".format(name, value))
-        # print("{0}: {1}".format(name, value))
-        pass
     config_type = {
         "dev": DevelopmentConfig(),
         "local": LocalConfig(),
+        "test": TestConfig(),
         "docker": DockerConfig(),
         "prod": ProductionConfig(),
     }

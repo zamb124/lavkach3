@@ -4,8 +4,6 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from typing import List
 
-import taskiq_fastapi
-import uvicorn
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,27 +11,25 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
-from app.front.tkq import broker
-from app.front.template_spec import templates
-from app.front.front_router import front_router
-#from app.front.front_tasks import remove_expired_tokens
-from core.helpers.broker import list_brocker
-from core.db_config import config
-from core.env import Env
+
 from app.basic import __domain__ as basic_domain
+from app.front.front_router import front_router
+from app.front.tkq import broker
 from app.inventory import __domain__ as inventory_domain
 from app.prescription import __domain__ as prescription_domain
+from core.db_config import config
+from core.env import Env
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
     AuthenticationMiddleware,
-    AuthBffBackend,
     SQLAlchemyMiddleware, AuthBackend,
 )
+# from app.front.front_tasks import remove_expired_tokens
+from core.helpers.broker import list_brocker
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
 from core.utils.timeit import add_timing_middleware
-from app.front.front_config import config as cf
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

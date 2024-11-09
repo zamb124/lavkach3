@@ -29,6 +29,9 @@ class DockerConfig(Config):
 class LocalConfig(Config):
     ...
 
+class TestConfig(Config):
+    ...
+
 
 class ProductionConfig(Config):
     ...
@@ -44,6 +47,7 @@ def get_config():
         "dev": DevelopmentConfig(),
         "local": LocalConfig(),
         "docker": DockerConfig(),
+        "test": TestConfig(),
         "prod": ProductionConfig(),
     }
     return config_type[env]

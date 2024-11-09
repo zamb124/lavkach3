@@ -17,8 +17,6 @@ class ProductStorageTypeBaseScheme(BasicModel):
     external_number: Optional[str] = None
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = ProductStorageType
 
 class ProductStorageTypeUpdateScheme(ProductStorageTypeBaseScheme):
@@ -33,8 +31,6 @@ class ProductStorageTypeScheme(ProductStorageTypeCreateScheme, TimeStampScheme):
     lsn: int
     id: UUID4
 
-    class Config:
-        from_attributes = True
 
 
 class ProductStorageTypeFilter(BaseFilter):

@@ -149,12 +149,6 @@ class Move(Base, AllMixin, CreatedEdited):
     suggest_list_rel: Mapped[Optional[list["Suggest"]]] = relationship(lazy="selectin")
     processing_steps: Mapped[dict] = mapped_column(JSON)
 
-    __table_args__ = (
-        CheckConstraint(
-            "(status = 'created' OR (quant_src_id IS NOT NULL AND quant_dest_id IS NOT NULL AND location_src_id IS NOT NULL AND location_dest_id IS NOT NULL))",
-            name='check_status_quant_location_not_null'
-        ),
-    )
 
 class Suggest(Base, AllMixin):
     """

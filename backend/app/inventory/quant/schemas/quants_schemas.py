@@ -2,13 +2,13 @@ from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, computed_field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import LocationClass
 from app.inventory.quant.models import Quant
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import BasicModel
+from core.schemas.basic_schemes import BasicModel, BasicField as Field
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
@@ -55,9 +55,6 @@ class QuantScheme(QuantCreateScheme, TimeStampScheme):
     @property
     def title(self) -> str:
         return f'Q-{self.quantity} | R-{self.reserved_quantity} | I-{self.incoming_quantity}'
-
-    class Config:
-        from_attributes = True
 
 
 class QuantFilter(BaseFilter):

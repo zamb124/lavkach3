@@ -33,8 +33,8 @@ class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilt
         super(UserService, self).__init__(request, User, UserCreateScheme, UserUpdateScheme)
 
     @permit('user_get')
-    async def get(self, id: Any) -> Row | RowMapping:
-        return await super(UserService, self).get(id)
+    async def get(self, id: Any, for_update=False) -> Row | RowMapping:
+        return await super(UserService, self).get(id, for_update=False)
 
     @permit('user_list')
     async def list(self, _filter: FilterSchemaType, size: int):

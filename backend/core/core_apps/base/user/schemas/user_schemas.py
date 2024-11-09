@@ -1,18 +1,18 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import Field, UUID4
+from pydantic import UUID4
 
 from ....base.company.schemas import CompanyCreateScheme, CompanyScheme
 from ....base.user.models.user_models import UserType, User
 from .....schemas import BaseFilter
-from .....schemas.basic_schemes import BaseModel
+from .....schemas.basic_schemes import BaseModel, BasicModel, BasicField as Field
 from .....schemas.list_schema import GenericListSchema
 from .....schemas.timestamps import TimeStampScheme
 from .....types.types import *
 
 
-class LoginResponseSchema(BaseModel):
+class LoginResponseSchema(BasicModel):
     nickname: str
     token: str = Field(..., description="Token")
     refresh_token: str = Field(..., description="Refresh token")
@@ -25,28 +25,25 @@ class LoginResponseSchema(BaseModel):
     country: Optional[str]
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = User
-        service = 'app.base.user.services.UserService'
 
 class UserBaseScheme(BaseModel):
     vars: Optional[dict] = {}
     email: str = Field(title="Email")
-    locale: Optional[TypeLocale] = Field(default='en_US', title='Locale', table=True, form=True, model='locale')
-    country: Optional[TypeCountry] = Field(default='US', title='Country', table=True, form=True, model='country')
-    currency: TypeCurrency | str = Field(default='USD', title='Currency', table=True, form=True, model='currency')
-    phone_number: Optional[TypePhone] = Field(default=None, title='Phone', table=True, form=True)
+    locale: Optional[str] = Field(default='en_US', title='Locale', table=True, form=True, model='locale')
+    country: Optional[str] = Field(default='US', title='Country', table=True, form=True, model='country')
+    phone_number: Optional[str] = Field(default=None, title='Phone', table=True, form=True)
     nickname: str = Field(title='Nickname', table=True, form=True)
     is_admin: Optional[bool] = Field(default=False, title='Is Admin')
     type: Optional[UserType] = Field(default=UserType.COMMON, title='Type')
-    external_number: Optional[str] = Field(default=False, title='External #', table=True)
+    external_number: Optional[str] = Field(default=None, title='External #', table=True)
+    company_id: Optional[UUID4] = Field(default=None, title='Company Id', model='company')
     company_ids: Optional[list[UUID4]] = Field(default=None, title='Сompanies', model='company')
     role_ids: Optional[list[UUID4]] = Field(default=None, title='Roles', model='role')
 
 
 class UserUpdateScheme(UserBaseScheme):
-    email: str = Field(title="Email")
+    email: str = Field(default=None, title="Email")
 
 
 class UserCreateScheme(UserBaseScheme):
@@ -61,7 +58,9 @@ class UserScheme(UserBaseScheme, TimeStampScheme):
     lsn: int
     company_id: Optional[UUID4] = Field(title='Company Id', model='company')
     company_rel: Optional['CompanyScheme']
-
+    locale: Optional[TypeLocale] = Field(default='en_US', title='Locale', table=True, form=True, model='locale')
+    country: Optional[TypeCountry] = Field(default='US', title='Country', table=True, form=True, model='country')
+    phone_number: Optional[TypePhone] = Field(default=None, title='Phone', table=True, form=True)
 
 
 class UserFilter(BaseFilter):

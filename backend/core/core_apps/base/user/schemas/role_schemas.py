@@ -2,6 +2,7 @@ from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel, Field, UUID4
+from pygments.lexer import default
 
 from ...user.models.role_models import Role
 from .....schemas import BaseFilter
@@ -30,7 +31,7 @@ class RoleUpdateScheme(RoleBaseScheme):
 class RoleCreateScheme(RoleBaseScheme):
     title: str
     company_id: UUID4
-    role_ids: Optional[List[UUID4]] = Field(title='Roles', model='role')
+    role_ids: Optional[List[UUID4]] = Field(default=[], title='Roles', model='role')
 
 
 class RoleScheme(RoleCreateScheme, TimeStampScheme):

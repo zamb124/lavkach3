@@ -11,6 +11,7 @@ class MoveErrors(str, Enum):
     RESERVATION_ALREADY_CREATED: str = 'Reservation already created for move {move_id}'
     SET_DONE_ERROR: str = 'Move SET_DONE_ERROR'
     SUGGESTS_NOT_DONE: str = 'Suggests not done for move {move_id}'
+    CHANGE_LOCATION_ERROR: str = 'Change location error for move {move_id}'
 
 class OrderErrors(str, Enum):
     WRONG_STATUS: str = 'Move is not in CREATED status'

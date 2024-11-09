@@ -2,14 +2,14 @@ from typing import Optional, List
 
 from celery.worker.strategy import default
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic.types import UUID
 
 from ...bus.enums import BusStatus
 from ....bus.bus.models.bus_models import Bus
 from core.helpers.cache import CacheTag
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import BasicModel
+from core.schemas.basic_schemes import BasicModel, BasicField as Field
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 

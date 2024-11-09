@@ -95,18 +95,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                 location_entity = await self.env['location'].service.get(val_in_cleaned)
                 if location_entity:
                     if move.location_dest_id != location_entity.id:
-                        available_quants = await move_service.get_product_destination_quants_by_move(move=move)
-                        if not available_quants:
-                            raise ModuleException(
-                                status_code=406,
-                                enum=SuggestErrors.LOCATION_IS_NOT_AVALIBLE
-                            )
-
-                        move.vars.update({
-                            'origin_location_dest_id': move.location_dest_id
-                        })
-                        move.quant_dest_id = available_quants[0].id
-                        move.location_dest_id = location_entity.id
+                        await move_service.change_dest_location(move, location_entity)
                     suggest_entity.result_value = value
                     suggest_entity.status = SuggestStatus.DONE
             else:

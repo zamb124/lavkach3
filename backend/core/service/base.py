@@ -186,7 +186,10 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             if is_pydantic(value):
                 if isinstance(value, list):
                     for _obj in value:
-                        rel_service = self.env[_obj.Config.orm_model.__tablename__].service
+                        try:
+                            rel_service = self.env[_obj.Config.orm_model.__tablename__].service
+                        except Exception as e:
+                            raise e
                         if hasattr(_obj, 'id') and _obj.id:
                             rel_entity = await rel_service.update(id=_obj.id, obj=_obj, commit=False)
                         else:

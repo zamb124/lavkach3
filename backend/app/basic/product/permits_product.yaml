@@ -5,3 +5,11 @@ permits:
   store_delete: Может удалять магазин
   store_get: Может смотреть на магазин
   product_by_barcode: Может получать продукт по штрихкоду
+  product_category_update: Может редактировать категорию продукта
+  product_category_list: Может получать список категорий продуктов
+  product_category_create: Может создавать категорию продукта
+  product_category_delete: Может удалять категорию продукта
+  product_update: Может редактировать продукт
+  product_list: Может получать список продуктов
+  product_create: Может создавать продукт
+  product_delete: Может удалять продукт

@@ -1,4 +1,6 @@
 import asyncio
+import os
+import uuid
 from contextvars import ContextVar, Token
 from idlelib.pyparse import trans
 from typing import Union
@@ -13,7 +15,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from sqlalchemy.sql.expression import Update, Delete, Insert
 from core.helpers.broker import list_brocker
-from core.db_config import config
+from core.db_config import config, TestConfig
 from httpx import AsyncClient as asyncclient
 
 from core.helpers.cache import CacheTag
@@ -24,16 +26,17 @@ session_context: ContextVar[str] = ContextVar("session_context")
 
 
 def get_session_context() -> str:
-    return session_context.get()
-
+    session_id = session_context.get()
+    logger.info(f"Context get: {session_id}")
+    return session_id
 
 def set_session_context(session_id: str) -> Token:
+    logger.info(f"Context set: {session_id}")
     return session_context.set(session_id)
-
 
 def reset_session_context(context: Token) -> None:
     session_context.reset(context)
-
+    logger.info("Context reset")
 
 engines = {
     "writer": create_async_engine(config.WRITER_DB_URL, echo=True, pool_recycle=3600, max_overflow=30),
@@ -52,6 +55,7 @@ class RoutingSession(Session):
 async_session_factory = sessionmaker(
     class_=AsyncSession,
     sync_session_class=RoutingSession,
+    expire_on_commit=False if isinstance(config, TestConfig) else True
 )
 session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
     session_factory=async_session_factory,
@@ -90,7 +94,8 @@ class Base(metaclass=DeclarativeMeta):
         responce = await client.post(
             url=f'http://{config.BUS_HOST}:{config.BUS_PORT}/api/bus/bus',
             json=data,
-            headers={'Authorization': config.INTERCO_TOKEN}
+            headers={'Authorization': config.INTERCO_TOKEN},
+            timeout=1
         )
         if responce.status_code == 200:
             logger.info(f'Message sended to bus.bus')
@@ -104,6 +109,8 @@ class Base(metaclass=DeclarativeMeta):
         i: int = 1
         while True:
             try:
+                if os.environ.get('ENT') == 'test':
+                    break
                 task = await self.update_notify.kiq(self.__tablename__, message)
                 logger.info(f'Message sended to bus.bus with id: {task.task_id}')
                 break

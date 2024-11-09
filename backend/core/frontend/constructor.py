@@ -192,7 +192,108 @@ class P:
 
 class H:
     """
-        Класс инкапсулирует работу с шаблонизатором и htmx
+    Class for creating flexible methods to generate various HTML components like tables, divs, cards, modals, buttons, filters, and actions using templates.
+
+    Attributes:
+        cls: Reference to 'ClassView' for rendering.
+        templates: Dictionary holding different templates.
+
+    Methods:
+        __init__:
+            Initializes the H class by copying default templates.
+
+        as_tr:
+            Generates a table row as a string using the specified template, block name, method, and excluding defined fields.
+
+        as_tr_get:
+            Displays the object as a table row for viewing.
+
+        as_tr_header:
+            Displays the object as a table header row.
+
+        as_tr_placeholder:
+            Displays the object as a table header row.
+
+        as_tr_update:
+            Displays the object as a table row for editing.
+
+        as_tr_create:
+            Displays the object as a table row for creating.
+
+        as_div:
+            Generates a div as a string using the specified template, block name, method, and excluding defined fields.
+
+        as_div_get:
+            Displays the object as a div for viewing.
+
+        as_div_update:
+            Displays the object as a div for updating.
+
+        as_div_create:
+            Displays the object as a div for creating.
+
+        as_card:
+            Generates a card as a string using the specified template, block name, method, and excluding defined fields.
+
+        as_card_get:
+            Displays the object as a card for viewing.
+
+        as_modal:
+            Generates a modal as a string using the specified template, block name, method, and excluding defined fields.
+
+        as_modal_get:
+            Displays the object as a modal for viewing.
+
+        as_modal_update:
+            Displays the object as a modal for updating.
+
+        as_modal_delete:
+            Displays the object as a modal for deleting.
+
+        as_modal_create:
+            Displays the object as a modal for creating.
+
+        as_button:
+            Generates a button as a string using the specified template, block name, method, and excluding defined fields.
+
+        as_button_get:
+            Generates a button for viewing the object.
+
+        as_button_update:
+            Generates a button for editing the object.
+
+        as_button_create:
+            Generates a button for creating the object.
+
+        as_button_delete:
+            Generates a button for deleting the object.
+
+        as_button_save:
+            Generates a button for saving the object.
+
+        as_button_actions:
+            Generates a button for showing available actions on the object.
+
+        as_filter:
+            Generates a filter as a string using the specified template, block name, method, and excluding defined fields.
+
+        as_filter_widget:
+            Returns an HTMX widget to build a filter.
+
+        as_filter_get:
+            Returns a filter with columns and types for HTMX templates.
+
+        as_action:
+            Generates an action button for the specified action name, block name, and CSS class.
+
+        as_table:
+            Generates a table as a string using the specified template, block name, method, and excluding defined fields.
+
+        as_table_widget:
+            Returns the table filter with columns and types for HTMX templates.
+
+        as_table_get:
+            Returns the table filter with columns and types for HTMX templates.
     """
     cls: 'ClassView'
     templates = None
@@ -339,7 +440,17 @@ class H:
 
     @property
     def as_filter_widget(self) -> str:
-        """Отдает виджет HTMX для построение фильтра"""
+        """
+        Returns the filter widget as an HTML block
+
+          @property
+          def as_filter_widget(self) -> str:
+              Creates an HTML representation of the filter widget by invoking
+              the `as_filter` method with 'widget' as the block name.
+
+          Returns:
+              str: The HTML string for the filter widget
+        """
         return self.as_filter(block_name='widget')
 
     @property
@@ -420,7 +531,88 @@ class H:
 
 class ClassView:
     """
-        Классконструктор модели для манипулирование уже их UI HTMX
+     class ClassView:
+        Represents a view class for handling model-related data and operations.
+
+     _id:
+        Unique identifier for the class instance.
+
+     _lsn:
+        Optional logging sequence number.
+
+     _view:
+        An instance of the View class.
+
+     _exclude:
+        List of fields to exclude from operations.
+
+     _lines:
+        List storing instances related to the view.
+
+     __state:
+        Iterator state for internal use.
+
+     _templates:
+        Dictionary mapping template names to paths.
+
+     p:
+        Instance of class P.
+
+     h:
+        Instance of class H.
+
+     __init__(self, request: Request, model: str | BaseModel, params: dict = None, exclude: list = [],
+              join_related: bool = False, join_fields: list | None = None, is_inline: bool = False,
+              key: str | None = None, is_rel: bool = False, vars: dict | None = None,
+              schema: BaseModel = None, permits: list = [], parent_field: 'Field' = None):
+        Initializes an instance of ClassView with the given parameters and model.
+
+     __setattr__(self, key, value):
+        Overrides the default behavior for setting attributes.
+
+     __hash__(self):
+        Returns the hash value of the _id attribute.
+
+     __eq__(self, other):
+        Checks if another instance is equal to this one by comparing their _id attributes.
+
+     __iter__(self):
+        Returns the instance itself as an iterator.
+
+     reset_key(self):
+        Resets the key attribute in the view.
+
+     append(self, instance: object):
+        Appends an instance of ClassView or Field to the _lines list or updates the current dictionary.
+
+     delete_dublicates(self):
+        Removes duplicate entries from the _lines list based on their _id.
+
+     copy(self):
+        Creates and returns a deep copy of the current instance.
+
+     __next__(self):
+        Returns the next line in the _lines list when used as an iterator.
+
+     ___str__(self):
+        Returns a string representation of the instance.
+
+     __repr__(self):
+        Returns a string representation for debugging.
+
+     @property
+     def r(self):
+        Returns the request from the view.
+
+     async def init(self, params: dict | None = None, join_related: bool = False,
+                    data: list | dict = None, exclude: list = [], schema: BaseModel = None) -> None:
+        Extracts and initializes data based on input parameters and request data.
+
+     def _get_view_vars_by_fieldinfo(self, fielinfo: FieldInfo | None = None) -> ViewVars:
+        Returns a ViewVars instance initialized with field info attributes or default values.
+
+     _get_view_vars(self, fieldname: str, is_filter: bool) -> dict[str, ViewVars]:
+        Compiles and returns a dictionary of ViewVars based on specified field names and filter conditions.
     """
     _id: str | int = None
     _lsn: int | None = None

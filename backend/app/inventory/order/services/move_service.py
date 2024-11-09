@@ -1,6 +1,7 @@
 import logging
 import logging
 import traceback
+import typing
 import uuid
 from typing import Any, Optional, List
 
@@ -13,6 +14,7 @@ from watchfiles import awatch
 from app.inventory.location.enums import VirtualLocationClass, PhysicalLocationClass
 from app.inventory.order import MoveLog
 from app.inventory.order.enums.exceptions_move_enums import MoveErrors
+from app.inventory.order.enums.exceptions_suggest_enums import SuggestErrors
 from app.inventory.order.enums.order_enum import MoveLogType, OrderStatus, SuggestStatus, TYPE_MAP
 from app.inventory.order.models.order_models import Move, MoveType, Order, OrderType, MoveStatus, \
     SuggestType
@@ -25,6 +27,8 @@ from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 from core.utils.timeit import timed
+if typing.TYPE_CHECKING:
+    from app.inventory.location.models import Location
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -57,7 +61,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
     """
 
     def __init__(self, request: Request):
-        super(MoveService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme)
+        super(BaseService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme)
 
     @permit('move_update')
     async def update(self, id: Any, obj: UpdateSchemaType, commit: bool = True) -> Optional[ModelType]:
@@ -127,7 +131,6 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                     # "user_id": self.user.user_id
                 })
                 to_session_add.append(in_location_suggest_dest)
-            try:
                 move.status = MoveStatus.PROCESSING
                 order = await self.env['order'].service.get(move.order_id)
                 order.status = OrderStatus.PROCESSING
@@ -135,13 +138,14 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 self.session.add(move)
                 for suggests_obj in to_session_add:
                     self.session.add(suggests_obj)
+            try:
                 await self.session.commit()
                 await self.session.refresh(move)
-                await move.notify('update')
-                orders_to_notify.append(move.order_id)
             except Exception as ex:
                 self.session.rollback()
                 raise ex
+            await move.notify('update')
+            orders_to_notify.append(move.order_id)
         orders = await self.env['order'].service.list({'id__in': orders_to_notify})
         for order in orders:
             await order.notify('update')
@@ -157,7 +161,6 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         move.user_id = user_id
         await self.session.commit()
         return move
-
 
     @list_brocker.task(queue_name='model')
     async def confirm(self, move_ids: str, user_id: str):
@@ -523,7 +526,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
             raise e
 
-    async def _set_done(self, move: Move, user_id: str=False):
+    async def _set_done(self, move: Move, user_id: str):
         """
             Здесь создается mov_log, когда все саджесты выполнены
         """
@@ -538,7 +541,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
         if move.type == 'product':
             """Проверочки"""
-                # Проверяем, что у мува все саджесты закрыты
+            # Проверяем, что у мува все саджесты закрыты
             for suggest in move.suggest_list_rel:
                 if not suggest.status == SuggestStatus.DONE:
                     raise ModuleException(status_code=406, enum=MoveErrors.SUGGESTS_NOT_DONE)
@@ -549,15 +552,15 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             move_logs = await self.env['move_log'].service.list({'move_id__in': [move.id]})
             reserve_quantity = sum(float(s.reserved_quantity) for s in move_logs)
             incoming_quantity = sum(float(s.incoming_quantity) for s in move_logs)
-            assert reserve_quantity >= total_quantity, 'Not enough reserved quantity'
+
             # - Движение src
             src_log = move_log_model(**{
                 "company_id": move.company_id,
                 "type": src_type,
                 "order_id": move.order_id,
                 "move_id": move.id,
-                "created_by": move.created_by,
-                "edited_by": move.edited_by,
+                "created_by": user_id,
+                "edited_by": user_id,
                 "product_id": move.product_id,
                 "store_id": move.store_id,
                 "location_class": location_src.location_class,
@@ -571,78 +574,62 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             })
             src_quant.reserved_quantity -= reserve_quantity
             src_quant.quantity -= total_quantity
-            new_location_dest_log = None
-            suggest_dest_location_id = [i for i in move.suggest_list_rel if i.type == SuggestType.IN_LOCATION_DEST][0]
-            if suggest_dest_location_id == move.location_dest_id:
-                dest_log = move_log_model(**{
-                    "company_id": move.company_id,
+            origin_quant_dest_id = move.vars.get('origin_quant_dest_id')
+            if origin_quant_dest_id:
+                origin_quant_dest = await self.env['quant'].service.get(origin_quant_dest_id, for_update=True)
+                # Если у мува есть исходный квант назначения, то освобождаем его
+                origin_quant_log = move_log_model(**{
+                    "company_id": origin_quant_dest.company_id,
                     "type": dest_type,
                     "order_id": move.order_id,
                     "move_id": move.id,
-                    "product_id": move.product_id,
-                    "created_by": move.created_by,
-                    "edited_by": move.edited_by,
+                    "product_id": origin_quant_dest.product_id,
+                    "created_by": user_id,
+                    "edited_by": user_id,
                     "store_id": move.store_id,
-                    "location_class": location_dest.location_class,
-                    "location_id": move.location_dest_id,
-                    "lot_id": move.lot_id if move.lot_id else None,
-                    "partner_id": move.partner_id if move.partner_id else None,
-                    "quantity": total_quantity,
-                    "reserved_quantity": 0.0,
-                    "incoming_quantity": -incoming_quantity,
-                    "uom_id": move.uom_id,
-                })
-            else:
-                # Обнуляем квант назначения и и
-                move.quant_dest_id = None
-                move.location_id = suggest_dest_location_id
-                dest_log = move_log_model(**{
-                    "company_id": move.company_id,
-                    "type": dest_type,
-                    "order_id": move.order_id,
-                    "move_id": move.id,
-                    "product_id": move.product_id,
-                    "created_by": move.created_by,
-                    "edited_by": move.edited_by,
-                    "store_id": move.store_id,
-                    "location_class": location_dest.location_class,
-                    "location_id": move.location_dest_id,
-                    "lot_id": move.lot_id if move.lot_id else None,
-                    "partner_id": move.partner_id if move.partner_id else None,
+                    "location_class": origin_quant_dest.location_class,
+                    "location_id": origin_quant_dest.location_in,
+                    "lot_id": origin_quant_dest.lot_id if origin_quant_dest.lot_id else None,
+                    "partner_id": origin_quant_dest.partner_id if origin_quant_dest.partner_id else None,
                     "quantity": 0.0,
                     "reserved_quantity": 0.0,
                     "incoming_quantity": -incoming_quantity,
-                    "uom_id": move.uom_id,
+                    "uom_id": origin_quant_dest.uom_id,
                 })
-                new_location_dest_log = move_log_model(**{
-                    "company_id": move.company_id,
-                    "type": dest_type,
-                    "order_id": move.order_id,
-                    "move_id": move.id,
-                    "product_id": move.product_id,
-                    "created_by": move.created_by,
-                    "edited_by": move.edited_by,
-                    "store_id": move.store_id,
-                    "location_class": location_dest.location_class,
-                    "location_id": suggest_dest_location_id,
-                    "lot_id": move.lot_id if move.lot_id else None,
-                    "partner_id": move.partner_id if move.partner_id else None,
-                    "quantity": total_quantity,
-                    "reserved_quantity": 0.0,
-                    "incoming_quantity": 0.0,
-                    "uom_id": move.uom_id,
-                })
+                origin_quant_dest.incoming_quantity -= incoming_quantity
+                self.session.add(origin_quant_log)
 
+            dest_log = move_log_model(**{
+                "company_id": move.company_id,
+                "type": dest_type,
+                "order_id": move.order_id,
+                "move_id": move.id,
+                "product_id": move.product_id,
+                "created_by": user_id,
+                "edited_by": user_id,
+                "store_id": move.store_id,
+                "location_class": location_dest.location_class,
+                "location_id": move.location_dest_id,
+                "lot_id": move.lot_id if move.lot_id else None,
+                "partner_id": move.partner_id if move.partner_id else None,
+                "quantity": total_quantity,
+                "reserved_quantity": 0.0,
+                "incoming_quantity": -incoming_quantity if not origin_quant_dest_id else 0.0,
+                "uom_id": move.uom_id,
+            })
 
             dest_quant.incoming_quantity -= incoming_quantity
             dest_quant.quantity += total_quantity
-            if new_location_dest_log:
-                self.session.add(new_location_dest_log)
+            src_quant.move_ids.remove(move.id)
+            dest_quant.move_ids.remove(move.id)
+
+
+
+
             self.session.add(src_quant)
             self.session.add(src_log)
             self.session.add(dest_quant)
             self.session.add(dest_log)
-
 
     @permit('move_create')
     async def create(self, obj: CreateSchemaType, parent: Order | Move | None = None, commit=True) -> ModelType:
@@ -675,3 +662,28 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         executed_data = await self.session.execute(query)
         move_entities = executed_data.scalars().all()
         return move_entities
+
+    @permit('change_dest_location')
+    async def change_dest_location(self, move: Move, location: 'Location'):
+        # Меняем ячейку и ищем квант назначения
+        move.vars.update({
+            'origin_location_dest_id': move.location_dest_id,
+            'origin_quant_dest_id': move.quant_dest_id
+        })
+        dest_quant = self.env['quant'].service.get(move.quant_dest_id)
+        dest_quant.move_ids.remove(move.id)
+        self.session.add(dest_quant)
+        move.location_dest_id = location.id
+        move.quant_dest_id = None
+        available_quants = await self.get_product_destination_quants_by_move(move=move)
+        if not available_quants:
+            raise ModuleException(
+                status_code=406,
+                enum=MoveErrors.CHANGE_LOCATION_ERROR
+            )
+        new_quant = available_quants[0]
+        self.session.add(new_quant)
+        if not new_quant.id:
+            await self.session.flush([new_quant])
+        new_quant.move_ids.append(move.id)
+        move.quant_dest_id = new_quant.id
