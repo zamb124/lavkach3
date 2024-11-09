@@ -3,24 +3,20 @@ import logging
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Generic, Optional, Type, TypeVar, Tuple
+from typing import Any, Generic, Type, TypeVar
 from uuid import uuid4
-from starlette.requests import Request
-from fastapi_filter.contrib.sqlalchemy import Filter
-from httpx import AsyncClient as asyncclient
-from pydantic import BaseModel
-from sqlalchemy import select, Row, RowMapping, inspect
-from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.exceptions import HTTPException
 
-from core.db import Base
+from fastapi_filter.contrib.sqlalchemy import Filter
+from pydantic import BaseModel
+from sqlalchemy import select, Row, RowMapping
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
+from starlette.exceptions import HTTPException
+from starlette.requests import Request
+
 from core.db.session import Base, session
 from core.fastapi.middlewares.authentication import CurrentUser
-from core.helpers.broker import list_brocker
 from core.helpers.cache import CacheTag
 from core.schemas import BaseFilter
-from core.service_config import config
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -30,7 +26,7 @@ before_fields = ['role_ids', 'company_ids', 'is_admin', 'store_id']
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-from types import FunctionType
+
 
 @dataclass
 class Model:

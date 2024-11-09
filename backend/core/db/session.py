@@ -1,10 +1,10 @@
 import asyncio
-import os
-import uuid
-from contextvars import ContextVar, Token
-from idlelib.pyparse import trans
-from typing import Union
 import logging
+import os
+from contextvars import ContextVar
+from typing import Union
+
+from httpx import AsyncClient as asyncclient
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,
@@ -14,29 +14,14 @@ from sqlalchemy.orm import registry
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from sqlalchemy.sql.expression import Update, Delete, Insert
-from core.helpers.broker import list_brocker
-from core.db_config import config, TestConfig
-from httpx import AsyncClient as asyncclient
 
+from core.context import get_session_context
+from core.db_config import config, TestConfig
+from core.helpers.broker import list_brocker
 from core.helpers.cache import CacheTag
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-session_context: ContextVar[str] = ContextVar("session_context")
-
-
-def get_session_context() -> str:
-    session_id = session_context.get()
-    logger.info(f"Context get: {session_id}")
-    return session_id
-
-def set_session_context(session_id: str) -> Token:
-    logger.info(f"Context set: {session_id}")
-    return session_context.set(session_id)
-
-def reset_session_context(context: Token) -> None:
-    session_context.reset(context)
-    logger.info("Context reset")
 
 engines = {
     "writer": create_async_engine(config.WRITER_DB_URL, echo=True, pool_recycle=3600, max_overflow=30),
@@ -73,11 +58,11 @@ class Base(metaclass=DeclarativeMeta):
 
     __init__ = mapper_registry.constructor
 
-    async def prepare_bus(self, entity: object, method: str, updated_fields:list = None):
+    async def prepare_bus(self, entity: object, method: str, updated_fields: list = None):
         return {
             'cache_tag': CacheTag.MODEL,
             'message': f'{self.__tablename__.capitalize()} is {method.capitalize()}',
-            'company_id': entity.company_id if hasattr(entity,  'company_id') else entity.id,
+            'company_id': entity.company_id if hasattr(entity, 'company_id') else entity.id,
             'vars': {
                 'id': entity.id,
                 'lsn': entity.lsn if method == 'update' else None,
@@ -102,7 +87,6 @@ class Base(metaclass=DeclarativeMeta):
         else:
             logger.warning(responce.text)
 
-
     async def notify(self, method, updated_fields: list = None, message=None):
         if not message:
             message = await self.prepare_bus(self, method=method, updated_fields=updated_fields)
@@ -121,4 +105,3 @@ class Base(metaclass=DeclarativeMeta):
                 logger.error(f'Try to send message again to bus.bus: {i}..')
             if i > 20:
                 break
-

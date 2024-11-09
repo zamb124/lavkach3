@@ -9,7 +9,6 @@ from httpx import AsyncClient
 from starlette.requests import HTTPConnection, Request
 from taskiq import AsyncBroker
 
-from core.db.session import set_session_context, get_session_context, reset_session_context
 from core.db_config import config
 from core.fastapi.adapters.action_decorator import actions
 from httpx import AsyncClient as asyncclient, request
@@ -17,6 +16,8 @@ from httpx import AsyncClient as asyncclient, request
 from core.fastapi.schemas import CurrentUser
 from core.helpers.cache import CacheStrategy
 from pydantic import BaseModel
+
+from .context import set_session_context, get_session_context, reset_session_context
 
 if TYPE_CHECKING:
     from core.fastapi.adapters import BaseAdapter

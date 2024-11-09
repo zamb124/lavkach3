@@ -1,34 +1,32 @@
-import asyncio
 import os
-from contextvars import ContextVar
-from uuid import uuid4
-import importlib
-from taskiq import SimpleRetryMiddleware, TaskiqMiddleware, InMemoryBroker
-from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend, PubSubBroker
+import uuid
 
+from taskiq import SimpleRetryMiddleware, TaskiqMiddleware, InMemoryBroker
+from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend
+
+from core.context import set_session_context, reset_session_context
 from core.db_config import config
 from core.helpers.broker.initializator import init
-import taskiq.receiver
+
+
 class TaskSession(TaskiqMiddleware):
     """Middleware to add retries."""
 
     def __init__(self,) -> None:
         ...
 
-    def pre_execute(
-            self,
-            message: "TaskiqMessage",
-    ) -> "Union[TaskiqMessage, Coroutine[Any, Any, TaskiqMessage]]":
+    def pre_execute(self,message: "TaskiqMessage"):
+        set_session_context(message.task_id)
         return message
 
-    async def on_error(
-        self,
-        message: "TaskiqMessage",
-        result: "TaskiqResult[Any]",
-        exception: BaseException,
-    ) -> "Union[None, Coroutine[Any, Any, None]]":
+    def post_execute(self,message: "TaskiqMessage",result: "TaskiqResult[Any]"):
+        reset_session_context(message.task_id)
+
+    async def on_error(self,message: "TaskiqMessage",result: "TaskiqResult[Any]",exception: BaseException):
         ...
 
+    def post_save(self,message: "TaskiqMessage",result: "TaskiqResult[Any]"):
+        ...
 
 redis_async_result = RedisAsyncResultBackend(
     redis_url=f"redis{'s' if config.REDIS_SSL else ''}://default:{config.REDIS_PASSWORD}@{config.REDIS_HOST}:{config.REDIS_PORT}",

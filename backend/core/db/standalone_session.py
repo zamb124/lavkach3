@@ -1,6 +1,7 @@
 from uuid import uuid4
 
-from .session import session, set_session_context, reset_session_context
+from core.context import set_session_context, reset_session_context
+from core.db import session
 
 
 def standalone_session(func):

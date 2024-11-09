@@ -5,28 +5,22 @@ import typing
 import uuid
 from typing import Any, Optional, List
 
-from docutils.languages.he import labels
 from sqlalchemy import select
-from starlette.exceptions import HTTPException
 from starlette.requests import Request
-from watchfiles import awatch
 
-from app.inventory.location.enums import VirtualLocationClass, PhysicalLocationClass
-from app.inventory.order import MoveLog
+from app.inventory.location.enums import VirtualLocationClass
 from app.inventory.order.enums.exceptions_move_enums import MoveErrors
-from app.inventory.order.enums.exceptions_suggest_enums import SuggestErrors
-from app.inventory.order.enums.order_enum import MoveLogType, OrderStatus, SuggestStatus, TYPE_MAP
-from app.inventory.order.models.order_models import Move, MoveType, Order, OrderType, MoveStatus, \
+from app.inventory.order.enums.order_enum import OrderStatus, SuggestStatus, TYPE_MAP
+from app.inventory.order.models.order_models import Move, MoveType, Order, MoveStatus, \
     SuggestType
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
-from core.db import session
+from core.exceptions.module import ModuleException
 # from app.inventory.order.services.move_tkq import move_set_done
 from core.helpers.broker import list_brocker
-from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-from core.utils.timeit import timed
+
 if typing.TYPE_CHECKING:
     from app.inventory.location.models import Location
 
@@ -61,7 +55,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
     """
 
     def __init__(self, request: Request):
-        super(BaseService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme)
+        super(MoveService, self).__init__(request, Move, MoveCreateScheme, MoveUpdateScheme)
 
     @permit('move_update')
     async def update(self, id: Any, obj: UpdateSchemaType, commit: bool = True) -> Optional[ModelType]:
