@@ -7,16 +7,19 @@ from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 from starlette.requests import Request
 
-class ProductStorageTypeService(BaseService[ProductStorageType, ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, ProductStorageTypeFilter]):
-    def __init__(self, request:Request):
-        super(ProductStorageTypeService, self).__init__(request, ProductStorageType, ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme,)
+
+class ProductStorageTypeService(BaseService[
+                                    ProductStorageType, ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, ProductStorageTypeFilter]):
+    def __init__(self, request: Request):
+        super(ProductStorageTypeService, self).__init__(request, ProductStorageType, ProductStorageTypeCreateScheme,
+                                                        ProductStorageTypeUpdateScheme, )
 
     @permit('product_storage_type_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
         return await super(ProductStorageTypeService, self).update(id, obj)
 
     @permit('product_storage_type_list')
-    async def list(self, _filter: FilterSchemaType, size: int):
+    async def list(self, _filter: FilterSchemaType, size: int = 100):
         return await super(ProductStorageTypeService, self).list(_filter, size)
 
     @permit('product_storage_type_create')

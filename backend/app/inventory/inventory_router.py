@@ -9,6 +9,7 @@ from app.inventory.order.api.move_api import move_router
 from app.inventory.order.api.move_log_api import move_log_router
 from app.inventory.order.api.suggest_api import suggest_router
 from app.inventory.product_storage.api import product_storage_type_router
+from app.inventory.product_storage.api.storage_type_api import storage_type_router
 from app.inventory.quant.api import quant_router, lot_router
 from app.inventory.store_staff.api import store_staff_router
 from core.fastapi.dependencies import PermissionDependency, IsAuthenticated
@@ -73,6 +74,12 @@ router.include_router(
     order_type_router,
     prefix="/order_type",
     tags=["OrderType"],
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))]
+)
+router.include_router(
+    storage_type_router,
+    prefix="/storage_type",
+    tags=["StorageType"],
     dependencies=[Depends(PermissionDependency([IsAuthenticated]))]
 )
 router.include_router(

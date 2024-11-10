@@ -1,6 +1,7 @@
 import uuid
 from typing import Optional
 
+from sphinx.addnodes import index
 from sqlalchemy import Sequence, Uuid, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -20,12 +21,22 @@ class StorageType(Base, AllMixin):
 
 class ProductStorageType(Base, AllMixin):
     """
-        Расширяет Product добавляя к нему нужные для склада(если нужно) свойства
-        storage_uom_id - если ЕИ отлична от базовой
-        storage_image_url - Если картинка товара для склада отличается от базовой
-        allowed_package_ids - в какие типы упаковок можно класть товар
-        exclude_package_ids - в какие нельзя
-        is_homogeneity - товар гомогенен
+    Расширяет Product, добавляя к нему нужные для склада (если нужно) свойства.
+
+    Атрибуты:
+    ----------
+    storage_uom_id : uuid
+        Идентификатор единицы измерения склада, если ЕИ отличается от базовой.
+    storage_image_url : str
+        URL изображения товара для склада, если картинка отличается от базовой.
+    allowed_package_ids : List[uuid]
+        Список идентификаторов типов упаковок, в которые можно класть товар.
+    exclude_package_ids : List[uuid]
+        Список идентификаторов типов упаковок, в которые товар класть нельзя.
+    is_homogeneity : bool
+        Флаг, указывающий, может ли товар храниться только в гомогенных ячейках.
+    storage_type_ids : List[uuid]
+        Идентификаторы стратегий хранения товара.
     """
     __tablename__ = "product_storage_type"
     lsn_seq = Sequence(f'product_storage_type_lsn_seq')
@@ -35,5 +46,5 @@ class ProductStorageType(Base, AllMixin):
     storage_image_url: Mapped[Optional[str]]            # Картинка для склада
     allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Разрешенные типы упаковок
     exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Исключение типы упаковок
-    is_homogeneity: Mapped[bool] = mapped_column(default=False)  # Товар может хранится только в гомогенных ячейках
+    is_homogeneity: Mapped[bool] = mapped_column(default=False, index=True)  # Товар может хранится только в гомогенных ячейках
     storage_type_ids: Mapped[Optional[ids]] = mapped_column(default=False)  # Стратегии хранения

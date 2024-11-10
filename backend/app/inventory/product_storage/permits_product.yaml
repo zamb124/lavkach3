@@ -4,3 +4,8 @@ permits:
   product_storage_type_list: Может получать список магазинов
   product_storage_type_delete: Может удалять магазин
   product_storage_type_get: Может смотреть на магазин
+  storage_type_create: Может создавать магазин
+  storage_type_update: Может редактировать магазин
+  storage_type_list: Может получать список магазинов
+  storage_type_delete: Может удалять магазин
+  storage_type_get: Может смотреть на магазин
