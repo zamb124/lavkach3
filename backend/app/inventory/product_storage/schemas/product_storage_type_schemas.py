@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field
+from pydantic import Field
 from pydantic.types import UUID4
 
 from app.inventory.product_storage.models.product_storage_models import ProductStorageType

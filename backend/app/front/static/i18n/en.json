@@ -619,6 +619,7 @@
 "t-store-monitor": "Store Monitor",
 "t-active": "Active",
 "t-logistics-dashboard": "Logistics Dashboard",
-"t-action_suggest_confirm": "Confirm suggest"
-
+"t-action_suggest_confirm": "Confirm suggest",
+"t-WRONG_STATUS": "Wrong {status} translated",
+"t-order_complete": "Order complete"
 }

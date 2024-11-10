@@ -9,7 +9,6 @@ class OrderView(ClassView):
         permits = ['order_list']
         super().__init__(request=request, model='order', schema=schema, permits=permits)
 
-
 class MoveView(ClassView):
     """Переопределяем модель"""
     def __init__(self, request: Request, schema: BaseSchema = None):
@@ -21,6 +20,12 @@ class SuggestView(ClassView):
     def __init__(self, request: Request, schema: BaseSchema = None):
         permits = ['suggest_list']
         super().__init__(request=request, model='suggest', schema=schema,  permits=permits)
+
+class MoveLogView(ClassView):
+    """Переопределяем модель"""
+    def __init__(self, request: Request, schema: BaseSchema = None):
+        permits = ['move_log_list']
+        super().__init__(request=request, model='move_log', schema=schema,  permits=permits)
 
 class OrderTypeView(ClassView):
     """Переопределяем модель"""

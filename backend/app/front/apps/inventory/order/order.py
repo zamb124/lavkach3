@@ -4,12 +4,13 @@ from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
+from app.front.apps.inventory.order.order_create.order_create import order_create_router
 from app.front.apps.inventory.views import OrderView
 from app.front.template_spec import templates
 from app.front.utills import render
 
 order_router = APIRouter()
-
+order_router.include_router(order_create_router, prefix="/create", tags=["order"])
 
 @order_router.get("", response_class=HTMLResponse)
 async def order(request: Request, view: OrderView = Depends()):

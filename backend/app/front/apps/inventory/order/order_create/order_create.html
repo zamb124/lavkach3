@@ -1,0 +1,134 @@
+{% autoescape false %}
+    <div class="modal" id="{{ order.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true">
+    <input type="hidden" name="key" value="{{ order.p.class_key }}">
+        <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-12">
+                                <div class="d-sm-flex align-items-center justify-space-between">
+                                    <h4 class="mb-4 mb-sm-0 card-title" data-key="t-order-create">
+                                        Create Order
+                                    </h4>
+                                    <nav aria-label="breadcrumb" class="ms-auto">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                <a href="#"
+                                                   hx-post="/inventory/order/create"
+                                                   hx-ext="json-enc"
+                                                   hx-push-url="false"
+                                                   hx-include="#{{ order.p.key }}"
+                                                    >
+                                                    <iconify-icon icon="solar:diskette-bold"
+                                                                  class="fs-7"></iconify-icon>
+                                                </a>
+                                            </li>
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                <a href="#" data-bs-dismiss="modal">
+                                                    <iconify-icon icon="solar:close-circle-outline"
+                                                                  class="fs-7"></iconify-icon>
+                                                </a>
+                                            </li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body was-validated">
+                    <div class="row">
+                        <div class="col-lg-8 ">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-7" data-key="t-order-main-fields">Main</h4>
+                                    <form class="form-horizontal">
+                                        <b>{{ order.store_id.label }}</b>
+                                        {{ order.store_id.as_update }}
+                                        <p class="fs-2" data-key="t-select-store-description">Select the store
+                                            over
+                                            which you want to create a warehouse order.</p>
+                                        <div>
+                                            <label class="form-label" data-key="t-products">Products</label>
+                                            <p class="fs-2 mb-0">Set a description to the product for better
+                                                {% with products=order.products.val %}
+                                                    {% include 'inventory/order/order_create/order_create_products.html' %}
+                                                {% endwith %}
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="offcanvas-md offcanvas-end overflow-auto" tabindex="-1" id="offcanvasRight"
+                                 aria-labelledby="offcanvasRightLabel">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title mb-7" data-key="t-order-add-fields"
+                                            data-key="t-order-create-location_type-blok-">Location</h4>
+                                        <b>
+                                            {{ order.location_src_id.label }}
+                                        </b>
+                                        {{ order.location_src_id.as_update }}
+                                        <b>
+                                            {{ order.location_dest_id.label }}
+                                        </b>
+                                        {{ order.location_dest_id.as_update }}
+                                        <p class="fs-2 mb-0">
+                                            Set a target date when the order should be executed.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title mb-7" data-key="t-order-add-fields"
+                                            data-key="t-order-create-locations-blok-"> Location Type</h4>
+                                        <b>
+                                            {{ order.location_type_src_id.label }}
+                                        </b>
+                                        {{ order.location_type_src_id.as_update }}
+                                        <b>
+                                            {{ order.location_type_dest_id.label }}
+                                        </b>
+                                        {{ order.location_type_dest_id.as_update }}
+                                        <p class="fs-2 mb-0">
+                                            Set a target date when the order should be executed.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title mb-7" data-key="t-order-add-fields">Add Attributes</h4>
+                                        <b>
+                                            {{ order.external_number.label }}
+                                        </b>
+                                        {{ order.external_number.as_update }}
+                                        <p class="fs-2 mb-0">
+                                            If the order has an external identifier.
+                                        </p>
+                                        <b>
+                                            {{ order.planned_datetime.label }}
+                                        </b>
+                                        {{ order.planned_datetime.as_update }}
+                                        <p class="fs-2 mb-0">
+                                            Set a target date when the order should be executed.
+                                        </p>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        new ModalHandler('#{{ order.p.key }}')
+    </script>
+{% endautoescape %}

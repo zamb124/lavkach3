@@ -3,8 +3,11 @@ import json
 from enum import Enum
 from typing import Optional, Any
 
+from docutils.nodes import field_name
+from docutils.writers.latex2e import block_name
 from jinja2_fragments import render_block
 from pydantic import BaseModel
+from pydantic.fields import FieldInfo
 
 from core.frontend.enviroment import environment
 from core.frontend.types import MethodType, ViewVars
@@ -24,6 +27,7 @@ class Field:
         - as_table_get - виджет как таблица (доступен только для list_rel) полей
     """
     cls: 'ClassView'  # Класс, которому принадлежит поле
+    fieldinfo: 'FieldInfo'  # Информация о поле
     field_name: str  # Системное имя поля
     type: str  # Тип поля (srt, ins, rel, list_rel ... )
 
@@ -43,6 +47,7 @@ class Field:
         instance = copy.copy(self)
         instance.val = None
         return instance
+
 
     def __call__(self, *args, **kwargs):
         return self.val
@@ -83,6 +88,11 @@ class Field:
             return f"""<div id="{self.key}" style="display: flex; justify-content: center; align-items: center;">{widget}{self.as_update_link(method)}</div>"""
         else:
             return widget
+
+    @property
+    def description(self) -> str:
+        return self.fieldinfo.description or self.field_name
+
 
     def render(self, block_name: str, type: str = '', method: MethodType = MethodType.GET) -> str:
         """Метод рендера шаблона"""
@@ -142,6 +152,11 @@ class Field:
         return f't-{self.cls.v.model.name}-{self.field_name}'
 
     @property
+    def data_key_description(self) -> str:
+        """Отдать Label for шаблон для поля"""
+        return f't-{self.cls.v.model.name}-{self.field_name}-description'
+
+    @property
     def as_update(self) -> str:
         """Отобразить поле с возможностью редактирования"""
         return self.render(block_name='as_update', method=MethodType.UPDATE)
@@ -160,6 +175,15 @@ class Field:
     def as_card_title(self) -> str:
         """Отобразить поле только на чтение"""
         return self.render(block_name='as_card_title')
+
+    @property
+    def as_th_title(self):
+        return render_block(
+            environment=environment,
+            template_name=f'field/as_th_title.html',
+            block_name='th_title',
+            field=self,
+        )
 
     @property
     def as_table_get(self) -> str:

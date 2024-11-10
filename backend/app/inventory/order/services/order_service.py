@@ -112,7 +112,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
                 await self.session.rollback()
                 logging.error("Произошла ошибка: %s", e)
                 logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
-                raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
+                raise e
             await order_entity.notify('update')
         return res
 
@@ -136,7 +136,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
                 await self.session.rollback()
                 logging.error("Произошла ошибка: %s", e)
                 logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
-                raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
+                raise e
             await order_entity.notify('update')
         return res
 
@@ -151,18 +151,20 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
                     raise ModuleException(
                         status_code=406,
                         enum=OrderErrors.WRONG_STATUS,
-                        message='Order is not in PROCESSING status'
+                        message='Order is not in PROCESSING status',
+                        args={'status': order_entity.status}
                     )
                 for move in order_entity.move_list_rel:
                     if move.status != MoveStatus.DONE:
                        """ Пытаемся синхронно завершить все мувы"""
                        task = await self.env['move'].service.set_done.kiq(None, move_id=move.id, user_id=self.user.user_id)
-                       result = await task.wait_result()
+                       result = await task.wait_result(timeout=5)
                        if result.error:
                            raise ModuleException(
                                 status_code=406,
                                 enum=MoveErrors.WRONG_STATUS,
-                                message=f'Move {move.id} is not in DONE status'
+                                message=f'Move {move.id} is not in DONE status',
+                                args={'status': move.status}
                             )
                 order_entity.status = OrderStatus.DONE
                 await self.session.commit()
@@ -171,6 +173,6 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
                 await self.session.rollback()
                 logging.error("Произошла ошибка: %s", e)
                 logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
-                raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
+                raise e
             await order_entity.notify('update')
         return res

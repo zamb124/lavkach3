@@ -1,0 +1,36 @@
+<table class="table table-responsive align-middle table-hover mb-0 last-items-borderless text-uppercase">
+    <thead>
+    <tr class="fs-5 text-center" style="text-align: center">
+        <th scope="col">
+            <p>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       id="{{ products.p.class_key ~'--'~ 'checkAll' }}"
+                       value="option">
+            </div>
+            </p>
+        </th>
+        {{ products.product_id.as_th_title }}
+        {{ products.lot_id.as_th_title }}
+        {{ products.uom_id.as_th_title }}
+        {{ products.quantity.as_th_title }}
+    </tr>
+    </thead>
+    <tbody id="tbody-{{ order.p.key }}">
+    {% for product in  products %}
+        {% include 'inventory/order/order_create/order_create_products_line.html' %}
+    {% endfor %}
+    </tbody>
+</table>
+<button
+        type="button"
+        href="#"
+        hx-push-url="false"
+        hx-get="/inventory/order/create/add_product?key={{ order.products.key }}"
+        hx-trigger="click"
+        hx-target="#tbody-{{ order.p.key }}"
+        hx-swap="beforeend"
+        class="btn bg-primary-subtle text-primary mt-4">
+    <span class="fs-4 me-1">+</span>
+    Add Product
+</button>

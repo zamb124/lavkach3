@@ -128,7 +128,7 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
     padding-left: 0;
 }
 .toastify.on {
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
 [data-bs-theme=dark] .app-calendar .event-fc-color:hover,[data-bs-theme=dark] .app-calendar .fc-theme-standard th,[data-bs-theme=dark] .bg-white,[data-bs-theme=dark] .dropdown-item:focus,[data-bs-theme=dark] .dropdown-item:hover,[data-bs-theme=dark] .form-control:disabled,[data-bs-theme=dark] .theme-tab.nav-tabs .nav-item .nav-link {
@@ -154,4 +154,16 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
 }
 .tab-content{
     min-height: 300px;
+}
+
+.tooltip-inner {
+    background-color: var(--bs-secondary); /* Цвет фона тултипа */
+    color: #ffff; /* Цвет текста тултипа */
+    font-size: 12px; /* Размер шрифта тултипа */
+    padding: 5px; /* Отступы внутри тултипа */
+    border-radius: 10px; /* Скругление углов тултипа */
+}
+
+.tooltip-arrow::before {
+    border-top-color: var(--bs-secondary);
 }

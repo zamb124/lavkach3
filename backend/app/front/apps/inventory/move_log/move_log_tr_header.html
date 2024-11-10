@@ -1,0 +1,23 @@
+{% autoescape false %}
+    <tr class="fs-5 text-center" style="text-align: center">
+        <th scope="col">
+            <p>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       id="{{ move_log.p.class_key ~'--'~ 'checkAll' }}"
+                       value="option">
+            </div>
+            </p>
+        </th>
+        {{ move_log.created_at.as_th_title }}
+        {{ move_log.type.as_th_title }}
+        {{ move_log.product_id.as_th_title }}
+        {{ move_log.location_class.as_th_title }}
+        {{ move_log.location_id.as_th_title }}
+        {{ move_log.lot_id.as_th_title }}
+        {{ move_log.quantity.as_th_title }}
+        {{ move_log.reserved_quantity.as_th_title }}
+        {{ move_log.incoming_quantity.as_th_title }}
+
+    </tr>
+{% endautoescape %}

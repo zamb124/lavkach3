@@ -22,6 +22,7 @@ from core.frontend.exceptions import HTMXException
 from core.frontend.field import Field, Fields
 from core.frontend.types import LineType, ViewVars, MethodType
 from core.frontend.utils import clean_filter
+from core.schemas.basic_schemes import BasicModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -637,8 +638,7 @@ class ClassView:
             return self._id == other._id
         return False
 
-    def __iter__(self):
-        return self
+
 
     def reset_key(self):
         self._view.key = _get_key()
@@ -676,6 +676,9 @@ class ClassView:
         instance.h = H()
         instance.h.cls = instance
         return instance
+
+    def __iter__(self):
+        return self
 
     def __next__(self):
         """Если использовать конструктор как итератор, то он будет возвращать строки"""
@@ -855,7 +858,7 @@ class ClassView:
         fielinfo: FieldInfo = fields_merged[field_name]
         res: str = ''
         enums: list = []
-        model: Model | None = None
+        model: Model | None | BaseModel = None
         model_name: str = self._view.model.name
         is_filter: bool = True if self._view.model.schemas.filter.model_fields.get(
             field_name) else False  # type: ignore
@@ -879,7 +882,7 @@ class ClassView:
             elif issubclass(c, enum.Enum):  # type: ignore
                 res += 'enum'
                 enums = c  # type: ignore
-            elif issubclass(c, BaseModel):  # type: ignore
+            elif issubclass(c, BasicModel):  # type: ignore
                 try:
                     model_name = c.Config.orm_model.__tablename__  # type: ignore
                 except Exception as ex:
@@ -889,6 +892,15 @@ class ClassView:
                 submodel = ClassView(
                     request=self._view.request,
                     model=model_name,
+                    key=self.p.class_key
+                )
+                self._view.submodels.update({field_name: submodel})
+            elif issubclass(c, BaseModel):
+                model_name = c.__name__.lower()  # type: ignore
+                res += 'rel'
+                submodel = ClassView(
+                    request=self._view.request,
+                    model=c,
                     key=self.p.class_key
                 )
                 self._view.submodels.update({field_name: submodel})
@@ -909,7 +921,8 @@ class ClassView:
             'field_name': field_name,
             'is_reserved': True if field_name in reserved_fields else False,
             'type': res,
-            'model_name': model.name,
+            'fieldinfo': fielinfo,
+            'model_name': model_name.lower(),
             # 'domain_name': model.domain.name,
             'enums': enums,
             'sort_idx': self._view.sort.get(field_name, 999),

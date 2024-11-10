@@ -131,7 +131,22 @@ class App {
                 evt.detail.shouldSwap = true;
                 evt.detail.target = htmx.find("#teapot");
             } else {
-                this.showToast(evt.detail.xhr.responseText, "#e94e1d");
+                const responseText = JSON.parse(evt.detail.xhr.responseText);
+                if (responseText.detail) {
+
+                    let message = app.translations[`t-${responseText.detail.code}`] || responseText.detail.msg || responseText.detail.code;
+                    if (responseText.detail.args) {
+                        for (const [key, value] of Object.entries(responseText.detail.args)) {
+                            message = message.replace(`{${key}}`, value);
+                        }
+                    }
+                    this.showToast(message, "#e94e1d");
+                } else {
+                    this.showToast(
+                        evt.detail.xhr.responseText,
+                        "#e94e1d",
+                    );
+                }
             }
         });
 
@@ -370,6 +385,10 @@ class App {
             if (elements) {
                 elements.forEach(app.translateElement);
             }
+            var elements_tooltips = elt.querySelectorAll('[data-bs-toggle="tooltip"]');
+            var tooltipList = Array.from(elements_tooltips).map(function (tooltipTriggerEl) {
+                var tooltip = new bootstrap.Tooltip(tooltipTriggerEl);
+            });
 
         })
         await this.setLocale(this.userSettings.locale);

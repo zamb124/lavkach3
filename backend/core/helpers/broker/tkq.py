@@ -16,11 +16,12 @@ class TaskSession(TaskiqMiddleware):
         ...
 
     def pre_execute(self,message: "TaskiqMessage"):
-        set_session_context(message.task_id)
+        session_id  = str(uuid.uuid4())
+        set_session_context(session_id)
         return message
 
     def post_execute(self,message: "TaskiqMessage",result: "TaskiqResult[Any]"):
-        reset_session_context(message.task_id)
+        ...
 
     async def on_error(self,message: "TaskiqMessage",result: "TaskiqResult[Any]",exception: BaseException):
         ...

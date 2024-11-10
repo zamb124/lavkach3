@@ -1,7 +1,8 @@
 {% block label %}
 <p style="margin-bottom: 0; margin-top: 1rem;"
    class="sort text-uppercase text-muted text-start "
-   for="{{ field.key }}">{{ field.get.title|capitalize }}:
+   data-key="{{ field.data_key }}"
+   for="{{ field.key }}">{{ field.field_name }}
 </p>
 
 {% endblock %}

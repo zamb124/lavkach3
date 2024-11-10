@@ -147,7 +147,7 @@ class Env:
             exist_model = v.models.get(item)
             if exist_model:
                 return exist_model
-        raise KeyError
+        raise KeyError(f"Model {item} not found")
 
     @classmethod
     async def get_sudo_env(self):

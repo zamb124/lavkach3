@@ -54,16 +54,17 @@ async def store_monitor(orders: OrderView = Depends(), order_type: OrderTypeView
 
 
 @inventory.get("/store_monitor_orders", response_class=HTMLResponse)
-async def store_monitor_otders(orders: OrderView = Depends(), order_types: OrderTypeView = Depends()):
+async def store_monitor_otders(orders: OrderView = Depends(), order_types: OrderTypeView = Depends(),
+                               store_id: UUID = None):
     """Интерфейс работы со своим складом"""
-    await orders.init(exclude=['store_id'])
+    await orders.init(params={'store_id__in': [store_id]}, exclude=['store_id'])
     orders.v.update = False
     order_types_map = defaultdict(list)
     for order in orders:
         order_types.append(order.order_type_rel.val)
     for order in orders:
         order_types_map[order.order_type_rel.val].append(order)
-    return render(orders.r, 'inventory/store_monitor/store_monitor_orders.html',
-                  context={'order_types_map': order_types_map}
-                  )
-
+    return render(
+        orders.r, 'inventory/store_monitor/store_monitor_orders.html',
+        context={'order_types_map': order_types_map, 'store_id': store_id},
+    )

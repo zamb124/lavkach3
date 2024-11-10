@@ -1,0 +1,51 @@
+{% autoescape false %}
+    <tr
+            id="{{ move_log.p.key }}"
+            class="line text-nowrap"
+            ui_key="{{ move_log.p.ui_key }}"
+            lsn="{{ move_log.p.lsn }}"
+            hx-trigger="backend_update"
+            hx-get="/inventory/move_log/line?move_log_id={{ move_log._id }}"
+            hx-swap="outerHTML transition:true"
+            hx-target="#{{ move_log.p.key }}"
+    >
+        <th scope="row" style="white-space: nowrap; vertical-align: middle;">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-check fs-5" style="display: inline-block;">
+                        <input class="form-check-input" type="checkbox"
+                               name="{{ move_log.p.key ~ '--check' }}" value="">
+                    </div>
+                </div>
+            </div>
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
+            {{ move_log.created_at.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
+            {{ move_log.type.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
+            {{ move_log.product_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
+            {{ move_log.location_class.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
+            {{ move_log.location_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
+            {{ move_log.lot_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
+            {{ move_log.quantity.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
+            {{ move_log.reserved_quantity.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
+            {{ move_log.incoming_quantity.as_get }}
+        </th>
+
+    </tr>
+{% endautoescape %}

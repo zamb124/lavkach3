@@ -615,5 +615,6 @@
 "t-sales-dashboard": "Панель управления продажами",
 "t-store-monitor": "Мониторинг магазина",
 "t-active": "Активный",
-"t-logistics-dashboard": "Панель управления логистикой"
+"t-logistics-dashboard": "Панель управления логистикой",
+"t-WRONG_STATUS": "Не верный статус {status}"
 }

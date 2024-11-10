@@ -532,7 +532,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         location_dest = await self.env['location'].service.get(move.location_dest_id)
         src_type, dest_type = TYPE_MAP.get((location_src.location_class, location_dest.location_class))
         if move.status == MoveStatus.DONE:
-            raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
+            raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS, args={'staus': move.status})
         if move.type == 'product':
             """Проверочки"""
             # Проверяем, что у мува все саджесты закрыты

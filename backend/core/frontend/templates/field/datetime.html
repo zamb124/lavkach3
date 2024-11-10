@@ -33,9 +33,7 @@
            class="form-control text-center"
             {% if field.required %} required {% endif %}
            disabled
-           data-bs-placement="bottom"
-           data-bs-toggle="tooltip"
-           title="{{ field.get.description }}"
+
            name="{{ field.key }}"
            placeholder=""
            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}"

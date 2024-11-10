@@ -65,7 +65,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     actual_datetime: Optional[datetime] = Field(title='Actual Date')
     created_by: UUID = Field(title='Created By', model='user')
     edited_by: UUID = Field(title='Edit By', model='user')
-    user_ids: Optional[list[UUID]] = Field(default=[], title='Users', readonly=True, model='user', table=True)
+    user_ids: Optional[list[UUID]] = Field(default=[], title='Users', readonly=False, model='user', table=True)
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=False, readonly=True)
     move_list_rel: Optional[list["MoveScheme"]] = Field(default=[], title='Order Movements')
 

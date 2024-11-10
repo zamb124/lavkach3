@@ -16,7 +16,7 @@ from core.schemas.timestamps import TimeStampScheme
 
 
 class MoveLogBaseScheme(BasicModel):
-    type: MoveLogType = Field(title='Move Type', table=True, readonly=True)
+    type: MoveLogType = Field(title='Move Type', table=True, readonly=True, description='Type of move')
     order_id: Optional[UUID4] = Field(default=None, title='Order ID', model='order')
     move_id: UUID4 = Field(title='Move ID', model='move', readonly=True)
     product_id: UUID4 = Field( title='Product', table=True, model='product')
@@ -55,7 +55,7 @@ class MoveLogFilter(BaseFilter):
     move_id__in: Optional[List[UUID4]] = Field(default=None, title='Move', model='move')
     product_id__in: Optional[List[UUID4]] = Field(default=None, title='Product', model='product')
     location_id__in: Optional[List[UUID4]] = Field(default=None, title='Location', model='location')
-    lot_id__in: Optional[List[UUID4]] = Field(default=None, title='Lot', model='Lot')
+    lot_id__in: Optional[List[UUID4]] = Field(default=None, title='Lot', model='lot')
 
     class Config:
         populate_by_name = True

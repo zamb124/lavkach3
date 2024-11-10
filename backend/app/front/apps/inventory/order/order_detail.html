@@ -105,10 +105,12 @@
                                 </a>
                             </li>
                             <li class="nav-item p-2" role="presentation">
-                                <a class="nav-link primary" id="suggests-tab" data-bs-toggle="tab" href="#suggests"
+                                <a class="nav-link primary" id="move_logs-tab" data-bs-toggle="tab" href="#move_logs"
                                    role="tab"
-                                   aria-controls="suggests" aria-selected="false" tabindex="-1">
-                                    <span data-key="t-suggests">Suggests</span>
+                                   hx-trigger="click once" hx-get="/inventory/move_log/table?order_id={{ order.p.id }}"
+                                   hx-target="#move_logs"
+                                   aria-controls="move_logs" aria-selected="false" tabindex="-1">
+                                    <span data-key="t-move_logs">Move Logs</span>
                                 </a>
                             </li>
                             <li class="nav-item p-2" role="presentation">
@@ -180,8 +182,8 @@
                                 </table>
 
                             </div>
-                            <div class="tab-pane fade" id="suggests" role="tabpanel" aria-labelledby="suggests-tab">
-                                ...
+                            <div class="tab-pane fade" id="move_logs" role="tabpanel" aria-labelledby="move_logs-tab"">
+
                             </div>
 
                         </div>

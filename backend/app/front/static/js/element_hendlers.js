@@ -84,9 +84,9 @@ class ChoiceHandler {
                 }
             }
         } else if (this.element.id.includes('__in')) {
-            this.choices.containerInner.element.classList.remove('is-invalid');
+            //this.choices.containerInner.element.classList.remove('is-invalid');
         } else {
-            this.choices.containerInner.element.classList.add('is-valid');
+            //this.choices.containerInner.element.classList.add('is-valid');
         }
     }
 

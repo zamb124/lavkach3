@@ -36,5 +36,4 @@ class ProductStorageType(Base, AllMixin):
     allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Разрешенные типы упаковок
     exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Исключение типы упаковок
     is_homogeneity: Mapped[bool] = mapped_column(default=False)  # Товар может хранится только в гомогенных ячейках
-    is_mix_products: Mapped[Optional[bool]] = mapped_column(default=False)  # товар может хранится в микс ячейках
     storage_type_ids: Mapped[Optional[ids]] = mapped_column(default=False)  # Стратегии хранения

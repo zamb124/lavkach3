@@ -1,0 +1,12 @@
+<table class="table table-responsive align-middle table-hover mb-0 last-items-borderless text-uppercase">
+    <thead>
+    {% with move_log = move_logs %}
+    	{% include 'inventory/move_log/move_log_tr_header.html' %}
+    {% endwith %}
+    </thead>
+    <tbody>
+    {% for move_log in  move_logs %}
+        {% include 'inventory/move_log/move_log_line.html' %}
+    {% endfor %}
+    </tbody>
+</table>
