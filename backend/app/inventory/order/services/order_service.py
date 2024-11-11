@@ -93,13 +93,10 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         for order_id in ids:
             try:
                 order_entity = await self.get(order_id, for_update=True)
-                if order_entity.status not in (OrderStatus.CREATED, OrderStatus.RESERVATION_FAILED):
-                    raise HTTPException(
-                        status_code=401,
-                        detail=f"Order {order_entity.number} is not in CREATED status"
-                    )
+                if order_entity.status not in (OrderStatus.CREATED, OrderStatus.RESERVATION_FAILED, OrderStatus.CONFIRMING):
+                    raise ModuleException(status_code=406, enum=OrderErrors.WRONG_STATUS)
                 for move in order_entity.move_list_rel:
-                    if not move.status in (MoveStatus.CREATED, MoveStatus.RESERVATION_FAILED):
+                    if not move.status in (MoveStatus.CREATED, MoveStatus.RESERVATION_FAILED, MoveStatus.CONFIRMING):
                         raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
                     move.status = MoveStatus.CONFIRMING
                 move_ids = [move.id for move in order_entity.move_list_rel]

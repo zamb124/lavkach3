@@ -23,14 +23,17 @@ class LocationBaseScheme(BasicModel):
     partner_id: Optional[UUID4] = Field(default=None, title='Partner', model='partner')
 
     location_class: LocationClass = Field(default=LocationClass.PLACE, title='Location Class')
-    lot_id: Optional[UUID4] = Field(default=None, title='Lot')
     is_can_negative: bollean = Field(default=False, title='Can Negative')
-    allowed_package_ids: Optional[list[UUID4]] = Field(default=[], title='Allowed Packages')  # Разрешенные типы упаковок
-    exclude_package_ids: Optional[list[UUID4]] = Field(default=[], title='Exclude Packages')  # Разрешенные типы упаковок
+    allowed_package_type_ids: Optional[list[UUID4]] = Field(
+        default=[], title='Allowed Packages',
+        filter={'location_class__in': LocationClass.PACKAGE.value}
+    )  # Разрешенные типы упаковок
+    exclude_package_type_ids: Optional[list[UUID4]] = Field(
+        default=[], title='Exclude Packages',
+        filter={'location_class__in': LocationClass.PACKAGE.value}
+    )  # Разрешенные типы упаковок
 
     class Config:
-        extra = 'allow'
-        from_attributes = True
         orm_model = Location
 
 class LocationUpdateScheme(LocationBaseScheme):

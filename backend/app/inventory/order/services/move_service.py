@@ -15,6 +15,7 @@ from app.inventory.order.models.order_models import Move, MoveType, Order, MoveS
     SuggestType
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
+from core.db import session
 from core.exceptions.module import ModuleException
 # from app.inventory.order.services.move_tkq import move_set_done
 from core.helpers.broker import list_brocker
@@ -432,6 +433,9 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             # Проверяем, что не созданы уже резервы для этого мува
             if await self.env['move_log'].service.list({'move_id': move.id}):
                 raise ModuleException(status_code=406, enum=MoveErrors.RESERVATION_ALREADY_CREATED)
+            self.session.add(src_quant)
+            self.session.add(dest_quant)
+            await self.session.flush([src_quant, dest_quant])
 
             move.quant_src_id = src_quant.id
             move.location_src_id = src_quant.location_id

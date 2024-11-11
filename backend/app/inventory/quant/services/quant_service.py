@@ -36,8 +36,8 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
 
     async def get_available_quants(
             self,
-            product_id:                         uuid.UUID,
             store_id:                           uuid.UUID,
+            product_id:                         uuid.UUID = None,
             id:                                 uuid.UUID = None,
             exclude_id:                         uuid.UUID = None,
             location_class_ids:                 [uuid.UUID] = None,
@@ -45,6 +45,7 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
             location_type_ids:                  [uuid.UUID] = None,
             lot_ids:                            [uuid.UUID] = None,
             partner_id:                         uuid.UUID = None,
+            quantity:                           float = 0
     ) -> list(Quant):
         """
             Метод получения квантов по параметрам
@@ -67,6 +68,8 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
                 query = query.where(self.model.location_type_id.in_(location_type_ids))
             if lot_ids:
                 query = query.where(self.model.lot_id.in_(lot_ids))
+            if quantity:
+                query = query.where(self.model.quantity > quantity)
 
             """Если не указываем партнера, то партнер None тк тут не подходит логика --> Любой"""
             query = query.where(self.model.partner_id == partner_id)

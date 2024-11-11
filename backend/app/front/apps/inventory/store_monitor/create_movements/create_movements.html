@@ -71,7 +71,7 @@
                                             </ul>
                                             <div class="tab-content">
                                                 <div class="tab-pane active show p-3" id="products" role="tabpanel">
-                                                    <div class="p-3">
+                                                    <div class="p-3 was-validated">
                                                         <p class="fs-2 mb-0">Set a description to the product for better</p>
                                                         {% with products=order.products.val %}
                                                             {% include 'inventory/store_monitor/create_movements/create_movements_products.html' %}
@@ -79,7 +79,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="tab-pane p-3" id="packages" role="tabpanel">
-                                                <div class="p-3">
+                                                <div class="p-3 was-validated">
                                                     <p class="fs-2 mb-0">Set a description to the product for better</p>
                                                         {% with packages=order.packages.val %}
                                                             {% include 'inventory/store_monitor/create_movements/create_movements_packages.html' %}

@@ -69,9 +69,7 @@ class Base(metaclass=DeclarativeMeta):
                 'lsn': entity.lsn if method == 'update' else None,
                 'model': self.__tablename__,
                 'method': method,
-                'updated_fields': {
-                        i: getattr(entity, i) for i in updated_fields
-                    } if updated_fields else None
+                'updated_fields': updated_fields
             }
         }
 

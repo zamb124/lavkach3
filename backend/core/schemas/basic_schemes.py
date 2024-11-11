@@ -91,6 +91,7 @@ def BasicField(
         *,
         #####
         model: str | None = None,  # Имя модели
+        filter: dict | None = None,  # Имя модели
         readonly: bool | list = False,  # Только на чтение (всегда) или одно из условий  например
         # [('status','==', 'CONFIRMED')]
         table: bool = False,  # Показывать в таблице
@@ -135,6 +136,7 @@ def BasicField(
         default,
         table=table,
         model=model,
+        filter=filter,
         readonly=readonly,
         form=form,
         default_factory=default_factory,

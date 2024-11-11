@@ -2,15 +2,17 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
+from celery.worker.strategy import default
 from pydantic import BaseModel
 
-from app.inventory.location.enums import LocationClass
+from app.inventory.location.enums import LocationClass, PhysicalStoreLocationClass
 from core.schemas.basic_schemes import BasicField as Field
 
 
 class Product(BaseModel):
     product_id: UUID = Field(title='Product', form=True, model='product')
     quantity: float = Field(title='Quantity', form=True)
+    avaliable_quantity: float = Field(default=0.0, title='Avaliable Quantity', form=True)
     lot_id: Optional[UUID] = Field(default=None, title='Lot', form=True, model='lot')
     uom_id: Optional[UUID] = Field(default=None, title='UOM', form=True, model='uom')
 
@@ -21,7 +23,7 @@ class Package(BaseModel):
 
 class CreateMovements(BaseModel):
     external_number: Optional[str] = Field(default=None, title='External ID', form=True)
-    order_type_id: UUID = Field(title='Order type', form=True, model='order_type')
+    order_type_id: UUID = Field(default=None, title='Order type', form=True, model='order_type')
     store_id: UUID = Field(title='Store', table=True, form=True, model='store')
     location_src_id: Optional[UUID] = Field(default=None, title='Source Location', form=True, model='location')
     location_dest_id: Optional[UUID] = Field(default=None, title='Destination Location', form=True, model='location')
@@ -29,6 +31,12 @@ class CreateMovements(BaseModel):
                                                  model='location_type')
     location_type_dest_id: Optional[UUID] = Field(default=None, title='Destination Location Type', form=True,
                                                   model='location_type')
+    location_class_src_id: Optional[PhysicalStoreLocationClass] = Field(
+        default=None, title='Source Location Class', form=True
+    )
+    location_class_dest_id: Optional[PhysicalStoreLocationClass] = Field(
+        default=None, title='Destination Location Class', form=True
+    )
     partner_id: Optional[UUID] = Field(default=None, title='Partner', form=True, model='partner')
     origin_number: Optional[str] = Field(default=None, title='Original', form=True)
     planned_datetime: Optional[datetime] = Field(default=None, title='Planned Date', form=True)

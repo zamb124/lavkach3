@@ -42,24 +42,6 @@ class MoveBaseScheme(BasicModel):
     class Config:
         orm_model = Move
 
-    @model_validator(mode='before')
-    def check_fields_based_on_type(cls, values):
-        move_type = values.get('type')
-        product_id = values.get('product_id')
-        uom_id = values.get('uom_id')
-        quantity = values.get('quantity')
-        package_id = values.get('package_id')
-
-        if move_type == MoveType.PRODUCT:
-            if not product_id or not uom_id or quantity is None:
-                raise ValueError("For type 'product', fields product_id, uom_id, and quantity must be provided")
-        elif move_type == MoveType.PACKAGE:
-            if not package_id:
-                raise ValueError("For type 'package', field package_id must be provided")
-        else:
-            raise ValueError("Invalid move type")
-
-        return values
 
 class MoveUpdateScheme(MoveBaseScheme):
     suggest_list_rel: Optional[list[SuggestUpdateScheme]] = Field(default=[], title='Suggests', form=True)

@@ -43,7 +43,7 @@
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                            {% if order.status.val in ('created', 'reservation_failed') %}
+                                            {% if order.status.val in ('created', 'reservation_failed', 'confirming') %}
                                                 {{ order.h.as_action('order_confirm', 'as_a', css_class="btn btn-sm btn-primary") }}
                                             </li>
                                         {% endif %}

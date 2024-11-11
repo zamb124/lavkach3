@@ -1,3 +1,4 @@
+from abc import ABCMeta
 from functools import wraps
 from typing import Iterable
 
@@ -8,7 +9,7 @@ actions = {
 }
 
 
-def action(model: str, schema:BaseModel = None, multiple: bool = False, permits: Iterable = ()):
+def action(model: str, schema: ABCMeta = None, multiple: bool = False, permits: Iterable = ()):
     """
         Декоратор регистрирует функцию
     """

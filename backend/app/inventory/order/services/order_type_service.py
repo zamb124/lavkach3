@@ -18,7 +18,7 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
         return await super(OrderTypeService, self).update(id, obj)
 
     @permit('order_type_list')
-    async def list(self, _filter: FilterSchemaType, size: int):
+    async def list(self, _filter: FilterSchemaType, size: int=100):
         return await super(OrderTypeService, self).list(_filter, size)
 
     @permit('order_type_create')

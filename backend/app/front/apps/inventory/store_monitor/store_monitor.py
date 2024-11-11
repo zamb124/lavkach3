@@ -74,7 +74,7 @@ async def create_movements(request: Request, schema: Schema):
     order = OrderView(request)
     data = clean_filter(schema.model_extra, schema.key)
     async with order.v.model.adapter as a:
-        order = await a.create(data)
+        order = await a.create_movements(data[0])
     return render(order.r, 'inventory/store_monitor/create_movements/create_movements.html', context={'order': order})
 
 
