@@ -1,5 +1,5 @@
 {% autoescape false %}
-    <tr>
+    <tr id="{{ package.p.key }}">
         <th scope="row" style="white-space: nowrap; vertical-align: middle;">
             <div class="row">
                 <div class="col-6">
@@ -12,6 +12,11 @@
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {{ package.package_id.as_update }}
+        </th>
+         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            <button class="btn danger" hx-target="#{{ package.p.key }}" hx-swap="outerHTML transition:true" hx-delete="/front/delete">
+                <iconify-icon class="fs-8" icon="solar:list-cross-minimalistic-linear"></iconify-icon>
+            </button>
         </th>
     </tr>
 {% endautoescape %}

@@ -14,9 +14,12 @@
         {{ products.lot_id.as_th_title }}
         {{ products.uom_id.as_th_title }}
         {{ products.quantity.as_th_title }}
+        <th scope="col">
+            <p data-key="t-delete"> Actions </p>
+        </th>
     </tr>
     </thead>
-    <tbody id="tbody-{{ order.p.key }}">
+    <tbody id="tbody-{{ products.p.class_key }}">
     {% for product in  products %}
         {% include 'inventory/order/order_create/order_create_product_line.html' %}
     {% endfor %}
@@ -28,7 +31,7 @@
         hx-push-url="false"
         hx-get="/inventory/store_monitor/create_movements/add_product?key={{ order.products.key }}"
         hx-trigger="click"
-        hx-target="#tbody-{{ order.p.key }}"
+        hx-target="#tbody-{{ products.p.class_key }}"
         hx-swap="beforeend"
         class="btn bg-primary-subtle text-primary mt-4">
     <span class="fs-4 me-1">+</span>

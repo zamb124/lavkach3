@@ -1,14 +1,14 @@
 {% block as_update %}
     <input
             type="number"
-            class="float form-control"
+            class="float form-control text-center"
             name="{{ field.key }}"
             {% if field.readonly %}readonly{% endif %}
             step="any"
             {% if field.required %}required {% endif %}
             placeholder="Enter {{ field.title }}"
             value="{{ field.val }}"
-            style="padding-right: 1rem; padding-left: 1rem; width: 50%"
+            style="padding-right: 1rem; padding-left: 1rem;"
     >
 {% endblock %}
 {% block as_create %}
@@ -21,7 +21,7 @@
             {% if field.required %}required {% endif %}
             placeholder="Enter {{ field.title }}"
             value="{{ field.val }}"
-            style="padding-right: 1rem; padding-left: 1rem; width: 50%"
+            style="padding-right: 1rem; padding-left: 1rem;"
     >
 {% endblock %}
 {% block as_get %}

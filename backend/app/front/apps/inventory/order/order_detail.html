@@ -2,7 +2,7 @@
     <div class="modal" id="{{ 'modal_'~order.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true"
          ui_key="{{ order.p.ui_key }}"
          lsn="{{ order.p.lsn }}"
-         hx-swap="outerHTML"
+         hx-swap="outerHTML transition:true"
          hx-trigger="backend_update"
          hx-get="/inventory/order/detail?order_id={{ order._id }}"
          hx-target="#modal_content_{{ order.p.id }}"

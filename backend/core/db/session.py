@@ -4,6 +4,7 @@ import os
 from contextvars import ContextVar
 from typing import Union
 
+from docutils.nodes import entry
 from httpx import AsyncClient as asyncclient
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -68,7 +69,9 @@ class Base(metaclass=DeclarativeMeta):
                 'lsn': entity.lsn if method == 'update' else None,
                 'model': self.__tablename__,
                 'method': method,
-                'updated_fields': updated_fields
+                'updated_fields': {
+                        i: getattr(entity, i) for i in updated_fields
+                    } if updated_fields else None
             }
         }
 

@@ -16,8 +16,7 @@ class Product(BaseModel):
 
 
 class Package(BaseModel):
-    package_id: Optional[UUID] = Field(default=None, title='Package', form=True, model='location',
-                                       filter={'location_class__in': LocationClass.PACKAGE.value})
+    package_id: UUID = Field(title='Package', form=True, model='location',filter={'location_class__in': LocationClass.PACKAGE.value})
 
 
 class CreateMovements(BaseModel):

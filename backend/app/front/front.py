@@ -34,6 +34,10 @@ index_router = APIRouter(
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 
+@index_router.delete("/front/delete", response_class=HTMLResponse)
+async def delete_mock(request: Request):
+    return
+
 
 @index_router.get("/front/topbar_vertical", response_class=HTMLResponse)
 async def topbar(request: Request):

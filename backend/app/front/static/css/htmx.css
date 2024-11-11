@@ -1,0 +1,4 @@
+tr.htmx-swapping th{
+  opacity: 0 !important;
+  transition: opacity 5s ease-out !important;
+}
