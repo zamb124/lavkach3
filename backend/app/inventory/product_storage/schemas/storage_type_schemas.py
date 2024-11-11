@@ -13,11 +13,9 @@ from core.schemas.timestamps import TimeStampScheme
 class StorageTypeBaseScheme(BasicModel):
     product_id: UUID = Field(title='Product', form=True, model='product')
     storage_uom_id: Optional[UUID] = Field(default=None)  # Единица измерения склада
-    storage_image_url: Optional[str] = Field(default=None)  # Картинка для склада
-    allowed_package_ids: Optional[List[UUID]] = Field(default=[])  # Разрешенные типы упаковок
-    exclude_package_ids: Optional[List[UUID]] = Field(default=[])  # Исключение типы упаковок
-    is_homogeneity: bool = Field(default=False)  # Товар может хранится только в гомогенных ячейках
-    storage_type_ids: Optional[List[UUID]] = Field(default=[])  # Стратегии хранения
+    title: str = Field(title='Title', form=True)
+    priority: int = Field(title='Priority', form=True)  # Приоритет данной стратегии хранения
+    location_ids: Optional[List[UUID]] = Field(default=[], title='Locations', model='location')  # Список идентификаторов ячеек хранения
 
     class Config:
         orm_model = StorageType

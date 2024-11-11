@@ -1,6 +1,7 @@
 import json
 from uuid import UUID
 
+from app.inventory.schemas import CreateMovements
 from app.inventory.inventory_config import config
 from app.inventory.order.schemas import SuggestConfirmScheme
 from app.inventory.order.schemas.order_schemas import AssignUser
@@ -98,5 +99,14 @@ class InventoryAdapter(BaseAdapter):
         if isinstance(payload, dict):
             payload = json.dumps(payload, cls=UUIDEncoder)
         path = f'/api/inventory/order/order_complete'
+        responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()
+
+    @action(model='order', schema=CreateMovements, multiple=False, permits=[])
+    async def create_movements(self, payload: dict, **kwargs):
+        """Переводит ордер из CONFIRMED в WAITING"""
+        if isinstance(payload, dict):
+            payload = json.dumps(payload, cls=UUIDEncoder)
+        path = f'/api/inventory/create_movements'
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()

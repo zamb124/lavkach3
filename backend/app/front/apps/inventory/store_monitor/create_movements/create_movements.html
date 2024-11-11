@@ -1,6 +1,6 @@
 {% autoescape false %}
     <div class="modal" id="{{ order.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true">
-    <input type="hidden" name="key" value="{{ order.p.class_key }}">
+        <input type="hidden" name="key" value="{{ order.p.class_key }}">
         <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
             <div class="modal-content">
                 <div class="modal-header">
@@ -9,17 +9,17 @@
                             <div class="col-12">
                                 <div class="d-sm-flex align-items-center justify-space-between">
                                     <h4 class="mb-4 mb-sm-0 card-title" data-key="t-order-create">
-                                        Create Order
+                                        Create Movements
                                     </h4>
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
                                             <li class="breadcrumb-item d-flex align-items-center">
                                                 <a href="#"
-                                                   hx-post="/inventory/order/create"
+                                                   hx-post="/inventory/store_monitor/create_movements"
                                                    hx-ext="json-enc"
                                                    hx-push-url="false"
                                                    hx-include="#{{ order.p.key }}"
-                                                    >
+                                                >
                                                     <iconify-icon icon="solar:diskette-bold"
                                                                   class="fs-7"></iconify-icon>
                                                 </a>
@@ -34,6 +34,11 @@
                                     </nav>
                                 </div>
                             </div>
+                        </div>
+                        <div class="p-3 d-flex text-center">
+                            <iconify-icon class="fs-7" icon="solar:info-circle-line-duotone"></iconify-icon>
+                            Creating an order for goods, you need to specify either the types of locations from /to or
+                            specific storage cells from / to, you also need to select goods
                         </div>
                     </div>
                 </div>
@@ -50,11 +55,38 @@
                                             over
                                             which you want to create a warehouse order.</p>
                                         <div>
-                                            <label class="form-label" data-key="t-products">Products</label>
-                                            <p class="fs-2 mb-0">Set a description to the product for better
-                                                {% with products=order.products.val %}
-                                                    {% include 'inventory/order/order_create/order_create_products.html' %}
-                                                {% endwith %}
+                                            <ul class="nav nav-tabs" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                    <a class="nav-link active" data-bs-toggle="tab" href="#products"
+                                                       role="tab" aria-selected="true">
+                                                        <span data-key="t-products">Products</span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <a class="nav-link" data-bs-toggle="tab" href="#packages" role="tab"
+                                                       aria-selected="false" tabindex="-1">
+                                                        <span data-key="t-packages">Paackages</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div class="tab-pane active show p-3" id="products" role="tabpanel">
+                                                    <div class="p-3">
+                                                        <p class="fs-2 mb-0">Set a description to the product for better</p>
+                                                        {% with products=order.products.val %}
+                                                            {% include 'inventory/store_monitor/create_movements/create_movements_products.html' %}
+                                                        {% endwith %}
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane p-3" id="packages" role="tabpanel">
+                                                <div class="p-3">
+                                                    <p class="fs-2 mb-0">Set a description to the product for better</p>
+                                                        {% with packages=order.packages.val %}
+                                                            {% include 'inventory/store_monitor/create_movements/create_movements_packages.html' %}
+                                                        {% endwith %}
+                                                </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                     </form>
@@ -117,7 +149,6 @@
                                         </p>
                                     </div>
                                 </div>
-
 
 
                             </div>

@@ -1,0 +1,33 @@
+<table class="table table-responsive align-middle table-hover mb-0 last-items-borderless text-uppercase">
+    <thead>
+    <tr class="fs-5 text-center" style="text-align: center">
+        <th scope="col">
+            <p>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       id="{{ packages.p.class_key ~'--'~ 'checkAll' }}"
+                       value="option">
+            </div>
+            </p>
+        </th>
+        {{ packages.package_id.as_th_title }}
+    </tr>
+    </thead>
+    <tbody id="tbody-{{ order.p.key }}">
+    {% for package in packages %}
+        {% include 'inventory/order/order_create/create_movements_package_line.html' %}
+    {% endfor %}
+    </tbody>
+</table>
+<button
+        type="button"
+        href="#"
+        hx-push-url="false"
+        hx-get="/inventory/store_monitor/create_movements/add_package?key={{ order.packages.key }}"
+        hx-trigger="click"
+        hx-target="#tbody-{{ order.p.key }}"
+        hx-swap="beforeend"
+        class="btn bg-primary-subtle text-primary mt-4">
+    <span class="fs-4 me-1">+</span>
+    Add Package
+</button>

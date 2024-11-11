@@ -34,37 +34,3 @@ async def order(request: Request):
     cls = OrderView(request)
     render(request, template, context={'cls': cls})
 
-
-@inventory.get("/store_monitor", response_class=HTMLResponse)
-async def store_monitor(orders: OrderView = Depends(), order_type: OrderTypeView = Depends()):
-    """Интерфейс работы со своим складом"""
-    store_staff_model = orders.r.scope['env']['store_staff']
-    orders._exclude = ['store_id']
-    async with store_staff_model.adapter as a:
-        data = await a.list(params={'user_id': orders.r.user.user_id})
-        if not data['data']:
-            return render(orders.r, 'inventory/user_not_attached_store.html')
-        store_staff = data['data'][0]
-        store_staff_cls = StoreStaffView(orders.r)
-        await store_staff_cls.init(params={'store_id': store_staff['store_id']})
-    return render(
-        orders.r, 'inventory/store_monitor/store_monitor.html',
-        context={'store_staff_cls': store_staff_cls, 'order_type': order_type, 'orders': orders}
-    )
-
-
-@inventory.get("/store_monitor_orders", response_class=HTMLResponse)
-async def store_monitor_otders(orders: OrderView = Depends(), order_types: OrderTypeView = Depends(),
-                               store_id: UUID = None):
-    """Интерфейс работы со своим складом"""
-    await orders.init(params={'store_id__in': [store_id]}, exclude=['store_id'])
-    orders.v.update = False
-    order_types_map = defaultdict(list)
-    for order in orders:
-        order_types.append(order.order_type_rel.val)
-    for order in orders:
-        order_types_map[order.order_type_rel.val].append(order)
-    return render(
-        orders.r, 'inventory/store_monitor/store_monitor_orders.html',
-        context={'order_types_map': order_types_map, 'store_id': store_id},
-    )

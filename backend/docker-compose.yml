@@ -10,7 +10,7 @@ services:
       - .env-docker
     ports:
       - 5433:5433
-  tedt_db:
+  test_db:
     image: postgres:15
     container_name: test_db_app
     command: -p 5434

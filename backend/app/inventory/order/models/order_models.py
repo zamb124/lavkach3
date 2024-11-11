@@ -1,11 +1,12 @@
 import datetime
+import json
 import uuid
 from operator import index
 from typing import Optional
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint, ARRAY, \
-    String, JSON, CheckConstraint
-from sqlalchemy.orm import relationship, mapped_column, Mapped
+    String, JSON, CheckConstraint, TypeDecorator, Index, text
+from sqlalchemy.orm import relationship, mapped_column, Mapped, validates
 
 # from app.inventory.location.models import Location, LocationClass
 from app.inventory.location.enums import LocationClass, PutawayStrategy
@@ -48,36 +49,44 @@ class OrderType(Base, AllMixin, CreatedEdited):
         UniqueConstraint('title', 'company_id', name='_order_type_companyid_title_uc'),
     )
     lsn_seq = Sequence(f'order_type_lsn_seq')
-    prefix: Mapped[str] = mapped_column(index=True)                                                             # Префикс данных Ордеров
-    title: Mapped[str] = mapped_column(index=True)                                                              # Человекочетабельное имя
+    prefix: Mapped[str] = mapped_column(index=True)  # Префикс данных Ордеров
+    title: Mapped[str] = mapped_column(index=True)  # Человекочетабельное имя
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
-    order_class: Mapped[OrderClass]                                                                             # Класс ордера
-    allowed_location_src_ids: Mapped[ids] = mapped_column(index=True)      # Разрешенные зоны для подбора
-    exclude_location_src_ids: Mapped[ids] = mapped_column(index=True)    # Искличенные зоны из подбора
-    allowed_location_dest_ids: Mapped[ids] = mapped_column(index=True)     # Разрешенные зона для назначения
-    exclude_location_dest_ids: Mapped[ids] = mapped_column(index=True)    # Исключение зон из назначения
-    allowed_location_type_src_ids: Mapped[ids] = mapped_column(index=True)      # Разрешенные типы зоны для подбора
-    exclude_location_type_src_ids: Mapped[ids] = mapped_column(index=True)     # Искличенные типы зоны из подбора
-    allowed_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)        # Разрешенные типы зоны для назначения
-    exclude_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)     # Искличенные типы зоны для назначения
-    allowed_location_class_src_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}',index=True)                 # Разрешенные классы зона для подбора
-    exclude_location_class_src_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}', index=True)               # Исключение классы зон для подбора
-    allowed_location_class_dest_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}', index=True)                 # Разрешенные классы зона для назначения
-    exclude_location_class_dest_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}', index=True)               # Исключение классы зон для назначения
-    order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("order_type.id", ondelete='CASCADE'))# Тип Ордера возврата разницы
-    backorder_action_type: Mapped[BackOrderAction] = mapped_column(default=BackOrderAction.ASK)                 # Поведение возврата разницы
-    store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                     # Склад
-    partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)                                   # Партнер (если у опредленного партнера своя стратегия)
-    reservation_method: Mapped[ReservationMethod] = mapped_column(default=ReservationMethod.AT_CONFIRM)         # Метод резервирование
-    reservation_time_before: Mapped[Optional[int]] = mapped_column(default=0)                                   # Минуты до начала резервирования
-    allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)            # Разрешенные типы упаковок
-    exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)          # Исключение типы упаковок
-    is_homogeneity: Mapped[bool]                                                                                   # Признак Гомогенности
-    is_allow_create_package: Mapped[bool]                                                                          # Можно ли создавать упаковки
-    is_can_create_order_manualy: Mapped[bool]                                                                      # Можно ли создавать Ордер вручную
-    is_overdelivery: Mapped[bool]                                                                                  # Возможно ли Overdelivery
-    barcode: Mapped[str]                                                                                        # Штрих-код ордера для быстрого доступа
-    strategy: Mapped['PutawayStrategy'] = mapped_column(default=PutawayStrategy.FEFO)                           # Стратегия комплектования
+    order_class: Mapped[OrderClass]  # Класс ордера
+    allowed_location_src_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные зоны для подбора
+    exclude_location_src_ids: Mapped[ids] = mapped_column(index=True)  # Искличенные зоны из подбора
+    allowed_location_dest_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные зона для назначения
+    exclude_location_dest_ids: Mapped[ids] = mapped_column(index=True)  # Исключение зон из назначения
+    allowed_location_type_src_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные типы зоны для подбора
+    exclude_location_type_src_ids: Mapped[ids] = mapped_column(index=True)  # Искличенные типы зоны из подбора
+    allowed_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные типы зоны для назначения
+    exclude_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)  # Искличенные типы зоны для назначения
+    allowed_location_class_src_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}',
+                                                                          index=True)  # Разрешенные классы зона для подбора
+    exclude_location_class_src_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}',
+                                                                          index=True)  # Исключение классы зон для подбора
+    allowed_location_class_dest_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}',
+                                                                           index=True)  # Разрешенные классы зона для назначения
+    exclude_location_class_dest_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}',
+                                                                           index=True)  # Исключение классы зон для назначения
+    order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        ForeignKey("order_type.id", ondelete='CASCADE'))  # Тип Ордера возврата разницы
+    backorder_action_type: Mapped[BackOrderAction] = mapped_column(
+        default=BackOrderAction.ASK)  # Поведение возврата разницы
+    store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)  # Склад
+    partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid,
+                                                            index=True)  # Партнер (если у опредленного партнера своя стратегия)
+    reservation_method: Mapped[ReservationMethod] = mapped_column(
+        default=ReservationMethod.AT_CONFIRM)  # Метод резервирование
+    reservation_time_before: Mapped[Optional[int]] = mapped_column(default=0)  # Минуты до начала резервирования
+    allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Разрешенные типы упаковок
+    exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Исключение типы упаковок
+    is_homogeneity: Mapped[bool]  # Признак Гомогенности
+    is_allow_create_package: Mapped[bool]  # Можно ли создавать упаковки
+    is_can_create_order_manualy: Mapped[bool]  # Можно ли создавать Ордер вручную
+    is_overdelivery: Mapped[bool]  # Возможно ли Overdelivery
+    barcode: Mapped[str]  # Штрих-код ордера для быстрого доступа
+    strategy: Mapped['PutawayStrategy'] = mapped_column(default=PutawayStrategy.FEFO)  # Стратегия комплектования
 
 
 
@@ -120,8 +129,6 @@ class Order(Base, AllMixin, CreatedEdited):
         super().__init__(**kwargs)
 
 
-
-
 class Move(Base, AllMixin, CreatedEdited):
     """
     Move - это часть Order, но определяющее уже конкретную позицию товара
@@ -137,7 +144,7 @@ class Move(Base, AllMixin, CreatedEdited):
     location_src_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="RESTRICT"))
     location_dest_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="RESTRICT"))
     lot_id: Mapped[Optional['Lot']] = mapped_column(ForeignKey("lot.id", ondelete="RESTRICT"))
-    location_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="RESTRICT"))
+    package_id: Mapped[Optional[Location]] = mapped_column(ForeignKey("location.id", ondelete="RESTRICT"))
     # ONE OF Возможно либо location_id либо product_id
     product_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
@@ -149,6 +156,12 @@ class Move(Base, AllMixin, CreatedEdited):
     suggest_list_rel: Mapped[Optional[list["Suggest"]]] = relationship(lazy="selectin")
     processing_steps: Mapped[dict] = mapped_column(JSON)
 
+    @validates('package_id')
+    def validate_package_id(self, key, package_id):
+        if package_id and package_id.location_class != LocationClass.PACKAGE:
+            raise ValueError("package_id must refer to a location with location_class 'PACKAGE'")
+        return package_id
+
 
 class Suggest(Base, AllMixin):
     """
@@ -159,10 +172,11 @@ class Suggest(Base, AllMixin):
     move_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('move.id', ondelete='RESTRICT'), index=True)
     priority: Mapped[int]
     type: Mapped[SuggestType]
-    value: Mapped[Optional[str]]            # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
-    result_value: Mapped[Optional[str]]     # Фактически введенное значение пользователем
+    value: Mapped[Optional[str]]  # это значение которое или нужно заполнить или уже заполненное и нужно подвердить
+    result_value: Mapped[Optional[str]]  # Фактически введенное значение пользователем
     user_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True)
     status: Mapped[SuggestStatus] = mapped_column(default=SuggestStatus.WAITING, index=True)
+
 
 class MoveLog(Base, AllMixin, CreatedEdited):
     """
@@ -194,4 +208,3 @@ class MoveLog(Base, AllMixin, CreatedEdited):
     quantity: Mapped[float]
     reserved_quantity: Mapped[float]
     incoming_quantity: Mapped[float]
-

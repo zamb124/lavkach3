@@ -898,6 +898,7 @@ class ClassView:
             elif issubclass(c, BaseModel):
                 model_name = c.__name__.lower()  # type: ignore
                 res += 'rel'
+                model=c
                 submodel = ClassView(
                     request=self._view.request,
                     model=c,

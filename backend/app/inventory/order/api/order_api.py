@@ -1,7 +1,6 @@
-import typing
 import uuid
 
-from fastapi import APIRouter, Query, Request, Depends
+from fastapi import APIRouter, Query, Depends
 from fastapi_filter import FilterDepends
 
 from app.inventory.order.schemas import (
@@ -64,6 +63,7 @@ async def order_confirm(schema: AssignUser, service: OrderService = Depends()):
 @order_router.post("/order_start", response_model=list[OrderScheme])
 async def order_start(schema: AssignUser, service: OrderService = Depends()):
     return await service.order_start(ids=schema.ids, user_id=schema.user_id)
+
 
 @order_router.post("/order_complete", response_model=list[OrderScheme])
 async def order_complete(schema: AssignUser, service: OrderService = Depends()):

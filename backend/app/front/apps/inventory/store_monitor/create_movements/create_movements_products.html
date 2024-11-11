@@ -18,7 +18,7 @@
     </thead>
     <tbody id="tbody-{{ order.p.key }}">
     {% for product in  products %}
-        {% include 'inventory/order/order_create/order_create_products_line.html' %}
+        {% include 'inventory/order/order_create/order_create_product_line.html' %}
     {% endfor %}
     </tbody>
 </table>
@@ -26,7 +26,7 @@
         type="button"
         href="#"
         hx-push-url="false"
-        hx-get="/inventory/order/create/add_product?key={{ order.products.key }}"
+        hx-get="/inventory/store_monitor/create_movements/add_product?key={{ order.products.key }}"
         hx-trigger="click"
         hx-target="#tbody-{{ order.p.key }}"
         hx-swap="beforeend"
