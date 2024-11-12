@@ -3,19 +3,21 @@ from typing import Any, Optional
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
+from starlette.requests import Request
 
+from app.inventory.location import Location
 from app.inventory.quant.models.quants_models import Quant
 from app.inventory.quant.schemas.quants_schemas import QuantCreateScheme, QuantUpdateScheme, QuantFilter
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-from starlette.requests import Request
+
 if TYPE_CHECKING:
     pass
 
 
 class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, QuantFilter]):
-    def __init__(self, request:Request):
+    def __init__(self, request: Request):
         super(QuantService, self).__init__(request, Quant, QuantCreateScheme, QuantUpdateScheme)
 
     @permit('quant_update')
@@ -36,21 +38,21 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
 
     async def get_available_quants(
             self,
-            store_id:                           uuid.UUID,
-            product_id:                         uuid.UUID = None,
-            id:                                 uuid.UUID = None,
-            exclude_id:                         uuid.UUID = None,
-            location_class_ids:                 [uuid.UUID] = None,
-            location_ids:                       [uuid.UUID] = None,
-            location_type_ids:                  [uuid.UUID] = None,
-            lot_ids:                            [uuid.UUID] = None,
-            partner_id:                         uuid.UUID = None,
-            quantity:                           float = 0
-    ) -> list(Quant):
+            store_id: uuid.UUID,
+            product_id: uuid.UUID = None,
+            id: uuid.UUID = None,
+            exclude_id: uuid.UUID = None,
+            location_classes: list[str] = None,
+            location_ids: list[uuid.UUID] = None,
+            location_type_ids: list[uuid.UUID] = None,
+            lot_ids: list[uuid.UUID] = None,
+            partner_id: uuid.UUID = None,
+            quantity: float = 0
+    ) -> list[Quant]:
         """
             Метод получения квантов по параметрам
         """
-        query = select(self.model)
+        query = select(self.model).join(Location, self.model.location_id == Location.id)
         if id:
             query = query.where(self.model.id == id)
         else:
@@ -60,12 +62,12 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
                 query = query.where(self.model.id != exclude_id)
             if store_id:
                 query = query.where(self.model.store_id == store_id)
-            if location_class_ids:
-                query = query.where(self.model.location_class.in_(location_class_ids))
+            if location_classes:
+                query = query.where(Location.location_class.in_(location_classes))
             if location_ids:
                 query = query.where(self.model.location_id.in_(location_ids))
             if location_type_ids:
-                query = query.where(self.model.location_type_id.in_(location_type_ids))
+                query = query.where(Location.location_type_id.in_(location_type_ids))
             if lot_ids:
                 query = query.where(self.model.lot_id.in_(lot_ids))
             if quantity:

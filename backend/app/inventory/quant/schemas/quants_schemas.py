@@ -17,13 +17,10 @@ class QuantBaseScheme(BasicModel):
     vars: Optional[dict] = None
     product_id: UUID4 = Field(title='Product ID', model='product')
     store_id: UUID4 = Field(title='Store ID', model='store')
-    location_class: LocationClass = Field(title='Location Class')
-    location_type_id: UUID4 = Field(title='Location Type ID', model='location_type')
     location_id: Optional[UUID4] = Field(
         title='Location ID', model='location',
         filter={'location_class__not_in': LocationClass.PACKAGE.value},
     )
-    package_type_id: UUID4 = Field(title='Package Type ID', model='location_type')
     package_id: Optional[UUID4] = Field(
         title='Package ID', model='location',
         filter={'location_class__in': LocationClass.PACKAGE.value},

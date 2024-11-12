@@ -284,45 +284,26 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         assert move.product_id, 'Product is required if Move Type is  Product'
         order_type_entity = await order_type.service.get(move.order_type_id)
         """Проверяем, что мув может быть создан согласно праавилам в Order type """
-
-        location_class_src_ids = list(
-            set(order_type_entity.allowed_location_class_src_ids) -
-            set(order_type_entity.exclude_location_class_src_ids)
+        location_src_ids = location.service.get_location_hierarchy(
+            location_ids=order_type_entity.allowed_location_class_dest_ids,
+            exclude_location_ids=order_type_entity.exclude_location_dest_ids,
+            location_type_ids=order_type_entity.allowed_location_type_dest_ids,
+            exclude_location_type_ids=order_type_entity.exclude_location_type_dest_ids,
+            location_class_ids=order_type_entity.allowed_location_dest_ids,
+            exclude_location_class_ids=order_type_entity.exclude_location_class_dest_ids,
         )
-        location_type_src_ids = list(
-            set(order_type_entity.allowed_location_type_src_ids) -
-            set(order_type_entity.exclude_location_type_src_ids)
-        )
-        location_src_ids = list(
-            set(order_type_entity.allowed_location_src_ids) -
-            set(order_type_entity.exclude_location_src_ids)
-        )
-        if move.location_src_id:
-            """Если мы указали локацию, то нас уже не интересуют правила из OrderType"""
-            location_class_src_ids, location_type_src_ids, location_src_ids = [], [], [move.location_src_id, ]
-
         available_src_quants = await quant.service.get_available_quants(
             product_id=move.product_id,
             store_id=move.store_id,
             id=move.quant_src_id,
-            location_class_ids=location_class_src_ids,
-            location_ids=location_src_ids,
-            location_type_ids=location_type_src_ids,
+            location_ids=[i.id for i in location_src_ids],
             lot_ids=[move.lot_id] if move.lot_id else None,
             partner_id=move.partner_id if move.partner_id else None
         )
         # TODO: здесь нужно вставить метод FEFO, FIFO, LIFO, LEFO
         if not available_src_quants:
             """Поиск локаций, которые могут быть negative"""
-            location_src_search_params = {
-                "location_class__in": location_class_src_ids,
-                "location_type_id__in": location_type_src_ids,
-                "id__in": location_src_ids,
-                "is_active": True,
-                "is_can_negative": True
-            }
-            locations_src = await location.service.list(_filter=location_src_search_params)
-            for loc_src in locations_src:
+            for loc_src in location_src_ids:
                 quant_src_entity = quant.model(**{
                     "product_id": move.product_id,
                     "company_id": move.company_id,
@@ -349,45 +330,29 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         quant = self.env['quant']
         location = self.env['location']
         order_type_entity = await self.env['order_type'].service.get(move.order_type_id)
-        location_class_dest_ids = list(
-            set(order_type_entity.allowed_location_class_dest_ids) -
-            set(order_type_entity.exclude_location_class_dest_ids)
-        )
-        location_type_dest_ids = list(
-            set(order_type_entity.allowed_location_type_dest_ids) -
-            set(order_type_entity.exclude_location_type_dest_ids)
-        )
-        location_dest_ids = list(
-            set(order_type_entity.allowed_location_dest_ids) -
-            set(order_type_entity.exclude_location_dest_ids)
-        )
 
-        if move.location_dest_id:
-            """Если мы указали локацию, то нас уже не интересуют правила из OrderType"""
-            location_class_dest_ids, location_type_dest_ids, location_dest_ids = [], [], [move.location_dest_id, ]
-
+        # Достаем все локации, которые подходят под правила OrderType
+        location_dest_ids = location.service.get_location_hierarchy(
+            location_ids=order_type_entity.allowed_location_class_dest_ids,
+            exclude_location_ids=order_type_entity.exclude_location_dest_ids,
+            location_type_ids=order_type_entity.allowed_location_type_dest_ids,
+            exclude_location_type_ids=order_type_entity.exclude_location_type_dest_ids,
+            location_class_ids=order_type_entity.allowed_location_dest_ids,
+            exclude_location_class_ids=order_type_entity.exclude_location_class_dest_ids,
+        )
         available_dest_quants = await quant.service.get_available_quants(
             product_id=move.product_id,
             store_id=move.store_id,
             id=move.quant_dest_id,
             exclude_id=move.quant_src_id,  # Исключаем из возможного поиска квант источника, ибо нехер
-            location_class_ids=location_class_dest_ids,
-            location_ids=location_dest_ids,
-            location_type_ids=location_type_dest_ids,
+            location_ids=[i.id for i in location_dest_ids],
             lot_ids=[move.lot_id] if move.lot_id else None,
             partner_id=move.partner_id if move.partner_id else None
         )
         # TODO: здесь нужно вставить метод Putaway
         if not available_dest_quants:
             """Поиск локаций, которые могут быть negative"""
-            location_dest_search_params = {
-                "location_class__in": location_class_dest_ids,
-                "location_type_id__in": location_type_dest_ids,
-                "id__in": location_dest_ids,
-                "is_active": True,
-            }
-            locations_dest = await location.service.list(_filter=location_dest_search_params)
-            for loc_dest in locations_dest:
+            for loc_dest in location_dest_ids:
                 quant_dest_entity = quant.model(**{
                     "product_id": move.product_id,
                     "company_id": move.company_id,
@@ -403,6 +368,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                     "uom_id": move.uom_id,
                 })
                 available_dest_quants = [quant_dest_entity, ]
+                break
         return available_dest_quants
 
     async def set_reserve(self, move: Move, src_quant: Quant, dest_quant: Quant, qty_to_move: float):

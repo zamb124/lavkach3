@@ -11,6 +11,7 @@ from core.schemas.timestamps import TimeStampScheme
 
 
 class StorageTypeBaseScheme(BasicModel):
+    """"""
     product_id: UUID = Field(title='Product', form=True, model='product')
     storage_uom_id: Optional[UUID] = Field(default=None)  # Единица измерения склада
     title: str = Field(title='Title', form=True)

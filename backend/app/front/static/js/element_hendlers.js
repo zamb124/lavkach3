@@ -19,6 +19,7 @@ class ChoiceHandler {
             placeholder: true,
             searchPlaceholderValue: 'Start typing to search',
             placeholderValue: "Enter " + this.displayTitle,
+            itemSelectText: '',
             removeItemButton: !(method === 'get' || this.element.getAttribute('readonly'))
         };
         this.choices = new Choices(this.element, this.attrs);

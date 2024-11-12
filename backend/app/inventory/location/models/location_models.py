@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import Sequence, Uuid, ForeignKey, text
+from sqlalchemy import Sequence, Uuid, ForeignKey, text, JSON
 from sqlalchemy.orm import mapped_column, Mapped
 
 from app.inventory.location.enums import LocationClass, PutawayStrategy
@@ -13,22 +13,23 @@ from core.db.types import ids
 
 class LocationType(Base, AllMixin, LocationMixin):
     """
-    **Типы местоположения** -  Обозначают набор свойств местоположения, например Паллет, или ячейка, или ящик, или зона
+    **Типы местоположения** - Обозначают набор свойств местоположения, например Паллет, или ячейка, или ящик, или зона
     """
     __tablename__ = "location_type"
     lsn_seq = Sequence(f'location_type_lsn_seq')
     title: Mapped[str] = mapped_column(index=True)
     store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
-    allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Разрешенные типы упаковок
-    exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Исключение типы упаковок
+    allowed_package_type_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Разрешенные типы упаковок
+    exclude_package_type_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Исключение типы упаковок
     is_homogeneity: Mapped[Optional[bool]] = mapped_column(default=False, index=True)  # Запрет на 1KU 2х разных партий
     strategy: Mapped[Optional['PutawayStrategy']] = mapped_column(default=PutawayStrategy.FEFO)  # Стратегия комплектования
-    is_can_negative: Mapped[Optional[bool]] = mapped_column(server_default=text('false'),index=True)  # Может иметь отрицательный остаток
+    is_can_negative: Mapped[Optional[bool]] = mapped_column(server_default=text('false'), index=True)  # Может иметь отрицательный остаток
+    capacity: Mapped[Optional[dict]] = mapped_column(JSON)  # Вместимость
 
 
-class Location(Base, AllMixin, LocationMixin):
+class Location(Base, AllMixin):
     """
-    **Местоположение** -  это обьект хранящий в себе кванты, а так же другие локации
+    **Местоположение** - это обьект хранящий в себе кванты, а так же другие локации
     Местоположение может быть статичная или динамическая определяется типом:
     - shelve - статичная ячейка хранения в магазине
     - rack - статичная стеллаж
@@ -37,12 +38,10 @@ class Location(Base, AllMixin, LocationMixin):
     __tablename__ = "location"
     lsn_seq = Sequence(f'location_lsn_seq')
     title: Mapped[str] = mapped_column(index=True)
-    store_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
+    store_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)
     location_class: Mapped[LocationClass] = mapped_column(index=True)
     location_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('location_type.id'), index=True)
     location_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id"), index=True)
+    zone_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("location.id"), index=True)
     is_active: Mapped[Optional[bool]] = mapped_column(default=True)
-    allowed_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Разрешенные типы упаковок
-    exclude_package_ids: Mapped[Optional[ids]] = mapped_column(index=True)  # Исключение типы упаковок
-    is_can_negative: Mapped[Optional[bool]] = mapped_column(server_default=text('false'), index=True)  # Может иметь отрицательный остаток
 

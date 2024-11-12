@@ -120,5 +120,7 @@ class InventoryService:
                         quantity=0.0
                     )
                     product.available_quantity = sum([quant.available_quantity for quant in available_src_quants])
-        a=1
+        # Достали все подходящие кванты согласно условиям
+        # Теперь нужно подобрать для каждого кванта подходящий тип ордера
+
 

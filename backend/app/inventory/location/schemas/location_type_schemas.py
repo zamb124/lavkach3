@@ -1,5 +1,6 @@
 from typing import Optional, List
 
+from celery.worker.strategy import default
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel
 from pydantic.types import UUID4
@@ -14,24 +15,32 @@ from core.schemas.timestamps import TimeStampScheme
 
 class LocationTypeBaseScheme(BasicModel):
     vars: Optional[dict] = None
-    title: str
-    location_class: LocationClass
-    is_homogeneity: Optional[bool] = None
+    title: str = Field(title='Title', form=True, table=True)
+    location_class: LocationClass = Field(title='Location Class', form=True, table=True)
+    is_homogeneity: Optional[bool] = Field(default=False, title='Homogeneity', form=True, table=True)
     allowed_package_type_ids: Optional[list[UUID4]] = Field(
         default=[],
         model='location_type',
-        filter={'location_class__in': LocationClass.PACKAGE.value}
+        filter={'location_class__in': LocationClass.PACKAGE.value},
+        title='Allowed Package Types',
+        form=True,
+        table=True
     )
     exclude_package_type_ids: Optional[list[UUID4]] = Field(
         default=[],
         model='location_type',
-        filter={'location_class__in': LocationClass.PACKAGE.value}
+        filter={'location_class__in': LocationClass.PACKAGE.value},
+        title='Exclude Package Types',
+        form=True,
+        table=True
     )
-    strategy: Optional[PutawayStrategy] = PutawayStrategy.FEFO
-    is_can_negative: bollean = Field(default=False, title='Can be Negative')
+    strategy: Optional[PutawayStrategy] = Field(default=PutawayStrategy.FEFO, title='Putaway Strategy', form=True,
+                                                table=True)
+    is_can_negative: bollean = Field(default=False, title='Can be Negative', form=True, table=True)
 
     class Config:
         orm_model = LocationType
+
 
 class LocationTypeUpdateScheme(LocationTypeBaseScheme):
     title: Optional[str] = None
@@ -39,23 +48,23 @@ class LocationTypeUpdateScheme(LocationTypeBaseScheme):
 
 
 class LocationTypeCreateScheme(LocationTypeBaseScheme):
-    company_id: UUID4
+    ...
 
 
 class LocationTypeScheme(LocationTypeCreateScheme, TimeStampScheme):
     lsn: int
-    id: UUID4
-
+    id: UUID4 = Field(title='ID', form=False, table=True)
+    company_id: UUID4
 
 
 class LocationTypeFilter(BaseFilter):
-    ...
+    location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Location Class')
 
 
     class Constants(Filter.Constants):
         model = LocationType
         ordering_field_name = "order_by"
-        search_model_fields = ["title",]
+        search_model_fields = ["title", ]
 
 
 class LocationTypeListSchema(GenericListSchema):

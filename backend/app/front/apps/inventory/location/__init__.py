@@ -1,0 +1,1 @@
+from .location_type import location_type_router

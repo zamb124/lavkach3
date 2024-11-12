@@ -20,15 +20,9 @@ class StockMixin(LocationMixin):
     lot_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         ForeignKey("lot.id", ondelete="RESTRICT"), index=True
     )
-    location_type_id: Mapped[uuid.UUID] = mapped_column(              # Тип локации
-        ForeignKey("location_type.id", ondelete="RESTRICT"), index=True
-    )
     location_id: Mapped[uuid.UUID] = mapped_column(                   # локация
         ForeignKey("location.id", ondelete="RESTRICT"), index=True
     )
     package_id: Mapped[Optional[uuid.UUID]] = mapped_column(              # Упаковка, если есть
         ForeignKey("location.id", ondelete="RESTRICT"), index=True
-    )
-    package_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey( # Тип упаковки
-        "location_type.id", ondelete="RESTRICT"), index=True
     )

@@ -1,4 +1,5 @@
 from typing import Any, Optional
+from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,8 +14,8 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 
 class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdateScheme, LocationFilter]):
-    def __init__(self, request:Request):
-        super(LocationService, self).__init__(request, Location,LocationCreateScheme, LocationUpdateScheme)
+    def __init__(self, request: Request):
+        super(LocationService, self).__init__(request, Location, LocationCreateScheme, LocationUpdateScheme)
 
     @permit('location_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
@@ -32,20 +33,24 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
     async def delete(self, id: Any) -> None:
         return await super(LocationService, self).delete(id)
 
-
-    async def get_location_hierarchy(self, allowed_location_src_ids: list):
+    async def get_location_hierarchy(
+            self, location_ids: list[UUID],
+            exclude_location_ids: list[UUID] = None,
+            location_classes: list[str] = None,
+            location_type_ids: list[UUID] = None,
+            exclude_location_classes: list[str] = None,
+            exclude_location_type_ids: list[UUID] = None) -> list[Location]:
+        if exclude_location_ids:
+            location_ids = list(set(location_ids) - set(exclude_location_ids))
         # Определяем CTE для рекурсивного запроса
         location_cte = (
             select(
                 Location.id,
                 Location.location_id,
-                Location.title,
                 Location.location_class,
                 Location.location_type_id,
-                Location.store_id
             )
-            .where(Location.id.in_(allowed_location_src_ids))
-            .where(Location.location_class != LocationClass.PACKAGE)
+            .where(Location.id.in_(location_ids))
             .cte(name="location_cte", recursive=True)
         )
 
@@ -57,17 +62,18 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
             select(
                 Location.id,
                 Location.location_id,
-                Location.title,
                 Location.location_class,
                 Location.location_type_id,
-                Location.store_id
             )
             .where(Location.location_id == location_alias.c.id)
-            .where(Location.location_class != LocationClass.PACKAGE)
+            .where(Location.location_class.in_(location_classes) if location_classes else True)
+            .where(Location.location_type_id.in_(location_type_ids) if location_type_ids else True)
+            .where(Location.location_class.notin_(exclude_location_classes) if exclude_location_classes else True)
+            .where(Location.location_type_id.notin_(exclude_location_type_ids) if exclude_location_type_ids else True)
         )
 
         # Выполняем запрос
-        query = select(location_cte)
+        query = select(Location).where(Location.id.in_(select(location_cte.c.id)))
         result = await self.session.execute(query)
         locations = result.scalars().all()
 

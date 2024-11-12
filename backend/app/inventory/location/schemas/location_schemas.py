@@ -14,27 +14,17 @@ from core.schemas.timestamps import TimeStampScheme
 
 class LocationBaseScheme(BasicModel):
     vars: Optional[dict] = None
-    location_class: LocationClass
-    title: str
-    store_id: UUID4 = Field(title='Store', model='store')
-    location_id: Optional[UUID4] = Field(default=None, title='Parent Location', model='location')
-    is_active: bollean = Field(default=True, title='Is Active')
-    location_type_id: UUID4 = Field(title='Location Type', model='location_type')
-    partner_id: Optional[UUID4] = Field(default=None, title='Partner', model='partner')
-
-    location_class: LocationClass = Field(default=LocationClass.PLACE, title='Location Class')
-    is_can_negative: bollean = Field(default=False, title='Can Negative')
-    allowed_package_type_ids: Optional[list[UUID4]] = Field(
-        default=[], title='Allowed Packages',
-        filter={'location_class__in': LocationClass.PACKAGE.value}
-    )  # Разрешенные типы упаковок
-    exclude_package_type_ids: Optional[list[UUID4]] = Field(
-        default=[], title='Exclude Packages',
-        filter={'location_class__in': LocationClass.PACKAGE.value}
-    )  # Разрешенные типы упаковок
+    title: str = Field(title='Title', form=True, table=True)
+    store_id: UUID4 = Field(title='Store', model='store', form=True, table=True)
+    is_active: bollean = Field(default=True, title='Is Active', form=True, table=True)
+    location_class: LocationClass = Field(title='Location Class', form=True, table=True)
+    location_type_id: UUID4 = Field(title='Location Type', model='location_type', form=True, table=True)
+    location_id: Optional[UUID4] = Field(default=None, title='Parent Location', model='location', form=True, table=True)
+    zone_id: Optional[UUID4] = Field(default=None, title='Zone', model='location', form=True, table=True, filter={'location_class__in': LocationClass.ZONE.value})
 
     class Config:
         orm_model = Location
+
 
 class LocationUpdateScheme(LocationBaseScheme):
     ...
@@ -45,22 +35,19 @@ class LocationCreateScheme(LocationBaseScheme):
 
 
 class LocationScheme(LocationCreateScheme, TimeStampScheme):
-    company_id: UUID4 = Field(model='company', title='Company')
+    company_id: UUID4 = Field(model='company', title='Company', form=True, table=True)
     lsn: int
-    id: UUID4
-
-    class Config:
-        from_attributes = True
+    id: UUID4 = Field(title='ID', form=True, table=True)
 
 
 class LocationFilter(BaseFilter):
     title: Optional[str] = Field(default=None, title='Title')
     store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', model='store')
     location_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Location Type', model='location_type')
-    location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Class')
-    location_class__not_in: Optional[List[LocationClass]] = Field(default=None, title='Class')
+    location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Location Class')
+    location_id__in: Optional[List[UUID4]] = Field(default=None, title='Zone', model='location')
+    zone_id__in: Optional[List[UUID4]] = Field(default=None, title='Zone', model='location')
     is_active: Optional[bool] = Field(default=None, title='Active')
-    is_can_negative: Optional[bool] = Field(default=None, title='Is can negative')
 
     class Constants(Filter.Constants):
         model = Location

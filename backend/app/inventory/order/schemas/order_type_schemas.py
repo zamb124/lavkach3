@@ -16,24 +16,26 @@ class OrderTypeBaseScheme(BasicModel):
     prefix: str = Field(title='Prefix', table=True, form=True)
     order_class: OrderClass = Field(title='Order Class', table=True, form=True)
     title: str = Field(title='Titile', table=True, form=True)
-    allowed_location_src_ids: Optional[list[UUID4]] = Field(
+    allowed_zone_src_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
-        title='Allowed locations source',
-        description='Allowed locations for the source of this order type',
-        filter={'location_class__not_in': LocationClass.PACKAGE.value},
+        title='Allowed zones source',
+        description='Allowed Zones for the source of this order type',
+        filter={'location_class__not_in': LocationClass.ZONE.value},
         form=True
     )
-    exclude_location_src_ids: Optional[list[UUID4]] = Field(
+    exclude_zone_src_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
-        title='Exclude locations source',
+        title='Exclude zones source',
+        filter={'location_class__not_in': LocationClass.ZONE.value},
         form=True
     )
-    allowed_location_dest_ids: Optional[list[UUID4]] = Field(
+    allowed_zone_dest_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
-        title='Allowed locations dest',
+        title='Allowed zones dest',
+        filter={'location_class__not_in': LocationClass.ZONE.value},
         form=True
     )
-    exclude_location_dest_ids: Optional[list[UUID4]] = Field(
+    exclude_zone_dest_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
         title='Exclude locations dest',
         form=True

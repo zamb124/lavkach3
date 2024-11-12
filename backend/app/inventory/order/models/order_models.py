@@ -53,10 +53,10 @@ class OrderType(Base, AllMixin, CreatedEdited):
     title: Mapped[str] = mapped_column(index=True)  # Человекочетабельное имя
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     order_class: Mapped[OrderClass]  # Класс ордера
-    allowed_location_src_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные зоны для подбора
-    exclude_location_src_ids: Mapped[ids] = mapped_column(index=True)  # Искличенные зоны из подбора
-    allowed_location_dest_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные зона для назначения
-    exclude_location_dest_ids: Mapped[ids] = mapped_column(index=True)  # Исключение зон из назначения
+    allowed_zone_src_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные зоны для подбора
+    exclude_zone_src_ids: Mapped[ids] = mapped_column(index=True)  # Искличенные зоны из подбора
+    allowed_zone_dest_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные зона для назначения
+    exclude_zone_dest_ids: Mapped[ids] = mapped_column(index=True)  # Исключение зон из назначения
     allowed_location_type_src_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные типы зоны для подбора
     exclude_location_type_src_ids: Mapped[ids] = mapped_column(index=True)  # Искличенные типы зоны из подбора
     allowed_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные типы зоны для назначения
