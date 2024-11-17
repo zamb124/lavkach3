@@ -148,17 +148,9 @@
                         </button>
                         <button type="button"
                                 hx-trigger="click"
-                                hx-post="/base/line"
-                                hx-ext="json-enc"
+                                hx-delete="/base/line/{{ line.v.model.name }}/{{ line.p.id }}"
                                 hx-target="this"
                                 hx-swap="outerHTML"
-                                hx-vals='{
-                                "model": "{{ line.v.model.name }}",
-                                "method": "delete_delete",
-                                "id": "{{ line.p.id }}",
-                                "key": "{{ line.p.key }}"
-                            }'
-
                                 class="btn btn-danger">Delete
                         </button>
                     </div>

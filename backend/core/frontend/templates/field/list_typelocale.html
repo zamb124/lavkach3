@@ -1,12 +1,12 @@
 {% block as_update %}
-    <select class="list_typelocale form-control is-valid"
-            id="{{ field.key }}"
-            name="{{ field.key }}"
+    <select class="list-babel-update form-control is-valid"
+            id="{{ field.field_name }}"
+            name="{{ field.field_name }}"
             data-choices multiple
             display-title="{{ field.create.title }}"
             title="{{ field.create.description }}"
             {% if field.create.readonly %} readonly='1' {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             {% if field.create.required %} required {% endif %}
             filter="{{ field.create.filter }}"
             model-name="{{ field.model_name }}"
@@ -16,21 +16,16 @@
                     <option value="{{ field.val.id }}" selected> {{ field.val.name or field.val.english_name }}</option>
                 {% endif %}
     </select>
-    <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceMultiBabel(el)
-    </script>
 {% endblock %}
 {% block as_create %}
-    <select class="list_typelocale form-control is-valid"
-            id="{{ field.key }}"
-            name="{{ field.key }}"
+    <select class="list-babel-craate list_typelocale form-control is-valid"
+            id="{{ field.field_name }}"
+            name="{{ field.field_name }}"
             data-choices multiple
             display-title="{{ field.create.title }}"
             title="{{ field.create.description }}"
             {% if field.create.readonly %} readonly='1' {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             {% if field.create.required %} required {% endif %}
             filter="{{ field.create.filter }}"
             model-name="{{ field.model_name }}"
@@ -40,14 +35,11 @@
                     <option value="{{ field.val.id }}" selected> {{ field.val.name or field.val.english_name }}</option>
                 {% endif %}
     </select>
-    <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceMultiBabel(el)
-    </script>
 {% endblock %}
 {% block as_get %}
+<div class="list-babel-get">
         {{ field.val.english_name or field.val.name or field.val}}
+</div>
 {% endblock %}
 {% block as_table %}
 <a href="#" hx-params="none" hx-get="/base/table/row?model={{ field.model_name }}">{{ field.val.code or field.val.english_name}}</a>

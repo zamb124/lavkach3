@@ -1,9 +1,9 @@
 {% block as_update %}
-    <select class="list-uuid form-control text-center"
-            id="{{ field.key }}"
+    <select class="list-uuid-update form-control text-center"
+            id="{{ field.field_name }}"
             {% if field.update.required and not field.is_filter %} required {% endif %}
             {% if field.update.readonly %} readonly="1" {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             filter="{{ field.update.filter }}"
             {% if field.is_filter %} is-filter="1"{% endif %}
             model-name="{{ field.model_name }}"
@@ -16,17 +16,13 @@
             {% endfor %}
         {% endif %}
     </select>
-        <script>
-    new ChoiceHandler('{{ field.key }}', 'create')
-    </script>
-
 {% endblock %}
 {% block as_create %}
-    <select class="list-uuid form-control is-valid text-center"
-            id="{{ field.key }}"
+    <select class="list-uuid-create form-control is-valid text-center"
+            id="{{ field.field_name }}"
             {% if field.create.required and not field.is_filter %} required {% endif %}
             {% if field.create.readonly %} readonly="1" {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             filter="{{ field.create.filter }}"
             {% if field.is_filter %} is-filter="1"{% endif %}
             model-name="{{ field.model_name }}"
@@ -39,19 +35,12 @@
             {% endfor %}
         {% endif %}
     </select>
-        <script>
-new ChoiceHandler('{{ field.key }}', 'update')
-    </script>
-
 {% endblock %}
 
 {% block as_get %}
-        <div  model-name="{{ field.model_name }}" class="text-start text-center form-control"  id="{{ field.key }}">
+        <div  model-name="{{ field.model_name }}" class="list-uuid-get text-start text-center form-control"  id="{{ field.field_name }}">
             {% if field.val %}
                 {{ ','.join(field.val) }}
             {% endif %}
         </div>
-        <script>
-            choicesMultiBadges('{{ field.key }}', 'get')
-    </script>
 {% endblock %}

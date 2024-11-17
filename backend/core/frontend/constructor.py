@@ -1,27 +1,22 @@
-import asyncio
 import copy
 import enum
 import logging
 import uuid
-from collections import defaultdict
 from datetime import datetime
 from inspect import isclass
 from typing import Optional, get_args, get_origin, Any
-
+from functools import lru_cache
 from jinja2_fragments import render_block
-from pydantic import BaseModel, UUID4, model_validator
+from pydantic import BaseModel
 from pydantic.fields import FieldInfo, ComputedFieldInfo
 from pydantic_core import ValidationError
-from starlette.datastructures import QueryParams
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 
-from core.env import Model, Env, Schemas
+from core.env import Model, Env
 from core.frontend.enviroment import passed_classes, reserved_fields, environment, _crud_filter
-from core.frontend.exceptions import HTMXException
 from core.frontend.field import Field, Fields
-from core.frontend.types import LineType, ViewVars, MethodType
-from core.frontend.utils import clean_filter
+from core.frontend.types import ViewVars, MethodType
 from core.schemas.basic_schemes import BasicModel
 
 logging.basicConfig(level=logging.INFO)
@@ -37,7 +32,7 @@ def import_view(service_name):
 
 
 # Во views нужно регистрировать вьюхи  {'имя модели': 'класс'}
-views = {
+views: dict[str, Any] = {
 
 }
 
@@ -51,36 +46,6 @@ default_templates = {
     'as_filter': 'cls/as_filter.html',
     'as_header': 'cls/as_header.html',
     'as_import': 'cls/as_import.html',
-}
-
-default_field_templates = {
-    'as_card': 'as_card.html',
-    'babel': 'babel.html',
-    'bool': 'bool.html',
-    'daterange': 'daterange.html',
-    'datetime': 'datetime.html',
-    'dict': 'dict.html',
-    'enum': 'enum.html',
-    'float': 'float.html',
-    'id': 'id.html',
-    'int': 'int.html',
-    'label': 'label.html',
-    'list_enum': 'list_enum.html',
-    'list_rel': 'list_rel.html',
-    'list_str': 'list_str.html',
-    'list_typecountry': 'list_typecountry.html',
-    'list_typecurrency': 'list_typecurrency.html',
-    'list_typelocale': 'list_typelocale.html',
-    'list_uuid': 'list_uuid.html',
-    'other': 'other.html',
-    'rel': 'rel.html',
-    'search': 'search.html',
-    'str': 'str.html',
-    'typecountry': 'typecountry.html',
-    'typecurrency': 'typecurrency.html',
-    'typelocale': 'typelocale.html',
-    'typephone': 'typephone.html',
-    'uuid': 'uuid.html'
 }
 
 
@@ -114,30 +79,27 @@ class View:
         ВАЖНО!! класс этот шерится между всеми лайнами,
          <поэтому в нем не должно быть никаких данных
     """
-    request: Request = None  # Реквест - TODO: надо потом убрать
+    request: Request  # Реквест - TODO: надо потом убрать
     model: Model = None  # Имя поля
-    vars: Optional[dict] = {
-        'as_button_update': True,
-        'as_button_get': True,
-    }  # Переменные если нужно передать контекст
-    params: Optional[QueryParams] | dict | None  # Параметры на вхрде
+    params: Optional[dict] = None  # Параметры на вхрде
     parent_field: 'Field'
     join_related: Optional[bool] | None = None  # Джойнить рилейшен столбцы
     join_fields: Optional[list] = []  # Список присоединяемых полей, если пусто, значит все
     submodels: dict
-    parent_field: Optional['ClassView'] = None  # Родительский класс
     # Список обьектов
     exclude: Optional[list] = [None]  # Исключаемые солбцы
-    sort: dict = dict  # Правила сортировки
-    key: str = None  # Ключ конструктора
+    sort: dict = {}  # Правила сортировки
+    key: str  # Ключ конструктора
     actions: dict  # Доступные Методы модели
     is_rel: bool = False  # True, если
     env: Env  # Среда выполнения
     schema: BaseModel
     create = True
     delete = True
-    actions = True
+    actions = None
     update = True
+    model_name: str
+    data: dict = {}
 
 
 class P:
@@ -158,12 +120,12 @@ class P:
         return f'{self.cls.v.model.name}--{self.cls._id}'
 
     @property
-    def lsn(self) -> str:
+    def lsn(self) -> int | None:
         """Сгенерировать ключ обьекта для UI"""
         return self.cls._lsn
 
     @property
-    def id(self) -> str:
+    def id(self) -> str | int:
         """Сгенерировать ключ обьекта для UI"""
         return self.cls._id
 
@@ -183,7 +145,10 @@ class P:
     def class_key(self):
         """Ключ класса"""
         if self.cls.v.parent_field:
-            return self.cls.v.parent_field.key
+            if isinstance(self.cls.v.parent_field, Field):
+                return self.cls.v.parent_field.key
+            elif isinstance(self.cls.v.parent_field, str):
+                return self.cls.v.parent_field
         return self.cls.v.key
 
     @property
@@ -297,7 +262,8 @@ class H:
             Returns the table filter with columns and types for HTMX templates.
     """
     cls: 'ClassView'
-    templates = None
+    templates: dict[str, str]
+    key: str
 
     def __init__(self):
         self.templates = default_templates.copy()
@@ -306,7 +272,7 @@ class H:
               exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
-        template = self.templates.get(template)
+        template = self.templates.get(template, 'line/as_tr.html')
         return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
@@ -338,7 +304,7 @@ class H:
                exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
-        template = self.templates.get(template)
+        template = self.templates.get(template, 'line/as_div.html')
         return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
@@ -360,7 +326,7 @@ class H:
                 exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
-        template = self.templates.get(template)
+        template = self.templates.get(template, 'line/as_card.html')
         return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
@@ -372,7 +338,7 @@ class H:
                  exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
-        template = self.templates.get(template)
+        template = self.templates.get(template, 'line/as_modal.html')
         return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
@@ -399,7 +365,7 @@ class H:
                   exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
-        template = self.templates.get(template)
+        template = self.templates.get(template, 'line/as_button.html')
         return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
@@ -436,7 +402,7 @@ class H:
                   exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
-        template = self.templates.get(template)
+        template = self.templates.get(template, 'cls/as_filter.html')
         return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
@@ -459,8 +425,10 @@ class H:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
         return self.as_filter()
 
-    def as_action(self, action_name, block_name: str = 'button', css_class: str = 'btn btn-primary') -> str:
+    def as_action(self, action_name, block_name: str = 'button', label=True, css_class=False, icon: Optional[str]=None) -> str:
         """Отдаем кнопку действия"""
+        if css_class is True:
+            css_class = 'btn btn-primary'
         action = self.cls.v.actions[action_name]
         return render_block(
             environment=environment,
@@ -468,14 +436,16 @@ class H:
             block_name=block_name,
             action=action,
             line=self.cls,
-            css_class=css_class
+            label=label,
+            css_class=css_class,
+            icon=icon or 'solar:double-alt-arrow-right-bold-duotone',
         )
 
     def as_table(self, template: str = 'as_table', block_name: str = 'get', method: MethodType = MethodType.GET,
                  exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
-        template = self.templates.get(template)
+        template = self.templates.get(template, 'cls/as_table.html')
         return self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
@@ -492,16 +462,6 @@ class H:
     def as_table_update(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
         return self.as_table(method=MethodType.UPDATE)
-
-    @property
-    def as_card_kanban(self) -> str:
-        """Метод отдает Таблицу с хидером на просмотр"""
-        return f'<div class="row" id="{self.key}">{self.lines.as_card_kanban}</div>'
-
-    @property
-    def as_card_list(self) -> str:
-        """Метод отдает Таблицу с хидером на просмотр"""
-        return f'<div class="row" id="{self.key}">{self.lines.as_card_list}</div>'
 
     @property
     def as_header_widget(self) -> str:
@@ -615,17 +575,17 @@ class ClassView:
      _get_view_vars(self, fieldname: str, is_filter: bool) -> dict[str, ViewVars]:
         Compiles and returns a dictionary of ViewVars based on specified field names and filter conditions.
     """
-    _id: str | int = None
+    _id: int
     _lsn: int | None = None
-    _view: View = None
+    _view: View
     _exclude: list
     _lines: list
     __state: int = 0
     _templates = {
         'as_tr_': 'line/as_tr.html',
     }
-    p: P = None
-    h: H = None
+    p: P
+    h: H
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
@@ -637,8 +597,6 @@ class ClassView:
         if isinstance(other, ClassView):
             return self._id == other._id
         return False
-
-
 
     def reset_key(self):
         self._view.key = _get_key()
@@ -652,8 +610,8 @@ class ClassView:
             self._lines.append(instance.cls)
 
     def delete_dublicates(self):
-        ids: [str] = []
-        to_del_inxs: [int] = []
+        ids: list[str] = []
+        to_del_inxs: list[int] = []
         for indx, line in enumerate(self._lines):
             if line._id in ids:
                 to_del_inxs.append(indx)
@@ -696,16 +654,11 @@ class ClassView:
     def __init__(self,
                  request: Request,
                  model: str | BaseModel,
-                 params: dict = None,
+                 params: Optional[dict] = None,
                  exclude: list = [],
                  join_related: bool = False,
                  join_fields: list | None = None,
-                 is_inline: bool = False,
-                 key: str | None = None,
-                 is_rel: bool = False,
                  vars: dict | None = None,
-                 schema: BaseModel = None,
-                 permits: list = [],
                  parent_field: 'Field' = None
                  ):
         self.p = P()
@@ -715,8 +668,8 @@ class ClassView:
         self._id = id(self)
         self._view = View()
         if not isinstance(model, str):
-            if issubclass(model, BaseModel):
-                action_name = model.__name__
+            if issubclass(model, BaseModel):  # type: ignore
+                action_name = model.__name__  # type: ignore
                 self._view.model = Model(
                     name=action_name,
                     _adapter=None,
@@ -734,36 +687,27 @@ class ClassView:
         else:
             self._view.model = request.scope['env'][model]
             self._view.actions = self._view.model.adapter.get_actions()
-        if not schema:
-            schema = BaseSchema(model=self._view.model.name, key=key or _get_key())
         self._view.request = request
-        if vars:
-            self._view.vars = vars
-
         assert self._view.model, 'Model is not defined'
         self._view.model_name = self._view.model.name
-        self._view.is_rel = is_rel
-
         self._view.env = request.scope['env']
-        self._view.key = key or schema.key
+        self._view.key = _get_key()
         self._view.exclude = exclude or []
-        self._view.params = params or schema.params or {}
+        self._view.params = params
         self._view.join_related = join_related
         self._view.join_fields = join_fields or []
-        self._view.schema = schema
         self._view.submodels = {}
         self._view.parent_field = parent_field
         config_sort = self._view.model.sort
         if config_sort:
             self._view.sort = {v: i for i, v in enumerate(config_sort)}
         else:
-            self.sort = {}
-        self._view.is_inline = is_inline
+            self._view.sort = {}
         ##=======--------
         self._lines = []
         self._exclude = []
         self._exclude = exclude
-        self._get_schema_fields(exclude=exclude)
+        self._get_schema_fields()
 
     def __repr__(self):
         return f'<ClassView {self.v.model.name}'
@@ -772,29 +716,13 @@ class ClassView:
     def r(self):
         return self.v.request
 
-    async def init(self,
-                   params: dict | None = None,
-                   join_related: bool = False,
-                   data: list | dict = None,
-                   exclude: list = [],
-                   schema: BaseModel = None) -> None:
+    async def init(self, params: Optional[dict] = None, data: Optional[list | dict] = None,
+                   exclude: Optional[list] = None) -> None:
         """Майнинг данных по params"""
-        self._exclude = exclude
-        if not params:
-            if self.v.request.method == 'POST':
-                request_data = await self._view.request.json()
-                qp = clean_filter(request_data, self._view.key)
-            elif self.v.request.method == 'GET':
-                qp = self._view.request.query_params
-            if qp:
-                if isinstance(qp, list):
-                    params = {i: v for i, v in qp[0].items() if v}
-                else:
-                    params = {i: v for i, v in qp.items() if v}
-
+        self._exclude = exclude or []
         if isinstance(data, list):
-            data = {i['id']: i for i in data}
-        await self.get_data(params=params, data=data)
+            data = {i.get('id', uuid.uuid4()): i for i in data}
+        await self.get_data(params=params or {}, data=data)
 
     def _get_view_vars_by_fieldinfo(self, fielinfo: FieldInfo | None = None) -> ViewVars:
         if not fielinfo:
@@ -809,30 +737,33 @@ class ClassView:
                 'form': False,
                 'description': None,
             })
-        return ViewVars(**{
+        view_vars_dict: dict[str, Any] = {}
+        view_vars_dict.update({
             'required': fielinfo.is_required() if isinstance(fielinfo, FieldInfo) else False,
-            'title': fielinfo.title or str(fielinfo),
-            'hidden': fielinfo.json_schema_extra.get('hidden',
-                                                     False) if fielinfo.json_schema_extra else False,
-            # type: ignore
-            'color_map': fielinfo.json_schema_extra.get('color_map',
-                                                        {}) if fielinfo.json_schema_extra else {},
-            # type: ignore
-            'readonly': fielinfo.json_schema_extra.get('readonly',
-                                                       False) if fielinfo.json_schema_extra else False,
-            # type: ignore
-            'filter': fielinfo.json_schema_extra.get('filter',
-                                                     {}) if fielinfo.json_schema_extra else {},
-            # type: ignore
-            'table': fielinfo.json_schema_extra.get('table',
-                                                    False) if fielinfo.json_schema_extra else False,
-
-            'form': fielinfo.json_schema_extra.get('form',
-                                                   False) if fielinfo.json_schema_extra else False,
-            # type: ignore
             'description': fielinfo.description,
+            'title': fielinfo.title or str(fielinfo),
         })
+        if isinstance(fielinfo.json_schema_extra, dict):
+            view_vars_dict.update({
+                'hidden': fielinfo.json_schema_extra.get('hidden', False),
+                'color_map': fielinfo.json_schema_extra.get('color_map', {}),
+                'readonly': fielinfo.json_schema_extra.get('readonly', False),
+                'filter': fielinfo.json_schema_extra.get('filter', {}),
+                'table': fielinfo.json_schema_extra.get('table', False),
+                'form': fielinfo.json_schema_extra.get('form', False),
+            })
+        else:
+            view_vars_dict.update({
+                'hidden': False,
+                'color_map': {},
+                'readonly': True,
+                'filter': {},
+                'table': False,
+                'form': False,
+            })
+        return ViewVars(**view_vars_dict)
 
+    @lru_cache(maxsize=None)
     def _get_view_vars(self, fieldname: str, is_filter: bool) -> dict[str, ViewVars]:
         """Костыльный метод собирания ViewVars"""
         create_fields = self._view.model.schemas.create.model_fields | self._view.model.schemas.create.model_computed_fields
@@ -851,13 +782,13 @@ class ClassView:
             'get': self._get_view_vars_by_fieldinfo(get_fieldinfo),
         }
 
+
     def _get_field(self, field_name: str, fields_merged: dict) -> 'Field':
         """
             Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
         fielinfo: FieldInfo = fields_merged[field_name]
         res: str = ''
-        enums: list = []
         model: Model | None | BaseModel = None
         model_name: str = self._view.model.name
         is_filter: bool = True if self._view.model.schemas.filter.model_fields.get(
@@ -866,9 +797,7 @@ class ClassView:
         if not isinstance(fielinfo, ComputedFieldInfo):
             class_types: list = get_types(fielinfo.annotation, [])
         else:
-            class_types: list = [str]
-        if field_name == 'staff_position__in':
-            a = 1
+            class_types = []
         if fielinfo.json_schema_extra:
             if fielinfo.json_schema_extra.get('model'):  # type: ignore
                 model_name = fielinfo.json_schema_extra.get('model')  # type: ignore
@@ -879,9 +808,11 @@ class ClassView:
             if field_name == 'id':
                 res += 'id'
                 break
+            elif field_name == 'search':
+                res += 'search'
+                break
             elif issubclass(c, enum.Enum):  # type: ignore
                 res += 'enum'
-                enums = c  # type: ignore
             elif issubclass(c, BasicModel):  # type: ignore
                 try:
                     model_name = c.Config.orm_model.__tablename__  # type: ignore
@@ -891,18 +822,16 @@ class ClassView:
                 model = self._view.env[model_name]
                 submodel = ClassView(
                     request=self._view.request,
-                    model=model_name,
-                    key=self.p.class_key
+                    model=model_name
                 )
                 self._view.submodels.update({field_name: submodel})
             elif issubclass(c, BaseModel):
                 model_name = c.__name__.lower()  # type: ignore
                 res += 'rel'
-                model=c
+                model = c
                 submodel = ClassView(
                     request=self._view.request,
                     model=c,
-                    key=self.p.class_key
                 )
                 self._view.submodels.update({field_name: submodel})
             else:
@@ -914,18 +843,14 @@ class ClassView:
             elif model_name != self._view.model.name:
                 model = self._view.env[model_name]
         assert model, f'Model for field {field_name} is not defined'
-        if field_name == 'ids':
-            a = 1
         field = Field(**{
             **self._get_view_vars(field_name, is_filter),
             'is_filter': is_filter,
-            'field_name': field_name,
+            '_field_name': field_name,
             'is_reserved': True if field_name in reserved_fields else False,
             'type': res,
             'fieldinfo': fielinfo,
             'model_name': model_name.lower(),
-            # 'domain_name': model.domain.name,
-            'enums': enums,
             'sort_idx': self._view.sort.get(field_name, 999),
             'cls': self,
             'val': submodel
@@ -934,13 +859,14 @@ class ClassView:
             submodel.v.parent_field = field
         return field
 
-    def _get_schema_fields(self, exclude: list = []) -> Fields:
+    @lru_cache(maxsize=None)
+    def _get_schema_fields(self) -> Fields:
         """Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2 - а зачем?"""
         fields: list[tuple[str, Field]] = []
         n = 0
         fields_merged = self._view.model.schemas.get.model_fields | self._view.model.schemas.get.model_computed_fields | self._view.model.schemas.filter.model_fields
         for k, v in fields_merged.items():
-            if k in exclude:
+            if k in self._exclude:
                 continue
             f = self._get_field(field_name=k, fields_merged=fields_merged)
             fields.append((k, f))
@@ -949,12 +875,11 @@ class ClassView:
         for field_name, field in fields:
             setattr(self, field_name, field)
 
-    async def get_data(self, params: QueryParams | dict | None = None,
-                       data: list | dict | None = None, ) -> None:
+    async def get_data(self, params: Optional[dict] = None, data: list | dict | None = None, ) -> None:
         """Метод собирает данные для конструктора модели"""
 
         if not params:
-            params = self._view.params
+            params = self._view.params or {}
         if not data:
             if not self._view.model.adapter.domain.domain_type == 'INTERNAL':
                 async with self._view.model.adapter as a:  # type: ignore
@@ -966,23 +891,23 @@ class ClassView:
         if isinstance(data, list):
             self._view.data = {i['id']: i for i in data}
         else:
-            self._view.data = data
+            self._view.data = data if data is not None else {}
         await self.fill_lines(self._view.data, self.v.join_related, self.v.join_fields)
 
     async def fill_lines(self, data: dict | list, join_related: bool = False,
                          join_fields: list = []):
         if isinstance(data, list):
-            data = {i['id']: i for i in data}
+            data = {i.get('id', uuid.uuid4()): i for i in data}
         if not data:
             data = {}
         self._view.data = data
-        join_fields = join_fields or self._view.join_fields
+        self.join_fields: list[Any] = join_fields if join_fields is not None else []
         for _id, row in data.items():
             line_copied = self.copy() if self._lines else self
             line_copied._id = row.get('id', id(line_copied))
             line_copied._lsn = row.get('lsn')
             for col in line_copied.get_fields():
-                val = row.get(col.field_name, None)
+                val = row.get(col._field_name, None)
                 if col.type in ('date', 'datetime'):
                     if isinstance(val, datetime):
                         pass
@@ -992,12 +917,12 @@ class ClassView:
                     if not val:
                         val = []
                 elif col.type.endswith('list_rel'):
-                    submodel = line_copied.v.submodels[col.field_name].copy()
+                    submodel = line_copied.v.submodels[col._field_name].copy()
                     val = await submodel.fill_lines(data=val, join_related=False)
                     submodel.v.key = col.key
                     submodel.v.parent_field = col
                 elif col.type.endswith('rel'):
-                    submodel = line_copied.v.submodels[col.field_name].copy()
+                    submodel = line_copied.v.submodels[col._field_name].copy()
                     submodel._lines = []
                     val = await submodel.fill_lines(data=[val], join_related=False)
                     submodel.v.key = col.key
@@ -1005,64 +930,64 @@ class ClassView:
                 col.val = val
             line_copied._lines.append(line_copied)
 
-        if join_related or join_fields:
-            missing_fields = defaultdict(list)
-            for _line in self.lines:
-                """Достаем все релейтед обьекты у которых модуль отличается"""
-                assert _line.fields, "Проверяем что все поля есть"
-                for field_name, field in _line.fields.get_fields():
-                    if field.type in ('uuid',):
-                        # if field.widget.get('table'):  # TODO: может все надо а не ток table
-                        if not join_fields:
-                            missing_fields[field.field_name].append((field.val, field))
-                        elif field.field_name in join_fields:
-                            missing_fields[field.field_name].append((field.val, field))
-            to_serialize = []
-            for miss_key, miss_value in missing_fields.items():
-                # _data = []
-                _vals, _fields = [i[0] for i in miss_value], [i[1] for i in miss_value]
-                miss_value_str = ''
-                _corutine_data = None
-                if isinstance(_vals, list):
-                    miss_value_str = ','.join([i for i in set(_vals) if i])
-                if miss_value_str:
-                    qp = {'id__in': miss_value_str}
-                    _corutine_data = asyncio.create_task(
-                        self.cls.env[_fields[0].model_name].adapter.list(params=qp))
-                to_serialize.append((_vals, _fields, _corutine_data))
-            for _vals, _fields, _corutine_data in to_serialize:
-                _join_lines = {}
-                if _corutine_data:
-                    _data = await _corutine_data
-                    _join_lines = {i['id']: i for i in _data['data']}
-                for _val, _field in zip(_vals, _fields):
-                    if isinstance(_val, list):
-                        _new_vals = []
-                        for _v in _val:
-                            __val = _join_lines.get(_v)
-                            if __val:
-                                _new_vals.append(__val)
-                        _field.val = _new_vals
-                    else:
-                        _field.val = _join_lines.get(_val)
-                    if _field.type == 'uuid':
-                        _field.type = 'rel'
-                    elif _field.type == 'list_uuid':
-                        _field.type = 'list_rel'
-                    else:
-                        raise HTMXException(
-                            status_code=500,
-                            detail=f'Wrong field name {_field.field_name} in table model {_field.model}'
-                        )
-            for col in missing_fields.keys():
-                for _field_name, _header_col in self.line_header.fields.get_fields():  # type: ignore
-                    if col == _field_name:
-                        _header_col.type = _header_col.type.replace('uuid', 'rel')
-                        _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
+        # if join_related or join_fields:
+        #     missing_fields = defaultdict(list)
+        #     for _line in self.lines:
+        #         """Достаем все релейтед обьекты у которых модуль отличается"""
+        #         assert _line.fields, "Проверяем что все поля есть"
+        #         for field_name, field in _line.fields.get_fields():
+        #             if field.type in ('uuid',):
+        #                 # if field.widget.get('table'):  # TODO: может все надо а не ток table
+        #                 if not join_fields:
+        #                     missing_fields[field._field_name].append((field.val, field))
+        #                 elif field._field_name in join_fields:
+        #                     missing_fields[field._field_name].append((field.val, field))
+        #     to_serialize = []
+        #     for miss_key, miss_value in missing_fields.items():
+        #         # _data = []
+        #         _vals, _fields = [i[0] for i in miss_value], [i[1] for i in miss_value]
+        #         miss_value_str = ''
+        #         _corutine_data = None
+        #         if isinstance(_vals, list):
+        #             miss_value_str = ','.join([i for i in set(_vals) if i])
+        #         if miss_value_str:
+        #             qp = {'id__in': miss_value_str}
+        #             _corutine_data = asyncio.create_task(
+        #                 self.cls.env[_fields[0].model_name].adapter.list(params=qp))
+        #         to_serialize.append((_vals, _fields, _corutine_data))
+        #     for _vals, _fields, _corutine_data in to_serialize:
+        #         _join_lines = {}
+        #         if _corutine_data:
+        #             _data = await _corutine_data
+        #             _join_lines = {i['id']: i for i in _data['data']}
+        #         for _val, _field in zip(_vals, _fields):
+        #             if isinstance(_val, list):
+        #                 _new_vals = []
+        #                 for _v in _val:
+        #                     __val = _join_lines.get(_v)
+        #                     if __val:
+        #                         _new_vals.append(__val)
+        #                 _field.val = _new_vals
+        #             else:
+        #                 _field.val = _join_lines.get(_val)
+        #             if _field.type == 'uuid':
+        #                 _field.type = 'rel'
+        #             elif _field.type == 'list_uuid':
+        #                 _field.type = 'list_rel'
+        #             else:
+        #                 raise HTMXException(
+        #                     status_code=500,
+        #                     detail=f'Wrong field name {_field._field_name} in table model {_field.model}'
+        #                 )
+        #     for col in missing_fields.keys():
+        #         for _field_name, _header_col in self.line_header.fields.get_fields():  # type: ignore
+        #             if col == _field_name:
+        #                 _header_col.type = _header_col.type.replace('uuid', 'rel')
+        #                 _header_col.type = _header_col.type.replace('list_uuid', 'list_rel')
         return self
 
-    def get_fields(self, display_view: str = None, method: MethodType = MethodType.GET) -> Fields:
-        fields = [k for i, k in self.__dict__.items() if isinstance(k, Field) and k.field_name not in self._exclude]
+    def get_fields(self, display_view: Optional[str] = None, method: MethodType = MethodType.GET) -> Fields:
+        fields = [k for i, k in self.__dict__.items() if isinstance(k, Field) and k._field_name not in self._exclude]
         return _crud_filter(fields, method, display_view)
 
     def render_line(self, template: str, block_name: str, method: MethodType = MethodType.GET) -> str:
@@ -1099,48 +1024,43 @@ class ClassView:
         await self.get_data(params={'id__in': ids})
         return self
 
-    async def update_lines(self, data: list, id: uuid.UUID) -> 'ClassView':
+    async def update_line(self, data: dict, id: uuid.UUID) -> 'ClassView':
         """Метод обновления обьектов"""
         new_data = []
-        for raw_line in data:
-            try:
-                method_schema_obj = self.v.model.schemas.update(**raw_line)
-            except ValidationError as e:
-                raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
-            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
-            line = await self.v.model.adapter.update(id=id, json=_json)
-            new_data.append(line)
-        lines = await self.fill_lines(new_data)
-        return self
-
-    async def create_lines(self, data: dict) -> 'ClassView':
-        """Метод создания обьектов"""
-        new_data = []
-        for raw_line in data:
-            raw_line.update({'id': uuid.uuid4()})
-            try:
-                method_schema_obj = self.v.model.schemas.create(**raw_line)
-            except ValidationError as e:
-                raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
-            _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
-            line = await self.v.model.adapter.create(json=_json)
-            new_data.append(line)
+        try:
+            method_schema_obj = self.v.model.schemas.update(**data)
+        except ValidationError as e:
+            raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
+        _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
+        line = await self.v.model.adapter.update(id=id, json=_json)
+        new_data.append(line)
         await self.fill_lines(new_data)
         return self
 
-    async def get_action(self, action: str, ids: list[uuid.UUID], schema: BaseModel) -> str:
+    async def create_line(self, data: dict) -> 'ClassView':
+        """Метод создания обьектов"""
+        new_data = []
+        try:
+            method_schema_obj = self.v.model.schemas.create(**data)
+        except ValidationError as e:
+            raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
+        _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
+        line = await self.v.model.adapter.create(json=_json)
+        new_data.append(line)
+        await self.fill_lines(new_data)
+        return self
+
+    async def get_action(self, action_name: str, line_id: uuid.UUID) -> str:
         """Метод отдает апдейт схему , те столбцы с типами для HTMX шаблонов"""
-        data = {k: ids if k == 'ids' else None for k, v in schema.model_fields.items()}
-        cls = ClassView(
+        action = self.v.actions[action_name]
+        action_schema = ClassView(
             request=self.v.request,
-            model=schema,
-            key=self.v.model.name,
+            model=action['schema'],
         )
-        await cls.init(data=[data])
         return render_block(
             environment=environment,
-            template_name=f'cls/action.html',
-            block_name='action', cls=cls, action=action
+            template_name=f'cls/action.html', line_id=line_id, model=self.v.model.name,
+            block_name='action', cls=action_schema, action=action
         )
 
 
@@ -1152,50 +1072,3 @@ class Method(str, enum.Enum):
     UPDATE_SAVE: str = 'save'  # Сохранить изменения
     CREATE_SAVE: str = 'save_create'  # Сохранить новую запись
     DELETE_SAVE: str = 'delete_delete'  # Подтвердить удаление записи
-
-
-class BaseSchema(BaseModel):
-    model: str
-    key: str
-    method: Method = Method.GET
-    search: str = ''
-    filter: Any = None
-    id__in: str = None
-    cursor: int = 0
-    id: UUID4 | int = None
-    mode: str = 'get'
-    action: str = None
-    ids: list[str] = []
-    schema: Any = None
-    commit: Optional[bool] = False
-    params: Optional[dict] = None
-
-    @model_validator(mode='before')
-    def _filter(cls, value):
-        """
-            Так же убираем все пустые params
-        """
-        if f := value.get('filter'):
-            if isinstance(f, str):
-                try:
-                    value['filter'] = eval(f)
-                except TypeError as ex:
-                    raise 'Type Error'
-        return value
-
-    class Config:
-        extra = 'allow'
-
-
-async def get_view(request: Request, schema: BaseSchema) -> ClassView:
-    logger.info(f'get_view: {schema.model}')
-    if view_class := views.get(schema.model):
-        return view_class(
-            request=request,
-            schema=schema
-        )
-    return ClassView(
-        request=request,
-        model=schema.model,
-        schema=schema,
-    )

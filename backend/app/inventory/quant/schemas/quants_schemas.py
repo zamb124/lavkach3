@@ -26,6 +26,7 @@ class QuantBaseScheme(BasicModel):
         filter={'location_class__in': LocationClass.PACKAGE.value},
     )
     lot_id: Optional[UUID4] = Field(default=None, title='Lot ID', model='lot')
+    location_class: LocationClass = Field(title='Location Class')
     partner_id: Optional[UUID4] = Field(default=None, title='Partner ID', model='partner')
     quantity: float = Field(title='Quantity')
     reserved_quantity: Optional[float] = Field(default=0.0, title='Reserved Quantity')

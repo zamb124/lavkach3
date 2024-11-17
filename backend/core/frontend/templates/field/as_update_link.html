@@ -2,18 +2,9 @@
     <a href="#"
        id="{{ field.key~'_link' }}"
        hx-trigger="click"
-       hx-post="/base/field"
+       hx-get="/base/field/{{ field.model_name }}/{{ field.cls.p.id }}/{{ field._field_name }}"
        hx-target="#{{ field.key }}"
-       hx-swap="outerHTML"
-       hx-ext="json-enc"
-       hx-vals='{
-        "model": "{{ field.model_name }}",
-        "field": "{{ field.field_name }}",
-        "id": "{{ field.cls.p.id }}",
-        "method": "get",
-        "key": "{{ field.key }}"
-        }'
-    >
+       hx-swap="outerHTML">
         <iconify-icon icon="majesticons:edit-pen-2" class="fs-6"></iconify-icon>
     </a>
 {% endblock %}
@@ -21,19 +12,11 @@
     <a href="#"
        id="{{ field.key~'_link' }}"
        hx-trigger="click"
-       hx-post="/base/field"
+       hx-put="/base/field/{{ field.model_name }}/{{ field.cls.p.id }}/{{ field.field_name }}"
        hx-include="closest div"
        hx-target="#{{ field.key }}"
        hx-swap="none"
-       hx-ext="json-enc"
-       hx-vals='{
-        "model": "{{ field.model_name }}",
-        "field": "{{ field.field_name }}",
-        "id": "{{ field.cls.p.id }}",
-        "method": "update",
-        "key": "{{ field.key }}"
-        }'
-    >
+       hx-ext="json-enc">
         <iconify-icon icon="solar:diskette-bold" class="fs-6"></iconify-icon>
     </a>
 {% endblock %}

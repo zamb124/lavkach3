@@ -19,16 +19,10 @@
                                     <a class="text-muted text-decoration-none d-flex"
                                        href="/"
                                        id="{{ 'filter' ~'--'~ line.p.class_key }}"
-                                       hx-ext="json-enc"
-                                       hx-post="/base/import"
+                                       hx-get="/base/import/{{ line.v.model.name }}"
                                        hx-trigger="click"
                                        hx-target="#htmx_content"
                                        hx-swap="beforeend transition:true"
-                                       hx-vals='{
-                                        "model": "{{ line.v.model.name }}",
-                                        "key": "{{ line.p.class_key }}",
-                                        "method": "get"
-                                      }'
                                     >
                                         <iconify-icon icon="solar:file-send-bold"
                                                       class="fs-8"></iconify-icon>

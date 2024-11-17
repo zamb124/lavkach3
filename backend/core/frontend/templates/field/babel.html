@@ -1,5 +1,5 @@
 {% block as_update %}
-    <div    id="{{ field.key }}"
+    <div    id="{{ field.field_name }}"
             class="babel row"
             hx-ext="json-enc"
             hx-post="/bff/select"
@@ -15,7 +15,7 @@
     </div>
 {% endblock %}
 {% block as_create %}
-    <div    id="{{ field.key }}"
+    <div    id="{{ field.field_name }}"
             class="babel row"
             hx-ext="json-enc"
             hx-post="/bff/select"
@@ -35,7 +35,7 @@
                     class="form-control"
                     {% if field.required %} required {% endif %}
                     disabled
-                    name="{{ field.key }}"
+                    name="{{ field.field_name }}"
                     placeholder="Enter {{ field.title }}"
                     value="{{ field.val.english_name or field.val.name or field.val}}"
             >

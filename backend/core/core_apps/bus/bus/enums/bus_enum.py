@@ -32,7 +32,6 @@ class LocationClass(str, Enum):
     INVENTORY:  str = "inventory"
     SCRAP:      str = "scrap"
     SCRAPPED:   str = "scrapped"
-    BUFFER:     str = "buffer"
 
 
 class VirtualLocationClass(str, Enum):
@@ -48,5 +47,4 @@ class PhysicalLocationClass(str, Enum):
     PACKAGE: str = "package"        # Динамическое местоположение, например паллета коробка
     ZONE: str = "zone"              # Зона, которая отвечает за агрегацию свойств местоположений, например стратегия приемки или отгрузки
     SCRAP: str = "scrap"            # Класс хранение некондиционного товара
-    BUFFER: str = "buffer"          # Класс типов ячеек отвечающий за буфер приемки например за зону приемки или зону отгрузки
 

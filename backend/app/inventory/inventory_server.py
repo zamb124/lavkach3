@@ -23,6 +23,7 @@ from core.fastapi.middlewares import (
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
+from fastapi_babel import Babel, BabelMiddleware
 
 
 class EnvMidlleWare:

@@ -10,13 +10,24 @@ from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 
 
+class AllowedZoneScheme(BasicModel):
+    zone_id: UUID = Field(title='Zone', form=True, model='location')
+    priority: int = Field(title='Priority', form=True)
+
+
 class StorageTypeBaseScheme(BasicModel):
     """"""
     product_id: UUID = Field(title='Product', form=True, model='product')
     storage_uom_id: Optional[UUID] = Field(default=None)  # Единица измерения склада
     title: str = Field(title='Title', form=True)
     priority: int = Field(title='Priority', form=True)  # Приоритет данной стратегии хранения
-    location_ids: Optional[List[UUID]] = Field(default=[], title='Locations', model='location')  # Список идентификаторов ячеек хранения
+    allowed_location_type_ids: List[UUID] = Field(
+        default=[], title='Allowed Location Types',
+        model='location_type'
+    )  # Разрешенные типы локаций
+    allowed_zones: Optional[list[AllowedZoneScheme]] = Field(
+        default=[], title='Allowed Zones',
+    )  # Разрешенные зоны с приоритетами
 
     class Config:
         orm_model = StorageType

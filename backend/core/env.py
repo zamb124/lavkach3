@@ -113,7 +113,11 @@ class Domain:
 
     @property
     def adapter(self):
-        return self._adapter
+        return self._adapter(
+            conn=self._env.request,
+            domain=self,
+            env=self.domain._env
+        )
 
 
 core_domains = [base_domain, bus_domain, inventory_domain, basic_domain]

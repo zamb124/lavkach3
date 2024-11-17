@@ -621,5 +621,9 @@
 "t-logistics-dashboard": "Logistics Dashboard",
 "t-action_suggest_confirm": "Confirm suggest",
 "t-WRONG_STATUS": "Wrong {status} translated",
-"t-order_complete": "Order complete"
+"t-order_complete": "Order complete",
+"t-move_log-type-description": "Move Log Type Description",
+"t-move-type-description": "Move Type Description",
+"t-order_assign_doc": "Order Assign Document",
+  "t-action_suggest_confirm_doc": "Confirmation of the request, enter the value that the user would have scanned"
 }

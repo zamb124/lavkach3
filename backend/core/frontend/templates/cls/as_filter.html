@@ -1,13 +1,7 @@
 {% block widget %}
 <div id="{{ 'filter' ~'--'~ line.p.class_key }}"
-      hx-ext="json-enc"
-      hx-post="/base/filter"
+      hx-get="/base/filter/{{ line.v.model.name }}"
       hx-trigger="load"
-      hx-vals='{
-        "model": "{{ line.v.model.name }}",
-        "key": "{{ line.p.class_key }}",
-        "method": "get"
-      }'
 class="collapse">
     <!--HTMX CONTENT-->
 </div>

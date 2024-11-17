@@ -1,6 +1,8 @@
 from alembic import op
 import sqlalchemy as sa
 from uuid import uuid4
+
+from app.inventory.product_storage import StorageType
 from core.core_apps.base.company.models.company_models import Company
 from core.core_apps.base.user.models.user_models import User
 from core.core_apps.base.user.models.role_models import Role
@@ -520,7 +522,7 @@ def upgrade():
                            'lsn': 10,
                            "company_id": company_1_id,
                            "title": "buffer",
-                           "location_class": "buffer",
+                           "location_class": "place",
                            "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
@@ -621,7 +623,7 @@ def upgrade():
                            'lsn': 10,
                            "company_id": company_2_id,
                            "title": "buffer",
-                           "location_class": "buffer",
+                           "location_class": "place",
                            "is_can_negative": False,
                            'created_at': datetime.now(),
                            'updated_at': datetime.now(),
@@ -742,9 +744,9 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_1_id,
             'location_type_id': location_type_buffer_company_1,
-            'location_class': 'buffer',
+            'location_class': 'zone',
             "is_can_negative": False,
-            "title": f"LOCATION_BUFFER_COMPANY 1",
+            "title": f"LOCATION_INBOUND_COMPANY 1",
         },
         {
             'id': location_partner_company_2,
@@ -839,9 +841,9 @@ def upgrade():
             'updated_at': datetime.now(),
             'store_id': store_1_company_2_id,
             'location_type_id': location_type_buffer_company_2,
-            'location_class': 'buffer',
+            'location_class': 'zone',
             "is_can_negative": False,
-            "title": f"LOCATION_BUFFER_COMPANY 2",
+            "title": f"LOCATION_INBOUND_COMPANY 2",
         },
     ])
     op.bulk_insert(Location.__table__, [
@@ -897,6 +899,58 @@ def upgrade():
             'location_class': 'package',
             "is_can_negative": False,
             "title": f"LOCATION_PACKAGE_COMPANY 2",
+        },
+    ])
+    storage_type_1_company_1 = uuid4().__str__()
+    storage_type_1_company_2 = uuid4().__str__()
+    op.bulk_insert(StorageType.__table__, [
+        {
+            'id': storage_type_1_company_1,
+            'lsn': 2,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'allowed_zones': {
+                'zone_id': location_buffer_company_1,
+                'priority': 1
+            },
+            "title": f"Putaway Strategy 1",
+        },
+        {
+            'id': storage_type_1_company_2,
+            'lsn': 2,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'allowed_zones': {
+                'zone_id': location_buffer_company_2,
+                'priority': 1
+            },
+            "title": f"Putaway Strategy 1",
+        },
+    ])
+    product_storage_type_1_company_1 = uuid4().__str__()
+    product_storage_type_1_company_2 = uuid4().__str__()
+    op.bulk_insert(ProductStorageType.__table__, [
+        {
+            'id': product_storage_type_1_company_1,
+            'lsn': 2,
+            "company_id": company_1_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'product_id': product_1_company_1_id,
+            'is_homogeneity': False,
+            'storage_type_id': storage_type_1_company_1
+        },
+        {
+            'id': product_storage_type_1_company_2,
+            'lsn': 2,
+            "company_id": company_2_id,
+            'created_at': datetime.now(),
+            'updated_at': datetime.now(),
+            'product_id': product_1_company_2_id,
+            'is_homogeneity': False,
+            'storage_type_id': storage_type_1_company_2
         },
     ])
 

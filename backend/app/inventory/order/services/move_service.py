@@ -202,66 +202,127 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             return move
         if move.status != MoveStatus.CONFIRMING:
             raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
+        order_type = self.env['order_type']
+        quant = self.env['quant']
         location = self.env['location']
         if move.type == MoveType.PRODUCT:
             quant_src_entity: Quant | None = None
             quant_dest_entity: Quant | None = None
             qty_to_move = 0.0
-
-            available_src_quants = await self.get_product_source_quants_by_move(move=move)
-
+            order_type = await order_type.service.get(move.order_type_id)
+            available_src_locations = await self.get_avalible_locations(
+                allowed_zone_ids=order_type.allowed_zone_src_ids,
+                exclude_zone_ids=order_type.exclude_zone_src_ids,
+                allowed_location_type_ids=order_type.allowed_location_type_src_ids,
+                exclude_location_type_ids=order_type.exclude_location_type_src_ids,
+                allowed_location_class=order_type.allowed_location_class_src_ids,
+                exclude_location_class=order_type.exclude_location_class_src_ids,
+            )
+            if not available_src_locations:
+                raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_LOCATION_ERROR)
+            available_src_quants = await quant.service.get_available_quants(
+                product_ids=[move.product_id,],
+                store_id=move.store_id,
+                location_ids=[i.id for i in available_src_locations],
+                lot_ids=[move.lot_id] if move.lot_id else None,
+                partner_id=move.partner_id if move.partner_id else None
+            )
+            remainder = move.quantity
             if available_src_quants:
-                """Если кванты нашлись"""
-                remainder = move.quantity
                 for src_quant in available_src_quants:
-                    if move.uom_id == src_quant.uom_id:
-                        if src_quant.available_quantity <= 0.0:
-                            pass
-                        elif remainder <= src_quant.available_quantity:
-                            # src_quant.reserved_quantity += remainder
-                            qty_to_move += remainder
-                            remainder = 0.0
-                            quant_src_entity = src_quant
-                            # self.session.add(quant_src_entity)
-                            break
-                        elif remainder >= src_quant.available_quantity:
-                            remainder -= src_quant.available_quantity
-                            qty_to_move = remainder
-                            # src_quant.quantity = 0.0
-                            quant_src_entity = src_quant
-                            # self.session.add(quant_src_entity)
-                            break
-                    else:
-                        pass  # TODO: единицы измерения
+                    if move.uom_id != src_quant.uom_id:
+                        continue  # TODO: единицы измерения
+
+                    if src_quant.available_quantity <= 0.0:
+                        continue
+
+                    if remainder <= src_quant.available_quantity:
+                        qty_to_move += remainder
+                        remainder = 0.0
+                        quant_src_entity = src_quant
+                        break
+
+                    remainder -= src_quant.available_quantity
+                    qty_to_move += src_quant.available_quantity
+                    quant_src_entity = src_quant
+                    break
+
                 if remainder:
                     if remainder == move.quantity:
-                        "Если не нашли свободного количества вообще"
-                        "снова идем по квантам и берем то, у которого локация позволяет сделать отрицательный остсток"
                         for src_quant in available_src_quants:
-                            if move.uom_id == src_quant.uom_id:
-                                q_location = await location.service.get(src_quant.location_id)
-                                if q_location.is_can_negative:
-                                    # src_quant.reserved_quantity += remainder
-                                    qty_to_move += remainder
-                                    remainder = 0.0
-                                    quant_src_entity = src_quant
-                                    # self.session.add(quant_src_entity)
-                                    break
-                            else:
-                                ...  # TODO: единицы измерения
+                            if move.uom_id != src_quant.uom_id:
+                                continue  # TODO: единицы измерения
+
+                            q_location = await location.service.get(src_quant.location_id)
+                            if q_location.location_type_rel.is_can_negative:
+                                qty_to_move += remainder
+                                remainder = 0.0
+                                quant_src_entity = src_quant
+                                break
                     else:
-                        "Если квант нашелся, но на частичное количество уменьшаем количество в муве тк 1 мув = 1квант"
-                        logger.warning(f'The number in the move has been reduced')
+                        logger.warning('The number in the move has been reduced')
                         move.quantity -= remainder
+            else:
+                for loc_src in available_src_locations:
+                    if loc_src.location_type_rel.is_can_negative:
+                        quant_src_entity = quant.model(**{
+                            "product_id": move.product_id,
+                            "company_id": move.company_id,
+                            "store_id": move.store_id,
+                            "location_id": loc_src.id,
+                            "location_class": loc_src.location_class,
+                            "lot_id": move.lot_id if move.lot_id else None,
+                            "partner_id": move.partner_id if move.partner_id else None,
+                            "quantity": 0.0,
+                            "reserved_quantity": 0.0,
+                            "incoming_quantity": 0.0,
+                            "uom_id": move.uom_id,
+                        })
+                        break
             if not quant_src_entity:
                 raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
 
-            available_dest_quants = await self.get_product_destination_quants_by_move(move=move)
+            available_dest_locations = await self.get_avalible_locations(
+                allowed_zone_ids=order_type.allowed_zone_dest_ids,
+                exclude_zone_ids=order_type.exclude_zone_dest_ids,
+                allowed_location_type_ids=order_type.allowed_location_type_dest_ids,
+                exclude_location_type_ids=order_type.exclude_location_type_dest_ids,
+                allowed_location_class=order_type.allowed_location_class_dest_ids,
+                exclude_location_class=order_type.exclude_location_class_dest_ids,
+            )
+            if not available_dest_locations:
+                raise ModuleException(status_code=406, enum=MoveErrors.DESTINATION_LOCATION_ERROR)
+            available_dest_quants = await quant.service.get_available_quants(
+                product_ids=[move.product_id,],
+                store_id=move.store_id,
+                location_ids=[i.id for i in available_dest_locations],
+                lot_ids=[move.lot_id] if move.lot_id else None,
+                partner_id=move.partner_id if move.partner_id else None
+            )
+            if not available_dest_quants:
+                """Поиск локаций, которые могут быть negative"""
+                for loc_dest in available_dest_locations:
+                    quant_dest_entity = quant.model(**{
+                        "product_id": move.product_id,
+                        "company_id": move.company_id,
+                        "store_id": move.store_id,
+                        "location_id": loc_dest.id,
+                        "location_class": loc_dest.location_class,
+                        "lot_id": move.lot_id if move.lot_id else None,
+                        "partner_id": move.partner_id if move.partner_id else None,
+                        "quantity": 0.0,
+                        "reserved_quantity": 0.0,
+                        "incoming_quantity": 0.0,
+                        "uom_id": move.uom_id,
+                    })
+                    available_dest_quants = [quant_dest_entity, ]
+                    break
             for dest_quant in available_dest_quants:
                 quant_dest_entity = dest_quant
                 # quant_dest_entity.incoming_quantity += move.quantity
                 # self.session.add(quant_dest_entity)
                 break
+
             if not quant_dest_entity:
                 raise ModuleException(status_code=406, enum=MoveErrors.DEST_QUANT_ERROR)
 
@@ -276,51 +337,28 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
 
         return move
 
-    async def get_product_source_quants_by_move(self, move: Move):
+    async def get_avalible_locations(
+            self,
+            allowed_zone_ids: List[uuid.UUID],
+            exclude_zone_ids: List[uuid.UUID],
+            allowed_location_type_ids: List[uuid.UUID],
+            exclude_location_type_ids: List[uuid.UUID],
+            allowed_location_class: List[str],
+            exclude_location_class: List[str],
+    ):
         """ ПОДБОР ИСХОДЯЩЕГО КВАНТА/ЛОКАЦИИ"""
-        order_type = self.env['order_type']
-        quant = self.env['quant']
         location = self.env['location']
-        assert move.product_id, 'Product is required if Move Type is  Product'
-        order_type_entity = await order_type.service.get(move.order_type_id)
         """Проверяем, что мув может быть создан согласно праавилам в Order type """
-        location_src_ids = location.service.get_location_hierarchy(
-            location_ids=order_type_entity.allowed_location_class_dest_ids,
-            exclude_location_ids=order_type_entity.exclude_location_dest_ids,
-            location_type_ids=order_type_entity.allowed_location_type_dest_ids,
-            exclude_location_type_ids=order_type_entity.exclude_location_type_dest_ids,
-            location_class_ids=order_type_entity.allowed_location_dest_ids,
-            exclude_location_class_ids=order_type_entity.exclude_location_class_dest_ids,
-        )
-        available_src_quants = await quant.service.get_available_quants(
-            product_id=move.product_id,
-            store_id=move.store_id,
-            id=move.quant_src_id,
-            location_ids=[i.id for i in location_src_ids],
-            lot_ids=[move.lot_id] if move.lot_id else None,
-            partner_id=move.partner_id if move.partner_id else None
+        location_ids = await location.service.get_location_hierarchy(
+            location_ids=allowed_zone_ids,
+            exclude_location_ids=exclude_zone_ids,
+            location_type_ids=allowed_location_type_ids,
+            exclude_location_type_ids=exclude_location_type_ids,
+            location_classes=allowed_location_class,
+            exclude_location_classes=exclude_location_class,
         )
         # TODO: здесь нужно вставить метод FEFO, FIFO, LIFO, LEFO
-        if not available_src_quants:
-            """Поиск локаций, которые могут быть negative"""
-            for loc_src in location_src_ids:
-                quant_src_entity = quant.model(**{
-                    "product_id": move.product_id,
-                    "company_id": move.company_id,
-                    "store_id": move.store_id,
-                    "location_id": loc_src.id,
-                    "location_class": loc_src.location_class,
-                    "location_type_id": loc_src.location_type_id,
-                    "lot_id": move.lot_id if move.lot_id else None,
-                    "partner_id": move.partner_id if move.partner_id else None,
-                    "quantity": 0.0,
-                    "reserved_quantity": 0.0,
-                    "incoming_quantity": 0.0,
-                    "uom_id": move.uom_id,
-                })
-                available_src_quants = [quant_src_entity, ]
-                break
-        return available_src_quants
+        return location_ids
 
     async def get_product_destination_quants_by_move(self, move: Move):
         """ ПОИСК КВАНТА/ЛОКАЦИИ НАЗНАЧЕНИЯ """
@@ -358,8 +396,6 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                     "company_id": move.company_id,
                     "store_id": move.store_id,
                     "location_id": loc_dest.id,
-                    "location_class": loc_dest.location_class,
-                    "location_type_id": loc_dest.location_type_id,
                     "lot_id": move.lot_id if move.lot_id else None,
                     "partner_id": move.partner_id if move.partner_id else None,
                     "quantity": 0.0,
@@ -388,7 +424,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             # Пепепроверяем, что остатка в кванте источнике достаточно для движения
             if not src_quant.available_quantity >= total_quantity:
                 locations_src = await self.env['location'].service.get(src_quant.location_id)
-                if not locations_src.is_can_negative:
+                if not locations_src.location_type_rel.is_can_negative:
                     raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
             # Перепроверяем, что мув не был подтвержден
             if not move.status == MoveStatus.CONFIRMING:
@@ -584,11 +620,10 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
 
             dest_quant.incoming_quantity -= incoming_quantity
             dest_quant.quantity += total_quantity
-            src_quant.move_ids.remove(move.id)
-            dest_quant.move_ids.remove(move.id)
-
-
-
+            if move.id in src_quant.move_ids:
+                src_quant.move_ids.remove(move.id)
+            if move.id in dest_quant.move_ids:
+                dest_quant.move_ids.remove(move.id)
 
             self.session.add(src_quant)
             self.session.add(src_log)

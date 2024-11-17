@@ -1,7 +1,7 @@
 {% block as_update %}
-    <div class="search-box">
+    <div class="search-update search-box">
         <input type="search"
-               name="{{ field.key }}"
+               name="{{ field.field_name }}"
                id="search"
                class="form-control search"
                placeholder="{{ field.title }}"
@@ -10,9 +10,9 @@
     </div>
 {% endblock %}
 {% block as_create %}
-    <div class="search-box">
+    <div class="search-create search-box">
         <input type="search"
-               name="{{ field.key }}"
+               name="{{ field.field_name }}"
                id="search"
                class="form-control search"
                placeholder="{{ field.title }}"

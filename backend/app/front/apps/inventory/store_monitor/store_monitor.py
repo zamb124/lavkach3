@@ -9,16 +9,18 @@ from starlette.responses import HTMLResponse
 from app.front.apps.inventory.views import OrderView, OrderTypeView, StoreStaffView
 from app.front.utills import render
 from app.inventory.schemas import CreateMovements, Product, Package
-from core.frontend.constructor import ClassView, BaseSchema
+from core.frontend.constructor import ClassView
 from core.frontend.utils import clean_filter
 
 store_monitor_router = APIRouter()
 
+
 class CreateMovementsView(ClassView):
     """Переопределяем модель"""
-    def __init__(self, request: Request, schema: BaseSchema = None):
+
+    def __init__(self, request: Request, ):
         permits = ['order_list']
-        super().__init__(request=request, model=CreateMovements, schema=schema, permits=permits)
+        super().__init__(request=request, model=CreateMovements)
 
 
 @store_monitor_router.get("", response_class=HTMLResponse)
@@ -69,26 +71,28 @@ async def create_movements(request: Request, order: CreateMovementsView = Depend
     return render(request, 'inventory/store_monitor/create_movements/create_movements.html', context={'order': order})
 
 
-@store_monitor_router.post("/create_movements", response_class=HTMLResponse)
-async def create_movements(request: Request, schema: Schema):
-    order = OrderView(request)
-    data = clean_filter(schema.model_extra, schema.key)
-    async with order.v.model.adapter as a:
-        order = await a.create_movements(data[0])
-    return render(order.r, 'inventory/store_monitor/create_movements/create_movements.html', context={'order': order})
+@store_monitor_router.post("/create_movements", response_class=HTMLResponse)  # type: ignore
+async def create_movements(request: Request):
+    data = await request.json()
+    async with request.scope['env']['order'].adapter as a:
+        movements = await a.create_movements(data)
+        cm = CreateMovementsView(request)
+        await cm.init(data=[movements])
+    return render(request, 'inventory/store_monitor/create_movements/create_movements.html', context={'order': cm})
 
 
 @store_monitor_router.get("/create_movements/add_product", response_class=HTMLResponse)
-async def create_movements_add_product(request: Request, key: str = None):
-    product = ClassView(request=request, model=Product, key=key)
+async def create_movements_add_product(request: Request):
+    product = ClassView(request=request, model=Product)
     return render(
         request, 'inventory/store_monitor/create_movements/create_movements_product_line.html',
         context={'product': product}
     )
 
+
 @store_monitor_router.get("/create_movements/add_package", response_class=HTMLResponse)
-async def create_movements_add_product(request: Request, key: str = None):
-    package = ClassView(request=request, model=Package, key=key)
+async def create_movements_add_product(request: Request):
+    package = ClassView(request=request, model=Package)
     return render(
         request, 'inventory/store_monitor/create_movements/create_movements_package_line.html',
         context={'package': package}

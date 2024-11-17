@@ -92,22 +92,18 @@ class OrderListSchema(GenericListSchema):
     data: Optional[List[OrderScheme]]
 
 
+class OrderConfirm(ActionBaseSchame):
+    ...
+
+class OrderComplete(ActionBaseSchame):
+    ...
+class OrderStart(ActionBaseSchame):
+    ...
+
 class AssignUser(ActionBaseSchame):
-    user_id: Optional[UUID] = Field(
-        default=None,
+    user_id: UUID = Field(
+
         title='User',
         form=True,
         model='user'
     )
-    order_id: Optional[UUID] = Field(
-        default=None,
-        title='Order',
-        form=False,
-        model='order'
-    )
-
-    @model_validator(mode='after')
-    def check_passwords_match(self) -> Self:
-        if self.ids and not self.order_id:
-            self.order_id = self.ids[0]
-        return self

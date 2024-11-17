@@ -87,89 +87,90 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         return order_entity
 
     @permit('order_confirm')
-    async def order_confirm(self, ids: List[uuid.UUID], user_id: uuid.UUID) -> List[ModelType]:
+    async def order_confirm(self, order_id: uuid.UUID, user_id: Optional[uuid.UUID] = None) -> List[ModelType]:
         """Ставим статус CONFIRMING и запускаем процесс подтверждения по каждому таску"""
-        res = []
-        for order_id in ids:
-            try:
-                order_entity = await self.get(order_id, for_update=True)
-                if order_entity.status not in (OrderStatus.CREATED, OrderStatus.RESERVATION_FAILED, OrderStatus.CONFIRMING):
-                    raise ModuleException(status_code=406, enum=OrderErrors.WRONG_STATUS)
-                for move in order_entity.move_list_rel:
-                    if not move.status in (MoveStatus.CREATED, MoveStatus.RESERVATION_FAILED, MoveStatus.CONFIRMING):
-                        raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
-                    move.status = MoveStatus.CONFIRMING
-                move_ids = [move.id for move in order_entity.move_list_rel]
-                '''Отправляем таску на подтверждение мувов'''
-                await self.env['move'].service.confirm.kiq(None, move_ids=move_ids, user_id=user_id)
-                order_entity.status = OrderStatus.CONFIRMING
-                await self.session.commit()
-                await self.session.refresh(order_entity)
-            except Exception as e:
-                await self.session.rollback()
-                logging.error("Произошла ошибка: %s", e)
-                logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
-                raise e
-            await order_entity.notify('update')
+        res: list = []
+        if not user_id:
+            user_id = self.user.user_id
+        try:
+            order_entity = await self.get(order_id, for_update=True)
+            if order_entity.status not in (OrderStatus.CREATED, OrderStatus.RESERVATION_FAILED, OrderStatus.CONFIRMING):
+                raise ModuleException(status_code=406, enum=OrderErrors.WRONG_STATUS)
+            for move in order_entity.move_list_rel:
+                if not move.status in (MoveStatus.CREATED, MoveStatus.RESERVATION_FAILED, MoveStatus.CONFIRMING):
+                    raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
+                move.status = MoveStatus.CONFIRMING
+            move_ids = [move.id for move in order_entity.move_list_rel]
+            '''Отправляем таску на подтверждение мувов'''
+            await self.env['move'].service.confirm.kiq(None, move_ids=move_ids, user_id=user_id)
+            order_entity.status = OrderStatus.CONFIRMING
+            await self.session.commit()
+            await self.session.refresh(order_entity)
+        except Exception as e:
+            await self.session.rollback()
+            logging.error("Произошла ошибка: %s", e)
+            logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
+            raise e
+        await order_entity.notify('update')
         return res
 
     @permit('order_start')
-    async def order_start(self, ids: List[uuid.UUID], user_id: uuid.UUID) -> List[ModelType]:
+    async def order_start(self, order_id: uuid.UUID, user_id: uuid.UUID) -> List[ModelType]:
         """Ставим статус CONFIRMING и запускаем процесс подтверждения по каждому таску"""
         res = []
-        for order_id in ids:
-            try:
-                order_entity = await self.get(order_id, for_update=True)
-                if order_entity.status != OrderStatus.CONFIRMED:
-                    raise ModuleException(status_code=406, enum=OrderErrors.WRONG_STATUS)
-                for move in order_entity.move_list_rel:
-                    if move.status != MoveStatus.CONFIRMED:
-                        raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
-                    move.status = MoveStatus.WAITING
-                order_entity.status = OrderStatus.WAITING
-                await self.session.commit()
-                await self.session.refresh(order_entity)
-            except Exception as e:
-                await self.session.rollback()
-                logging.error("Произошла ошибка: %s", e)
-                logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
-                raise e
-            await order_entity.notify('update')
+        if not user_id:
+            user_id = self.user.user_id
+        try:
+            order_entity = await self.get(order_id, for_update=True)
+            if order_entity.status != OrderStatus.CONFIRMED:
+                raise ModuleException(status_code=406, enum=OrderErrors.WRONG_STATUS)
+            for move in order_entity.move_list_rel:
+                if move.status != MoveStatus.CONFIRMED:
+                    raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
+                move.status = MoveStatus.WAITING
+            order_entity.status = OrderStatus.WAITING
+            await self.session.commit()
+            await self.session.refresh(order_entity)
+        except Exception as e:
+            await self.session.rollback()
+            logging.error("Произошла ошибка: %s", e)
+            logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
+            raise e
+        await order_entity.notify('update')
         return res
 
     @permit('order_complete')
-    async def order_complete(self, ids: List[uuid.UUID], user_id: uuid.UUID) -> list:
+    async def order_complete(self, order_id: List[uuid.UUID], user_id: Optional[uuid.UUID] = None) -> list:
         """Ставим статус DONE"""
-        res = []
-        for order_id in ids:
-            try:
-                order_entity = await self.get(order_id, for_update=True)
-                if order_entity.status != OrderStatus.PROCESSING:
-                    raise ModuleException(
-                        status_code=406,
-                        enum=OrderErrors.WRONG_STATUS,
-                        message='Order is not in PROCESSING status',
-                        args={'status': order_entity.status}
-                    )
-                for move in order_entity.move_list_rel:
-                    if move.status != MoveStatus.DONE:
-                       """ Пытаемся синхронно завершить все мувы"""
-                       task = await self.env['move'].service.set_done.kiq(None, move_id=move.id, user_id=self.user.user_id)
-                       result = await task.wait_result(timeout=5)
-                       if result.error:
-                           raise ModuleException(
-                                status_code=406,
-                                enum=MoveErrors.WRONG_STATUS,
-                                message=f'Move {move.id} is not in DONE status',
-                                args={'status': move.status}
-                            )
-                order_entity.status = OrderStatus.DONE
-                await self.session.commit()
-                await self.session.refresh(order_entity)
-            except Exception as e:
-                await self.session.rollback()
-                logging.error("Произошла ошибка: %s", e)
-                logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
-                raise e
-            await order_entity.notify('update')
-        return res
+        if not user_id:
+            user_id = self.user.user_id
+        try:
+            order_entity = await self.get(order_id, for_update=True)
+            if order_entity.status != OrderStatus.PROCESSING:
+                raise ModuleException(
+                    status_code=406,
+                    enum=OrderErrors.WRONG_STATUS,
+                    message='Order is not in PROCESSING status',
+                    args={'status': order_entity.status}
+                )
+            for move in order_entity.move_list_rel:
+                if move.status != MoveStatus.DONE:
+                   """ Пытаемся синхронно завершить все мувы"""
+                   task = await self.env['move'].service.set_done.kiq(None, move_id=move.id, user_id=self.user.user_id)
+                   result = await task.wait_result(timeout=5)
+                   if result.error:
+                       raise ModuleException(
+                            status_code=406,
+                            enum=MoveErrors.WRONG_STATUS,
+                            message=f'Move {move.id} is not in DONE status',
+                            args={'status': move.status}
+                        )
+            order_entity.status = OrderStatus.DONE
+            await self.session.commit()
+            await self.session.refresh(order_entity)
+        except Exception as e:
+            await self.session.rollback()
+            logging.error("Произошла ошибка: %s", e)
+            logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
+            raise e
+        await order_entity.notify('update')

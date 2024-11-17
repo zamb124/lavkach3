@@ -4,73 +4,52 @@
     text-overflow: ellipsis;
     overflow: hidden;">
             <p class="card-text opacity-75 fs-2 fw-normal mb-0"
+               data-bs-toggle="tooltip" data-bs-html="true"  data-key-description="{{ field.data_key_description }}" title="{{ field.description }}"
                data-key="{{ field.data_key }}">
                 {{ field.field_name }}
             </p>
                 {% if field.type == 'datetime' %}
-                    <h4 class="card-title mb-0 mt-0" id="{{ field.key }}" model-name="{{ field.model_name }}">
+                    <h4 class="card-title mb-0 mt-0" id="{{ field.field_name }}" model-name="{{ field.model_name }}">
                     {{ field.val.strftime('%Y-%m-%d') if field.val else '' }}
                     </h4>
                 {% elif field.type == 'uuid' %}
                     <h4 class="card-title mb-0 mt-0">
-                    <a class="text-danger text-center"
-                       id="{{ field.key }}"
+                    <a class="uuid-get text-danger text-center"
+                       id="{{ field.field_name }}"
                        model-name="{{ field.model_name }}"
-                       href="#"
+                       href="/base/modal/{{ field.model_name }}/{{ field.val }}"
                        hx-include="none"
                        hx-trigger="click"
-                       hx-params="model,method,id,key"
                        hx-target="#htmx_content"
                        hx-swap="beforeend transition:true"
-                       hx-ext="json-enc"
-                       hx-post="/base/modal"
-                       hx-vals='{
-                        "model": "{{ field.model_name }}",
-                        "method": "get",
-                        "id": "{{ field.val }}",
-                        "key": "{{ field.key }}"
-                        }'
-                    >{{ field.val }}</a>
+                       >{{ field.val }}</a>
                     </h4>
                 {% elif field.type == 'rel' %}
                     {{ field.val }}
-                    <h4 class="card-title mb-0 mt-0" id="{{ field.key }}" model-name="{{ field.model_name }}">
+                    <h4 class="card-title mb-0 mt-0" id="{{ field.field_name }}" model-name="{{ field.model_name }}">
                     <a class="text-danger text-center"
                        href="#"
+                       hx-get="/base/modal/{{ field.model_name }}/{{ field.val.p.id }}"
                        hx-include="none"
                        hx-trigger="click"
                        hx-params="model,method,id,key"
                        hx-target="#htmx_content"
                        hx-swap="beforeend transition:true"
-                       hx-ext="json-enc"
-                       hx-post="/base/modal"
-                       hx-vals='{
-                        "model": "{{ field.model_name }}",
-                        "method": "get",
-                        "id": "{{ field.val.p.id }}",
-                        "key": "{{ field.key }}"
-                        }'
-                    >{{ field.val.p.display_title }}
+                       >
+                        {{ field.val.p.display_title }}
                     </a>
                     </h4>
                 {% elif field.type == 'list_uuid' %}
-                    <h4 class="card-title mb-0 mt-0" id="{{ field.key }}" model-name="{{ field.model_name }}">
+                    <h4 class="list-uuid-get card-title mb-0 mt-0" id="{{ field.field_name }}" model-name="{{ field.model_name }}">
                     {% if field.val %}
                         {{ ','.join(field.val)|safe }}
                     {% endif %}
                     </h4>
                 {% else %}
-                    <h4 class="card-title mb-0 mt-0" id="{{ field.key }}" model-name="{{ field.model_name }}">
+                    <h4 class="card-title mb-0 mt-0" id="{{ field.field_name }}" model-name="{{ field.model_name }}">
                     {{ field.val or '' }}
                     </h4>
                 {% endif %}
         </div>
     </div>
-    <script>
-        {% if field.type == 'uuid' %}
-            setTitle('{{ field.key }}', 'get')
-        {% elif field.type == 'list_uuid' %}
-            choicesMultiBadges('{{ field.key }}', 'get')
-        {% endif %}
-    </script>
 {% endblock %}

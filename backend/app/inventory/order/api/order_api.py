@@ -2,6 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Query, Depends
 from fastapi_filter import FilterDepends
+from pydantic.v1 import UUID4
 
 from app.inventory.order.schemas import (
     OrderScheme,
@@ -11,7 +12,7 @@ from app.inventory.order.schemas import (
     OrderListSchema,
     OrderFilter,
 )
-from app.inventory.order.schemas.order_schemas import AssignUser
+from app.inventory.order.schemas.order_schemas import AssignUser, OrderConfirm, OrderComplete, OrderStart
 from app.inventory.order.services import OrderService
 
 order_router = APIRouter(
@@ -52,19 +53,19 @@ async def order_delete(order_id: uuid.UUID, service: OrderService = Depends()):
 
 @order_router.post("/order_assign", response_model=OrderScheme)
 async def order_assign(schema: AssignUser, service: OrderService = Depends()):
-    return await service.order_assign(order_id=schema.order_id, user_id=schema.user_id)
+    return await service.order_assign(order_id=schema.id, user_id=schema.user_id)
 
 
 @order_router.post("/order_confirm", response_model=list[OrderScheme])
-async def order_confirm(schema: AssignUser, service: OrderService = Depends()):
-    return await service.order_confirm(ids=schema.ids, user_id=schema.user_id)
+async def order_confirm(schema: OrderConfirm, service: OrderService = Depends()):
+    return await service.order_confirm(order_id=schema.id)
 
 
 @order_router.post("/order_start", response_model=list[OrderScheme])
-async def order_start(schema: AssignUser, service: OrderService = Depends()):
-    return await service.order_start(ids=schema.ids, user_id=schema.user_id)
+async def order_start(schema: OrderStart, service: OrderService = Depends()):
+    return await service.order_start(order_id=schema.id)
 
 
 @order_router.post("/order_complete", response_model=list[OrderScheme])
-async def order_complete(schema: AssignUser, service: OrderService = Depends()):
-    return await service.order_complete(ids=schema.ids, user_id=schema.user_id)
+async def order_complete(schema: OrderComplete, service: OrderService = Depends()):
+    return await service.order_complete(order_id=schema.id)

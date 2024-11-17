@@ -1,8 +1,9 @@
 {% block label %}
 <p style="margin-bottom: 0; margin-top: 1rem;"
-   class="sort text-uppercase text-muted text-start "
+   class="label sort text-uppercase text-muted text-start "
    data-key="{{ field.data_key }}"
-   for="{{ field.key }}">{{ field.field_name }}
+   data-bs-toggle="tooltip" data-bs-html="true"  data-key-description="{{ field.data_key_description }}" title="{{ field.description }}"
+   for="{{ field.field_name }}">{{ field.field_name }}
 </p>
 
 {% endblock %}

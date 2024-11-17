@@ -1,4 +1,7 @@
-from typing import Any, Optional
+from typing import Any, Optional, List
+
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 
 from app.inventory.product_storage.models.product_storage_models import ProductStorageType
 from app.inventory.product_storage.schemas import ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, \
@@ -29,3 +32,13 @@ class ProductStorageTypeService(BaseService[
     @permit('product_storage_type_delete')
     async def delete(self, id: Any) -> None:
         return await super(ProductStorageTypeService, self).delete(id)
+
+    async def get_storage_types_by_products(self, product_ids) -> List[ProductStorageType]:
+        result = await self.session.execute(
+            select(ProductStorageType)
+            .options(joinedload(ProductStorageType.storage_type_rel))
+            .where(ProductStorageType.product_id.in_(product_ids))
+        )
+        product_storage_types = result.scalars().all()
+
+        return product_storage_types

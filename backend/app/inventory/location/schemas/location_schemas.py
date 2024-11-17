@@ -4,7 +4,7 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic.types import UUID4
 from core.schemas.basic_schemes import BasicField as Field, bollean
 
-from app.inventory.location.enums import LocationClass
+from app.inventory.location.enums import LocationClass, BlockerEnum
 from app.inventory.location.models import Location
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel
@@ -21,6 +21,7 @@ class LocationBaseScheme(BasicModel):
     location_type_id: UUID4 = Field(title='Location Type', model='location_type', form=True, table=True)
     location_id: Optional[UUID4] = Field(default=None, title='Parent Location', model='location', form=True, table=True)
     zone_id: Optional[UUID4] = Field(default=None, title='Zone', model='location', form=True, table=True, filter={'location_class__in': LocationClass.ZONE.value})
+    block: BlockerEnum = Field(default=BlockerEnum.FREE, title='Block', form=True, table=True)
 
     class Config:
         orm_model = Location

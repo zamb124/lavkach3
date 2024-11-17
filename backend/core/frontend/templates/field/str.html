@@ -3,12 +3,12 @@
             {% if field.update.required %} required {% endif %}
             {% if field.update.readonly %}
                 readonly
-                class="str form-control disabled  text-center"
+                class="str-update form-control disabled  text-center"
             {% else %}
                 class="str form-control {% if not field.is_filter %}is-valid{% endif %}"
                 placeholder="Enter {{ field.update.title }}"
             {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             title="{{ field.update.description }}"
             value="{{ field.val if field.val else "" }}"
 
@@ -19,13 +19,13 @@
             {% if field.create.required %} required {% endif %}
             {% if field.create.readonly %}
                 readonly
-                class="str form-control disabled text-center"
+                class="str-create form-control disabled text-center"
             {% else %}
                 class="enum form-control"
                 placeholder="Enter {{ field.update.title }}"
             {% endif %}
             {% if field.create.hidden %} hidden {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             title="{{ field.create.description }}"
 
             value="{{ field.val if field.val else "" }}"
@@ -34,10 +34,10 @@
 {% endblock %}
 {% block as_get %}
     <input type="text"
-           class="form-control  text-center"
+           class="str-get form-control  text-center"
             {% if field.get.required %} required {% endif %}
            disabled
-           name="{{ field.key }}"
+           name="{{ field.field_name }}"
     {%  if field.val %}
         {{ field.val }}
    {% endif %}

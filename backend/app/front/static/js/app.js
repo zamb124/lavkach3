@@ -91,12 +91,15 @@ class App {
         htmx.on("htmx:confirm", (e) => {
             console.log('htmx:confirm');
             let authToken = this.getCookieValue('token');
-            if (authToken == null && !window.location.pathname.includes('login')) {
+            if (authToken == null && window.location.pathname.indexOf('login') === -1) {
                 e.preventDefault();
                 window.history.pushState('Login', 'Login', '/basic/user/login');
                 console.log('redirect login');
                 document.location.replace('/basic/user/login');
             }
+        });
+        htmx.on("htmx:onLoad", (e) => { // Событие после загрузки контента
+            console.log('htmx:onLoad');
         });
 
         htmx.on("htmx:afterSwap", (e) => {
@@ -114,13 +117,13 @@ class App {
 
         htmx.on('htmx:beforeSwap', (evt) => {
             if (evt.detail.xhr.status === 200) {
-                // do nothing
+                console.log('BeforeSwap');
             } else if (evt.detail.xhr.status === 404) {
                 this.showToast(evt.detail.pathInfo.requestPath + ' + ' + evt.detail.xhr.responseText, "#e94e1d");
             } else if (evt.detail.xhr.status === 403) {
                 console.log('403');
                 this.showToast(evt.detail.xhr.responseText.replace(/\\n/g, '\n'), "red");
-            } else if (evt.detail.xhr.status === 401 && !window.location.pathname.includes('login')) {
+            } else if (evt.detail.xhr.status === 401 && window.location.pathname.indexOf('login') === -1) {
                 window.history.pushState('Login', 'Login', '/basic/user/login' + "?next=" + window.location.pathname);
                 htmx.ajax('GET', '/basic/user/login', {
                     target: '#htmx_content', headers: {
@@ -160,7 +163,6 @@ class App {
             e.detail.headers["Authorization"] = this.getCookieValue('token');
         });
         htmx.on('htmx:wsBeforeMessage', this.handleMessage.bind(this));
-
     }
 
     showToast(message, background) {
@@ -261,7 +263,7 @@ class App {
     // Методы Auth
     getCookieValue(name) {
         const nameString = name + "=";
-        const values = document.cookie.split(";").filter(item => item.includes(nameString));
+        const values = document.cookie.split(";").filter(item => item.indexOf(nameString) !== -1);
         if (values.length) {
             let value = values.find(val => val.trim().startsWith(nameString));
             if (value) {
@@ -288,6 +290,7 @@ class App {
     }
 
     login() {
+        event.preventDefault(); // Предотвращаем стандартное поведение формы
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const user = {
@@ -301,16 +304,15 @@ class App {
             },
             body: JSON.stringify(user)
         }).then(response => {
-            if (response.status === 200) {
-                response.json().then(data => {
-                    this.saveTokensAndRedirect(data.token, data.refresh_token, data.next);
-                });
-            } else {
-                response.json().then(data => {
-                    this.showToast(data.message, "red");
-                });
-            }
+            response.json().then(data => {
+                this.saveTokensAndRedirect(data.token, data.refresh_token, data.next);
+            });
+
+        }).catch(error => {
+            console.error('Error:', error);
         });
+        setTimeout(() => {
+        }, 500); // Задержка в 500 миллисекунд
     }
 
     saveTokensAndRedirect(token, refresh_token, next) {
@@ -381,15 +383,93 @@ class App {
                     app.loaded = true; // Устанавливаем флаг, что все прогрузили
                 }
             }
-            var elements = elt.querySelectorAll('[data-key]');
+            var elements = elt.querySelectorAll('[data-key], [data-key-description]');
             if (elements) {
                 elements.forEach(app.translateElement);
             }
+
             var elements_tooltips = elt.querySelectorAll('[data-bs-toggle="tooltip"]');
             var tooltipList = Array.from(elements_tooltips).map(function (tooltipTriggerEl) {
-                var tooltip = new bootstrap.Tooltip(tooltipTriggerEl);
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    delay: {"show": 500, "hide": 500}
+                });
             });
 
+            const elmts = elt.querySelectorAll('.uuid-create, .uuid-update, .list-uuid-create, .list-uuid-update, .uuid-get, .list-uuid-get, .babel-create, .babel-update, .list-str, .list-enum-update, .list-enum-get, .list-enum-create, .list-rel');
+
+            elmts.forEach(element => {
+                if (element.classList.contains('uuid-update') || element.classList.contains('list-uuid-update')) {
+                    new ChoiceHandler(element, 'update');
+                } else if (element.classList.contains('uuid-create') || element.classList.contains('list-uuid-create')) {
+                    new ChoiceHandler(element, 'create');
+                } else if (element.classList.contains('uuid-get')) {
+                    setTitle(element, 'get');
+                } else if (element.classList.contains('list-uuid-get')) {
+                    choicesMultiBadges(element, 'get');
+                } else if (element.classList.contains('list-uuid-update')) {
+                    new ChoiceHandler(element, 'update');
+                } else if (element.classList.contains('list-enum-update')) {
+                    choiceMultiEnum(element, 'update');
+                } else if (element.classList.contains('list-enum-create')) {
+                    choiceMultiEnum(element, 'create');
+                } else if (element.classList.contains('babel-create') || element.classList.contains('babel-update')) {
+                    choiceMultiBabel(element, 'update');
+                } else if (element.classList.contains('list-str')) {
+                    let choices = new Choices(element, {
+                        placeholderValue: "Enter...",
+                        multiple: true,
+                        removeItemButton: true
+                    });
+                    choices.containerInner.element.classList.add('form-control');
+                } else if (element.classList.contains('list-enum-update') || element.classList.contains('list-enum-get')) {
+                    choiceMultiEnum(element, 'update');
+                } else if (element.classList.contains('list-enum-create')) {
+                    choicesMultiBadges(element, 'create');
+                } else if (element.classList.contains('list-rel') || element.classList.contains('list-enum-get')) {
+                    let choices = new Choices(element, {
+                        placeholderValue: "Enter ....",
+                        multiple: true,
+                        removeItemButton: true
+                    });
+                    choices.containerInner.element.classList.add('form-control');
+                    choices.containerInner.element.classList.add('disabled');
+
+                    function check_valid(event) {
+                        if (element.required) {
+                            if (event) {
+                                if (event.type === 'choice') {
+                                    if (event.detail.choice.value) {
+                                        choices.containerInner.element.classList.remove('is-invalid');
+                                        choices.containerInner.element.classList.add('is-valid');
+                                    }
+                                } else if (event.type === 'removeItem') {
+                                    if (event.detail.value) {
+                                        choices.containerInner.element.classList.add('is-invalid');
+                                        choices.containerInner.element.classList.remove('is-valid');
+                                    }
+                                }
+
+                            } else {
+                                choices.containerInner.element.classList.add('is-invalid');
+                                choices.containerInner.element.classList.remove('is-valid');
+                            }
+                        } else if (element.id.includes('__in')) {
+                            choices.containerInner.element.classList.remove('is-invalid');
+                            choices.containerInner.element.classList.remove('is-invalid');
+                        } else {
+                            try {
+                                choices.containerInner.element.classList.remove('is-invalid');
+                            } catch (err) {
+
+                            }
+
+                            choices.containerInner.element.classList.add('is-valid');
+                        }
+                    }
+
+                    check_valid()
+                }
+            });
         })
         await this.setLocale(this.userSettings.locale);
         // Здесь можно вызвать любые другие методы или выполнить нужные действия
@@ -423,12 +503,25 @@ class App {
 
     translateElement(element) {
         const key = element.getAttribute("data-key");
-        const translation = app.translations[key];
-        if (!translation) {
-            console.warn(`No translation found for key: ${key}`);
-            return;
+        if (key) {
+            const translation = app.translations[key];
+            if (!translation) {
+                console.warn(`No translation found for key: ${key}`);
+            } else {
+                element.innerText = translation;
+            }
         }
-        element.innerText = translation;
+
+
+        const keyDescription = element.getAttribute("data-key-description");
+        if (keyDescription) {
+            const descriptionTranslation = app.translations[keyDescription];
+            if (!descriptionTranslation) {
+                console.warn(`No translation found for key description: ${keyDescription}`);
+            } else {
+                element.setAttribute("title", descriptionTranslation);
+            }
+        }
     }
 
     // -------

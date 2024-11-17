@@ -102,5 +102,6 @@ websockets==12.0
 wheel==0.38.4
 yarl==1.9.4
 zipp==3.18.1
+fastapi-babel==0.0.9
 openpyxl==3.1.5
  fastapi-distributed-websocket==0.2.0

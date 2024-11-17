@@ -7,15 +7,8 @@
             hx-include="none"
             hx-trigger="click"
             hx-target="#modal"
-            hx-ext="json-enc"
             hx-swap="innerHTML transition:true"
-            hx-post="/base/modal"
-            hx-vals='{
-"model": "{{ line.model_name }}",
-"method": "create",
-{% if line.id %}"id": "{{ line.id }}", {% endif %}
-"key": "{{ line.class_key }}"
-}'>
+            hx-get="/base/modal/{{ line.model_name }}/{{ line.id }}">
         <i class="ri-add-fill me-1 align-bottom"> Add {{ line.model_name|capitalize }}</i>
     </button>
 

@@ -1,3 +1,4 @@
+from email.policy import default
 from typing import Optional, List
 from uuid import UUID
 
@@ -14,10 +15,10 @@ class ProductStorageTypeBaseScheme(BasicModel):
     product_id: UUID = Field(title='Product', form=True, model='product')
     storage_uom_id: Optional[UUID] = Field(default=None)  # Единица измерения склада
     storage_image_url: Optional[str] = Field(default=None)  # Картинка для склада
+    allowed_storage_uom_ids: Optional[List[UUID]] = Field(default=[])  # Разрешенные единицы измерения склада
     allowed_package_ids: Optional[List[UUID]] = Field(default=[])  # Разрешенные типы упаковок
-    exclude_package_ids: Optional[List[UUID]] = Field(default=[])  # Исключение типы упаковок
     is_homogeneity: bool = Field(default=False)  # Товар может хранится только в гомогенных ячейках
-    storage_type_ids: Optional[List[UUID]] = Field(default=[])  # Стратегии хранения
+    storage_type_id: Optional[UUID] = Field(default=None)  # Стратегии хранения
 
     class Config:
         orm_model = ProductStorageType

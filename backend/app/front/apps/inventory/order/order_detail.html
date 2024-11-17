@@ -1,17 +1,16 @@
 {% autoescape false %}
-    <div class="modal" id="{{ 'modal_'~order.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true"
+    <div class="modal " id="{{ 'modal_'~order.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true"
          ui_key="{{ order.p.ui_key }}"
          lsn="{{ order.p.lsn }}"
-         hx-swap="outerHTML transition:true"
+         hx-swap="outerHTML"
          hx-trigger="backend_update"
          hx-get="/inventory/order/detail?order_id={{ order._id }}"
          hx-target="#modal_content_{{ order.p.id }}"
          hx-select=".modal-content"
          hx-disinherit="*"
-
     >
         <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
-            <div class="modal-content" id="modal_content_{{ order.p.id }}"
+            <div  class="modal-content" id="modal_content_{{ order.p.id }}"
             >
                 <div class="modal-header">
                     <div class="card-body">
@@ -63,9 +62,9 @@
                                             </li>
                                         {% endif %}
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                                <a href="#" data-bs-dismiss="modal">
+                                                <a href="#" data-bs-dismiss="modal" class="d-flex align-items-center">
                                                     <iconify-icon icon="solar:close-circle-outline"
-                                                                  class="fs-7"></iconify-icon>
+                                                                  class="fs-8"></iconify-icon>
                                                 </a>
                                             </li>
                                         </ol>
@@ -107,8 +106,10 @@
                             <li class="nav-item p-2" role="presentation">
                                 <a class="nav-link primary" id="move_logs-tab" data-bs-toggle="tab" href="#move_logs"
                                    role="tab"
-                                   hx-trigger="click once" hx-get="/inventory/move_log/table?order_id={{ order.p.id }}"
+                                   hx-trigger="click"
+                                   hx-get="/inventory/move_log/table?order_id={{ order.p.id }}"
                                    hx-target="#move_logs"
+                                   hx-swap="innerHTML transition: true"
                                    aria-controls="move_logs" aria-selected="false" tabindex="-1">
                                     <span data-key="t-move_logs">Move Logs</span>
                                 </a>
@@ -132,9 +133,9 @@
                             </li>
                         </ul>
                         <div class="tab-content" style="min-height: 300px" id="moves-tab">
-                            <div role="tabpanel" class="tab-pane fade active show" id="moves"
+                            <div role="tabpanel" class=" table-responsive tab-pane fade active show" id="moves"
                                  aria-labelledby="home-tab">
-                                <table class="table align-middle table-hover mb-0 last-items-borderless text-uppercase">
+                                <table class="table text-uppercase text-truncate">
                                     <thead>
                                     <tr class="fs-5 text-center" style="text-align: center">
                                         <th scope="col">
@@ -146,32 +147,14 @@
                                             </div>
                                             </p>
                                         </th>
-                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                            <p data-key="{{ order.move_list_rel.val.type.data_key }}">{{ order.move_list_rel.val.type.field_name }}</p>
-                                        </th>
-                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                            <p data-key="t-move-name">Name</p>
-                                        </th>
-                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                            <p data-key="{{ order.move_list_rel.val.edited_by.data_key }}">
-                                                {{ order.move_list_rel.val.edited_by.field_name }}
-                                            </p>
-                                        </th>
-                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                            <p data-key="{{ order.move_list_rel.val.location_src_id.data_key }}">{{ order.move_list_rel.val.location_src_id.field_name }}</p>
-                                        </th>
-                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                            <p data-key="{{ order.move_list_rel.val.location_dest_id.data_key }}">{{ order.move_list_rel.val.location_dest_id.field_name }}</p>
-                                        </th>
-                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                            <p data-key="{{ order.move_list_rel.val.quantity.data_key }}">{{ order.move_list_rel.val.quantity.field_name }}</p>
-                                        </th>
-                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                            <p data-key="t-move-suggests">Suggests</p>
-                                        </th>
-                                        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-                                            <p data-key="{{ order.move_list_rel.val.status.data_key }}">{{ order.move_list_rel.val.status.field_name }}</p>
-                                        </th>
+                                        {{ order.move_list_rel.val.type.as_th_title }}
+                                        {{ order.move_list_rel.val.product_id.as_th_title }}
+                                        {{ order.move_list_rel.val.edited_by.as_th_title }}
+                                        {{ order.move_list_rel.val.location_src_id.as_th_title }}
+                                        {{ order.move_list_rel.val.location_dest_id.as_th_title }}
+                                        {{ order.move_list_rel.val.quantity.as_th_title }}
+                                        {{ order.move_list_rel.val.suggest_list_rel.as_th_title }}
+                                        {{ order.move_list_rel.val.status.as_th_title }}
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -182,7 +165,7 @@
                                 </table>
 
                             </div>
-                            <div class="tab-pane fade" id="move_logs" role="tabpanel" aria-labelledby="move_logs-tab"">
+                            <div class="table-responsive tab-pane fade" id="move_logs" role="tabpanel" aria-labelledby="move_logs-tab">
 
                             </div>
 

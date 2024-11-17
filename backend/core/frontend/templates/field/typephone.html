@@ -1,8 +1,8 @@
 {% block as_update %}
     <input
             type="number"
-            class="form-control"
-            name="{{ field.key }}"
+            class="typephone-update form-control"
+            name="{{ field.field_name }}"
             placeholder="Enter {{ field.title }}"
             value="{{ field.val.national_number }}"
 
@@ -11,8 +11,8 @@
 {% block as_create %}
     <input
             type="number"
-            class="form-control"
-            name="{{ field.key }}"
+            class="typephone-create form-control"
+            name="{{ field.field_name }}"
             placeholder="Enter {{ field.title }}"
             value="{{ field.val.national_number }}"
 
@@ -20,10 +20,10 @@
 {% endblock %}
 {% block as_get %}
     <input type="text"
-           class="form-control"
+           class="typephone-get form-control"
             {% if field.required %} required {% endif %}
            disabled
-           name="{{ field.key }}"
+           name="{{ field.field_name }}"
            placeholder="Enter {{ field.title }}"
            value="{{ field.val.international or field.val.name or field.val }}"
     >

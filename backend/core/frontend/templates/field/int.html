@@ -1,11 +1,11 @@
 {% block as_update %}
     <input
             type="number"
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
            {% if field.update.readonly %}
             readonly
                 style="pointer-events: none;"
-                class="int form-control disabled"
+                class="int-update form-control disabled"
             {% else %}
                 class="int form-control is-valid"
             {% endif %}
@@ -18,13 +18,13 @@
 {% block as_create %}
     <input
             type="number"
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
            {% if field.create.readonly %}
             readonly
                 style="pointer-events: none;"
-                class="int form-control disabled"
+                class="int-create form-control disabled"
             {% else %}
-                class="int form-control is-valid"
+                class="int-create form-control is-valid"
             {% endif %}
             placeholder="Enter {{ field.title }}"
             {% if field.is_required %} required {% endif %}
@@ -34,10 +34,10 @@
 {% endblock %}
 {% block as_get %}
         <input  type="text"
-                    class="form-control text-center"
+                    class="int-get form-control text-center"
                     {% if field.required %} required {% endif %}
                     disabled
-                    name="{{ field.key }}"
+                    name="{{ field.field_name }}"
                     placeholder="Enter {{ field.title }}"
                     value="{{ field.val or field.val.english_name or field.val.name }}"
             >

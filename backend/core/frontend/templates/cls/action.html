@@ -5,31 +5,22 @@
                 <div class="modal-header">
                 </div>
                 <form class="was-validated"
-                      hx-post="/base/action"
+                      hx-post="/base/action/{{ model }}/{{ action.name }}/{{ line_id }}"
                       hx-ext="json-enc"
                       hx-include="this"
                       hx-target="this"
-                      hx-swap="none"
-                      hx-vals='{
-                "model": "{{ cls.p.class_key }}",
-                "action": "{{ action }}",
-                "key": "{{ cls.p.class_key }}",
-                "method": "update",
-                "commit": "true"
-              }'
-                >
+                      hx-swap="none">
                     <div class="modal-body">
                         <div class="card">
-                            <h3 class="card-title" data-key="t-{{ action }}"> {{ action }} </h3>
-                            {% for field in cls.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' %}
-                                {% if field.field_name in ('ids', 'id') %}
-                                    <div style="display: none">{{ field.as_update }}</div>
-                                {% else %}
+                            <h3 class="card-title" data-key="{{ action.tkey }}"> {{ action.name }}</h3>
+                            <div class="card-body">
+                                <div class="card-text">
+                                  <p data-key="{{ action.tkey_doc }}">{{ action.doc }}</p>
+                                </div>
+                            <input type="hidden" name="id" style="display: none" value="{{ line_id }}">
+                            {% for field in cls.get_fields(display_view='form') if not field.is_reserved and field.type != 'list_rel' and field.field_name !='id' %}
                                     {{ field.label|safe }}
                                     {{ field.as_update }}
-                                {% endif %}
-
-
                             {% endfor %}
 
                         </div>
@@ -52,22 +43,21 @@
 {% endblock %}
 {% block as_a %}
 <a
-        data-bs-toggle="{{ action.doc }}"
-        data-key="{{ action.tkey }}"
-        hx-params="model,action,method,ids,key,id"
+        data-bs-toggle="tooltip" data-bs-html="true" data-key-description="{{ action.tkey_doc }}" title="{{ action.doc }}"
+        {% if label %}data-key="{{ action.tkey }}"{% endif %}
         hx-trigger="click"
-        hx-ext="json-enc"
         hx-target="#htmx_content"
         hx-swap="beforeend transition:true"
-        hx-post="/base/action"
-        hx-vals='{
-            "model": "{{ line.v.model.name }}",
-            "action": "{{ action.name }}",
-            "method": "{% if action.schema %}get{% else %}update{% endif %}",
-            "ids": ["{{ line.p.id }}"],
-            "key": "{{ line.p.key }}"
-        }'
-        class="{{ css_class }}">
-    {{ action.name }}
+        {% if css_class %}class="{{ css_class }}"{% endif %}
+        {% if not action.schema %}
+            hx-ext="json-enc"
+            hx-post="/base/action/{{ line.v.model.name }}/{{ action.name }}/{{ line.p.id }}"
+        {% else %}
+            hx-get="/base/action/{{ line.v.model.name }}/{{ action.name }}/{{ line.p.id }}"
+        {% endif %}>
+    {% if label %}{{ action.name }} {% endif %}
+{% if icon %}
+    <iconify-icon style="color:#37c76c" icon="{{ icon }}" class="fs-8"></iconify-icon>
+{% endif %}
 </a>
 {% endblock %}

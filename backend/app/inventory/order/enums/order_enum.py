@@ -111,8 +111,9 @@ class MoveLogType(str, Enum):
 
 
 TYPE_MAP = {
+(VirtualLocationClass.PARTNER, PhysicalLocationClass.PLACE): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
+    (VirtualLocationClass.PARTNER, PhysicalLocationClass.ZONE): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
     (VirtualLocationClass.PARTNER, PhysicalLocationClass.PLACE): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
-    (VirtualLocationClass.PARTNER, PhysicalLocationClass.BUFFER): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
     (PhysicalLocationClass.PLACE, PhysicalLocationClass.PLACE): (MoveLogType.PUT_OUT, MoveLogType.PUT_IN),
     (PhysicalLocationClass.PLACE, VirtualLocationClass.PARTNER): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
     (PhysicalLocationClass.PLACE, VirtualLocationClass.INVENTORY): (
@@ -121,5 +122,6 @@ TYPE_MAP = {
         MoveLogType.INVENROTY_OUT, MoveLogType.INVENROTY_IN),
     (VirtualLocationClass.LOST, PhysicalLocationClass.PLACE): (MoveLogType.LOST, MoveLogType.FOUND),
     (PhysicalLocationClass.PLACE, VirtualLocationClass.LOST): (MoveLogType.LOST, MoveLogType.FOUND),
-    (PhysicalLocationClass.BUFFER, VirtualLocationClass.PARTNER): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
+    (PhysicalLocationClass.ZONE, VirtualLocationClass.PARTNER): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
+(PhysicalLocationClass.PLACE, VirtualLocationClass.PARTNER): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
 }

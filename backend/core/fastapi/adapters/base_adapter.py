@@ -12,6 +12,7 @@ import json as _json
 
 from core.fastapi.adapters.action_decorator import actions
 from core.helpers.cache import Cache, CacheStrategy
+from core.types import UUIDEncoder
 from core.utils.timeit import timed
 
 if TYPE_CHECKING:
@@ -24,6 +25,8 @@ logger = logging.getLogger(__name__)
 class Client(httpx.AsyncClient):
 
     async def request(self, method: str, url: str, json=None, params=None, timeout=None):
+        if isinstance(json, dict):
+            json = _json.dumps(json, cls=UUIDEncoder)
         if isinstance(json, str):
             json = _json.loads(json)
         query_param_cleaned = {}

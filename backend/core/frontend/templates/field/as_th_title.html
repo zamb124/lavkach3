@@ -1,7 +1,7 @@
 {% block th_title %}
-    <th data-bs-toggle="tooltip" data-bs-html="true" title="{{ field.description }}">
+    <th data-bs-toggle="tooltip" data-bs-html="true"  data-key-description="{{ field.data_key_description }}" title="{{ field.description }}">
         <p data-key="{{ field.data_key }}">
-            {{ field.field_name }}
+            {{ field._field_name }}
         </p>
     </th>
 {% endblock %}

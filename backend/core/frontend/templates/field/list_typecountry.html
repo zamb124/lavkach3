@@ -1,10 +1,10 @@
 {% block as_update %}
-    <select class="list_typecountry form-control select"
-            id="{{ field.key }}"
+    <select class="babel-update form-control select"
+            id="{{ field.field_name }}"
             display-title="{{ field.create.title }}"
             title="{{ field.create.description }}"
             {% if field.create.readonly %} readonly='1' {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             {% if field.create.required %} required {% endif %}
             filter="{{ field.create.filter }}"
             model-name="{{ field.model_name }}"
@@ -14,20 +14,14 @@
                 {% if field.val %}
                     <option value="{{ field.val.id }}" selected> {{ field.val.name }}</option>
                 {% endif %}
-    </select>
-        <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceMultiBabel(el)
-    </script>
 {% endblock %}
 {% block as_create %}
-    <select class="list_typecountry form-control select"
-            id="{{ field.key }}"
+    <select class="babel-create form-control select"
+            id="{{ field.field_name }}"
             display-title="{{ field.create.title }}"
             title="{{ field.create.description }}"
             {% if field.create.readonly %} readonly='1' {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             {% if field.create.required %} required {% endif %}
             filter="{{ field.create.filter }}"
             model-name="{{ field.model_name }}"
@@ -37,13 +31,10 @@
                 {% if field.val %}
                     <option value="{{ field.val.id }}" selected> {{ field.val.name }}</option>
                 {% endif %}
-    </select>
-        <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceMultiBabel(el)
-    </script>
+
 {% endblock %}
 {% block as_get %}
+    <div class="babel-get">
 {{ field.val.english_name or field.val.name or field.val}}
+    </div>
 {% endblock %}

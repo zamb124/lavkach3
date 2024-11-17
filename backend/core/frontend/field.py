@@ -1,16 +1,15 @@
 import copy
-import json
 from enum import Enum
 from typing import Optional, Any
-
-from docutils.nodes import field_name
-from docutils.writers.latex2e import block_name
 from jinja2_fragments import render_block
-from pydantic import BaseModel
 from pydantic.fields import FieldInfo
-
+from typing import Optional, get_args, get_origin, Any
 from core.frontend.enviroment import environment
 from core.frontend.types import MethodType, ViewVars
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from core.frontend.constructor import ClassView
 
 
 class FieldFields:
@@ -28,11 +27,9 @@ class Field:
     """
     cls: 'ClassView'  # Класс, которому принадлежит поле
     fieldinfo: 'FieldInfo'  # Информация о поле
-    field_name: str  # Системное имя поля
+    _field_name: str  # Системное имя поля
     type: str  # Тип поля (srt, ins, rel, list_rel ... )
 
-    # widget params
-    enums: Optional[Any] = None  # Если поле enum, то тут будет список енумов
     sort_idx: int = 0  # Индекс сортировки поля
 
     is_filter: bool = False  # Является ли поле фильтром
@@ -47,7 +44,6 @@ class Field:
         instance = copy.copy(self)
         instance.val = None
         return instance
-
 
     def __call__(self, *args, **kwargs):
         return self.val
@@ -64,15 +60,31 @@ class Field:
         return str(self.val)
 
     def __repr__(self):
-        return f'<Field {self.cls.v.model.name} - {self.field_name}>'
+        return f'<Field {self.cls.v.model.name} - {self._field_name}>'
 
     def __init__(self, *args, **kwargs):
         self.__dict__.update(kwargs)
 
     @property
+    def enum(self):
+        if isinstance(self.fieldinfo.annotation, Enum):
+            return self.fieldinfo.annotation
+        else:
+            return get_args(get_args(self.fieldinfo.annotation)[0])[0]
+
+    @property
+    def field_name(self):
+        if self.cls.v.parent_field:
+            if isinstance(self.cls.v.parent_field, Field):
+                return f'{self.cls.v.parent_field._field_name}[{self.cls.p.lsn}][{self._field_name}]'
+            elif isinstance(self.cls.v.parent_field, str):
+                return f'{self.cls.v.parent_field}[{self.cls.p.id}][{self._field_name}]'
+        return self._field_name
+
+    @property
     def key(self) -> str:
         """Отдает уникальный идентификатор для поля"""
-        return f'{self.cls.p.key}--{self.field_name}'
+        return f'{self.cls.p.key}--{self._field_name}'
 
     def as_(self, method='get', button=False, model=None):
         """Отдает виджет поля в зависимости от метода"""
@@ -91,12 +103,11 @@ class Field:
 
     @property
     def description(self) -> str:
-        return self.fieldinfo.description or self.field_name
+        return self.fieldinfo.description or self._field_name
 
-
-    def render(self, block_name: str, type: str = '', method: MethodType = MethodType.GET) -> str:
+    def render(self, block_name: str, method: MethodType = MethodType.GET) -> str:
         """Метод рендера шаблона"""
-        type = type or self.type
+        type = self.type or 'str'
         rendered_html = render_block(
             environment=environment,
             template_name=f'field/{type}.html',
@@ -149,12 +160,12 @@ class Field:
     @property
     def data_key(self) -> str:
         """Отдать Label for шаблон для поля"""
-        return f't-{self.cls.v.model.name}-{self.field_name}'
+        return f't-{self.cls.v.model.name}-{self._field_name}'
 
     @property
     def data_key_description(self) -> str:
         """Отдать Label for шаблон для поля"""
-        return f't-{self.cls.v.model.name}-{self.field_name}-description'
+        return f't-{self.cls.v.model.name}-{self._field_name}-description'
 
     @property
     def as_update(self) -> str:
@@ -242,4 +253,4 @@ class Fields:
             raise StopIteration
 
     def get_fields(self):
-        return {i.field_name: i for i in self._fields}.items()
+        return {i._field_name: i for i in self._fields}.items()

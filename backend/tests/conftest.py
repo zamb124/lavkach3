@@ -292,7 +292,7 @@ async def location_types(env: Env, user_admin, companies) -> Company:
     location_type_buffer = await location_type.create(LocationTypeCreateScheme(**{
         'company_id': companies[0].id.__str__(),
         'title': 'BUFFER',
-        'location_class': LocationClass.BUFFER
+        'location_class': LocationClass.PLACE
     }))
     yield {
         'partner': location_type_partner,

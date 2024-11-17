@@ -1,8 +1,8 @@
 {% block as_update %}
-    <select class="rel form-control text-start "
-            id="{{ field.key }}"
+    <select class="rel-update rel form-control text-start "
+            id="{{ field.field_name }}"
             {% if field.update.readonly %} readonly="1" {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             {% if field.update.required %} required {% endif %}
             filter="{{ field.update.filter }}"
             model-name="{{ field.model_name }}"
@@ -12,15 +12,12 @@
             <option value="{{ field.val.p.id }}" selected>{{ field.val.p.display_title }}</option>
         {% endif %}
     </select>
-    <script>
-        new ChoiceHandler('{{ field.key }}', 'update')
-    </script>
 {% endblock %}
 {% block as_create %}
-    <select class="rel form-control text-start "
-            id="{{ field.key }}"
+    <select class="rel-create rel form-control text-start "
+            id="{{ field.field_name }}"
             {% if field.create.readonly %} readonly="1" {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             {% if field.create.required %} required {% endif %}
             filter="{{ field.create.filter }}"
             model-name="{{ field.model_name }}"
@@ -30,26 +27,15 @@
             <option value="{{ field.val.p.id }}" selected>{{ field.val.p.display_title }}</option>
         {% endif %}
     </select>
-    <script>
-        new ChoiceHandler('{{ field.key }}', 'create')
-    </script>
 {% endblock %}
 {% block as_get %}
-        <a class="text-danger text-center disabled my-list form-control"
-           href="#"
+        <a class="rel-get text-danger text-center disabled my-list form-control"
+           href="/base/modal/{{ field.model_name }}/{{ field.val.id }}"
            hx-include="none"
            hx-trigger="click"
            hx-params="model,method,id,key"
            hx-target="#htmx_content"
            hx-swap="beforeend transition:true"
-           hx-ext="json-enc"
-           hx-post="/base/modal"
-           hx-vals='{
-            "model": "{{ field.model_name }}",
-            "method": "get",
-            "id": "{{ field.val.p.id }}",
-            "key": "{{ field.key }}"
-            }'
         >{{ field.val.p.display_title }}
         </a>
 {% endblock %}
@@ -67,7 +53,7 @@
 "model": "{{ field.model_name }}",
 "method": "get",
 "id": "{{ field.val.id }}",
-"key": "{{ field.key }}"
+"key": "{{ field.field_name }}"
 }'
     >{{ field.val.title or field.val.nickname }}
     </a>

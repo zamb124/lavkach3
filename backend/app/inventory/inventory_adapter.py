@@ -15,7 +15,7 @@ class InventoryAdapter(BaseAdapter):
     protocol = config.APP_PROTOCOL
     port = config.APP_PORT
     host = config.APP_HOST
-    bff_methods = []
+
 
     async def order(self, params=None, **kwargs):
         data = await self.list(model='order', params=params)
@@ -51,6 +51,7 @@ class InventoryAdapter(BaseAdapter):
 
     @action(model='suggest',schema=SuggestConfirmScheme, multiple=True, permits=[])
     async def action_suggest_confirm(self, schema: SuggestConfirmScheme | dict):
+        """Подтверждение саджеста, введите то значение, которое бы отсканировал пользователь"""
         if isinstance(schema, dict):
             schema = SuggestConfirmScheme(**schema)
         path = f'/api/inventory/suggest/confirm'
@@ -85,19 +86,18 @@ class InventoryAdapter(BaseAdapter):
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()
 
-    @action(model='order',schema=AssignUser, multiple=False, permits=[])
+    @action(model='order', schema=AssignUser, multiple=False, permits=[])
     async def order_assign(self, schema: AssignUser):
         """Назначение пользователя на заказ, если не указан, то возьется из запроса"""
-        path = f'/api/inventory/order/order_assign'
+
         schema_body = schema.model_dump_json()
+        path = f'/api/inventory/order/order_assign'
         responce = await self.client.post(self.host + path, json=schema_body, params={})
         return responce.json()
 
     @action(model='order', multiple=False, permits=[])
     async def order_complete(self, payload: dict, **kwargs):
         """Переводит ордер из CONFIRMED в WAITING"""
-        if isinstance(payload, dict):
-            payload = json.dumps(payload, cls=UUIDEncoder)
         path = f'/api/inventory/order/order_complete'
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()

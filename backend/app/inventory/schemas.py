@@ -8,6 +8,15 @@ from pydantic import BaseModel
 from app.inventory.location.enums import LocationClass, PhysicalStoreLocationClass
 from core.schemas.basic_schemes import BasicField as Field
 
+class Quant(BaseModel):
+    quant_id: UUID = Field(title='Quant', form=True, model='quant')
+    quantity: float = Field(title='Quantity', form=True)
+    package_id: Optional[UUID] = Field(default=None, title='Package', form=True, model='location')
+    location_src_id: Optional[UUID] = Field(default=None, title='Location', form=True, model='location')
+    location_dest_id: Optional[UUID] = Field(default=None, title='Location', form=True, model='location')
+    store_id: Optional[UUID] = Field(default=None, title='Store', form=True, model='store')
+    uom_id: Optional[UUID] = Field(default=None, title='UOM', form=True, model='uom')
+    order_type_id: Optional[UUID] = Field(default=None, title='Order Type', form=True, model='order_type')
 
 class Product(BaseModel):
     product_id: UUID = Field(title='Product', form=True, model='product')
@@ -15,6 +24,7 @@ class Product(BaseModel):
     avaliable_quantity: float = Field(default=0.0, title='Avaliable Quantity', form=True)
     lot_id: Optional[UUID] = Field(default=None, title='Lot', form=True, model='lot')
     uom_id: Optional[UUID] = Field(default=None, title='UOM', form=True, model='uom')
+    quants: Optional[list[Quant]] = Field(default=None, title='Quants', form=True)
 
 
 class Package(BaseModel):

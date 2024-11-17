@@ -5,18 +5,9 @@
              lsn="{{ line.p.lsn }}"
              ui_key="{{ line.p.ui_key }}"
              hx-trigger="backend_update"
-             hx-post="/base/line"
-             hx-ext="json-enc"
-             hx-swap="outerHTML transition:true"
-             hx-target="#{{ line.p.key }}"
-             hx-vals='{
-                    "model": "{{ line.v.model.name }}",
-                    "method": "{{ method.value }}",
-                    "mode": "div",
-                    "key": "{{ line.p.class_key }}",
-                    "id": "{{ line.p.id }}"
-                    }'
-        >
+             hx-get="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=div&method={{ method.value }}"
+             hx-swap="outerHTML"
+             hx-target="#{{ line.p.key }}">
 
         <div class="text-start" style="padding-left: 0px;">
             <a
@@ -25,17 +16,18 @@
                     {% if method.value in ('get', 'create') %}
                     hx-target="#{{ line.p.key }}"
                     {% else %}hx-target="this"{% endif %}
+                    hx-swap="outerHTML"
+                    {% if method.value =='get' %}
+                    hx-get="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=div&method=update"
+                    {% elif method.value =='create' %}
                     hx-include="#{{ line.p.key }}"
                     hx-ext="json-enc"
-                    hx-swap="outerHTML transition:true"
-                    hx-post="/base/line"
-                    hx-vals='{
-                "model": "{{ line.v.model.name }}",
-                "method": "{% if method.value =='get' %}update{% elif method.value =='create' %}save_create{% else %}save{% endif %}",
-                "mode": "div",
-                "id": "{{ line.p.id }}",
-                "key": "{{ line.p.class_key }}"
-            }'
+                    hx-post="/base/line/{{ line.v.model.name }}"
+                    {% else %}
+                    hx-include="#{{ line.p.key }}"
+                    hx-ext="json-enc"
+                    hx-put="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=div?method=save"
+                    {% endif %}
                     class="btn btn-soft-primary inline"
                     style="display: inline-block">
                 <iconify-icon
@@ -95,17 +87,9 @@
              lsn="{{ line.p.lsn }}"
              ui_key="{{ line.p.ui_key }}"
              hx-trigger="backend_update"
-             hx-post="/base/line"
-             hx-ext="json-enc"
-             hx-swap="outerHTML transition:true"
+             hx-get="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=div&method={{ method.value }}"
+             hx-swap="outerHTML"
              hx-target="#{{ line.p.key }}"
-             hx-vals='{
-                    "model": "{{ line.v.model.name }}",
-                    "method": "{{ method.value }}",
-                    "mode": "div",
-                    "key": "{{ line.p.class_key }}",
-                    "id": "{{ line.p.id }}"
-                    }'
         >
 
         <div class="text-start" style="padding-left: 0px;">
@@ -116,16 +100,16 @@
                     hx-target="#{{ line.p.key }}"
                     {% else %}hx-target="this"{% endif %}
                     hx-include="#{{ line.p.key }}"
+                    {% if method.value =='get' %}
+                    hx-post="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=div?method=update"
+                    {% elif method.value =='create' %}
                     hx-ext="json-enc"
+                    hx-post="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=div?method=save_create"
+                    {% else %}
+                    hx-ext="json-enc"
+                    hx-put="/base/line/{{ line.v.model.name }}/{{ line.p.id }}"
+                    {% endif %}
                     hx-swap="outerHTML transition:true"
-                    hx-post="/base/line"
-                    hx-vals='{
-                "model": "{{ line.v.model.name }}",
-                "method": "{% if method.value =='get' %}update{% elif method.value =='create' %}save_create{% else %}save{% endif %}",
-                "mode": "div",
-                "id": "{{ line.p.id }}",
-                "key": "{{ line.p.class_key }}"
-            }'
                     class="btn btn-soft-primary inline"
                     style="display: inline-block">
                 <iconify-icon
@@ -184,17 +168,10 @@
              lsn="{{ line.p.lsn }}"
              ui_key="{{ line.p.ui_key }}"
              hx-trigger="backend_update"
-             hx-post="/base/line"
+             hx-post="/base/line/{{ line.v.model.name }}/{{ line.p.id }}"
              hx-ext="json-enc"
-             hx-swap="outerHTML transition:true"
+             hx-swap="outerHTML"
              hx-target="#{{ line.p.key }}"
-             hx-vals='{
-                    "model": "{{ line.v.model.name }}",
-                    "method": "{{ method.value }}",
-                    "mode": "div",
-                    "key": "{{ line.p.class_key }}",
-                    "id": "{{ line.p.id }}"
-                    }'
         >
 
         <div class="text-start" style="padding-left: 0px;">
@@ -207,14 +184,7 @@
                     hx-include="#{{ line.p.key }}"
                     hx-ext="json-enc"
                     hx-swap="outerHTML transition:true"
-                    hx-post="/base/line"
-                    hx-vals='{
-                "model": "{{ line.v.model.name }}",
-                "method": "{% if method.value =='get' %}update{% elif method.value =='create' %}save_create{% else %}save{% endif %}",
-                "mode": "div",
-                "id": "{{ line.p.id }}",
-                "key": "{{ line.p.class_key }}"
-            }'
+                    hx-post="/base/line/{{ line.v.model.name }}"
                     class="btn btn-soft-primary inline"
                     style="display: inline-block">
                 <iconify-icon

@@ -1,15 +1,16 @@
 from abc import ABCMeta
 from functools import wraps
-from typing import Iterable
+from typing import Iterable, Optional
 
 from pydantic import BaseModel
+from redis.commands.graph.execution_plan import Operation
 
 actions = {
 
 }
 
 
-def action(model: str, schema: ABCMeta = None, multiple: bool = False, permits: Iterable = ()):
+def action(model: str, schema: Optional[ABCMeta] = None, multiple: bool = False, permits: Iterable = ()):
     """
         Декоратор регистрирует функцию
     """

@@ -1,11 +1,11 @@
 {% block as_update %}
-    <select class="form-control is-valid"
-            id="{{ field.key }}"
-            name="{{ field.key }}"
+    <select class="babel-update form-control is-valid"
+            id="{{ field.field_name }}"
+            name="{{ field.field_name }}"
             display-title="{{ field.create.title }}"
             title="{{ field.create.description }}"
             {% if field.create.readonly %} readonly='1' {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             {% if field.create.required %} required {% endif %}
             filter="{{ field.create.filter }}"
             model-name="{{ field.model_name }}"
@@ -17,20 +17,15 @@
                     selected> {{ field.val.name or field.val.english_name }}</option>
         {% endif %}
     </select>
-    <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceOneBabel(el)
-    </script>
 {% endblock %}
 {% block as_create %}
-    <select class="form-control is-valid"
-            id="{{ field.key }}"
-            name="{{ field.key }}"
+    <select class="babel-create form-control is-valid"
+            id="{{ field.field_name }}"
+            name="{{ field.field_name }}"
             display-title="{{ field.create.title }}"
             title="{{ field.create.description }}"
             {% if field.create.readonly %} readonly='1' {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             {% if field.create.required %} required {% endif %}
             filter="{{ field.create.filter }}"
             model-name="{{ field.model_name }}"
@@ -42,18 +37,13 @@
                     selected> {{ field.val.name or field.val.english_name }}</option>
         {% endif %}
     </select>
-    <script>
-        var key = '{{ field.key }}';
-        var el = document.getElementById(key);
-        choiceOneBabel(el)
-    </script>
 {% endblock %}
 {% block as_get %}
     <input type="text"
-           class="form-control"
+           class="babel-get form-control"
             {% if field.required %} required {% endif %}
            disabled
-           name="{{ field.key }}"
+           name="{{ field.field_name }}"
            placeholder="Enter {{ field.title }}"
            value="{{ field.val.english_name or field.val.name or field.val }}"
     >

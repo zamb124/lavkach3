@@ -6,34 +6,34 @@
                id="btn-add-contact"
                hx-get="/inventory/store_monitor/create_movements?store_id={{ store_id }}"
                hx-target="#htmx_content"
-               hx-swap="beforebegin"
+               hx-swap="beforebegin transition:true"
                class="btn btn-primary d-flex align-items-center"
             >
                 <iconify-icon icon="solar:add-circle-broken" class="me-1 fs-5" data_key="t-add-order"></iconify-icon>
                 Add Order
             </a>
         </div>
-        <div class="table-responsive">
-            <ul class="nav nav-tabs theme-tab gap-3 flex-nowrap" role="tablist">
-                {% for order_type, ords in order_types_map.items() %}
-                    <li class="nav-item ">
-                        <a class="nav-link {% if loop.first %} active {% endif %}" data-bs-toggle="tab"
-                           href="#{{ order_type._id }}" role="tab">
-                            <div class="hstack gap-2">
-                                <iconify-icon icon="solar:smartphone-line-duotone" class="fs-4"></iconify-icon>
-                                <span>{{ order_type.title.val }}</span>
-                            </div>
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+
+        <ul class="nav nav-tabs theme-tab gap-3 flex-nowrap" role="tablist">
+            {% for order_type, ords in order_types_map.items() %}
+                <li class="nav-item ">
+                    <a class="nav-link {% if loop.first %} active {% endif %}" data-bs-toggle="tab"
+                       href="#{{ order_type._id }}" role="tab">
+                        <div class="hstack gap-2">
+                            <iconify-icon icon="solar:smartphone-line-duotone" class="fs-4"></iconify-icon>
+                            <span>{{ order_type.title.val }}</span>
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+
         <div class="tab-content mb-n3">
             {% for order_type, orders in order_types_map.items() %}
-                <div class="tab-pane {% if loop.first %} active {% endif %}" id="{{ order_type._id }}" role="tabpanel">
+                <div class="table-responsive tab-pane {% if loop.first %} active {% endif %}" id="{{ order_type._id }}" role="tabpanel">
                     {% with order=order %}
                         {% include 'inventory/order/order_table.html' %}
-                        {% endwith %}
+                    {% endwith %}
                 </div>
             {% endfor %}
         </div>

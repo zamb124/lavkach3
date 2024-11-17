@@ -1,32 +1,32 @@
 {% block as_update %}
-    <input type="hidden" name="{{ field.key }}" value="off">
+    <input type="hidden" name="{{ field.field_name }}" value="off">
         <input
-                class="bool form-check-input"
+                class="bool-update form-check-input"
                 type="checkbox"
                 role="switch"
-                id="{{ field.key }}"
-                name="{{ field.key }}"
+                id="{{ field.field_name }}"
+                name="{{ field.field_name }}"
                 {% if field.val == True %} checked {% endif %}
         >
 {% endblock %}
 {% block as_create %}
         <input
-                class="bool form-check-input"
+                class="bool-create form-check-input"
                 type="checkbox"
                 role="switch"
-                id="{{ field.key }}"
-                name="{{ field.key }}"
+                id="{{ field.field_name }}"
+                name="{{ field.field_name }}"
                 {% if field.val == True %} checked {% endif %}
         >
 {% endblock %}
 {% block as_get %}
         <input
-                class="bool form-check-input"
+                class="bool-get form-check-input"
                 type="checkbox"
                 role="switch"
                 disabled
-                id="{{ field.key }}"
-                name="{{ field.key }}"
+                id="{{ field.field_name }}"
+                name="{{ field.field_name }}"
                 {% if field.val == True %} checked {% endif %}
         >
 {% endblock %}

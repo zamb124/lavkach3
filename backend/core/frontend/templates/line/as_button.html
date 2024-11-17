@@ -3,39 +3,12 @@
        hx-params="model,method,id,key,backdrop"
        hx-trigger="click"
        hx-target="#htmx_content"
-       hx-ext="json-enc"
-       hx-post="/base/modal"
+       hx-get="/base/modal/{{ line.v.model.name }}/{{ line.p.id }}?method=get"
        hx-swap="beforeend transition:true"
-       hx-vals='{
-"model": "{{ line.v.model.name }}",
-"method": "get",
-"id": "{{ line.p.id or "" }}",
-"key": "{{ line.p.key }}"
-}'
        class="btn btn-soft-success inline" style="padding: 0px">
         <iconify-icon icon="solar:document-bold" class="fs-8"></iconify-icon>
 
     </a>
-{% endblock %}
-{% block save %}
-    <button
-            id="{{ 'submit-'~line.p.key }}"
-            class="btn btn-success"
-            hx-boost="true"
-            hx-include="#{{ line.p.key }}"
-            hx-post="/base/line"
-            hx-ext="json-enc"
-            hx-target="#htmx_content"
-            hx-swap="{% if line.type == 'new' %}outerHTML{% else %}none{% endif %} transition:true"
-            hx-vals='{
-                {% if line.p.id %}"id": "{{ line.p.id }}",{% endif %}
-                "model": "{{ line.v.model.name }}",
-                "method": "{% if line.type == 'new' %}save_create{% else %}save{% endif %}",
-                "key": "{{ line.p.class_key }}"
-                }'
-    >
-        Save
-    </button>
 {% endblock %}
 {% block update %}
     <button
@@ -43,15 +16,8 @@
             hx-params="model,method,id,key,backdrop"
             hx-trigger="click"
             hx-target="#htmx_content"
-            hx-ext="json-enc"
             hx-swap="beforeend transition:true"
-            hx-post="/base/modal"
-            hx-vals='{
-            "model": "{{ line.v.model.name }}",
-            "method": "update",
-            "id": "{{ line.p.id }}",
-            "key": "{{ line.p.class_key }}"
-            }'
+            hx-get="/base/modal/{{ line.v.model.name }}/{{ line.p.id }}?method=update"
             class="btn btn-soft-primary inline">
         <iconify-icon icon="solar:document-add-bold" class="fs-8"></iconify-icon>
 
@@ -62,15 +28,8 @@
        hx-params="model,method,key,backdrop"
        hx-trigger="click"
        hx-target="#htmx_content"
-       hx-ext="json-enc"
        hx-swap="beforeend transition:true"
-       hx-post="/base/modal"
-       hx-vals='{
-"model": "{{ line.v.model.name }}",
-"method": "create",
-{% if line.p.id %}"id": "{{ line.p.id }}", {% endif %}
-"key": "{{ line.p.class_key }}"
-}'
+       hx-get="/base/modal/{{ line.v.model.name }}/{{ line.p.id }}?method=create"
     >
         <iconify-icon icon="solar:add-square-broken" class="fs-8"></iconify-icon>
     </a>
@@ -82,14 +41,8 @@
        hx-target="#htmx_content"
        hx-ext="json-enc"
        hx-swap="beforeend transition:true"
-       hx-post="/base/line"
+       hx-get="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?method=delete"
        disabled
-       hx-vals='{
-"model": "{{ line.v.model.name }}",
-"method": "delete",
-"id": "{{ line.p.id or "" }}",
-"key": "{{ line.p.key }}"
-}'
        class="btn btn-soft-danger" style="padding: 0px">
         <iconify-icon icon="solar:trash-bin-2-bold" class="fs-8"></iconify-icon>
     </a>

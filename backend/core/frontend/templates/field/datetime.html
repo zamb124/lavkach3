@@ -1,11 +1,11 @@
 {% block as_update %}
     <input
             type="text"
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             {% if field.update.required %} aria-required="true" {% endif %}
             {% if field.update.readonly %}
             readonly
-            class="datetime form-control disabled"
+            class="datetime-update form-control disabled"
             {% else %}
             class="datetime form-control text-center"
             {% endif %}
@@ -16,11 +16,11 @@
 {% block as_create %}
     <input
             type="text"
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             {% if field.create.required %} aria-required="true" {% endif %}
             {% if field.create.readonly %}
             readonly
-            class="datetime form-control disabled text-center"
+            class="datetime-create form-control disabled text-center"
             {% else %}
             class="datetime form-control"
             {% endif %}
@@ -30,11 +30,11 @@
 {% endblock %}
 {% block as_get %}
     <input type="text"
-           class="form-control text-center"
+           class="datetime-get form-control text-center"
             {% if field.required %} required {% endif %}
            disabled
 
-           name="{{ field.key }}"
+           name="{{ field.field_name }}"
            placeholder=""
            value="{{ field.val.strftime('%Y-%m-%d') if field.val else '' }}"
     >

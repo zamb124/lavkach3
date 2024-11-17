@@ -47,7 +47,7 @@ class BasicModel(BaseModel):
                 annotation = fieldinfo.annotation
                 field = getattr(self, field1)
                 if isinstance(field, Enum):
-                    normalized_value = annotation(field2.lower())
+                    normalized_value = annotation(field2.lower())  # type: ignore
                 else:
                     normalized_value = field2
                 if field != normalized_value:
@@ -67,6 +67,16 @@ class BasicModel(BaseModel):
             case 'not in':
                 ...
         return resolution
+
+    # @model_validator(mode='before')
+    # @classmethod
+    # def field_cleaner(cls, data: Any) -> Any:
+    #     if isinstance(data, dict):
+    #         for k, v in data.items():
+    #             if isinstance(v, str):
+    #                 if v == '':
+    #                     data[k] = None
+    #     return data
 
     # def model_post_init(self, __context):
     #     if hasattr(self.Config, 'readonly'):
@@ -92,10 +102,12 @@ def BasicField(
         #####
         model: str | None = None,  # Имя модели
         filter: dict | None = None,  # Имя модели
+
         readonly: bool | list = False,  # Только на чтение (всегда) или одно из условий  например
         # [('status','==', 'CONFIRMED')]
         table: bool = False,  # Показывать в таблице
         form: bool = False,  # Показывать в Форме
+        hidden: bool = False,  # Показывать в Форме
         ####
         default_factory: typing.Callable[[], Any] | None = _Unset,
         alias: str | None = _Unset,
@@ -132,13 +144,14 @@ def BasicField(
     """
     Переопределяем для удобства
     """
-    return Field(
+    return Field(  # type: ignore
         default,
         table=table,
         model=model,
         filter=filter,
         readonly=readonly,
         form=form,
+        hidden=hidden,
         default_factory=default_factory,
         alias=alias,
         alias_priority=alias_priority,
@@ -186,7 +199,7 @@ class CountryListSchema(GenericListSchema):
 
 class LocaleSchema(BaseModel):
     lsn: int = 0
-    id: str = None
+    id: str
     language: str
     territory: Optional[str | None] = None
     display_name: str
@@ -220,10 +233,9 @@ class PhoneSchema(BaseModel):
 
 
 class ActionBaseSchame(BaseModel):
-    id: Optional[UUID4] = Field(default=None, title='Id', hidden=True, form=True)
-    ids: Optional[list[UUID4]] = Field(default=[], title='Ids', hidden=True, form=True)
-    lsn: Optional[int] = Field(default=0, title='Lsn', hidden=True)
-    vars: Optional[dict] = Field(default={}, title='Vars', hidden=True)
+    id: Optional[UUID4] = BasicField(default=None, title='Id', hidden=True, form=True)
+    lsn: Optional[int] = BasicField(default=0, title='Lsn', hidden=True)
+    vars: Optional[dict] = BasicField(default={}, title='Vars', hidden=True)
 
     class Config:
         extra = 'allow'

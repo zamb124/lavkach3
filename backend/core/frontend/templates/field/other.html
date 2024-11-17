@@ -1,15 +1,15 @@
 {% block as_update %}
     <input
-            class="form-control"
-            name="{{ field.key }}"
+            class="other-update form-control"
+            name="{{ field.field_name }}"
             placeholder="Enter {{ field.title or c }}"
             value="{{ field.val }}"
     >
 {% endblock %}
 {% block as_create %}
     <input
-            class="form-control"
-            name="{{ field.key }}"
+            class="other-update form-control"
+            name="{{ field.field_name }}"
             placeholder="Enter {{ field.title or c }}"
             value="{{ field.val }}"
     >

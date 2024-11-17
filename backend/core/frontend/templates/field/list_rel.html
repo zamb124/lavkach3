@@ -1,8 +1,8 @@
 {% block as_update %}
     <input
-            name="{{ field.key }}"
-            id="{{ field.key }}"
-            class="list-rel form-control"
+            name="{{ field.field_name }}"
+            id="{{ field.field_name }}"
+            class="list-rel-update form-control"
             {% if field.update.readonly %}readonly="1" {% endif %}
             model-name="{{ field.model_name }}"
             title="{{ field.update.description }}"
@@ -14,58 +14,12 @@
             data-choices-removeItem
             value="{% if field.val %}{{ ','.join(field.val) }}{% endif %}"
     />
-    <script>
-    (async function () {
-            let element = document.getElementById("{{ field.key }}");
-            let choices = new Choices(element, {
-                placeholderValue: "Enter {{ field.update.title or field.field_name }}",
-                multiple: true,
-                removeItemButton: true
-            });
-            choices.containerInner.element.classList.add('form-control');
-            choices.containerInner.element.classList.add('disabled');
-            function check_valid(event) {
-                if (element.required) {
-                    if (event) {
-                        if (event.type === 'choice') {
-                            if (event.detail.choice.value) {
-                                choices.containerInner.element.classList.remove('is-invalid');
-                                choices.containerInner.element.classList.add('is-valid');
-                            }
-                        } else if (event.type === 'removeItem') {
-                            if (event.detail.value) {
-                                choices.containerInner.element.classList.add('is-invalid');
-                                choices.containerInner.element.classList.remove('is-valid');
-                            }
-                        }
-
-                    } else {
-                        choices.containerInner.element.classList.add('is-invalid');
-                        choices.containerInner.element.classList.remove('is-valid');
-                    }
-                } else if (element.id.includes('__in')) {
-                    choices.containerInner.element.classList.remove('is-invalid');
-                    choices.containerInner.element.classList.remove('is-invalid');
-                } else {
-                    try {
-                        choices.containerInner.element.classList.remove('is-invalid');
-                    } catch (err) {
-
-                    }
-
-                    choices.containerInner.element.classList.add('is-valid');
-                }
-            }
-
-            check_valid()
-        })();
-    </script>
 {% endblock %}
 {% block as_create %}
     <input
-            name="{{ field.key }}"
-            id="{{ field.key }}"
-            class="list-str form-control"
+            name="{{ field.field_name }}"
+            id="{{ field.field_name }}"
+            class="list-rel-create form-control"
             {% if field.create.readonly %}readonly="1" {% endif %}
             model-name="{{ field.model_name }}"
             title="{{ field.create.description }}"
@@ -77,58 +31,12 @@
             data-choices-removeItem
             value="{% if field.val %}{{ ','.join(field.val) }}{% endif %}"
     />
-    <script>
-    (async function () {
-            let element = document.getElementById("{{ field.key }}");
-            let choices = new Choices(element, {
-                placeholderValue: "Enter {{ field.create.title or field.field_name }}",
-                multiple: true,
-                removeItemButton: true
-            });
-            choices.containerInner.element.classList.add('form-control');
-            choices.containerInner.element.classList.add('disabled');
-            function check_valid(event) {
-                if (element.required) {
-                    if (event) {
-                        if (event.type === 'choice') {
-                            if (event.detail.choice.value) {
-                                choices.containerInner.element.classList.remove('is-invalid');
-                                choices.containerInner.element.classList.add('is-valid');
-                            }
-                        } else if (event.type === 'removeItem') {
-                            if (event.detail.value) {
-                                choices.containerInner.element.classList.add('is-invalid');
-                                choices.containerInner.element.classList.remove('is-valid');
-                            }
-                        }
-
-                    } else {
-                        choices.containerInner.element.classList.add('is-invalid');
-                        choices.containerInner.element.classList.remove('is-valid');
-                    }
-                } else if (element.id.includes('__in')) {
-                    choices.containerInner.element.classList.remove('is-invalid');
-                    choices.containerInner.element.classList.remove('is-invalid');
-                } else {
-                    try {
-                        choices.containerInner.element.classList.remove('is-invalid');
-                    } catch (err) {
-
-                    }
-
-                    choices.containerInner.element.classList.add('is-valid');
-                }
-            }
-
-            check_valid()
-        })();
-    </script>
 {% endblock %}
 {% block as_get %}
     <input
-            name="{{ field.key }}"
-            id="{{ field.key }}"
-            class="list_str form-control" data-choices data-choices-text-disabled-true
+            name="{{ field.field_name }}"
+            id="{{ field.field_name }}"
+            class="list-rel-get form-control" data-choices data-choices-text-disabled-true
             value="
 
                {% for val in field.val %}
@@ -139,15 +47,6 @@
                {% endfor %}
                 "
     />
-    <script>
-    (async function () {
-            let element = document.getElementById("{{ field.key }}");
-            let choices = new Choices(element);
-             choices.containerInner.element.classList.add('form-control');
-            choices.disable()
-            choices.containerInner.element.classList.add('disabled');
-        })();
-    </script>
 {% endblock %}
 
 

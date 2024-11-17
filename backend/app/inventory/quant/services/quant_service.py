@@ -1,8 +1,8 @@
 import uuid
-from typing import Any, Optional
+from typing import Any, Optional, List
 from typing import TYPE_CHECKING
 
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.orm import joinedload
 from starlette.requests import Request
 
@@ -39,16 +39,17 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
     async def get_available_quants(
             self,
             store_id: uuid.UUID,
-            product_id: uuid.UUID = None,
+            product_ids: [uuid.UUID] = None,
             id: uuid.UUID = None,
             exclude_id: uuid.UUID = None,
-            location_classes: list[str] = None,
-            location_ids: list[uuid.UUID] = None,
-            location_type_ids: list[uuid.UUID] = None,
-            lot_ids: list[uuid.UUID] = None,
+            location_classes: List[str] = None,
+            location_ids: List[uuid.UUID] = None,
+            package_ids: List[uuid.UUID] = None,
+            location_type_ids: List[uuid.UUID] = None,
+            lot_ids: List[uuid.UUID] = None,
             partner_id: uuid.UUID = None,
             quantity: float = 0
-    ) -> list[Quant]:
+    ) -> List[Quant]:
         """
             Метод получения квантов по параметрам
         """
@@ -56,8 +57,8 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
         if id:
             query = query.where(self.model.id == id)
         else:
-            if product_id:
-                query = query.where(self.model.product_id == product_id)
+            if product_ids:
+                query = query.where(self.model.product_id.in_(product_ids))
             if exclude_id:
                 query = query.where(self.model.id != exclude_id)
             if store_id:
@@ -66,10 +67,18 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
                 query = query.where(Location.location_class.in_(location_classes))
             if location_ids:
                 query = query.where(self.model.location_id.in_(location_ids))
+            if package_ids:
+                if None in package_ids:
+                    query = query.where(or_(self.model.package_id.in_(package_ids), self.model.package_id.is_(None)))
+                else:
+                    query = query.where(self.model.package_id.in_(package_ids))
             if location_type_ids:
                 query = query.where(Location.location_type_id.in_(location_type_ids))
             if lot_ids:
-                query = query.where(self.model.lot_id.in_(lot_ids))
+                if None in lot_ids:
+                    query = query.where(or_(self.model.lot_id.in_(lot_ids), self.model.lot_id.is_(None)))
+                else:
+                    query = query.where(self.model.lot_id.in_(lot_ids))
             if quantity:
                 query = query.where(self.model.quantity > quantity)
 

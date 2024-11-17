@@ -1,11 +1,11 @@
 {% block as_update %}
-    <select class="uuid as-update text-center"
-            id="{{ field.key }}"
+    <select class="uuid-update as-update text-center"
+            id="{{ field.field_name }}"
             display-title="{{ field.update.title }}"
             title="{{ field.update.description }}"
             filter="{{ field.update.filter }}"
             model-name="{{ field.model_name }}"
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             data-choices
             {% if field.update.readonly %}
             readonly='1'
@@ -18,16 +18,13 @@
             <option value="{{ field.val }}" selected label="Loading"></option>
         {% endif %}
     </select>
-    <script>
-        new ChoiceHandler('{{ field.key }}', 'update')
-    </script>
 {% endblock %}
 {% block as_create %}
-    <select class="uuid as-create text-center"
-            id="{{ field.key }}"
+    <select class="uuid-create as-create text-center"
+            id="{{ field.field_name }}"
             display-title="{{ field.create.title }}"
             title="{{ field.create.description }}"
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             filter="{{ field.create.filter }}"
             model-name="{{ field.model_name }}"
             data-choices
@@ -43,42 +40,25 @@
             <option value="{{ field.val }}" selected></option>
         {% endif %}
     </select>
-    <script>
-        new ChoiceHandler('{{ field.key }}', 'create')
-    </script>
 {% endblock %}
 {% block as_get %}
-    <a class="uuid text-center text-danger fw-bold form-control"
-            id="{{ field.key }}"
+    <a class="uuid-get text-center text-danger fw-bold form-control"
+            id="{{ field.field_name }}"
             href="#"
-            hx-ext="json-enc"
-            hx-post="/base/modal"
+            hx-get="/base/modal/{{ field.model_name }}/{{ field.val }}"
             display-title="{{ field.get.title }}"
             title="{{ field.get.description }}"
             filter="{{ field.get.filter }}"
             model-name="{{ field.model_name }}"
             hx-target="#htmx_content"
             hx-swap="beforeend transition:true"
-
-           hx-vals='{
-            "model": "{{ field.model_name }}",
-            "method": "get",
-            "id": "{{ field.val }}",
-            "key": "{{ field.key }}"
-            }'
     >{{ field.val }}</a>
-    <script>
-        setTitle('{{ field.key }}', 'get')
-    </script>
 {% endblock %}
 {% block as_card_title %}
     <h4
-            class="uuid as-card-title"
-            id="{{ field.key }}"
+            class="uuid-get as-card-title"
+            id="{{ field.field_name }}"
             model-name="{{ field.model_name }}"
     > {{ field.val }}
     </h4>
-    <script>
-        setTitle('{{ field.key }}', 'get')
-    </script>
 {% endblock %}

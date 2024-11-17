@@ -50,4 +50,4 @@ async def suggest_delete(suggest_id: uuid.UUID, service: SuggestService = Depend
 
 @suggest_router.post("/confirm", responses={200: {'model': list[SuggestScheme]}})
 async def action_suggest_confirm(schema: SuggestConfirmScheme, service: SuggestService = Depends()):
-    return await service.suggest_confirm(suggest_ids=schema.ids, value=schema.value)
+    return await service.suggest_confirm(suggest_id=schema.id, value=schema.value)

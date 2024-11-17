@@ -1,8 +1,8 @@
 {% block as_update %}
     <input
             type="number"
-            class="float form-control text-center"
-            name="{{ field.key }}"
+            class="float-update form-control text-center"
+            name="{{ field.field_name }}"
             {% if field.readonly %}readonly{% endif %}
             step="any"
             {% if field.required %}required {% endif %}
@@ -14,8 +14,8 @@
 {% block as_create %}
     <input
             type="number"
-            class="float form-control"
-            name="{{ field.key }}"
+            class="float-create form-control"
+            name="{{ field.field_name }}"
             {% if field.readonly %}readonly{% endif %}
             step="any"
             {% if field.required %}required {% endif %}
@@ -26,10 +26,10 @@
 {% endblock %}
 {% block as_get %}
     <input  type="text"
-                    class="form-control text-center"
+                    class="float-get form-control text-center"
                     {% if field.required %} required {% endif %}
                     disabled
-                    name="{{ field.key }}"
+                    name="{{ field.field_name }}"
                     placeholder="Enter {{ field.title }}"
                     value="{{ field.val.english_name or field.val.name or field.val}}"
             >

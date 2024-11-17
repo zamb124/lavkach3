@@ -13,7 +13,6 @@ inventory_router = APIRouter(
 )
 
 
-@inventory_router.post("/create_movements", response_model=OrderListSchema)
+@inventory_router.post("/create_movements", response_model=CreateMovements)
 async def create_movements(schema: CreateMovements, service: InventoryService = Depends()):
-    await service.create_movements(schema)
-    return {}
+    return await service.create_movements(schema)

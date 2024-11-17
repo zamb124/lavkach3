@@ -1,8 +1,8 @@
 {% block as_update %}
         <input
-                class="dict form-control"
+                class="dict-update form-control"
                 {% if field.required %} required {% endif %}
-                name="{{ field.key }}"
+                name="{{ field.field_name }}"
                 {% if field.update.hidden %}hidden{% endif %}
                 placeholder="Enter {{ field.title }}"
                 value="{{ field.val if field.val else "" }}"
@@ -10,15 +10,17 @@
 {% endblock %}
 {% block as_create %}
         <input
-                class="dict form-control"
+                class="dict-create form-control"
                 {% if field.required %} required {% endif %}
-                name="{{ field.key }}"
+                name="{{ field.field_name }}"
                 {% if field.create.hidden %}hidden{% endif %}
                 placeholder="Enter {{ field.title }}"
                 value="{{ field.val if field.val else "" }}"
         >
 {% endblock %}
 {% block as_get %}
-{{ field.val.english_name or field.val.name or field.val }}
+    <div class="fict-get">
+        {{ field.val.english_name or field.val.name or field.val }}
+    </div>>
 {% endblock %}
 

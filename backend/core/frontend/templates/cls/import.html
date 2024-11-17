@@ -66,15 +66,10 @@
                                 type="button"
                                 class="btn btn-secondary"
                                 id="{{ 'submit-'~line.p.class_key }}"
-                                hx-post="/base/import"
+                                hx-post="/base/import/{{ line.v.model.name }}"
                                 hx-target="#{{ 'modal_body'~ line.p.class_key }}"
                                 hx-include="#{{ 'tbody-table' ~'--'~ line.p.class_key }}"
                                 hx-ext="json-enc"
-                                hx-vals='{
-                                "model": "{{ line.v.model.name }}",
-                                "method": "save",
-                                "key": "{{ line.p.class_key }}"
-                            }'
                         >
                             Commit Import
                         </button>

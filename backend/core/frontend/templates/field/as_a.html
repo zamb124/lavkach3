@@ -5,23 +5,14 @@
     {% else %}
         href="#"
         hx-ext="json-enc"
-        hx-post="/base/modal"
-        hx-vals='{
-            "model": "{{ model or field.model_name }}",
-            "method": "get",
-            "id": "{{ field.val }}",
-            "key": "{{ field.cls.v.key }}"
-            }'
+        hx-post="/base/modal/{{ field.model_name }}/{{ field.val }}"
     {% endif %}
-   id="{{ field.key }}"
+   id="{{ field.field_name }}"
    hx-trigger="click"
    hx-push-url="false"
    model-name="{{ model or field.model_name }}"
    hx-target="#htmx_content"
    hx-swap="beforeend transition:true"
-   class="text-danger">
+   class="uuid-get text-danger">
     {{ field.val }}</a>
-<script>
-    setTitle('{{ field.key }}', 'get')
-</script>
 {% endblock %}

@@ -7,9 +7,9 @@ function extractUUIDs(input) {
 }
 
 class ChoiceHandler {
-    constructor(elId, method) {
-        this.element = document.getElementById(elId);
+    constructor(element, method) {
         this.method = method;
+        this.element = element
         this.displayTitle = this.element.getAttribute('display-title');
         this.filter = this.element.getAttribute('filter');
         this.isFilter = this.element.getAttribute('is-filter');
@@ -93,7 +93,7 @@ class ChoiceHandler {
 
     async searchChoices(value) {
         try {
-            const items = await fetch(`/base/search?model=${this.modelName}&filter=${this.filter}&search=${encodeURIComponent(value)}`);
+            const items = await fetch(`/base/search?model=${this.modelName}&filter=${this.filter}&q=${encodeURIComponent(value)}`);
             const results = await items.json();
             if (results.length === 0) {
                 throw 'Empty!';
@@ -145,8 +145,7 @@ class ChoiceHandler {
 
 }
 
-async function choicesMultiBadges(elId, method) {
-    let element = document.getElementById(elId);
+async function choicesMultiBadges(element, method) {
     var model_name = element.getAttribute('model-name')
 
     async function getValues() {
@@ -181,7 +180,7 @@ async function choicesMultiBadges(elId, method) {
     let res = await getValues()
     element.innerText = ''
     res.forEach(function (line) {
-        element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary">' + line.label + '</span>');
+        element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary m-lg-1">' + line.label + '</span>');
     });
     if (!element.innerText && method==='get') {
         element.innerText = '-'
@@ -232,7 +231,7 @@ async function choicesUuidBadge(elId, method) {
     }
 }
 
-async function choiceMultiBabel() {
+async function choiceMultiBabel(element) {
     var display_title = element.getAttribute('display-title')
     var filter = element.getAttribute('filter')
     var is_filter = element.getAttribute('is-filter')
@@ -343,8 +342,7 @@ async function choiceOneBabel(elId, method) {
     init()
 }
 
-async function choiceMultiEnum(elId, method) {
-    let element = document.getElementById(elId);
+async function choiceMultiEnum(element, method) {
     var display_title = element.getAttribute('display-title')
     var filter = element.getAttribute('filter')
     var is_filter = element.getAttribute('is-filter')
@@ -415,8 +413,7 @@ async function choiceMultiEnum(elId, method) {
     check_valid()
 }
 
-async function setTitle(elId) {
-    let element = document.getElementById(elId);
+async function setTitle(element, method) {
     var model_name = element.getAttribute('model-name')
 
     async function getValues() {

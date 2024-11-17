@@ -6,17 +6,9 @@
                 ui_key="{{ line.p.ui_key }}"
                 lsn="{{ line.p.lsn }}"
                 hx-trigger="backend_update"
-                hx-post="/base/line"
-                hx-ext="json-enc"
-                hx-swap="outerHTML transition:true"
+                hx-get="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=tr&method=get"
+                hx-swap="outerHTML"
                 hx-target="#{{ line.p.key }}"
-                hx-vals='{
-                "model": "{{ line.v.model.name }}",
-                "method": "get",
-                "mode": "tr",
-                "key": "{{ line.p.class_key }}",
-                "id": "{{ line.p.id }}"
-                }'
         >
             <th scope="row" style="white-space: nowrap; vertical-align: middle;">
                 <div class="row">
@@ -35,16 +27,16 @@
                                         {% if method.value in ('get','create') %}hx-target="#{{ line.p.key }}"
                                         {% else %}hx-target="this"{% endif %}
                                         hx-include="#{{ line.p.key }}"
+                                        {% if method.value =='get' %}
+                                        hx-get="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=tr&method=update"
+                                        {% elif method.value =='create' %}
                                         hx-ext="json-enc"
-                                        hx-swap="outerHTML transition:true"
-                                        hx-post="/base/line"
-                                        hx-vals='{
-                                "model": "{{ line.v.model.name }}",
-                                "method": "{% if method.value =='get' %}update{% elif method.value =='create' %}save_create{% else %}save{% endif %}",
-                                "mode": "tr",
-                                "id": "{{ line.p.id }}",
-                                "key": "{{ line.p.class_key }}"
-                            }'
+                                        hx-post="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=tr&method=save_create"
+                                        {% else %}
+                                        hx-ext="json-enc"
+                                        hx-post="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=tr&method=save"
+                                        {% endif %}
+                                        hx-swap="outerHTML"
                                         class="btn btn-soft-primary inline"
                                         style="display: inline-block">
                                     <iconify-icon
@@ -72,17 +64,11 @@
                 <div
                         {% if line.is_last and not line.is_rel %}
                             hx-include="{{ '#filter' ~'--'~ line.p.class_key }}"
-                            hx-params="*"
-                            hx-post="/base/table"
+                            hx-post="/base/table/{{ line.v.model.name }}?cursor_lt={{ line.p.lsn }}"
                             hx-ext="json-enc"
                             hx-trigger="revealed" hx-swap="beforeend transition:true"
                             hx-select="#{{ 'tbody-table' ~'--'~ line.p.class_key }}>tr"
                             hx-target="#tbody-table--{{ line.p.class_key }}"
-                            hx-vals='{
-                            "model": "{{ line.v.model.name }}",
-                            "{{ line.p.class_key ~'--filter--'~ 'cursor_lt' }}": "{{ line.p.lsn }}",
-                            "key": "{{ line.p.class_key }}"
-                        }'
                         {% endif %}>
                 </div>
                 <div>
@@ -102,25 +88,16 @@
                 ui_key="{{ line.p.ui_key }}"
                 lsn="{{ line.p.lsn }}"
                 hx-trigger="backend_update"
-                hx-post="/base/line"
-                hx-ext="json-enc"
-                hx-swap="outerHTML transition:true"
+                hx-get="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=tr&method=get"
+                hx-swap="outerHTML"
                 hx-target="#{{ line.p.key }}"
-                hx-vals='{
-                "model": "{{ line.v.model.name }}",
-                "method": "get",
-                "mode": "tr",
-
-                "key": "{{ line.p.class_key }}",
-                "id": "{{ line.p.id }}"
-                }'
         >
             <th scope="row" style="white-space: nowrap; vertical-align: middle;">
                 <div class="row">
                     <div class="col-6">
                         <div class="form-check fs-5" style="display: inline-block;">
                             <input class="form-check-input" type="checkbox"
-                                   name="{{ line.p.key ~ '--check' }}" value="">
+                                   name="{{ line.p.id ~ '--check' }}" value="">
                         </div>
                     </div>
                     {% if not line.v.parent_field %} {# Если строчка встроена в другой обьект, то не даем изменять #}
@@ -130,17 +107,18 @@
                                     hx-trigger="click"
                                     {% if method.value in ('get','create') %}hx-target="#{{ line.p.key }}"
                                     {% else %}hx-target="this"{% endif %}
+                                    {% if method.value =='get' %}
+                                    hx-get="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=tr&method=update"
+                                    {% elif method.value =='create' %}
                                     hx-include="#{{ line.p.key }}"
                                     hx-ext="json-enc"
+                                    hx-post="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=tr&method=save_create"
+                                    {% else %}
+                                    hx-include="#{{ line.p.key }}"
+                                    hx-ext="json-enc"
+                                    hx-put="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=tr&method=save"
+                                    {% endif %}
                                     hx-swap="outerHTML transition:true"
-                                    hx-post="/base/line"
-                                    hx-vals='{
-                                "model": "{{ line.v.model.name }}",
-                                "method": "{% if method.value =='get' %}update{% elif method.value =='create' %}save_create{% else %}save{% endif %}",
-                                "mode": "tr",
-                                "id": "{{ line.p.id }}",
-                                "key": "{{ line.p.class_key }}"
-                            }'
                                     class="btn btn-soft-primary inline"
                                     style="display: inline-block">
                                 <iconify-icon
@@ -152,7 +130,7 @@
                 </div>
             </th>
             {% if line.id.val %}
-                <input type="hidden" name="{{ line.id.key }}" value="{{ line.id.val }}">
+                <input type="hidden" name="{{ line.id.field_name }}" value="{{ line.id.val }}">
             {% endif %}
             {% for field in line.get_fields(display_view='table') %}
                 {% if method in ('update', 'create') %}
@@ -167,7 +145,6 @@
                 <div
                         {% if line.is_last and not line.is_rel %}
                             hx-include="{{ '#filter' ~'--'~ line.p.class_key }}"
-                            hx-params="*"
                             hx-post="/base/table"
                             hx-ext="json-enc"
                             hx-trigger="revealed" hx-swap="beforeend transition:true"
@@ -200,7 +177,7 @@
                 hx-trigger="backend_update"
                 hx-post="/base/line"
                 hx-ext="json-enc"
-                hx-swap="outerHTML transition:true"
+                hx-swap="outerHTML"
                 hx-target="#{{ line.p.key }}"
                 hx-vals='{
                 "model": "{{ line.v.model.name }}",
@@ -260,17 +237,10 @@
                 <div
                         {% if line.is_last and not line.is_rel %}
                             hx-include="{{ '#filter' ~'--'~ line.p.class_key }}"
-                            hx-params="*"
-                            hx-post="/base/table"
-                            hx-ext="json-enc"
+                            hx-get="/base/table/{{ line.v.model.name }}?cursor_lt={{ line.p.lsn }}"
                             hx-trigger="revealed" hx-swap="beforeend transition:true"
                             hx-select="#{{ 'tbody-table' ~'--'~ line.p.class_key }}>tr"
                             hx-target="#tbody-table--{{ line.p.class_key }}"
-                            hx-vals='{
-                            "model": "{{ line.v.model.name }}",
-                            "{{ line.p.class_key ~'--filter--'~ 'cursor_lt' }}": "{{ line.p.lsn }}",
-                            "key": "{{ line.p.class_key }}"
-                        }'
                         {% endif %}>
                 </div>
                 <div>
@@ -297,8 +267,9 @@
             <th
                     data-bs-toggle="tooltip"
                     data-bs-html="true"
-                    title="{{ field.get.description or field.get.title }}">
-                <p data-key="t-{{ field.field_name }}">{{ field.get.title or field.field_name }}</p>
+                    data-key-description="{{ field.data_key_description }}"
+                    title="{{ field.description }}">
+                <p data-key="{{ field.data_key}}">{{ field.get.title or field.field_name }}</p>
             </th>
         {% endfor %}
         <th style="min-width: 8rem"><p data-key="t-active">Active</p></th>

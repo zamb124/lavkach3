@@ -1,4 +1,4 @@
-<table class="table text-nowrap align-middle table-custom mb-0 last-items-borderless text-uppercase">
+<table class="table align-middle text-truncate text-uppercase">
     <thead>
     <tr class="text-uppercase fs-5 text-center" style="text-align: center">
         <th scope="col">
@@ -10,25 +10,12 @@
             </div>
             </p>
         </th>
-        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-            <p data-key="{{ orders[0].id.data_key }}">{{ orders[0].id.field_name }}</p>
-        </th>
-        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-            <p data-key="{{ orders[0].created_at.data_key }}">{{ orders[0].created_at.field_name }}</p>
-        </th>
-        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-            <p data-key="{{ orders[0].order_type_rel.data_key }}">{{ orders[0].order_type_rel.field_name }}</p>
-        </th>
-        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-            <p data-key="{{ orders[0].partner_id.data_key }}">{{ orders[0].partner_id.field_name }}</p>
-        </th>
-        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-            <p data-key="{{ orders[0].user_ids.data_key }}">{{ orders[0].user_ids.field_name }}</p>
-        </th>
-        <th data-bs-toggle="tooltip" data-bs-html="true" title="">
-            <p data-key="{{ orders[0].status.data_key }}">{{ orders[0].status.field_name }}</p>
-        </th>
-
+        {{ orders[0].id.as_th_title }}
+        {{ orders[0].created_at.as_th_title }}
+        {{ orders[0].order_type_rel.as_th_title }}
+        {{ orders[0].partner_id.as_th_title }}
+        {{ orders[0].user_ids.as_th_title }}
+        {{ orders[0].status.as_th_title }}
     </tr>
     </thead>
     <tbody>

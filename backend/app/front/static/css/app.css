@@ -19,7 +19,8 @@ input[type="date"] {
 
 
 .is-valid {
-    border: 1px solid var(--bs-form-valid-border-color) !important;
+    /*border: 1px solid var(--bs-form-valid-border-color) !important;*/
+    border: var(--bs-border-width) solid #e0e6eb;
     border-radius: 10px !important;
 }
 
@@ -28,15 +29,17 @@ input[type="date"] {
     font-weight: 900;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%233cd188' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
     background-position: right calc(1.375em + 1.5rem) center !important;
-    color: var(--bs-form-valid-border-color);
+    /*color: var(--bs-form-valid-border-color);*/
+    border: var(--bs-border-width) solid #e0e6eb;
     font-size: 20px;
     right: 40px;
 }
 
 
 .is-invalid {
-    border: 1px solid var(--bs-form-invalid-border-color) !important;
+    /*border: 1px solid var(--bs-form-invalid-border-color) !important;*/
     border-radius: 10px !important;
+    border: var(--bs-border-width) solid #e0e6eb;
 }
 
 .is-invalid::after {
@@ -54,9 +57,14 @@ input[type="date"] {
 }
 
 .form-control.is-invalid, .was-validated .form-control:invalid {
-    border-color: var(--bs-form-invalid-border-color);
+    /*border-color: var(--bs-form-invalid-border-color);*/
+    border: var(--bs-border-width) solid #e0e6eb;
     background-position: right calc(2.375em + 5px) center;
     padding-right: calc(5.5em + 20px);
+}
+.form-control.is-valid, .was-validated .form-control:valid {
+    /*border-color: var(--bs-form-invalid-border-color);*/
+    border: var(--bs-border-width) solid #e0e6eb;
 }
 
 .app-menu {
@@ -80,6 +88,7 @@ input[type="date"] {
     line-height: 10px;
     min-height: 10px;
     height: 10px;
+    text-align: center !important;
 
 }
 
@@ -166,4 +175,7 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
 
 .tooltip-arrow::before {
     border-top-color: var(--bs-secondary);
+}
+.table {
+    vertical-align: middle;
 }

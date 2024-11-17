@@ -10,7 +10,7 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel
 from sqlalchemy import select, Row, RowMapping
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from starlette.exceptions import HTTPException
+from core.exceptions.module import ModuleException as HTTPException
 from starlette.requests import Request
 
 from core.db.session import Base, session
@@ -313,6 +313,8 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         except IntegrityError as e:
             await self.session.rollback()
             if "duplicate key" in str(e):
+                raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
+            if "violates foreign key constraint" in str(e):
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
             else:
                 raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")

@@ -2,7 +2,15 @@ from fastapi.exceptions import HTTPException
 
 
 class ModuleException(HTTPException):
-    def __init__(self, status_code: int, enum=None, code: str | None = None, message: str | None = None, args:dict=None):
+    def __init__(self,
+                 status_code: int,
+                 enum=None, code: str | None = None,
+                 message: str | None = None,
+                 *args,
+                 **kwargs
+                 ):
+        if not message and kwargs.get('detail'):
+            message = kwargs.get('detail')
         if not enum and (code and message):
             raise ModuleException(status_code=500, code='ENUM_ERROR', message='Enum not found')
         if enum:

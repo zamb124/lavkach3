@@ -44,16 +44,16 @@
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {{ move.location_dest_id.as_get }}
         </th>
-        <th class="line-col text-center">
+        <th class="line-col">
             {% if move.status.val in ('created', 'reservation_failed') %}
             {{ move.quantity.as_(method='get', button=True) }}
                 {% else %}
              {{ move.quantity.as_get }}
             {% endif %}
         </th>
-        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+        <th class="line-col" style="padding-left: 2px; padding-right: 2px;">
             <a
-                    class="text-muted text-decoration-none d-flex justify-content-center"
+                    class="text-muted"
                     href="#"
                     hx-get="/inventory/move/detail?move_id={{ move._id }}"
                     hx-push-url="false"
@@ -64,21 +64,21 @@
                 {{ move.suggest_list_count.val }}
             </a>
         </th>
-        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+        <th class="line-col" style="padding-left: 2px; padding-right: 2px;">
             {% if move.status.val == 'created' %}
-                <span class="mb-1 badge text-bg-light">{{ move.status.val }}</span>
+                <span class="mb-0 badge text-bg-light">{{ move.status.val }}</span>
             {% elif move.status.val == 'waiting' %}
-                <span class="mb-1 badge text-bg-info">{{ move.status.val }}</span>
+                <span class="mb-0 badge text-bg-info">{{ move.status.val }}</span>
             {% elif move.status.val == 'confirmed' %}
-                <span class="mb-1 badge text-bg-secondary">{{ move.status.val }}</span>
+                <span class="mb-0 badge text-bg-secondary">{{ move.status.val }}</span>
             {% elif move.status.val == 'processing' %}
-                <span class="mb-1 badge text-bg-primary">{{ move.status.val }}</span>
+                <span class="mb-0 badge text-bg-primary">{{ move.status.val }}</span>
             {% elif move.status.val == 'done' %}
-                <span class="mb-1 badge text-bg-success">{{ move.status.val }}</span>
+                <span class="mb-0 badge text-bg-success">{{ move.status.val }}</span>
             {% elif move.status.val == 'canceled' %}
-                <span class="mb-1 badge text-bg-dark">{{ move.status.val }}</span>
+                <span class="mb-0 badge text-bg-dark">{{ move.status.val }}</span>
             {% else %}
-                <span class="mb-1 badge text-bg-danger">{{ move.status.val }}</span>
+                <span class="mb-0 badge text-bg-danger ">{{ move.status.val }}</span>
             {% endif %}
         </th>
     </tr>

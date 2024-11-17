@@ -4,12 +4,12 @@
             {% if field.update.required %} required {% endif %}
            {% if field.update.readonly %}
                 style="pointer-events: none;"
-                class="id form-control disabled"
+                class="id-update form-control disabled"
                 readonly
             {% else %}
                 class="id form-control is-valid"
             {% endif %}
-            name="{{ field.key }}"
+            name="{{ field.field_name }}"
             value="{{ field.val if field.val else "" }}"
     >
 {% endblock %}
@@ -19,34 +19,25 @@
             {% if field.create.required %} required {% endif %}
             {% if field.create.readonly %}
                                            style="pointer-events: none;"
-                                           class="id form-control disabled"
+                                           class="id-create form-control disabled"
                                            readonly
             {% else %}
                                            class="id form-control is-valid"
             {% endif %}
-                                           name="{{ field.key }}"
+                                           name="{{ field.field_name }}"
                                            value="{{ field.val if field.val else "" }}"
     >
 {% endblock %}
 {% block as_get %}
-    <a class="text-danger form-control disabled"
+    <a class="id-get text-danger form-control disabled"
        data-bs-placement="bottom"
        data-bs-toggle="tooltip"
        title="Object Link"
-       href="#"
-       hx-params="model,method,id,key"
+       href="/base/modal/{{ field.model_name }}/{{ field.cls.p.id }}"
        hx-trigger="click"
        hx-target="#htmx_content"
        hx-swap="beforeend transition:true"
-       hx-ext="json-enc"
        disabled
-       hx-post="/base/modal"
-       hx-vals='{
-"model": "{{ field.model_name }}",
-"method": "get",
-"id": "{{ field.cls.p.id }}",
-"key": "{{ field.cls.v.key }}"
-}'
     > {{ field.cls.p.display_title }}
     </a>
 

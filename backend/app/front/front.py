@@ -1,28 +1,17 @@
 import asyncio
 import json
 import os
-import uuid
-from collections import defaultdict
-from lib2to3.fixes.fix_input import context
-from typing import Optional
 import re
+import uuid
 
 import aiofiles
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from starlette.responses import RedirectResponse, JSONResponse
-from starlette.websockets import WebSocket
-from urllib3 import request
+from starlette.responses import JSONResponse
 
-from app.front.apps.basic.company.company import company
 from app.front.template_spec import templates
-from app.front.utills import BasePermit
-from distributed_websocket import WebSocketProxy
-
-from app.front.front_config import config
-from core.frontend.constructor import BaseSchema
 from core.frontend.enviroment import template_dirs
 
 
@@ -185,15 +174,18 @@ async def widget_user_profile(request: Request) -> dict:
 
 async def find_data_keys_in_file(file_path):
     data_keys = set()
-    pattern = re.compile(r'data-key="([^"]+)"')
+    pattern_key = re.compile(r'data-key="([^"]+)"')
+    pattern_description = re.compile(r'data-key-description="([^"]+)"')
 
     async with aiofiles.open(file_path, mode='r', encoding='utf-8') as file:
         try:
             content = await file.read()
         except Exception as ex:
             return set()
-        matches = pattern.findall(content)
-        data_keys.update(matches)
+        matches_keys = pattern_key.findall(content)
+        matches_descriptions = pattern_description.findall(content)
+        data_keys.update(matches_keys)
+        data_keys.update(matches_descriptions)
 
     return data_keys
 
@@ -222,7 +214,7 @@ async def geterate_translate_keys(request: Request, locale: str) -> dict:
     async with aiofiles.open(path, mode='r') as file:
         content = await file.read()
         keys = json.loads(content)
-    init_keys = {}
+    init_keys: dict = {}
     for domain_name, domain in env.domains.items():
         for model_name, model in domain.models.items():
             schema_keys = []
@@ -236,6 +228,7 @@ async def geterate_translate_keys(request: Request, locale: str) -> dict:
             cleaned_schema_keys = list(set(schema_keys))
             for key in cleaned_schema_keys:
                 init_keys.update({f't-{model_name}-{key}': None})
+                init_keys.update({f't-{model_name}-{key}-description': None})
     init_keys.update(keys)
     data = await find_data_keys(template_dirs)
     for data_key in data:
