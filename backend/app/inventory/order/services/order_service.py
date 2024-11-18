@@ -80,7 +80,6 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
             if move.suggest_list_rel:
                 move_ids.discard(move.id)
         await self.env['move'].service.create_suggests.kiq(None, move_ids=move_ids, user_id=user_id)
-        await order_entity.notify('update')
         return order_entity
 
     @permit('order_confirm')
@@ -108,7 +107,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
             logging.error("Произошла ошибка: %s", e)
             logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
             raise e
-        await order_entity.notify('update')
+        #await order_entity.notify('update')
         return res
 
     @permit('order_start')

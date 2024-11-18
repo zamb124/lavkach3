@@ -89,7 +89,16 @@ input[type="date"] {
     min-height: 10px;
     height: 10px;
     text-align: center !important;
+      opacity: 1;
+  transition: opacity 1s ease-out;
 
+}
+.line.htmx-swapping {
+      opacity: 0;
+  transition: opacity 1s ease-out;
+}
+.line.htmx-added{
+      opacity: 0;
 }
 
 

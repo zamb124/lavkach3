@@ -6,7 +6,7 @@
             lsn="{{ order.p.lsn }}"
             hx-trigger="backend_update"
             hx-get="/inventory/order/line?order_id={{ order._id }}"
-            hx-swap="outerHTML transition:true"
+            hx-swap="outerHTML"
             hx-target="#{{ order.p.key }}"
     >
         <th scope="row" style="white-space: nowrap; vertical-align: middle;">
@@ -52,5 +52,6 @@
                 <span class="mb-0 badge text-bg-warning">{{ order.status.val }}</span>
             {% endif %}
         </th>
+     {% include 'components/loader.html' %}
     </tr>
 {% endautoescape %}

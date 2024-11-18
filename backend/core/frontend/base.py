@@ -217,7 +217,7 @@ async def field_update(request: Request, model: str, line_id: UUID, field_name: 
 class ActionSchema(BaseModel):
     action: str
     ids: Optional[list[str]] = []
-    schema: Any = None
+    _schema: Any = None
     commit: Optional[bool] = False
 
     class Config:

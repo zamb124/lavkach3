@@ -6,7 +6,7 @@
             lsn="{{ suggest.p.lsn }}"
             hx-trigger="backend_update"
             hx-get="/inventory/suggest/line?suggest_id={{ suggest._id }}"
-            hx-swap="outerHTML transition:true"
+            hx-swap="outerHTML swap:1s"
             hx-target="#{{ suggest.p.key }}"
     >
         <th scope="row" style="white-space: nowrap; vertical-align: middle;">
@@ -24,7 +24,7 @@
                hx-trigger="click"
                hx-push-url="false"
                hx-target="#htmx_content"
-               hx-swap="beforeend transition:true"
+               hx-swap="beforeend"
                class="text-danger form-control">
                 {{ suggest.type.val }}</a>
         </th>

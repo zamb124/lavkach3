@@ -2,6 +2,7 @@ tr.htmx-swapping th {
     opacity: 0 !important;
     transition: opacity 5s ease-out !important;
 }
+
 @keyframes fade-in {
     from {
         opacity: 0;
@@ -26,7 +27,7 @@ tr.htmx-swapping th {
     }
 }
 
-.modal-content {
+.slide-right {
     view-transition-name: slide-right;
 }
 
@@ -38,4 +39,17 @@ tr.htmx-swapping th {
 ::view-transition-new(slide-right) {
     animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+}
+
+
+.loader {
+    display: none;
+}
+
+.htmx-request .loader {
+    display: inline;
+}
+
+.htmx-request.loader {
+    display: inline;
 }

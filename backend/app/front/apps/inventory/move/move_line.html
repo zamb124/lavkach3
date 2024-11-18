@@ -1,12 +1,13 @@
 {% autoescape false %}
     <tr
             id="{{ move.p.key }}"
-            class="line"
+            class="line fade-out fade-in"
             ui_key="{{ move.p.ui_key }}"
             lsn="{{ move.p.lsn }}"
             hx-trigger="backend_update"
             hx-get="/inventory/move/line?move_id={{ move._id }}"
-            hx-swap="outerHTML"
+            hx-swap="outerHTML swap:1s"
+            hx-indicator=".loader"
             hx-target="#{{ move.p.key }}"
     >
         <th scope="row" style="white-space: nowrap; vertical-align: middle;">
@@ -24,7 +25,7 @@
                hx-trigger="click"
                hx-push-url="false"
                hx-target="#htmx_content"
-               hx-swap="beforeend transition:true"
+               hx-swap="beforeend"
                class="text-danger form-control">
                 {{ move.type.val }}</a>
         </th>
@@ -58,7 +59,7 @@
                     hx-get="/inventory/move/detail?move_id={{ move._id }}"
                     hx-push-url="false"
                     hx-target="#htmx_content"
-                    hx-swap="beforeend"
+                    hx-swap="beforeend transition:true"
             >
                 <iconify-icon icon="solar:hamburger-menu-broken" class="fs-8"></iconify-icon>
                 {{ move.suggest_list_count.val }}
@@ -80,6 +81,9 @@
             {% else %}
                 <span class="mb-0 badge text-bg-danger ">{{ move.status.val }}</span>
             {% endif %}
+
         </th>
+    {% include 'components/loader.html' %}
     </tr>
+
 {% endautoescape %}

@@ -47,7 +47,7 @@ htmx.defineExtension('json-enc', {
             if (typeof obj === 'string' && obj === '') {
                 return null;
             } else if (Array.isArray(obj)) {
-                return obj.map(replaceEmptyStrings);
+                return obj
             } else if (typeof obj === 'object' && obj !== null) {
                 const newObj = {};
                 for (const key in obj) {
@@ -60,7 +60,7 @@ htmx.defineExtension('json-enc', {
             return obj;
         }
 
-// Преобразование объектов в списки только для тех, которые соответствуют паттерну
+    // Преобразование объектов в списки только для тех, которые соответствуют паттерну
         for (const listName in result) {
             if (result.hasOwnProperty(listName) && typeof result[listName] === 'object' && !Array.isArray(result[listName])) {
                 result[listName] = Object.values(result[listName]);

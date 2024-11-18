@@ -4,8 +4,7 @@
        href="{{ url }}?{{ field.field_name }}={{ field.val }}"
     {% else %}
         href="#"
-        hx-ext="json-enc"
-        hx-post="/base/modal/{{ field.model_name }}/{{ field.val }}"
+        hx-get="/base/modal/{{ field.model_name }}/{{ field.val }}"
     {% endif %}
    id="{{ field.field_name }}"
    hx-trigger="click"

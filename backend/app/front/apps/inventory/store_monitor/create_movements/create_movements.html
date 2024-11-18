@@ -1,8 +1,10 @@
 {% autoescape false %}
     <div class="modal" id="{{ order.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
+
             <div class="modal-content slide-right">
                 <div class="modal-header">
+                    {% include 'components/loader.html'  %}
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-12">
@@ -10,6 +12,7 @@
                                     <h4 class="mb-4 mb-sm-0 card-title" data-key="t-order-create">
                                         Create Movements
                                     </h4>
+                                    {% include 'components/loader.html' %}
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
                                             <li class="breadcrumb-item d-flex align-items-center">
@@ -17,7 +20,7 @@
                                                    hx-post="/inventory/store_monitor/create_movements"
                                                    hx-select=".modal-content"
                                                    hx-target="closest .modal-content"
-                                                   hx-swap="outerHTML transition:true"
+                                                   hx-swap="outerHTML"
                                                    hx-ext="json-enc"
                                                    hx-push-url="false"
                                                    hx-include=".modal-content"
