@@ -1,6 +1,5 @@
 import logging
 
-from fastapi_restful.tasks import repeat_every
 
 from core.env import Env
 from core.helpers.cache import CacheTag
@@ -76,9 +75,3 @@ async def start_processing_messages_task():
                 message.status = BusStatus.DELIVERED
                 bs.session.add(message)
     await bs.session.commit()
-
-@repeat_every(seconds=99999, logger=logger)
-async def start_processing_messages() -> None:
-    task = await start_processing_messages_task.kiq()
-    res = await task.wait_result()
-    return None
