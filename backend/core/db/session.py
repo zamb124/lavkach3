@@ -39,7 +39,7 @@ class RoutingSession(Session):
 async_session_factory = sessionmaker(
     class_=AsyncSession,
     sync_session_class=RoutingSession,
-    expire_on_commit=False if isinstance(config, TestConfig) else True
+    expire_on_commit=False if os.environ.get('ENV') == 'test' else True
 )
 session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
     session_factory=async_session_factory,
@@ -92,8 +92,9 @@ class Base(metaclass=DeclarativeMeta):
         i: int = 1
         while True:
             try:
-                if os.environ.get('ENT') == 'test':
+                if os.environ.get('ENV') == 'test':
                     break
+
                 task = await self.update_notify.kiq(self.__tablename__, message)
                 logger.info(f'Message sended to bus.bus with id: {task.task_id}')
                 break

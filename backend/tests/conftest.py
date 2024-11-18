@@ -1,11 +1,13 @@
 import asyncio
 import logging
+import os
 from datetime import datetime
 from typing import Any
 from uuid import uuid4
-
+from core.db_config import config
 import pytest
 import pytest_asyncio
+from dotenv import load_dotenv
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -29,7 +31,7 @@ from core.core_apps.base.user.models import User
 from core.core_apps.base.user.schemas import UserCreateScheme, RoleCreateScheme
 from core.core_apps.bus.bus_server import app as bus_app
 from core.db.session import Base
-from core.db_config import config
+
 from core.env import Env, env_context
 from core.fastapi.schemas import CurrentUser
 from core.helpers.broker import list_brocker  # noqa: F401, isort:skip
@@ -40,9 +42,15 @@ logger = logging.getLogger(__name__)
 session_id = str(uuid4())
 context = set_session_context(session_id=session_id)
 
+@pytest.fixture(scope='session', autouse=True)
+def load_env():
+    cwd = os.getcwd()
+    env_path = os.path.join(cwd, os.environ.get('DOTENV_PATH') or '.env')
+    load_dotenv(env_path)
+
 
 @pytest.fixture(scope="session")
-def event_loop() -> asyncio.AbstractEventLoop:
+def event_loop(load_env) -> asyncio.AbstractEventLoop:
     """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
@@ -50,7 +58,7 @@ def event_loop() -> asyncio.AbstractEventLoop:
 
 
 @pytest.fixture(scope="session")
-def engine():
+def engine(event_loop):
     engine = create_async_engine(config.WRITER_DB_URL)
     yield engine
     engine.sync_engine.dispose()
@@ -328,9 +336,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'store_id': stores[0].id.__str__(),
         'location_class': LocationClass.PARTNER,
         'is_active': True,
-        'location_type_id': location_types['partner'].id.__str__(),
-        'allowed_package_ids': [],
-        'exclude_package_ids': []
+        'location_type_id': location_types['partner'].id.__str__()
     }))
     location_place = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -338,9 +344,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'store_id': stores[0].id.__str__(),
         'location_class': LocationClass.PLACE,
         'is_active': True,
-        'location_type_id': location_types['place'].id.__str__(),
-        'allowed_package_ids': [],
-        'exclude_package_ids': []
+        'location_type_id': location_types['place'].id.__str__()
     }))
     location_resource = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -348,9 +352,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'store_id': stores[0].id.__str__(),
         'location_class': LocationClass.RESOURCE,
         'is_active': True,
-        'location_type_id': location_types['resource'].id.__str__(),
-        'allowed_package_ids': [],
-        'exclude_package_ids': []
+        'location_type_id': location_types['resource'].id.__str__()
     }))
     location_package = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -358,9 +360,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'store_id': stores[0].id.__str__(),
         'location_class': LocationClass.PACKAGE,
         'is_active': True,
-        'location_type_id': location_types['package'].id.__str__(),
-        'allowed_package_ids': [],
-        'exclude_package_ids': []
+        'location_type_id': location_types['package'].id.__str__()
     }))
     location_zone = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -368,9 +368,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'store_id': stores[0].id.__str__(),
         'location_class': LocationClass.ZONE,
         'is_active': True,
-        'location_type_id': location_types['zone'].id.__str__(),
-        'allowed_package_ids': [],
-        'exclude_package_ids': []
+        'location_type_id': location_types['zone'].id.__str__()
     }))
     location_lost = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -378,9 +376,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'store_id': stores[0].id.__str__(),
         'location_class': LocationClass.LOST,
         'is_active': True,
-        'location_type_id': location_types['lost'].id.__str__(),
-        'allowed_package_ids': [],
-        'exclude_package_ids': []
+        'location_type_id': location_types['lost'].id.__str__()
     }))
     location_inventory = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -389,8 +385,6 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'location_class': LocationClass.LOST,
         'is_active': True,
         'location_type_id': location_types['inventory'].id.__str__(),
-        'allowed_package_ids': [],
-        'exclude_package_ids': []
     }))
     location_scrap = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -399,8 +393,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'location_class': LocationClass.SCRAP,
         'is_active': True,
         'location_type_id': location_types['scrap'].id.__str__(),
-        'allowed_package_ids': [],
-        'exclude_package_ids': []
+
     }))
     location_scrapped = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -409,8 +402,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'location_class': LocationClass.SCRAPPED,
         'is_active': True,
         'location_type_id': location_types['scrapped'].id.__str__(),
-        'allowed_package_ids': [],
-        'exclude_package_ids': []
+
     }))
     location_buffer = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -419,8 +411,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'location_class': LocationClass.SCRAPPED,
         'is_active': True,
         'location_type_id': location_types['buffer'].id.__str__(),
-        'allowed_package_ids': [],
-        'exclude_package_ids': []
+
     }))
     yield {
         'partner': location_partner,
@@ -479,6 +470,7 @@ async def quants(env: Env, user_admin, companies, lots, products, stores, locati
         'lot_id': lots[0].id.__str__(),
         'quantity': 10.0,
         'reserved_quantity': 5,
+        'location_class': LocationClass.PLACE,
         'expiration_datetime': datetime.now().isoformat(),
         'uom_id': uoms[0].id.__str__()
     }))
@@ -490,6 +482,7 @@ async def quants(env: Env, user_admin, companies, lots, products, stores, locati
         'lot_id': lots[1].id.__str__(),
         'quantity': 5,
         'reserved_quantity': 0,
+        'location_class': LocationClass.PLACE,
         'expiration_datetime': datetime.now().isoformat(),
         'uom_id': uoms[0].id.__str__()
     }))
@@ -508,8 +501,8 @@ async def order_types(env: Env, user_admin, companies, lots, products, stores, l
         'prefix': 'IN',
         'title': 'Inbound Type',
         'order_class': 'incoming',
-        'allowed_location_src_ids': [locations['partner'].id.__str__(), ],
-        'allowed_location_dest_ids': [locations['buffer'].id.__str__(), ],
+        'allowed_zone_src_ids': [locations['partner'].id.__str__(), ],
+        'allowed_zone_dest_ids': [locations['buffer'].id.__str__(), ],
         'order_type_id': None,
         'backorder_action_type': 'ask',
         'store_id': None,
@@ -530,8 +523,8 @@ async def order_types(env: Env, user_admin, companies, lots, products, stores, l
         'prefix': 'LO',
         'title': 'Lost Type',
         'order_class': 'incoming',
-        'allowed_location_src_ids': None,
-        'allowed_location_dest_ids': [locations['lost'].id.__str__(), ],
+        'allowed_zone_src_ids': None,
+        'allowed_zone_dest_ids': [locations['lost'].id.__str__(), ],
         'order_type_id': None,
         'backorder_action_type': 'never',
         'store_id': None,
@@ -552,8 +545,8 @@ async def order_types(env: Env, user_admin, companies, lots, products, stores, l
         'prefix': 'PL',
         'title': 'Placement Type',
         'order_class': 'internal',
-        'allowed_location_src_ids': [locations['buffer'].id.__str__(), ],
-        'allowed_location_dest_ids': [locations['place'].id.__str__(), ],
+        'allowed_zone_src_ids': [locations['buffer'].id.__str__(), ],
+        'allowed_zone_dest_ids': [locations['place'].id.__str__(), ],
         'order_type_id': lost_order_type.id.__str__(),
         'backorder_action_type': 'always',
         'store_id': None,
@@ -574,8 +567,8 @@ async def order_types(env: Env, user_admin, companies, lots, products, stores, l
         'prefix': 'SH',
         'title': 'Shipment Type',
         'order_class': 'outgoing',
-        'allowed_location_src_ids': [locations['place'].id.__str__(), ],
-        'allowed_location_dest_ids': [locations['buffer'].id.__str__(), ],
+        'allowed_zone_src_ids': [locations['place'].id.__str__(), ],
+        'allowed_zone_dest_ids': [locations['buffer'].id.__str__(), ],
         'order_type_id': None,
         'backorder_action_type': 'ask',
         'store_id': None,
@@ -689,7 +682,7 @@ async def headers(token) -> dict:
         'company_support': {'Authorization': token['company_support']['token']}
     }
 
-# @pytest.mark.asyncio
-# async def test_health(async_client, headers, stores, product_categories, product_storage_types, uom_categories, uoms, products, locations, quants):
-#     response = await async_client.get("/api/basic/health", headers=headers['superadmin'])
-#     assert response.status_code == 200
+@pytest.mark.asyncio
+async def test_health(base_client, headers, stores, product_categories, uom_categories, uoms, products, locations, quants):
+    response = await base_client.get("/api/base/health", headers=headers['superadmin'])
+    assert response.status_code == 200

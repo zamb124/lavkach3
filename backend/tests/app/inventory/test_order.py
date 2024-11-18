@@ -13,8 +13,8 @@ async def test_crud_order_type(inventory_client, headers, stores, companies, pro
         'prefix': 'IN',
         'title': 'title',
         'order_class': 'incoming',
-        'allowed_location_src_ids': [locations['partner'].id.__str__(),],
-        'allowed_location_dest_ids': [locations['place'].id.__str__(),],
+        'allowed_zone_src_ids': [locations['partner'].id.__str__(),],
+        'allowed_zone_dest_ids': [locations['place'].id.__str__(),],
         'order_type_id': None,
         'backorder_action_type': 'ask',
         'store_id': None,
@@ -41,8 +41,8 @@ async def test_crud_order_type(inventory_client, headers, stores, companies, pro
         'prefix': 'OUT',
         'title': 'title',
         'order_class': 'outgoing',
-        'allowed_location_src_ids': [locations['place'].id.__str__(),],
-        'allowed_location_dest_ids': [locations['partner'].id.__str__(),],
+        'allowed_zone_src_ids': [locations['place'].id.__str__(),],
+        'allowed_zone_dest_ids': [locations['partner'].id.__str__(),],
         'barcode': '999999',
     }
     data.update(update_data)

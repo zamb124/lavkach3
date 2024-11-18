@@ -22,6 +22,7 @@ class QuantBaseScheme(BasicModel):
         filter={'location_class__not_in': LocationClass.PACKAGE.value},
     )
     package_id: Optional[UUID4] = Field(
+        default=None,
         title='Package ID', model='location',
         filter={'location_class__in': LocationClass.PACKAGE.value},
     )
