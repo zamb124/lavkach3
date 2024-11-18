@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, UUID4
+from pydantic import Field, UUID4
 
 from app.basic.uom.models.uom_category_models import UomCategory
 from core.schemas import BaseFilter

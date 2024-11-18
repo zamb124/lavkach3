@@ -1,11 +1,10 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field
+from pydantic import Field
 from pydantic.types import UUID4
 
 from app.basic.product.models.product_models import ProductCategory
-from core.frontend.enviroment import table
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema

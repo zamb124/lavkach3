@@ -1,10 +1,10 @@
 import json
 from uuid import UUID
 
-from app.inventory.schemas import CreateMovements
 from app.inventory.inventory_config import config
 from app.inventory.order.schemas import SuggestConfirmScheme
 from app.inventory.order.schemas.order_schemas import AssignUser
+from app.inventory.schemas import CreateMovements
 from core.fastapi.adapters import BaseAdapter
 from core.fastapi.adapters.action_decorator import action
 from core.types import UUIDEncoder

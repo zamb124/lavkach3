@@ -1,8 +1,7 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, UUID4
-from pygments.lexer import default
+from pydantic import Field, UUID4
 
 from ...user.models.role_models import Role
 from .....schemas import BaseFilter

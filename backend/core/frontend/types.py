@@ -1,8 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, field_validator, model_validator
-from pydantic_core.core_schema import ValidationInfo
+from pydantic import BaseModel
 
 
 class MethodType(str, Enum):

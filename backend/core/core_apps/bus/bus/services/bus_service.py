@@ -2,12 +2,12 @@ from typing import Any, Optional
 
 from starlette.requests import Request
 
+from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, \
+    CreateSchemaType, logger
 from ..managers import ws_manager
 from ...bus.models.bus_models import Bus
 from ...bus.shemas.bus_schemas import BusCreateScheme, BusUpdateScheme, BusFilter
 from .....permissions import permit
-from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, \
-    CreateSchemaType, logger
 
 
 class BusService(BaseService[Bus, BusCreateScheme, BusUpdateScheme, BusFilter]):

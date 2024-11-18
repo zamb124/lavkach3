@@ -1,4 +1,28 @@
+from inspect import isclass
+from typing import get_origin, get_args
+
 from httpx import QueryParams
+
+from core.frontend.enviroment import passed_classes
+
+
+def get_types(annotation: object, _class: list = []) -> list[object]:
+    """
+        Рекурсивно берем типы из анотации типа
+    """
+    if isclass(annotation):
+        _class.append(annotation)
+        return _class
+    else:
+        origin = get_origin(annotation)
+        annotate = get_args(annotation)
+        if origin and origin not in passed_classes:
+            _class.append(origin)
+        try:
+            get_types(annotate[0], _class)
+        except Exception as ex:
+            _class.append(annotation)
+    return _class
 
 
 def clean_filter(qp: QueryParams | dict, _filter: str) -> list:

@@ -1,7 +1,7 @@
 from typing import Any, Type
+from typing import Optional, List
 
 from pydantic import BaseModel, model_validator
-from typing import Optional, List
 
 
 class GenericListSchema(BaseModel):

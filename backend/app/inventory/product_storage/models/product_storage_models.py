@@ -1,7 +1,6 @@
 import uuid
-from typing import Optional, List, Dict
+from typing import Optional
 
-from sphinx.addnodes import index
 from sqlalchemy import Sequence, Uuid, UniqueConstraint, JSON, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 

@@ -1,9 +1,9 @@
-import dataclasses
 from datetime import datetime, timedelta
-from typing import Optional, List, Iterable, Union, Annotated
+from datetime import datetime, timedelta
+from typing import Optional, List, Iterable
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, UUID4, model_validator, computed_field
+from pydantic import Field, UUID4, model_validator
 
 created_at_gte_default = datetime.now() - timedelta(days=365)
 created_at_lt_default = datetime.now() + timedelta(days=365)

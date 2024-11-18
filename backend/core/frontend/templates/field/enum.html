@@ -11,7 +11,7 @@
 
             aria-label="Default select example"
     >
-        {% for s in field.fieldinfo.annotation %}
+        {% for s in field.enum %}
             {% if s.value == field.val %}
                 <option value="{{ s.value }}" selected> {{ s.name }} </option>
             {% else %}
@@ -32,7 +32,7 @@
 
             aria-label="Default select example"
     >
-        {% for s in field.fieldinfo.annotation %}
+        {% for s in field.enum %}
             {% if s.value == field.val %}
                 <option value="{{ s.value }}" selected> {{ s.name }} </option>
             {% else %}
@@ -44,7 +44,7 @@
 {% block as_get %}
     {% if field.color_map %}
         <div class="d-flex flex-wrap gap-2">
-            <span class="enum-get text-uppercase badge border border-{{ field.color.value|safe }} text-{{ field.color.value|safe }} p-3"
+            <span class="enum-get badge border border-{{ field.color.value|safe }} text-{{ field.color.value|safe }} p-3"
                   style="border-radius: 15px"><b>{{ field.val.english_name or field.val.name or field.val }}</b></span>
         </div>
     {% else %}

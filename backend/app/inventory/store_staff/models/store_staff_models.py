@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import Sequence, Uuid, ForeignKey, text
+from sqlalchemy import Sequence, Uuid
 from sqlalchemy.orm import mapped_column, Mapped
 
 from app.inventory.store_staff.enums import StaffPosition

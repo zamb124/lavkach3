@@ -6,10 +6,10 @@ from fastapi import APIRouter, HTTPException
 from fastapi import Response, Request
 from pydantic import BaseModel
 
+from core.types.types import TypeLocale
 from ...base.fundamental.schemas.dundamental_shemas import Image
 from ....schemas.basic_schemes import CurrencySchema, CountrySchema, LocaleSchema, CountryListSchema, \
     CurrencyListSchema, LocaleListSchema
-from core.types.types import TypeLocale
 
 
 class ExceptionResponseSchema(BaseModel):

@@ -2,11 +2,11 @@ from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic.types import UUID4
-from core.schemas.basic_schemes import BasicField as Field, bollean
 
 from app.inventory.location.enums import LocationClass, BlockerEnum
 from app.inventory.location.models import Location
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicField as Field, bollean
 from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme

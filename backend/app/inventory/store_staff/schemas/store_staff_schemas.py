@@ -6,10 +6,9 @@ from pydantic import computed_field
 from pydantic.types import UUID4
 
 from app.inventory.store_staff.enums import StaffPosition
-from core.schemas.basic_schemes import BasicField as Field, bollean
-
 from app.inventory.store_staff.models import StoreStaff
 from core.schemas import BaseFilter
+from core.schemas.basic_schemes import BasicField as Field
 from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme

@@ -1,9 +1,9 @@
 from __future__ import annotations
+
 from typing import Optional, List
 
-from celery.worker.strategy import default
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, computed_field
+from pydantic import computed_field
 from pydantic.types import UUID4
 
 from app.inventory.order.enums.order_enum import SuggestStatus

@@ -8,10 +8,9 @@ from fastapi.responses import JSONResponse
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
-from app.prescription.prescription_router import router
-from core.db_config import config
-from core.env import Env
 from app.prescription import __domain__ as domains
+from app.prescription.prescription_router import router
+from core.env import Env
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (

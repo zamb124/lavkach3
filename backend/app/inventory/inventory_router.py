@@ -1,5 +1,3 @@
-from sys import prefix
-
 from fastapi import APIRouter, Depends
 
 from app.inventory.inventory_api import inventory_router

@@ -1,6 +1,7 @@
 # blueprint.py purchase purchase_order
-import os, sys
-from shutil import copy2, copytree
+import os
+import sys
+from shutil import copytree
 
 """
 """

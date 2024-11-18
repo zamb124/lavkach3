@@ -1,4 +1,3 @@
-from pydantic import BaseModel
 from starlette.requests import Request
 
 from core.frontend.constructor import ClassView, views

@@ -1,12 +1,14 @@
 import copy
 from enum import Enum
 from typing import Optional, Any
+from typing import TYPE_CHECKING
+
 from jinja2_fragments import render_block
 from pydantic.fields import FieldInfo
-from typing import Optional, get_args, get_origin, Any
+
 from core.frontend.enviroment import environment
 from core.frontend.types import MethodType, ViewVars
-from typing import TYPE_CHECKING
+from core.frontend.utils import get_types
 
 if TYPE_CHECKING:
     from core.frontend.constructor import ClassView
@@ -70,7 +72,9 @@ class Field:
         if isinstance(self.fieldinfo.annotation, Enum):
             return self.fieldinfo.annotation
         else:
-            return get_args(get_args(self.fieldinfo.annotation)[0])[0]
+            for type in get_types(self.fieldinfo.annotation, []):
+                if issubclass(type, Enum):
+                    return type
 
     @property
     def field_name(self):

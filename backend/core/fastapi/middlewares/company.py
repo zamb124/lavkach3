@@ -1,11 +1,7 @@
-from fastapi import FastAPI
-from starlette.datastructures import QueryParams
-from starlette.exceptions import HTTPException
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request, HTTPConnection
-from starlette.responses import Response
-from starlette.types import Scope, Receive, Send, ASGIApp
 from core.config import config
+from starlette.requests import HTTPConnection
+from starlette.types import Scope, Receive, Send, ASGIApp
+
 from core.fastapi.adapters import BaseAdapter
 
 

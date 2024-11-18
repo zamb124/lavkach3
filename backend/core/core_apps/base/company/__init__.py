@@ -1,7 +1,7 @@
+from core.helpers.cache import CacheStrategy
 from .models import Company
 from .schemas import CompanyCreateScheme, CompanyUpdateScheme, CompanyFilter, CompanyScheme
 from .services import CompanyService
-from core.helpers.cache import CacheStrategy
 
 __domain__ = {
     'company': {

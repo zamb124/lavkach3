@@ -1,11 +1,10 @@
-import uuid
+from typing import Optional, List
 
 from pydantic import BaseModel, UUID4, computed_field
-from typing import Optional, List
 from sqlalchemy import select
-from core.db.session import session
 
-#from app.basic.user.models import User
+from core.db.session import session
+# from app.basic.user.models import User
 from core.types import TypeLocale
 
 

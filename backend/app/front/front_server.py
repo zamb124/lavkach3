@@ -2,7 +2,7 @@ import logging
 import os
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
@@ -16,17 +16,15 @@ from app.basic import __domain__ as basic_domain
 from app.front.front_router import front_router
 from app.front.tkq import broker
 from app.inventory import __domain__ as inventory_domain
-from app.prescription import __domain__ as prescription_domain
 from core.db_config import config
-from core.env import Env
+from core.env import EnvMidlleWare, env
+from core.env_domains import domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
     AuthenticationMiddleware,
     SQLAlchemyMiddleware, AuthBackend,
 )
-# from app.front.front_tasks import remove_expired_tokens
-from core.helpers.broker import list_brocker
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
 from core.utils.timeit import add_timing_middleware
@@ -34,12 +32,13 @@ from core.utils.timeit import add_timing_middleware
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+domains += [inventory_domain, basic_domain]
 
 @dataclass
 class Htmx:
-    hx_target: str = None
-    hx_current_url: str = None
-    hx_request: bool = None
+    hx_target: Optional[str] = None
+    hx_current_url: Optional[str] = None
+    hx_request: Optional[bool] = None
 
 
 class HTMXMidlleWare:
@@ -58,29 +57,6 @@ class HTMXMidlleWare:
                 hx_current_url=conn.headers.get('hx-current-url'),
                 hx_request=True if conn.headers.get('hx-request') == 'true' else False
             )
-        await self.app(scope, receive, send)
-
-env = None
-
-class EnvMidlleWare:
-    """
-    Адартер кладется в request для удобства обращений к обьектам сервисов
-    """
-    def __init__(self, app: ASGIApp, *args, **kwargs):
-        self.app = app
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        global env
-        if scope['type'] in ("http", "websocket"):
-            conn = HTTPConnection(scope)
-            if not env:
-                env = Env([inventory_domain, basic_domain, prescription_domain], conn, broker=list_brocker)
-                scope['env'] = env
-                broker.env = env
-            else:
-                scope['env'] = env
-                broker.env = env
-                env.request = conn
         await self.app(scope, receive, send)
 
 
@@ -140,6 +116,7 @@ def init_cache() -> None:
 def fake_answer_to_everything_ml_model(x: float):
     return x * 42
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -152,6 +129,7 @@ async def lifespan(app: FastAPI):
             Выключение сервера
     """
     await broker.shutdown()
+
 
 def create_app() -> FastAPI:
     app_ = FastAPI(
@@ -169,6 +147,7 @@ def create_app() -> FastAPI:
     init_cache()
     return app_
 
+
 app = create_app()
 path = os.path.dirname(os.path.abspath(__file__))
 add_timing_middleware(app, record=logger.info, prefix="front", exclude="untimed")
@@ -176,6 +155,3 @@ app.mount(f"/static", StaticFiles(directory=f"{path}/static"), name="static")
 
 # if __name__ == "__main__":
 #     uvicorn.run(app, host="127.0.0.1", port=8003, log_level="info")
-
-
-

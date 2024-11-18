@@ -2,13 +2,13 @@ from typing import Any, Optional, List
 
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
+from starlette.requests import Request
 
 from app.inventory.product_storage.models.product_storage_models import ProductStorageType
 from app.inventory.product_storage.schemas import ProductStorageTypeCreateScheme, ProductStorageTypeUpdateScheme, \
     ProductStorageTypeFilter
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-from starlette.requests import Request
 
 
 class ProductStorageTypeService(BaseService[

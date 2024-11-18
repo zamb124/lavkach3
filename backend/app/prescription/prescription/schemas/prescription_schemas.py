@@ -1,11 +1,11 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field
 from pydantic.types import UUID
 
-from app.prescription.prescription.models.prescription_models import Prescription
 from app.prescription.prescription.models.prescription_models import IdentificationType
+from app.prescription.prescription.models.prescription_models import Prescription
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema

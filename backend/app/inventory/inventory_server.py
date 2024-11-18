@@ -5,15 +5,14 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi_restful.timing import add_timing_middleware
-from starlette.requests import HTTPConnection
-from starlette.types import ASGIApp, Scope, Receive, Send
+#from fastapi_restful.timing import add_timing_middleware
 
+from app.basic import __domain__ as basic_domain
+from app.inventory import __domain__ as inventory_domain
 from app.inventory.inventory_router import router
 from core.db_config import config
-from core.env import Env
-from app.inventory import __domain__ as inventory_domain
-from app.basic import __domain__ as basic_domain
+from core.env import EnvMidlleWare
+from core.env_domains import domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -23,22 +22,8 @@ from core.fastapi.middlewares import (
 )
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
-from fastapi_babel import Babel, BabelMiddleware
 
-
-class EnvMidlleWare:
-    """
-    Адартер кладется в request для удобства
-    """
-
-    def __init__(self, app: ASGIApp, *args, **kwargs):
-        self.app = app
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        if scope['type'] in ("http", "websocket"):
-            conn = HTTPConnection(scope)
-            scope['env'] = Env([inventory_domain, basic_domain], conn)
-        await self.app(scope, receive, send)
+domains += [basic_domain, inventory_domain]
 
 
 def init_routers(app_: FastAPI) -> None:
@@ -109,4 +94,4 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-add_timing_middleware(app, record=logger.info, prefix="front", exclude="untimed")
+#add_timing_middleware(app, record=logger.info, prefix="inventory", exclude="untimed")

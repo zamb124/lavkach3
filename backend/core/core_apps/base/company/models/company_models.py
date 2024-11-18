@@ -2,7 +2,7 @@ import uuid
 from typing import Optional
 
 from sqlalchemy import Uuid, Sequence
-from sqlalchemy.orm import relationship, mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy_utils import CurrencyType, CountryType, LocaleType
 
 from .....db import Base

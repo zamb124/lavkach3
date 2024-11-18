@@ -1,6 +1,7 @@
 from typing import Any, List
 from uuid import UUID
 
+from httpx import AsyncClient as asyncclient
 from sqlalchemy import select, Row, RowMapping
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
@@ -25,7 +26,6 @@ from .....helpers.cache import CacheTag
 from .....permissions.permissions import permit, permits
 from .....service.base import BaseService, ModelType, FilterSchemaType, logger
 from .....utils.token_helper import TokenHelper
-from httpx import AsyncClient as asyncclient
 
 
 class UserService(BaseService[User, UserCreateScheme, UserUpdateScheme, UserFilter]):

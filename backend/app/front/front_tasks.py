@@ -1,9 +1,6 @@
-import asyncio
 import logging
 
-from fastapi_restful.tasks import repeat_every
 from pydantic import BaseModel
-from pydantic.v1.schema import schema
 
 from app.front.tkq import broker
 

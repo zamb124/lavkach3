@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, List, Any
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, model_validator
+from pydantic import model_validator
 from pydantic.types import UUID4
 
 from app.basic.product.models.product_models import Product, ProductType

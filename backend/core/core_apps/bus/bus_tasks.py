@@ -1,14 +1,13 @@
 import logging
 
 from fastapi_restful.tasks import repeat_every
-from starlette.websockets import WebSocketDisconnect
 
+from core.env import Env
+from core.helpers.cache import CacheTag
 from .bus import BusFilter
 from .bus.enums import BusStatus
 from .bus.managers import ws_manager
 from .tkq import broker
-from core.env import Env
-from core.helpers.cache import CacheTag
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

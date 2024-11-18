@@ -1,8 +1,6 @@
 from typing import Optional, List
 
-from celery.worker.strategy import default
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import LocationClass, PutawayStrategy

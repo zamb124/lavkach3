@@ -2,7 +2,7 @@ import uuid
 from typing import Annotated
 
 from sqlalchemy import Uuid, ARRAY
-from sqlalchemy.ext.mutable import MutableList, MutableSet
+from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import mapped_column
 
 

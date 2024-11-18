@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from sqlalchemy import Sequence, Uuid
-from sqlalchemy.orm import relationship, mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped
 
 from core.db import Base
 from core.db.mixins import AllMixin

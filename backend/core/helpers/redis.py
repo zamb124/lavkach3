@@ -1,4 +1,5 @@
 import redis.asyncio as aioredis
+
 from core.db_config import config
 
 redis = aioredis.StrictRedis(

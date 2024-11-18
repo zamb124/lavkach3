@@ -1,15 +1,14 @@
 import json
-from typing import Any, Dict, Annotated
+from typing import Any, Dict
 from uuid import UUID
 
 from babel import Locale
-from pydantic import GetJsonSchemaHandler, model_validator, GetCoreSchemaHandler
-from pydantic.types import UuidVersion
-from pydantic_core import CoreSchema, core_schema
+from pydantic import GetJsonSchemaHandler
+from pydantic_core import CoreSchema
 from sqlalchemy_utils.types.country import Country
 from sqlalchemy_utils.types.currency import Currency
 from sqlalchemy_utils.types.phone_number import PhoneNumber
-from pydantic import BaseModel
+
 from core.schemas.basic_schemes import CountrySchema, LocaleSchema, CurrencySchema, PhoneSchema
 
 

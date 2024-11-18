@@ -1,13 +1,13 @@
 from typing import Any, Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.requests import Request
 
 from app.inventory.quant.models.quants_models import Lot
 from app.inventory.quant.schemas import LotCreateScheme, LotUpdateScheme, LotFilter
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
-from starlette.requests import Request
+
 class LotService(BaseService[Lot, LotCreateScheme, LotUpdateScheme, LotFilter]):
     def __init__(self, request:Request):
         super(LotService, self).__init__(request, Lot,LotCreateScheme, LotUpdateScheme)

@@ -104,4 +104,8 @@ yarl==1.9.4
 zipp==3.18.1
 fastapi-babel==0.0.9
 openpyxl==3.1.5
- fastapi-distributed-websocket==0.2.0
+fastapi-distributed-websocket==0.2.0
+docutils==0.21.2
+docutils-stubs==0.0.22
+## The following requirements were added by pip freeze:
+

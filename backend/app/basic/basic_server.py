@@ -1,17 +1,15 @@
-from contextlib import asynccontextmanager
 from typing import List
 
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from starlette.requests import HTTPConnection
-from starlette.types import ASGIApp, Scope, Receive, Send
 
+from app.basic import __domain__ as basic_domain
 from app.basic.basic_router import basic_router
-from core.db_config import config
-from core.env import Env
-from app.basic import __domain__ as domains
+from app.inventory import __domain__ as inventory_domain
+from core.env import EnvMidlleWare
+from core.env_domains import domains
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
 from core.fastapi.middlewares import (
@@ -22,20 +20,7 @@ from core.fastapi.middlewares import (
 from core.helpers.cache import Cache, CustomKeyMaker
 from core.helpers.cache import RedisBackend
 
-
-class EnvMidlleWare:
-    """
-    Адартер кладется в request для удобства
-    """
-
-    def __init__(self, app: ASGIApp, *args, **kwargs):
-        self.app = app
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        if scope['type'] in  ("http", "websocket"):
-            conn = HTTPConnection(scope)
-            scope['env'] = Env(domains, conn)
-        await self.app(scope, receive, send)
+domains += [inventory_domain, basic_domain]
 
 
 def init_routers(app_: FastAPI) -> None:

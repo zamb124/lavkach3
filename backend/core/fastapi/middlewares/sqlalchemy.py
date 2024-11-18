@@ -1,10 +1,9 @@
 from uuid import uuid4
 
 from starlette.types import ASGIApp, Receive, Scope, Send
-from taskiq import SimpleRetryMiddleware
 
 from core.context import set_session_context, reset_session_context
-from core.db.session import  session
+from core.db.session import session
 
 
 class SQLAlchemyMiddleware:

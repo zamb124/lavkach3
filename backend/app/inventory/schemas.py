@@ -2,11 +2,11 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from celery.worker.strategy import default
 from pydantic import BaseModel
 
 from app.inventory.location.enums import LocationClass, PhysicalStoreLocationClass
 from core.schemas.basic_schemes import BasicField as Field
+
 
 class Quant(BaseModel):
     quant_id: UUID = Field(title='Quant', form=True, model='quant')

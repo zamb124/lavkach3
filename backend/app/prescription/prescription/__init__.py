@@ -1,4 +1,3 @@
-from core.helpers.cache import CacheStrategy
 from .models import Prescription
 from .schemas.prescription_schemas import PrescriptionCreateScheme, PrescriptionUpdateScheme, PrescriptionFilter, PrescriptionScheme
 from .services import PrescriptionService

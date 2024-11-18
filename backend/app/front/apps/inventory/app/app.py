@@ -1,9 +1,10 @@
 import asyncio
+import traceback
 import uuid
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Annotated, Optional
-import traceback
+
 from fastapi import APIRouter, Depends, WebSocketException
 from fastapi import Request
 from fastapi.responses import HTMLResponse
@@ -16,9 +17,9 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 from app.front.template_spec import environment
 from app.front.template_spec import templates
 from core.env import Env
-from core.frontend.constructor import ClassView
 from core.fastapi.middlewares import AuthBackend
 from core.fastapi.schemas import CurrentUser
+from core.frontend.constructor import ClassView
 
 inventory_app = APIRouter()
 

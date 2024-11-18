@@ -2,7 +2,6 @@ import uuid
 
 from fastapi import APIRouter, Query, Depends
 from fastapi_filter import FilterDepends
-from starlette.requests import Request
 
 from app.basic.uom.schemas import (
     UomCategoryScheme,

@@ -48972,7 +48972,7 @@ body :not(pre) > code[class*=language-], body pre[class*=language-] {
 }
 
 .auth-bg {
-    background: url(../images/backgrounds/login-bg.jpg);
+    background: url(../images/background.jpeg);
     background-size: cover;
     background-repeat: no-repeat
 }

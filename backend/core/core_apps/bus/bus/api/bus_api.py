@@ -1,20 +1,16 @@
 import typing
 import uuid
 
+from fastapi import APIRouter, Depends, Query
 from fastapi_filter import FilterDepends
 
+from ...bus.services import BusService
 from ...bus.shemas.bus_schemas import (
     BusScheme,
     BusCreateScheme,
     BusUpdateScheme,
     BusListSchema, BusFilter
 )
-from ...bus.services import BusService
-from core.fastapi.dependencies import (
-    PermissionDependency,
-    IsAuthenticated,
-)
-from fastapi import APIRouter, Depends, Query, Request
 
 bus_router = APIRouter(
 

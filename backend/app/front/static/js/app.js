@@ -15,6 +15,7 @@ class App {
             temp: [],
             results: {}
         };
+        this.user = {};
         this.loaded = false;
         this.userSettings = Object.assign({}, this.userSettings);
         this.locale = this.userSettings.locale;
@@ -105,6 +106,10 @@ class App {
         htmx.on("htmx:afterSwap", (e) => {
             console.log('htmx:afterSwap');
         });
+
+        htmx.on("htmx:configRequest", (e) => {
+            e.detail.headers["Authorization"] = this.getCookieValue('token');
+        })
 
         htmx.on("htmx:afterRequest", (e) => {
             if (this.authToken == null) {
@@ -289,7 +294,28 @@ class App {
         return JSON.parse(jsonPayload);
     }
 
-    login() {
+    async fetchRoles() {
+        if (!this.user || !this.user.role_ids) return;
+
+        try {
+            const response = await fetch('/api/roles', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({role_ids: this.user.role_ids})
+            });
+
+            if (response.ok) {
+                const roles = await response.json();
+                this.permits = roles;
+            } else {
+                console.error('Failed to fetch roles:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching roles:', error);
+        }
+    }
+
+    login(event) {
         event.preventDefault(); // Предотвращаем стандартное поведение формы
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
@@ -315,7 +341,8 @@ class App {
         }, 500); // Задержка в 500 миллисекунд
     }
 
-    saveTokensAndRedirect(token, refresh_token, next) {
+    async saveTokensAndRedirect(token, refresh_token, next) {
+        this.user = this.parseJwt(token);
         const parsedToken = this.parseJwt(token);
         const parsedRefreshToken = this.parseJwt(refresh_token);
         const tokenExpires = new Date(parsedToken.exp * 1000);
@@ -323,48 +350,64 @@ class App {
 
         document.cookie = `token=${token}; expires=${tokenExpires.toUTCString()}; path=/;`;
         document.cookie = `refresh_token=${refresh_token}; expires=${refreshTokenExpires.toUTCString()}; path=/;`;
-
-        const redirectUrl = next || '/';
+        await this.fetchRoles();
+        let redirectUrl;
+        if (this.user.company_ids && this.user.company_ids.length > 0) {
+            redirectUrl = next || '/';
+        } else {
+            redirectUrl = '/company/create';
+        }
         window.location.replace(redirectUrl);
     }
 
+    async getUser() {
+        await this.refreshToken()
+    }
+
     async refreshToken() {
-        let user = {
-            token: this.getCookieValue('token').replace('=', ''),
-            refresh_token: this.getCookieValue('refresh_token').replace('=', '')
-        };
-        console.log('refreshing token');
-        let response = await fetch('/basic/user/refresh', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
-        });
-        let result = await response.json();
-        const parsed = this.parseJwt(result.token);
-        const expires = new Date(parsed.exp * 1000);
-        document.cookie = "token=" + result.token + "; expires=" + expires + ";path=/;";
-        document.cookie = "refresh_token=" + result.token + "; expires=" + expires + ";path=/;";
-        return true;
+        const token = this.getCookieValue('token')?.replace('=', '');
+        const refreshToken = this.getCookieValue('refresh_token')?.replace('=', '');
+
+        if (!token || !refreshToken) return false;
+
+        for (let attempt = 0; attempt < 15; attempt++) {
+            const response = await fetch('/basic/user/refresh', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({token, refresh_token: refreshToken})
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                const parsedToken = this.parseJwt(result.token);
+                const expires = new Date(parsedToken.exp * 1000);
+
+                document.cookie = `token=${result.token}; expires=${expires.toUTCString()}; path=/;`;
+                document.cookie = `refresh_token=${result.token}; expires=${expires.toUTCString()}; path=/;`;
+
+                this.user = parsedToken;
+                await this.fetchRoles();
+                return true;
+            }
+
+            await new Promise(r => setTimeout(r, 1000)); // Задержка в 1 секунду перед следующей попыткой
+        }
+
+        // Если все попытки неудачны, удаляем куки
+        this.removeCookie('token');
+        this.removeCookie('refresh_token');
+        return false;
     }
 
     async checkAuth() {
-        var authToken = this.getCookieValue('token');
-        if (!authToken) {
-            authToken = this.getCookieValue('refresh_token');
-            if (authToken) {
-                await this.refreshToken();
-                authToken = this.getCookieValue('token');
-            }
-        }
-        if (!authToken) {
-            return false;
-        }
-        var tokenData = this.parseJwt(authToken);
-        var now = Date.now() / 1000;
-        if (tokenData.exp <= now) {
+        let authToken = this.getCookieValue('token') || this.getCookieValue('refresh_token');
+        if (!authToken) return false;
+
+        let tokenData = this.parseJwt(authToken);
+        if (tokenData.exp <= Date.now() / 1000) {
             await this.refreshToken();
+            authToken = this.getCookieValue('token');
+            if (!authToken) return false;
         }
         return true;
     }

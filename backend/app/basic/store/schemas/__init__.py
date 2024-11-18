@@ -1,3 +1,5 @@
+from pydantic import BaseModel
+
 from .store_schemas import *
 
 

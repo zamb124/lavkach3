@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 import uuid
 
-from fastapi import APIRouter, Query, Request, Depends
+from fastapi import APIRouter, Query, Depends
 from fastapi_filter import FilterDepends
 
 from app.basic.product.schemas import (

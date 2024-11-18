@@ -5,14 +5,14 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from starlette.requests import HTTPConnection
-from starlette.types import ASGIApp, Scope, Receive, Send
 
-from .bus_tasks import start_processing_messages
-from .tkq import broker
+from . import __domain__ as bus_domain
 from .bus_router import bus_router
+from .tkq import broker
+from ...core_apps.base import __domain__ as base_domain
 from ...db_config import config
-from ...env import Env
+from ...env import EnvMidlleWare
+from ...env_domains import domains
 from ...exceptions import CustomException
 from ...fastapi.dependencies import Logging
 from ...fastapi.middlewares import (
@@ -22,34 +22,12 @@ from ...fastapi.middlewares import (
 )
 from ...helpers.cache import Cache, CustomKeyMaker
 from ...helpers.cache import RedisBackend
-from . import __domain__ as bus_domain
-domains = [bus_domain]
 
-env = None
-
-class EnvMidlleWare:
-    """
-    Адартер кладется в request для удобства обращений к обьектам сервисов
-    """
-    def __init__(self, app: ASGIApp, *args, **kwargs):
-        self.app = app
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        global env
-        if scope['type'] in ("http", "websocket"):
-            conn = HTTPConnection(scope)
-            if not env:
-                env = Env(domains, conn)
-                scope['env'] = env
-            else:
-                scope['env'] = env
-                env.request = conn
-        await self.app(scope, receive, send)
+domains += [bus_domain, base_domain]
 
 
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(bus_router)
-
 
 
 def init_listeners(app_: FastAPI) -> None:
@@ -74,12 +52,13 @@ def on_auth_error(request: Request, exc: Exception):
         content={"error_code": error_code, "message": message},
     )
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
         Старт сервера
     """
-    #await start_processing_messages()
+    # await start_processing_messages()
     await broker.startup()
     yield
     """

@@ -179,3 +179,9 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
 .table {
     vertical-align: middle;
 }
+
+.auth-bg {
+    background: url(../images/background.jpeg);
+    background-size: cover;
+    background-repeat: no-repeat
+}

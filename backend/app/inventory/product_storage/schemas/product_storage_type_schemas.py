@@ -1,4 +1,3 @@
-from email.policy import default
 from typing import Optional, List
 from uuid import UUID
 

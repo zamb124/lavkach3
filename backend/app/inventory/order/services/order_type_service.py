@@ -1,8 +1,8 @@
 from typing import Any, Optional
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
+
 from app.inventory.order.models.order_models import OrderType
 from app.inventory.order.schemas.order_type_schemas import OrderTypeCreateScheme, OrderTypeUpdateScheme, OrderTypeFilter
 from core.permissions import permit

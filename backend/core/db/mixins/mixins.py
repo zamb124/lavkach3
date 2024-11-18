@@ -1,15 +1,13 @@
 import datetime
 import uuid
 
-from sqlalchemy import Column, DateTime, func, Uuid, BigInteger, ForeignKey, Sequence, text, types
-from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import mapped_column, Mapped
-from sqlalchemy_utils.types import JSONType
-from typing import Annotated, Optional
-
+from sqlalchemy import Column, Uuid, BigInteger, Sequence, text, types
 from sqlalchemy import DateTime
 from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy.sql import expression
+from sqlalchemy_utils.types import JSONType
 
 
 # UTC now function on database server

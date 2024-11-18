@@ -1,12 +1,12 @@
 import os
 from types import UnionType
 from typing import Annotated, Union
-from jinja2 import Environment, FileSystemLoader, select_autoescape
 from typing import TYPE_CHECKING
 
+from jinja2 import Environment, FileSystemLoader
 
 if TYPE_CHECKING:
-    from core.frontend.field import Fields, MethodType, Field
+    from core.frontend.field import Fields, MethodType
 
 path = os.path.dirname(os.path.abspath(__file__))
 

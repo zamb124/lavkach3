@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends
-from fastapi import Request
 from fastapi.responses import HTMLResponse
 
-from app.front.apps.inventory.views import MoveView, StoreStaffView
+from app.front.apps.inventory.views import StoreStaffView
 from app.front.template_spec import templates
 
 store_staff_router = APIRouter()

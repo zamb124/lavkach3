@@ -3,7 +3,8 @@ from typing import Any, Optional
 from starlette.requests import Request
 
 from app.prescription.prescription.models.prescription_models import Prescription
-from app.prescription.prescription.schemas.prescription_schemas import PrescriptionCreateScheme, PrescriptionUpdateScheme, PrescriptionFilter
+from app.prescription.prescription.schemas.prescription_schemas import PrescriptionCreateScheme, \
+    PrescriptionUpdateScheme, PrescriptionFilter
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 

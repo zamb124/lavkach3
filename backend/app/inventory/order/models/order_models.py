@@ -1,11 +1,9 @@
 import datetime
-import json
 import uuid
-from operator import index
 from typing import Optional
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint, ARRAY, \
-    String, JSON, CheckConstraint, TypeDecorator, Index, text
+    String, JSON
 from sqlalchemy.orm import relationship, mapped_column, Mapped, validates
 
 # from app.inventory.location.models import Location, LocationClass

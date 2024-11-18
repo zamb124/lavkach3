@@ -1,11 +1,12 @@
 from typing import Any, Optional
 
+from starlette.requests import Request
+
 from app.inventory.product_storage.models.product_storage_models import StorageType
 from app.inventory.product_storage.schemas import StorageTypeCreateScheme, StorageTypeUpdateScheme, \
     StorageTypeFilter
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-from starlette.requests import Request
 
 
 class StorageTypeService(BaseService[StorageType, StorageTypeCreateScheme, StorageTypeUpdateScheme, StorageTypeFilter]):

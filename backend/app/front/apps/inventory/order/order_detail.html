@@ -109,7 +109,7 @@
                                    hx-trigger="click"
                                    hx-get="/inventory/move_log/table?order_id={{ order.p.id }}"
                                    hx-target="#move_logs"
-                                   hx-swap="innerHTML transition: true"
+                                   hx-swap="innerHTML"
                                    aria-controls="move_logs" aria-selected="false" tabindex="-1">
                                     <span data-key="t-move_logs">Move Logs</span>
                                 </a>
@@ -135,7 +135,7 @@
                         <div class="tab-content" style="min-height: 300px" id="moves-tab">
                             <div role="tabpanel" class=" table-responsive tab-pane fade active show" id="moves"
                                  aria-labelledby="home-tab">
-                                <table class="table text-uppercase text-truncate">
+                                <table class="table text-truncate">
                                     <thead>
                                     <tr class="fs-5 text-center" style="text-align: center">
                                         <th scope="col">

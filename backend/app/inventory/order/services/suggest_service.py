@@ -2,11 +2,9 @@ import logging
 import traceback
 import uuid
 from typing import Any, Optional, List
-from zoneinfo import available_timezones
 
-from fastapi.exceptions import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
+
 from app.inventory.order.enums.exceptions_suggest_enums import SuggestErrors
 from app.inventory.order.enums.order_enum import SuggestStatus, SuggestType, MoveStatus
 from app.inventory.order.models.order_models import Suggest
@@ -14,7 +12,6 @@ from app.inventory.order.schemas.suggest_schemas import SuggestCreateScheme, Sug
 from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-from core.helpers.broker.tkq import list_brocker
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

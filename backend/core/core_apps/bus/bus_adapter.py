@@ -1,5 +1,6 @@
-from ...fastapi.adapters import BaseAdapter
 from .bus_config import config
+from ...fastapi.adapters import BaseAdapter
+
 
 class BusAdapter(BaseAdapter):
     module = 'bus'

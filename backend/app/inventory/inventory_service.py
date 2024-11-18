@@ -1,21 +1,19 @@
 from collections import defaultdict
-from itertools import product
-from typing import Dict, List
+from typing import Any, Optional
 from uuid import UUID
 
-from sqlalchemy.cyextension.util import prefix_anon_map
 from starlette.requests import Request
 
-
-from app.inventory.location import Location, LocationType
-from app.inventory.location.enums import PhysicalStoreLocationClass, BlockerEnum
+from app.inventory.location import Location
+from app.inventory.location.enums import PhysicalStoreLocationClass
 from app.inventory.order import OrderType
 from app.inventory.order.enums.exceptions_move_enums import MoveErrors
 from app.inventory.order.enums.order_enum import OrderClass
+from app.inventory.product_storage import ProductStorageType
 from app.inventory.schemas import Product, Quant
-from core.core_apps.bus.bus.enums import LocationClass
 from core.env import Model
 from core.exceptions.module import ModuleException
+
 
 def get_intersection(list1, list2):
     return list(set(list1) & set(list2))
@@ -31,7 +29,7 @@ class InventoryService:
         order_type_model: Model = self.env['order_type']
         location_model: Model = self.env['location']
         product_storage_type: Model = self.env['product_storage_type']
-        location_src_ids: list[UUID]   = []
+        location_src_ids: list[Location]   = []
         # 1 - Сначала надо подобрать order_type_id, если его нет
         # 2 - Берем все типы ордеров, у которых класс internal
         order_types = await order_type_model.service.list({
@@ -56,14 +54,14 @@ class InventoryService:
             lot_ids={i.lot_id for i in schema.products} if schema.products else None,
             quantity=0.0
         )
-        grouped_quants = defaultdict(lambda: {'quantity': 0.0, 'available_quantity': 0.0, 'quants': []})
+        grouped_quants: defaultdict[Any, dict[str, float | list]] = defaultdict(lambda: {'quantity': 0.0, 'available_quantity': 0.0, 'quants': []})
         for quant in available_src_quants:
             if not quant.available_quantity > 0:
                 continue
             key = (quant.product_id,  quant.lot_id, quant.uom_id)
             grouped_quants[key]['quantity'] += quant.quantity
             grouped_quants[key]['available_quantity'] += quant.available_quantity
-            grouped_quants[key]['quants'].append({
+            grouped_quants[key]['quants'].append({  # type: ignore
                 'quant_id': quant.id,
                 'package_id': quant.package_id,
                 'location_src_id': quant.location_id,
@@ -78,7 +76,7 @@ class InventoryService:
                     uom_id=key[2],
                     quantity=data['available_quantity'],
                     avaliable_quantity=data['available_quantity'],
-                    quants=[Quant(**q) for q in data['quants']]
+                    quants=[Quant(**q) for q in data['quants']]  # type: ignore
                 )
                 for key, data in grouped_quants.items()
             ]
@@ -94,7 +92,7 @@ class InventoryService:
                     product.avaliable_quantity = 0.0
                     continue
                 product.avaliable_quantity = grouped_q['available_quantity']
-                product.quants = [Quant(**q) for q in grouped_q['quants']]
+                product.quants = [Quant(**q) for q in grouped_q['quants']]  # type: ignore
         # Далее нам нужно проверить, если мы берем всю упаковку, а не конкретные товары и упаковок,
         # ТК если всю, то как будето логично взять всю упаковку
 
@@ -104,7 +102,7 @@ class InventoryService:
         # Собираем всех родителей тех локаций, к которым прикреплены кванты
         # Что бы найти все ZONE этих локаций
         parents_location_src_map = await location_model.service.get_all_parent_zones(location_ids=quant_location_ids)
-        parents_location_dest_map: dict[list] = {}
+        parents_location_dest_map: dict[str, list] = {}
         if schema.location_dest_id:
             parents_location_dest_map = await location_model.service.get_all_parent_zones(
                 location_ids=[schema.location_dest_id]
@@ -113,7 +111,9 @@ class InventoryService:
         product_storage_types = await product_storage_type.service.get_storage_types_by_products(
             product_ids={i.product_id for i in schema.products}
         )
-        product_storage_type_map = {i.product_id: i for i in product_storage_types}
+        product_storage_type_map: dict[UUID, ProductStorageType] = {
+            i.product_id: i for i in product_storage_types
+        }
         # Собираем все возможные типы ордеров для каждой зоны
         src_zones_order_type = defaultdict(list)
         for order_type in order_types:
@@ -127,7 +127,7 @@ class InventoryService:
 
             # Берем для товара его стратегию приемки и вычленяем зоны, куда можно его перемещать
             parent_zones_dest_q = [
-                UUID(v) for k, v in product_storage_type_map.get(prod.product_id).
+                UUID(v) for k, v in product_storage_type_map.get(prod.product_id).  # type: ignore
                 storage_type_rel.allowed_zones.items()
                 if k == 'zone_id'
             ]
@@ -147,7 +147,7 @@ class InventoryService:
             for q in prod.quants:
                 # Подбираем ORDER_TYPE
                 parent_zones_src_q = parents_location_src_map.get(q.location_src_id)
-                move_order_type: OrderType = None
+                move_order_type: Optional[OrderType] = None
                 for zone_id in parent_zones_src_q:
                     if zone_id in src_zones_order_type:
                         order_types = src_zones_order_type[zone_id]

@@ -1,5 +1,5 @@
 import inspect
-from typing import Callable, Any
+from typing import Callable
 
 from core.helpers.cache.base import BaseKeyMaker
 

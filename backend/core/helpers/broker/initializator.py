@@ -1,13 +1,12 @@
-import uuid
 from typing import Awaitable, Callable
 
 from fastapi import FastAPI, Request
-from starlette.requests import HTTPConnection
 from taskiq import AsyncBroker, TaskiqEvents, TaskiqState
 from taskiq.cli.utils import import_object
 
-#from core.fastapi.schemas import CurrentUser
+# from core.fastapi.schemas import CurrentUser
 from core.service_config import config
+
 
 def startup_event_generator(
     broker: AsyncBroker,

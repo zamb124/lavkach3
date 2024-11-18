@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, computed_field
+from pydantic import computed_field
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import LocationClass

@@ -1,16 +1,9 @@
-from collections import defaultdict
-from lib2to3.fixes.fix_input import context
-from uuid import UUID
-
-from attr.filters import exclude
 from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
-from app.front.apps.inventory.views import OrderView, StoreStaffView, OrderTypeView, MoveView, SuggestView
-from app.front.template_spec import templates
+from app.front.apps.inventory.views import OrderView
 from app.front.utills import BasePermit, render
-from core.frontend.constructor import ClassView
 
 inventory = APIRouter()
 

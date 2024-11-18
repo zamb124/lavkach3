@@ -10,7 +10,6 @@ from app.front.apps.inventory.views import OrderView, OrderTypeView, StoreStaffV
 from app.front.utills import render
 from app.inventory.schemas import CreateMovements, Product, Package
 from core.frontend.constructor import ClassView
-from core.frontend.utils import clean_filter
 
 store_monitor_router = APIRouter()
 

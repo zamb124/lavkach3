@@ -1,10 +1,10 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Query, BackgroundTasks
-from fastapi import Response
+from fastapi import APIRouter, Depends, Query
 from fastapi_filter import FilterDepends
-from starlette.requests import Request
 
+from .schemas import LoginRequest, LogoutRequest
+from ..schemas.user_schemas import SignUpScheme, ChangeCompanyScheme, ChangeLocaleScheme
 from ....base.user.schemas import (
     ExceptionResponseSchema,
     UserScheme,
@@ -19,8 +19,6 @@ from .....fastapi.dependencies import (
     PermissionDependency,
     IsAuthenticated,
 )
-from .schemas import LoginRequest, LogoutRequest
-from ..schemas.user_schemas import SignUpScheme, ChangeCompanyScheme, ChangeLocaleScheme
 
 user_router = APIRouter()
 

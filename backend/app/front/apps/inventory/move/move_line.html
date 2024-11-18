@@ -6,7 +6,7 @@
             lsn="{{ move.p.lsn }}"
             hx-trigger="backend_update"
             hx-get="/inventory/move/line?move_id={{ move._id }}"
-            hx-swap="outerHTML transition:true"
+            hx-swap="outerHTML"
             hx-target="#{{ move.p.key }}"
     >
         <th scope="row" style="white-space: nowrap; vertical-align: middle;">
@@ -58,7 +58,7 @@
                     hx-get="/inventory/move/detail?move_id={{ move._id }}"
                     hx-push-url="false"
                     hx-target="#htmx_content"
-                    hx-swap="beforeend transition:true"
+                    hx-swap="beforeend"
             >
                 <iconify-icon icon="solar:hamburger-menu-broken" class="fs-8"></iconify-icon>
                 {{ move.suggest_list_count.val }}

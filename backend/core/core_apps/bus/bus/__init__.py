@@ -1,6 +1,6 @@
 from core.helpers.cache import CacheStrategy
-from .services import BusService
 from .models import Bus
+from .services import BusService
 from .shemas.bus_schemas import BusCreateScheme, BusUpdateScheme, BusFilter, BusScheme
 
 __domain__ = {

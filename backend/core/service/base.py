@@ -10,10 +10,10 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel
 from sqlalchemy import select, Row, RowMapping
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from core.exceptions.module import ModuleException as HTTPException
 from starlette.requests import Request
 
 from core.db.session import Base, session
+from core.exceptions.module import ModuleException as HTTPException
 from core.fastapi.middlewares.authentication import CurrentUser
 from core.helpers.cache import CacheTag
 from core.schemas import BaseFilter

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, computed_field
+from pydantic import Field, computed_field
 from pydantic.types import UUID4
 
 from app.inventory.order.enums.order_enum import OrderStatus

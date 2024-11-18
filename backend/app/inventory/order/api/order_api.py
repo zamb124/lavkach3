@@ -2,7 +2,6 @@ import uuid
 
 from fastapi import APIRouter, Query, Depends
 from fastapi_filter import FilterDepends
-from pydantic.v1 import UUID4
 
 from app.inventory.order.schemas import (
     OrderScheme,

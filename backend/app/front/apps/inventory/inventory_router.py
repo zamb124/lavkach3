@@ -1,14 +1,13 @@
 from fastapi import APIRouter
 
 from app.front.apps.inventory.app import inventory_app
-
+from app.front.apps.inventory.inventory import inventory
 from app.front.apps.inventory.location.location_type import location_type_router
 from app.front.apps.inventory.location_type import location_router
 from app.front.apps.inventory.move import move_router
 from app.front.apps.inventory.move_log import move_log_router
 from app.front.apps.inventory.order.order import order_router
 from app.front.apps.inventory.order_type.order_type import order_type_router
-from app.front.apps.inventory.inventory import inventory
 from app.front.apps.inventory.store import store_router
 from app.front.apps.inventory.store_monitor.store_monitor import store_monitor_router
 from app.front.apps.inventory.store_staff import store_staff_router

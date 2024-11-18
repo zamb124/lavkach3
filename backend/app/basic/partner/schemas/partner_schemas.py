@@ -2,7 +2,7 @@ from typing import List
 from typing import Optional
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, UUID4
+from pydantic import Field, UUID4
 
 from app.basic.partner.models.partner_models import PartnerType, Partner
 from core.schemas import BaseFilter

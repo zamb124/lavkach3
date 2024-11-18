@@ -1,22 +1,20 @@
-from alembic import op
-import sqlalchemy as sa
+from datetime import datetime
 from uuid import uuid4
 
-from app.inventory.product_storage import StorageType
-from core.core_apps.base.company.models.company_models import Company
-from core.core_apps.base.user.models.user_models import User
-from core.core_apps.base.user.models.role_models import Role
-from app.basic.store.models.store_models import Store
-from app.basic.product.models.product_models import Product, ProductCategory
+from alembic import op
 
-from app.inventory.product_storage.models.product_storage_models import ProductStorageType
-from app.basic.uom.models.uom_models import Uom
+from app.basic.product.models.product_models import Product, ProductCategory
+from app.basic.store.models.store_models import Store
 from app.basic.uom.models.uom_category_models import UomCategory
-from datetime import datetime
+from app.basic.uom.models.uom_models import Uom
 from app.inventory.location.models import Location, LocationType
 from app.inventory.order.models import OrderType, Order
+from app.inventory.product_storage import StorageType
+from app.inventory.product_storage.models.product_storage_models import ProductStorageType
 from app.inventory.quant.models import Lot, Quant
-from sqlalchemy_utils.types import PasswordType
+from core.core_apps.base.company.models.company_models import Company
+from core.core_apps.base.user.models.role_models import Role
+from core.core_apps.base.user.models.user_models import User
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'

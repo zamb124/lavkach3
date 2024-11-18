@@ -6,7 +6,7 @@
             lsn="{{ move_log.p.lsn }}"
             hx-trigger="backend_update"
             hx-get="/inventory/move_log/line?move_log_id={{ move_log._id }}"
-            hx-swap="outerHTML transition:true"
+            hx-swap="outerHTML"
             hx-target="#{{ move_log.p.key }}"
     >
         <th scope="row" style="white-space: nowrap; vertical-align: middle;">

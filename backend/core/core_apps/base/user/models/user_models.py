@@ -3,7 +3,6 @@ from enum import Enum
 from typing import Optional
 from typing import TYPE_CHECKING
 
-from fastapi_localization import lazy_gettext as _
 from sqlalchemy import ForeignKey
 from sqlalchemy import UniqueConstraint
 from sqlalchemy import Uuid, Sequence
@@ -18,9 +17,9 @@ if TYPE_CHECKING:
     from core.core_apps.base.company.models.company_models import Company
 
 class UserType(str, Enum):
-    COMMON: str = _('Common User')
-    STORE: str = _('Store User')
-    COURIER: str = _('Courier')
+    COMMON: str = 'Common User'
+    STORE: str = 'Store User'
+    COURIER: str = 'Courier'
 
 
 class User(Base, TimestampMixin, VarsMixin, LsnMixin):

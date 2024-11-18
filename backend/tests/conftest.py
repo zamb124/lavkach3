@@ -17,18 +17,18 @@ from app.basic.uom.models import UomType
 from app.basic.uom.schemas import UomCategoryCreateScheme, UomCreateScheme
 from app.front.front_server import app as front_app
 from app.inventory.inventory_server import app as inventory_app
-from app.inventory.location.enums import LocationClass, PutawayStrategy
+from app.inventory.location.enums import LocationClass
 from app.inventory.location.schemas import LocationTypeCreateScheme, LocationCreateScheme
 from app.inventory.order.schemas import OrderTypeCreateScheme
-from app.inventory.product_storage.schemas import ProductStorageTypeCreateScheme
 from app.inventory.quant.schemas import LotCreateScheme, QuantCreateScheme
+from core.context import set_session_context, reset_session_context
 from core.core_apps.base.base_server import app as base_app
 from core.core_apps.base.company.models import Company
 from core.core_apps.base.company.schemas import CompanyCreateScheme
 from core.core_apps.base.user.models import User
 from core.core_apps.base.user.schemas import UserCreateScheme, RoleCreateScheme
 from core.core_apps.bus.bus_server import app as bus_app
-from core.db.session import set_session_context, reset_session_context, Base
+from core.db.session import Base
 from core.db_config import config
 from core.env import Env, env_context
 from core.fastapi.schemas import CurrentUser

@@ -8,7 +8,6 @@ from fastapi import APIRouter, UploadFile, File
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from pydantic.v1.schema import schema
 from starlette.responses import JSONResponse
 
 from app.front.front_tasks import import_prepare_data, import_save
@@ -247,10 +246,10 @@ async def action(request: Request, model: str, action_name: str, line_id: UUID):
         obj = action_schema(**data)
         res = await func(schema=obj)
         result += res
-        return cls.send_message(message=f'Action {cls.v.schema.action} done')
+        return cls.send_message(message=f'Action {action_name} done')
     else:
         await func(payload={'id': line_id})
-        return cls.send_message(message=f'Action {cls.v.schema.action} done')
+        return cls.send_message(message=f'Action {action_name} done')
 
 
 class ImportSchema(BaseModel):

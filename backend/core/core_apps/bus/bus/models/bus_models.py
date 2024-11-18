@@ -1,13 +1,12 @@
 import uuid
-from typing import Optional
 
-from sqlalchemy import Uuid, Sequence, Enum, ForeignKey
+from sqlalchemy import Uuid, Sequence
 from sqlalchemy.orm import mapped_column, Mapped
 
-from ...bus.enums import BusStatus
 from core.db import Base
 from core.db.mixins import AllMixin
 from core.helpers.cache import CacheTag
+from ...bus.enums import BusStatus
 
 
 class Bus(Base, AllMixin):

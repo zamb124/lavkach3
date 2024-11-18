@@ -5,9 +5,7 @@ import traceback
 import uuid
 from typing import Any, Optional, List
 
-from fastapi import HTTPException
 from starlette.requests import Request
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.inventory.order.enums.exceptions_move_enums import MoveErrors, OrderErrors
 from app.inventory.order.enums.order_enum import OrderStatus, MoveStatus
@@ -17,7 +15,6 @@ from core.exceptions.module import ModuleException
 from core.helpers.broker.tkq import list_brocker
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -115,7 +112,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         return res
 
     @permit('order_start')
-    async def order_start(self, order_id: uuid.UUID, user_id: uuid.UUID) -> List[ModelType]:
+    async def order_start(self, order_id: uuid.UUID, user_id: Optional[uuid.UUID] = None) -> List[ModelType]:
         """Ставим статус CONFIRMING и запускаем процесс подтверждения по каждому таску"""
         res = []
         if not user_id:
@@ -140,7 +137,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         return res
 
     @permit('order_complete')
-    async def order_complete(self, order_id: List[uuid.UUID], user_id: Optional[uuid.UUID] = None) -> list:
+    async def order_complete(self, order_id: List[uuid.UUID], user_id: Optional[uuid.UUID] = None) -> None:
         """Ставим статус DONE"""
         if not user_id:
             user_id = self.user.user_id

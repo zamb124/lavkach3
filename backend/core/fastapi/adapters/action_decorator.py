@@ -2,9 +2,6 @@ from abc import ABCMeta
 from functools import wraps
 from typing import Iterable, Optional
 
-from pydantic import BaseModel
-from redis.commands.graph.execution_plan import Operation
-
 actions = {
 
 }

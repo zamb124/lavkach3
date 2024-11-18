@@ -1,5 +1,4 @@
 import uuid
-from operator import index
 from typing import Optional
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, text, JSON

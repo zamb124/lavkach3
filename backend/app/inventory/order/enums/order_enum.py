@@ -1,6 +1,5 @@
 from enum import Enum
 
-from core.frontend.enums import TextColorEnum
 from . import BaseEnum
 from ...location.enums import VirtualLocationClass, PhysicalLocationClass
 

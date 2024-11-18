@@ -1,10 +1,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
-from fastapi import Request
 from fastapi.responses import HTMLResponse
 
-from app.front.apps.inventory.views import MoveView, SuggestView
+from app.front.apps.inventory.views import SuggestView
 from app.front.template_spec import templates
 from app.front.utills import render
 

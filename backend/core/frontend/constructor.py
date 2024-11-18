@@ -3,9 +3,9 @@ import enum
 import logging
 import uuid
 from datetime import datetime
-from inspect import isclass
-from typing import Optional, get_args, get_origin, Any
 from functools import lru_cache
+from typing import Optional, Any
+
 from jinja2_fragments import render_block
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo, ComputedFieldInfo
@@ -14,9 +14,10 @@ from starlette.exceptions import HTTPException
 from starlette.requests import Request
 
 from core.env import Model, Env
-from core.frontend.enviroment import passed_classes, reserved_fields, environment, _crud_filter
+from core.frontend.enviroment import reserved_fields, environment, _crud_filter
 from core.frontend.field import Field, Fields
 from core.frontend.types import ViewVars, MethodType
+from core.frontend.utils import get_types
 from core.schemas.basic_schemes import BasicModel
 
 logging.basicConfig(level=logging.INFO)
@@ -52,25 +53,6 @@ default_templates = {
 def _get_key() -> str:
     """Генерирует уникальный идетификатор для конструктора модели"""
     return f'A{uuid.uuid4().hex[:10]}'
-
-
-def get_types(annotation: object, _class: list = []) -> list[object]:
-    """
-        Рекурсивно берем типы из анотации типа
-    """
-    if isclass(annotation):
-        _class.append(annotation)
-        return _class
-    else:
-        origin = get_origin(annotation)
-        annotate = get_args(annotation)
-        if origin and origin not in passed_classes:
-            _class.append(origin)
-        try:
-            get_types(annotate[0], _class)
-        except Exception as ex:
-            _class.append(annotation)
-    return _class
 
 
 class View:
@@ -425,7 +407,8 @@ class H:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
         return self.as_filter()
 
-    def as_action(self, action_name, block_name: str = 'button', label=True, css_class=False, icon: Optional[str]=None) -> str:
+    def as_action(self, action_name, block_name: str = 'button', label=True, css_class=False,
+                  icon: Optional[str] = None) -> str:
         """Отдаем кнопку действия"""
         if css_class is True:
             css_class = 'btn btn-primary'
@@ -781,7 +764,6 @@ class ClassView:
                 filter_fieldinfo),
             'get': self._get_view_vars_by_fieldinfo(get_fieldinfo),
         }
-
 
     def _get_field(self, field_name: str, fields_merged: dict) -> 'Field':
         """

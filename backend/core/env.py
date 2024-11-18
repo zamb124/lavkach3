@@ -1,32 +1,25 @@
 import uuid
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from enum import Enum
-from lib2to3.fixes.fix_input import context
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from httpx import AsyncClient
+from httpx import AsyncClient as asyncclient
+from pydantic import BaseModel
 from starlette.requests import HTTPConnection, Request
+from starlette.types import ASGIApp, Scope, Receive, Send
 from taskiq import AsyncBroker
 
 from core.db_config import config
 from core.fastapi.adapters.action_decorator import actions
-from httpx import AsyncClient as asyncclient, request
-
 from core.fastapi.schemas import CurrentUser
 from core.helpers.cache import CacheStrategy
-from pydantic import BaseModel
-
 from .context import set_session_context, get_session_context, reset_session_context
 
 if TYPE_CHECKING:
     from core.fastapi.adapters import BaseAdapter
     from core.service.base import Model, BaseService
-    from core.db import Base
-from .core_apps.base import __domain__ as base_domain
-from .core_apps.bus import __domain__ as bus_domain
-from app.inventory import __domain__ as inventory_domain
-from app.basic import __domain__ as basic_domain
+from .env_domains import domains
 
 
 class DeleteSchema(BaseModel):
@@ -87,6 +80,7 @@ class Domain:
     _env: 'Env'
     domain_type: str
     _adapter: 'BaseAdapter' = None
+    domain: 'Domain'
 
     def __init__(self, domain: dict, domain_type='EXTERNAL'):
         self.name = domain['name']
@@ -120,7 +114,7 @@ class Domain:
         )
 
 
-core_domains = [base_domain, bus_domain, inventory_domain, basic_domain]
+
 
 
 class Env:
@@ -128,12 +122,12 @@ class Env:
     request: HTTPConnection
     broker: AsyncBroker
 
-    def __init__(self, domains: list | dict, conn: HTTPConnection | AsyncClient | Request,
+    def __init__(self, domains: list, conn: HTTPConnection | AsyncClient | Request,
                  broker: AsyncBroker | None = None):
         _domains: dict = {}
         if isinstance(domains, dict):
             domains = [domains]
-        for d in domains + core_domains:
+        for d in domains:
             domain_type: str = 'EXTERNAL'
             if isinstance(d, tuple):
                 domain_type = d[1]
@@ -169,7 +163,7 @@ class Env:
         )
         data = responce.json()
         client = asyncclient(headers={'Authorization': data['token']})
-        env = Env(core_domains, client)
+        env = Env(domains, client)
         user = CurrentUser(id=uuid.uuid4(), is_admin=True)
         setattr(client, 'user', user)
         setattr(client, 'scope', {'env': env})
@@ -181,7 +175,7 @@ class Env:
             Создает env путем, без авторизации суперюзера
         """
         client = asyncclient(headers={'Authorization': f'Bearer {config.INTERCO_TOKEN}'})
-        env = Env(core_domains, client)
+        env = Env(domains, client)
         user = CurrentUser(id=uuid.uuid4(), is_admin=True)
         setattr(client, 'user', user)
         setattr(client, 'scope', {'env': env})
@@ -206,3 +200,27 @@ async def env_context():
     finally:
         if token:
             env.close(token)
+
+
+env: Optional[Env] = None
+
+
+class EnvMidlleWare:
+    """
+     ENV Middleware
+    """
+
+    def __init__(self, app: ASGIApp, *args, **kwargs):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        global env
+        if scope['type'] in ("http", "websocket"):
+            conn = HTTPConnection(scope)
+            if not env:
+                env = Env(domains, conn)
+                scope['env'] = env
+            else:
+                scope['env'] = env
+                env.request = conn
+        await self.app(scope, receive, send)

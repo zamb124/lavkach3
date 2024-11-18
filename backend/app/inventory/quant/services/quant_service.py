@@ -3,7 +3,6 @@ from typing import Any, Optional, List
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select, or_
-from sqlalchemy.orm import joinedload
 from starlette.requests import Request
 
 from app.inventory.location import Location

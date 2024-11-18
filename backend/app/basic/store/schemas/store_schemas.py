@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, field_validator
+from pydantic import field_validator
 from pydantic.types import UUID
 
 from app.basic.store.models.store_models import Store

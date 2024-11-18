@@ -1,11 +1,11 @@
 from typing import Optional, List
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import BaseModel, Field, UUID4
+from pydantic import Field, UUID4
 
 from ....base.company.models.company_models import Company
 from .....schemas import BaseFilter
-from .....schemas.basic_schemes import BaseModel, BasicModel
+from .....schemas.basic_schemes import BasicModel
 from .....schemas.list_schema import GenericListSchema
 from .....schemas.timestamps import TimeStampScheme
 from .....types.types import TypeCountry, TypeLocale, TypeCurrency

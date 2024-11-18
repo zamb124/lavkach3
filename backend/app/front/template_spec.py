@@ -1,14 +1,12 @@
 from datetime import datetime
 from uuid import uuid4
 
-from jinja2 import ChoiceLoader, FileSystemLoader, Environment
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
-from core.frontend.enviroment import template_dirs
-from core.frontend.enviroment import environment as env
-from app.front.front_config import config
 
+from app.front.front_config import config
+from core.frontend.enviroment import environment as env
 
 templates = Jinja2Templates(env=env)
 environment = templates.env

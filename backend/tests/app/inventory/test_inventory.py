@@ -1,24 +1,8 @@
 import pytest
-from uuid import uuid4
-from app.inventory.schemas import CreateMovements, Product, Package
 
-@pytest.fixture
-def product():
-    return Product(
-        product_id=uuid4(),
-        quantity=10.0,
-        avaliable_quantity=5.0,
-        lot_id=uuid4(),
-        uom_id=uuid4(),
-        quants=[]
-    )
-
-@pytest.fixture
-def package():
-    return Package(package_id=uuid4())
 
 @pytest.mark.asyncio
-async def test_create_movements_with_all_fields(inventory_client, headers, product, package):
+async def test_create_movements_with_all_fields(inventory_client, headers, product, package, locations, order_types):
     data = {
         "location_src_id": uuid4(),
         "location_dest_id": uuid4(),
@@ -37,8 +21,9 @@ async def test_create_movements_with_all_fields(inventory_client, headers, produ
     assert len(movement["products"]) == 1
     assert len(movement["packages"]) == 1
 
+
 @pytest.mark.asyncio
-async def test_create_movements_with_location_src_id_and_products(inventory_client, headers, product):
+async def test_create_movements_with_location_src_id_and_products(inventory_client, headers, product, locations, order_types):
     data = {
         "location_src_id": uuid4(),
         "products": [product]
@@ -51,8 +36,9 @@ async def test_create_movements_with_location_src_id_and_products(inventory_clie
     assert len(movement["products"]) == 1
     assert len(movement["packages"]) == 0
 
+
 @pytest.mark.asyncio
-async def test_create_movements_with_location_dest_id_and_packages(inventory_client, headers, package):
+async def test_create_movements_with_location_dest_id_and_packages(inventory_client, headers, package, locations, order_types):
     data = {
         "location_dest_id": uuid4(),
         "packages": [package]
@@ -65,8 +51,9 @@ async def test_create_movements_with_location_dest_id_and_packages(inventory_cli
     assert len(movement["products"]) == 0
     assert len(movement["packages"]) == 1
 
+
 @pytest.mark.asyncio
-async def test_create_movements_with_location_types_and_products(inventory_client, headers, product):
+async def test_create_movements_with_location_types_and_products(inventory_client, headers, product, locations, order_types):
     data = {
         "location_type_src_id": uuid4(),
         "location_type_dest_id": uuid4(),
@@ -82,8 +69,9 @@ async def test_create_movements_with_location_types_and_products(inventory_clien
     assert len(movement["products"]) == 1
     assert len(movement["packages"]) == 0
 
+
 @pytest.mark.asyncio
-async def test_create_movements_with_location_types_and_packages(inventory_client, headers, package):
+async def test_create_movements_with_location_types_and_packages(inventory_client, headers, package, locations, order_types):
     data = {
         "location_type_src_id": uuid4(),
         "location_type_dest_id": uuid4(),
