@@ -90,6 +90,7 @@ class App {
     // Htmx
     initEventListeners() {
         htmx.on("htmx:confirm", (e) => {
+
             console.log('htmx:confirm');
             let authToken = this.getCookieValue('token');
             if (authToken == null && window.location.pathname.indexOf('login') === -1) {
@@ -438,10 +439,14 @@ class App {
                 });
             });
 
-            const elmts = elt.querySelectorAll('.uuid-create, .uuid-update, .list-uuid-create, .list-uuid-update, .uuid-get, .list-uuid-get, .babel-create, .babel-update, .list-str, .list-enum-update, .list-enum-get, .list-enum-create, .list-rel');
-
+            const elmts = elt.querySelectorAll('.modal, .uuid-create, .uuid-update, .list-uuid-create, .list-uuid-update, .uuid-get, .list-uuid-get, .babel-create, .babel-update, .list-str, .list-enum-update, .list-enum-get, .list-enum-create, .list-rel');
+            if (elt.classList.contains('modal')) {
+                new ModalHandler(elt);
+            }
             elmts.forEach(element => {
-                if (element.classList.contains('uuid-update') || element.classList.contains('list-uuid-update')) {
+                if (element.classList.contains('modal')) {
+                    new ModalHandler(element);
+                } else if (element.classList.contains('uuid-update') || element.classList.contains('list-uuid-update')) {
                     new ChoiceHandler(element, 'update');
                 } else if (element.classList.contains('uuid-create') || element.classList.contains('list-uuid-create')) {
                     new ChoiceHandler(element, 'create');

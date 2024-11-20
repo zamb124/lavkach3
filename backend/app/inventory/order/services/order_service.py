@@ -5,8 +5,10 @@ import traceback
 import uuid
 from typing import Any, Optional, List
 
+from pydantic.v1 import UUID4
 from starlette.requests import Request
 
+from app.inventory.estatus import estatus
 from app.inventory.order.enums.exceptions_move_enums import MoveErrors, OrderErrors
 from app.inventory.order.enums.order_enum import OrderStatus, MoveStatus
 from app.inventory.order.models.order_models import Order
@@ -18,16 +20,6 @@ from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSc
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-@list_brocker.task
-async def print_foo(foo: str = None) -> None:
-    env = list_brocker.state.data['env'].get_env()
-    adapter = env['order'].adapter
-    service = env['order'].service
-    some_order = await service.list({'lsn__gt': 0})
-    order = await adapter.get(some_order[0].id)
-    await asyncio.sleep(3)
-    print(foo)
 
 
 class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, OrderFilter]):
@@ -50,7 +42,6 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         obj.number = datetime.datetime.now(datetime.UTC).strftime('%y%m%d%H%m%S')
         obj.created_by = self.user.user_id
         obj.edited_by = self.user.user_id
-        await print_foo.kiq('sd')
         return await super(OrderService, self).create(obj)
 
     @permit('order_delete')
@@ -61,6 +52,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
     async def move_counstructor(self, order_id: uuid.UUID, moves: list) -> None:
         return await super(OrderService, self).delete(id)
 
+    @estatus('waiting', 'assigning')
     @permit('order_assign')
     async def order_assign(self, order_id: uuid.UUID, user_id: uuid.UUID = None) -> ModelType:
         order_entity = await self.get(order_id)
@@ -82,24 +74,19 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
         await self.env['move'].service.create_suggests.kiq(None, move_ids=move_ids, user_id=user_id)
         return order_entity
 
+    @estatus('created', 'confirming')
     @permit('order_confirm')
     async def order_confirm(self, order_id: uuid.UUID, user_id: Optional[uuid.UUID] = None) -> List[ModelType]:
         """Ставим статус CONFIRMING и запускаем процесс подтверждения по каждому таску"""
         res: list = []
+        order_entity = await self.check_func_status_get_entity(self.order_confirm, order_id, for_update=True)
+        move_ids = [move.id for move in order_entity.move_list_rel]
         if not user_id:
             user_id = self.user.user_id
         try:
-            order_entity = await self.get(order_id, for_update=True)
-            if order_entity.status not in (OrderStatus.CREATED, OrderStatus.RESERVATION_FAILED, OrderStatus.CONFIRMING):
-                raise ModuleException(status_code=406, enum=OrderErrors.WRONG_STATUS)
-            for move in order_entity.move_list_rel:
-                if not move.status in (MoveStatus.CREATED, MoveStatus.RESERVATION_FAILED, MoveStatus.CONFIRMING):
-                    raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
-                move.status = MoveStatus.CONFIRMING
-            move_ids = [move.id for move in order_entity.move_list_rel]
             '''Отправляем таску на подтверждение мувов'''
-            await self.env['move'].service.confirm.kiq(None, move_ids=move_ids, user_id=user_id)
-            order_entity.status = OrderStatus.CONFIRMING
+            await self.env['move'].service.confirm.kiq(None, move_ids=move_ids, order_id=order_id, user_id=user_id)
+            order_entity.estatus = 'confirming'
             await self.session.commit()
             await self.session.refresh(order_entity)
         except Exception as e:
@@ -107,7 +94,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
             logging.error("Произошла ошибка: %s", e)
             logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
             raise e
-        #await order_entity.notify('update')
+        # await order_entity.notify('update')
         return res
 
     @permit('order_start')
@@ -150,18 +137,18 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
                     args={'status': order_entity.status}
                 )
             for move in order_entity.move_list_rel:
-                if move.status != MoveStatus.DONE:
-                   """ Пытаемся синхронно завершить все мувы"""
-                   task = await self.env['move'].service.set_done.kiq(None, move_id=move.id, user_id=self.user.user_id)
-                   result = await task.wait_result(timeout=5)
-                   if result.error:
-                       raise ModuleException(
+                if move.status != MoveStatus.COMPLETE:
+                    """ Пытаемся синхронно завершить все мувы"""
+                    task = await self.env['move'].service.set_done.kiq(None, move_id=move.id, user_id=self.user.user_id)
+                    result = await task.wait_result(timeout=5)
+                    if result.error:
+                        raise ModuleException(
                             status_code=406,
                             enum=MoveErrors.WRONG_STATUS,
                             message=f'Move {move.id} is not in DONE status',
                             args={'status': move.status}
                         )
-            order_entity.status = OrderStatus.DONE
+            order_entity.status = OrderStatus.COMPLETE
             await self.session.commit()
             await self.session.refresh(order_entity)
         except Exception as e:

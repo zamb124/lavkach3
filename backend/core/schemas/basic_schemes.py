@@ -2,7 +2,7 @@ import typing
 from enum import Enum
 from typing import Optional, List, Any
 
-from pydantic import BaseModel, UUID4, Field, AliasPath, AliasChoices, types, BeforeValidator
+from pydantic import BaseModel, UUID4, Field, AliasPath, AliasChoices, types, BeforeValidator, model_validator
 from pydantic.config import JsonDict
 from pydantic.fields import _EmptyKwargs
 from pydantic_core import PydanticUndefined
@@ -68,15 +68,15 @@ class BasicModel(BaseModel):
                 ...
         return resolution
 
-    # @model_validator(mode='before')
-    # @classmethod
-    # def field_cleaner(cls, data: Any) -> Any:
-    #     if isinstance(data, dict):
-    #         for k, v in data.items():
-    #             if isinstance(v, str):
-    #                 if v == '':
-    #                     data[k] = None
-    #     return data
+    @model_validator(mode='before')
+    @classmethod
+    def field_cleaner(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            for k, v in data.items():
+                if isinstance(v, str):
+                    if v == '':
+                        data[k] = None
+        return data
 
     # def model_post_init(self, __context):
     #     if hasattr(self.Config, 'readonly'):

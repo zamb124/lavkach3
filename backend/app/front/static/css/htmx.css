@@ -1,8 +1,3 @@
-tr.htmx-swapping th {
-    opacity: 0 !important;
-    transition: opacity 5s ease-out !important;
-}
-
 @keyframes fade-in {
     from {
         opacity: 0;
@@ -53,3 +48,5 @@ tr.htmx-swapping th {
 .htmx-request.loader {
     display: inline;
 }
+
+

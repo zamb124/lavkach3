@@ -33,12 +33,28 @@ class LocationClass(str, Enum):
     SCRAPPED: str = "scrapped"
 
 
-class VirtualLocationClass(str, Enum):
+class VirtualLocationZones(str, Enum):
     """ Виртуальные классы локаций"""
     PARTNER: str = "partner"  # Зона внешняя (например поставщика товаров)
     LOST: str = "lost"  # Класс типа местоположения отвечающий аккумулирование расхождений в рамках набора склада
     INVENTORY: str = "inventory"  # Класс типов ячеек, которы аккумулирует расхождения при легальной инвентаризации
     SCRAPPED: str = "scrapped"  # Списанный товар (уже утиилизарованный)\
+
+
+class PhysicalLocationZones(str, Enum):
+    """ Виртуальные классы локаций"""
+    ZONE: str = "zone"
+    SCRAP: str = "scrap"  # Класс хранение некондиционного товара
+
+
+class ZonesVirtPhis(str, Enum):
+    """ Все классы локаций, которые могут быть зонами"""
+    PARTNER: str = "partner"  # Зона внешняя (например поставщика товаров)
+    LOST: str = "lost"  # Класс типа местоположения отвечающий аккумулирование расхождений в рамках набора склада
+    INVENTORY: str = "inventory"  # Класс типов ячеек, которы аккумулирует расхождения при легальной инвентаризации
+    SCRAPPED: str = "scrapped"  # Списанный товар (уже утиилизарованный)\
+    ZONE: str = "zone"
+    SCRAP: str = "scrap"  # Класс хранение некондиционного товара
 
 
 class PhysicalLocationClass(str, Enum):

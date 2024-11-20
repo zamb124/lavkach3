@@ -6,7 +6,7 @@
             lsn="{{ order.p.lsn }}"
             hx-trigger="backend_update"
             hx-get="/inventory/order/line?order_id={{ order._id }}"
-            hx-swap="outerHTML"
+            hx-swap="outerHTML swap:1s"
             hx-target="#{{ order.p.key }}"
     >
         <th scope="row" style="white-space: nowrap; vertical-align: middle;">

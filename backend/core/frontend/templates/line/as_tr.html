@@ -118,7 +118,7 @@
                                     hx-ext="json-enc"
                                     hx-put="/base/line/{{ line.v.model.name }}/{{ line.p.id }}?mode=tr&method=save"
                                     {% endif %}
-                                    hx-swap="outerHTML transition:true"
+                                    hx-swap="outerHTML"
                                     class="btn btn-soft-primary inline"
                                     style="display: inline-block">
                                 <iconify-icon
@@ -203,7 +203,7 @@
                                 {% else %}hx-target="this"{% endif %}
                                 hx-include="#{{ line.p.key }}"
                                 hx-ext="json-enc"
-                                hx-swap="outerHTML transition:true"
+                                hx-swap="outerHTML"
                                 hx-post="/base/line"
                                 hx-vals='{
                                 "model": "{{ line.v.model.name }}",

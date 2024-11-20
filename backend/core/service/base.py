@@ -126,6 +126,32 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         self.env = request.scope['env']
         self.session = session
         self.basecache = BaseCache(self)
+        self.status_map = self._collect_statuses()
+
+    def _collect_statuses(self):
+        """Собирает статусы из всех методов сервиса"""
+        status_map = {}
+        for attr_name in dir(self):
+            attr = getattr(self, attr_name)
+            if callable(attr) and hasattr(attr, '_estatus'):
+                status, alias = attr._estatus
+                if status not in status_map:
+                    status_map[status] = []
+                status_map[status].append(alias)
+        return status_map
+
+    async def check_func_status_get_entity(self, func, entity: uuid.UUID | str | Row, for_update=False) -> Row:
+        """Может проверить, что функция выполняется ровно в том статусе, в котором нужно"""
+        if isinstance(entity, uuid.UUID):
+            entity = await self.get(entity, for_update)
+        elif isinstance(entity, str):
+            entity = await self.get(entity, for_update)
+        elif isinstance(entity, Row) and for_update:
+            entity = await self.get(entity, for_update)
+        if hasattr(func, '_estatus'):
+            if entity.status not in func._estatus:
+                raise HTTPException(status_code=409, detail=f"Estatus Error")
+        return entity
 
     def sudo(self):
         self.user = CurrentUser(id=uuid4(), is_admin=True)
@@ -244,7 +270,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 if is_pydantic(obj_value):
                     for _obj in obj_value:
                         rel_service = self.env[_obj.Config.orm_model.__tablename__].service
-                        #rel = rel_service(self.request)
+                        # rel = rel_service(self.request)
                         if hasattr(_obj, 'id') and getattr(_obj, 'id'):
                             rel_entity = await rel_service.update(id=_obj.id, obj=_obj, commit=False)
                             self.session.add(rel_entity)
@@ -289,7 +315,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         return {
             'cache_tag': CacheTag.MODEL,
             'message': f'{self.model.__tablename__.capitalize()} is {method.capitalize()}',
-            'company_id': entity.company_id if hasattr(entity,  'company_id') else entity.id,
+            'company_id': entity.company_id if hasattr(entity, 'company_id') else entity.id,
             'vars': {
                 'id': entity.id,
                 'lsn': entity.lsn,
@@ -297,7 +323,6 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 'method': method,
             }
         }
-
 
     async def update(self, id: Any, obj: UpdateSchemaType, commit=True) -> Row:
         entity, updated_fields = await self._update(id, obj, commit=commit)

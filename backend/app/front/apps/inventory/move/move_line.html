@@ -1,14 +1,13 @@
 {% autoescape false %}
     <tr
             id="{{ move.p.key }}"
-            class="line fade-out fade-in"
+            class="line"
             ui_key="{{ move.p.ui_key }}"
             lsn="{{ move.p.lsn }}"
-            hx-trigger="backend_update"
+            hx-trigger="backend_update consume"
             hx-get="/inventory/move/line?move_id={{ move._id }}"
-            hx-swap="outerHTML swap:1s"
-            hx-indicator=".loader"
-            hx-target="#{{ move.p.key }}"
+            hx-swap="outerHTML swap:0.3s"
+            hx-target="#{{ move.p.key }}" style="background-color: #0a7ea4"
     >
         <th scope="row" style="white-space: nowrap; vertical-align: middle;">
             <div class="row">

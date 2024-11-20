@@ -34,9 +34,9 @@
        data-bs-toggle="tooltip"
        title="Object Link"
        href="/base/modal/{{ field.model_name }}/{{ field.cls.p.id }}"
-       hx-trigger="click"
+       hx-trigger="click consume"
        hx-target="#htmx_content"
-       hx-swap="beforeend transition:true"
+       hx-swap="afterend"
        disabled
     > {{ field.cls.p.display_title }}
     </a>

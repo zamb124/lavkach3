@@ -89,18 +89,9 @@ input[type="date"] {
     min-height: 10px;
     height: 10px;
     text-align: center !important;
-      opacity: 1;
-  transition: opacity 1s ease-out;
+    opacity: 1;
 
 }
-.line.htmx-swapping {
-      opacity: 0;
-  transition: opacity 1s ease-out;
-}
-.line.htmx-added{
-      opacity: 0;
-}
-
 
 .table > :not(caption) > * > * {
     /* padding: 14px 24px; */
@@ -193,4 +184,44 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
     background: url(../images/background.jpeg);
     background-size: cover;
     background-repeat: no-repeat
+}
+
+.line {
+  opacity: 1;
+  transition: opacity 1s ease-in;
+}
+
+.line.htmx-swapping {
+  opacity: 0;
+  background-color: var(--bs-secondary-bg-subtle) !important;
+  transition: opacity 1s ease-out;
+}
+.line.htmx-swapping * {
+    background-color: inherit;
+}
+
+.line.htmx-added {
+  background-color: var(--bs-secondary-bg-subtle) !important;
+  opacity: 0;
+}
+.line.htmx-added * {
+    background-color: inherit;
+}
+.modal {
+     opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+}
+.modal.show {
+  display: block;
+  opacity: 1;
+}
+
+
+.formline {
+     opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+}
+.formline.show {
+  display: block;
+  opacity: 1;
 }

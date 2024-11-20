@@ -16,7 +16,7 @@
             hx-params="model,method,id,key,backdrop"
             hx-trigger="click"
             hx-target="#htmx_content"
-            hx-swap="beforeend transition:true"
+            hx-swap="beforeend"
             hx-get="/base/modal/{{ line.v.model.name }}/{{ line.p.id }}?method=update"
             class="btn btn-soft-primary inline">
         <iconify-icon icon="solar:document-add-bold" class="fs-8"></iconify-icon>

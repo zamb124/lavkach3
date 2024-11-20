@@ -19,9 +19,9 @@
                        model-name="{{ field.model_name }}"
                        href="/base/modal/{{ field.model_name }}/{{ field.val }}"
                        hx-include="none"
-                       hx-trigger="click"
+                       hx-trigger="click consume"
                        hx-target="#htmx_content"
-                       hx-swap="beforeend transition:true"
+                       hx-swap="afterend"
                        >{{ field.val }}</a>
                     </h4>
                 {% elif field.type == 'rel' %}
@@ -31,10 +31,10 @@
                        href="#"
                        hx-get="/base/modal/{{ field.model_name }}/{{ field.val.p.id }}"
                        hx-include="none"
-                       hx-trigger="click"
-                       hx-params="model,method,id,key"
+                       hx-trigger="click consume"
                        hx-target="#htmx_content"
-                       hx-swap="beforeend transition:true"
+                       hx-params="model,method,id,key"
+                       hx-swap="afterend"
                        >
                         {{ field.val.p.display_title }}
                     </a>

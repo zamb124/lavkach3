@@ -2,13 +2,15 @@ import logging
 import logging
 import traceback
 import typing
-import uuid
+
 from typing import Any, Optional, List
 
-from sqlalchemy import select
+from sqlalchemy import select, Row
 from starlette.requests import Request
+from uuid import UUID
 
-from app.inventory.location.enums import VirtualLocationClass
+from app.inventory.estatus import estatus
+from app.inventory.location.enums import VirtualLocationZones
 from app.inventory.order.enums.exceptions_move_enums import MoveErrors
 from app.inventory.order.enums.order_enum import OrderStatus, SuggestStatus, TYPE_MAP
 from app.inventory.order.models.order_models import Move, MoveType, Order, MoveStatus, \
@@ -62,7 +64,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return await super(MoveService, self).update(id, obj, commit)
 
     @permit('move_list')
-    async def list(self, _filter: FilterSchemaType, size: int = 100):
+    async def list(self, _filter: FilterSchemaType | dict, size: int = 100):
         return await super(MoveService, self).list(_filter, size)
 
     @list_brocker.task(queue_name='model')
@@ -83,7 +85,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 """Если это перемещение товара из виртуальцой локации, то идентификация локации не нужна"""
                 location_src = await location_service.get(move.location_src_id)
                 location_dest = await location_service.get(move.location_dest_id)
-                if not location_src.location_class in VirtualLocationClass:
+                if not location_src.location_class in VirtualLocationZones:
                     in_location_suggest_src = suggest_model(**{
                         "move_id": move.id,
                         "priority": 1,
@@ -146,7 +148,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             # Итого простой кейс, отсканировал локацию-источник, отсканировал товар, отсканировал локацию-назначения
 
     @permit('move_user_assign')
-    async def user_assign(self, move_id: uuid.UUID, user_id: uuid.UUID):
+    async def user_assign(self, move_id: UUID, user_id: UUID):
         """
             Если прикрепился пользователь, то значит, что необходимо создать саджесты для выполнения
         """
@@ -157,25 +159,23 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return move
 
     @list_brocker.task(queue_name='model')
-    async def confirm(self, move_ids: str, user_id: str):
+    async def confirm(self, move_ids: str, user_id: str, order_id: UUID = None):
         self = self or list_brocker.state.data['env'].get_env()['move'].service
-        moves = await self.list({'id__in': move_ids}, size=9999)
-        order = await self.env['order'].service.get(moves[0].order_id, for_update=True)
+        orders = []
         try:
-            for move in moves:
+            for move_id in move_ids:
+                move = await self.check_func_status_get_entity(self.confirm, move_id, for_update=True)
                 await self._confirm(move=move, user_id=user_id)
-            order.status = OrderStatus.CONFIRMED
+                #orders.append(move.order_rel)
+            if order_id:
+                order = await self.env['order'].service.get(order_id, for_update=True)
+                order.status = OrderStatus.CONFIRMED
+                self.session.add(order)
+                await order.notify('update')
             await self.session.commit()
-            await self.session.refresh(order)
-            await order.notify('update')
         except Exception as e:
             await self.session.rollback()
-            for move in moves:
-                move.status = MoveStatus.RESERVATION_FAILED
-            order.status = OrderStatus.RESERVATION_FAILED
             await self.session.commit()
-            await self.session.refresh(order)
-            await order.notify('update')
             logging.error("Произошла ошибка: %s", e)
             logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
             raise e
@@ -184,7 +184,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             "detail": "Move is confirmed"
         }
 
-    async def _confirm(self, move: Move, user_id: str):
+    async def _confirm(self, move: Row, user_id: str):
         """
         Входом для конфирма Мува может быть
          - Order - когда человек или система целенаправлено создают некий Ордер ( Ордер на примеку или Ордер на перемещение)
@@ -199,8 +199,6 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         """
         if move.status == MoveStatus.CONFIRMED:
             return move
-        if move.status != MoveStatus.CONFIRMING:
-            raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
         order_type = self.env['order_type']
         quant = self.env['quant']
         location = self.env['location']
@@ -338,10 +336,10 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
 
     async def get_avalible_locations(
             self,
-            allowed_zone_ids: List[uuid.UUID],
-            exclude_zone_ids: List[uuid.UUID],
-            allowed_location_type_ids: List[uuid.UUID],
-            exclude_location_type_ids: List[uuid.UUID],
+            allowed_zone_ids: List[UUID],
+            exclude_zone_ids: List[UUID],
+            allowed_location_type_ids: List[UUID],
+            exclude_location_type_ids: List[UUID],
             allowed_location_class: List[str],
             exclude_location_class: List[str],
     ):
@@ -406,16 +404,15 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 break
         return available_dest_quants
 
-    async def set_reserve(self, move: Move, src_quant: Quant, dest_quant: Quant, qty_to_move: float):
+    async def set_reserve(self, move: Row, src_quant: Quant, dest_quant: Quant, qty_to_move: float):
         """
             Здесь создается mov_log, для резервирования квантов
         """
         move_log_model = self.env['move_log'].model
         if move.type == 'product':
             """Берем обьекты на изменение"""
-            self.session.refresh(src_quant, with_for_update=True)
-            self.session.refresh(dest_quant, with_for_update=True)
-            self.session.refresh(move, with_for_update=True)
+            #self.session.refresh(src_quant, with_for_update=True)
+            #self.session.refresh(dest_quant, with_for_update=True)
             """Создаем MoveLog на резервирование товара, когда товар меняет одно из свойств таблицы, """
             """если движение на перемещение упаковки, то нет нужны """
             src_type, dest_type = TYPE_MAP.get((src_quant.location_class, dest_quant.location_class))
@@ -425,9 +422,6 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 locations_src = await self.env['location'].service.get(src_quant.location_id)
                 if not locations_src.location_type_rel.is_can_negative:
                     raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
-            # Перепроверяем, что мув не был подтвержден
-            if not move.status == MoveStatus.CONFIRMING:
-                raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
             # Проверяем, что у мува уже не созданы саджесты
             if move.suggest_list_rel:
                 raise ModuleException(status_code=406, enum=MoveErrors.SUGGESTS_ALREADY_CREATED)
@@ -504,13 +498,14 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             self.session.add(move)
         return move
 
+    @estatus('processing', 'setting_done')
     @list_brocker.task(queue_name='model')
     async def set_done(self, move_id: str, user_id: str):
         self = self or list_brocker.state.data['env'].get_env()['move'].service
         move = await self.get(move_id, for_update=True)
         try:
             await self._set_done(move=move, user_id=user_id)
-            move.status = MoveStatus.DONE
+            move.status = MoveStatus.COMPLETE
             await self.session.commit()
             await self.session.refresh(move)
             await move.notify('update')
@@ -536,7 +531,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         location_src = await self.env['location'].service.get(move.location_src_id)
         location_dest = await self.env['location'].service.get(move.location_dest_id)
         src_type, dest_type = TYPE_MAP.get((location_src.location_class, location_dest.location_class))
-        if move.status == MoveStatus.DONE:
+        if move.status == MoveStatus.COMPLETE:
             raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS, args={'staus': move.status})
         if move.type == 'product':
             """Проверочки"""
@@ -636,19 +631,19 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return await super(MoveService, self).create(obj)
 
     @permit('move_delete')
-    async def delete(self, id: uuid.UUID) -> None:
-        if isinstance(id, uuid.UUID):
+    async def delete(self, id: UUID) -> None:
+        if isinstance(id, UUID):
             move = await self.get(id)
             if move.status != MoveStatus.CREATED:
                 raise ModuleException(status_code=406, enum=MoveErrors.WRONG_STATUS)
         return await super(MoveService, self).delete(id)
 
     @permit('move_move_counstructor')
-    async def move_counstructor(self, move_id: uuid.UUID, moves: list) -> None:
+    async def move_counstructor(self, move_id: UUID, moves: list) -> None:
         return await super(MoveService, self).delete(id)
 
     @permit('get_moves_by_barcode')
-    async def get_moves_by_barcode(self, barcode: str, order_id: uuid.UUID) -> List[ModelType]:
+    async def get_moves_by_barcode(self, barcode: str, order_id: UUID) -> List[ModelType]:
         """
             Если прикрепился пользователь, то значит, что необходимо создать саджесты для выполнения
         """

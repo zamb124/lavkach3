@@ -3,7 +3,7 @@ from typing import Optional, List
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic.types import UUID4
 
-from app.inventory.location.enums import PutawayStrategy, LocationClass
+from app.inventory.location.enums import PutawayStrategy, LocationClass, ZonesVirtPhis
 from app.inventory.order.models import OrderType
 from app.inventory.order.models.order_models import OrderClass, BackOrderAction, ReservationMethod
 from core.schemas import BaseFilter
@@ -20,24 +20,25 @@ class OrderTypeBaseScheme(BasicModel):
         default=[], model='location',
         title='Allowed zones source',
         description='Allowed Zones for the source of this order type',
-        filter={'location_class__not_in': LocationClass.ZONE.value},
+        filter={'location_class__in': [item.value for item in ZonesVirtPhis]},
         form=True
     )
     exclude_zone_src_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
         title='Exclude zones source',
-        filter={'location_class__not_in': LocationClass.ZONE.value},
+        filter={'location_class__in': [item.value for item in ZonesVirtPhis]},
         form=True
     )
     allowed_zone_dest_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
         title='Allowed zones dest',
-        filter={'location_class__not_in': LocationClass.ZONE.value},
+        filter={'location_class__in': [item.value for item in ZonesVirtPhis]},
         form=True
     )
     exclude_zone_dest_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
         title='Exclude locations dest',
+        filter={'location_class__in': [item.value for item in ZonesVirtPhis]},
         form=True
     )
     allowed_location_type_src_ids: Optional[list[UUID4]] = Field(

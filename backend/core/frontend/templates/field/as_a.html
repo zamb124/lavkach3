@@ -11,7 +11,7 @@
    hx-push-url="false"
    model-name="{{ model or field.model_name }}"
    hx-target="#htmx_content"
-   hx-swap="beforeend transition:true"
+   hx-swap="beforeend"
    class="uuid-get text-danger">
     {{ field.val }}</a>
 {% endblock %}

@@ -51,7 +51,7 @@
             filter="{{ field.get.filter }}"
             model-name="{{ field.model_name }}"
             hx-target="#htmx_content"
-            hx-swap="beforeend transition:true"
+            hx-swap="afterend"
     >{{ field.val }}</a>
 {% endblock %}
 {% block as_card_title %}

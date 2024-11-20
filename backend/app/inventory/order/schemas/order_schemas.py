@@ -32,6 +32,7 @@ class OrderBaseScheme(BasicModel):
     expiration_datetime: Optional[datetime] = Field(default=None, title='Expiration Date', table=False)
     description: Optional[str] = Field(default=None, title='Description', table=False)
     status: OrderStatus = Field(default=OrderStatus.CREATED, title='Status', readonly=True, table=True)
+    estatus: Optional[str] = Field(default='done', title='Estatus', table=False)
     order_id: Optional[UUID] = Field(default=None, title='Parent', readonly=True)
     processing_steps: Optional[Dict[str, dict]] = Field(default={}, title='Processing Steps', readonly=True)
 

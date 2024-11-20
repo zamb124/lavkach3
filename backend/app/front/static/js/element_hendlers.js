@@ -109,7 +109,7 @@ class ChoiceHandler {
         let value = await this.choices.getValue();
         await this.choices.setValue([])
         let values = []
-        if (!value){
+        if (!value) {
             return []
         } else if (!Array.isArray(value)) {
             values.push(value);
@@ -182,7 +182,7 @@ async function choicesMultiBadges(element, method) {
     res.forEach(function (line) {
         element.insertAdjacentHTML('beforeend', '<span class="badge bg-secondary m-lg-1">' + line.label + '</span>');
     });
-    if (!element.innerText && method==='get') {
+    if (!element.innerText && method === 'get') {
         element.innerText = '-'
     }
 }
@@ -221,12 +221,12 @@ async function choicesUuidBadge(elId, method) {
     }
 
     let res = await getValues()
-    if (res.length > 0){
+    if (res.length > 0) {
         element.innerText = res[0].label;
     } else {
         element.innerText = ''
     }
-    if (!element.innerText && method==='get') {
+    if (!element.innerText && method === 'get') {
         element.innerText = '-'
     }
 }
@@ -347,13 +347,13 @@ async function choiceMultiEnum(element, method) {
     var filter = element.getAttribute('filter')
     var is_filter = element.getAttribute('is-filter')
     var model_name = element.getAttribute('model-name')
-            let attrs = {
-            allowHTML: true,
-            placeholder: true,
-            searchPlaceholderValue: 'Start typing to search',
-            placeholderValue: "Enter " + display_title,
-            removeItemButton: !(method === 'get' || element.getAttribute('readonly'))
-        };
+    let attrs = {
+        allowHTML: true,
+        placeholder: true,
+        searchPlaceholderValue: 'Start typing to search',
+        placeholderValue: "Enter " + display_title,
+        removeItemButton: !(method === 'get' || element.getAttribute('readonly'))
+    };
     let choices = new Choices(element, attrs);
     if (method === 'get' || element.getAttribute('readonly')) {
         choices.containerInner.element.classList.add('disabled');
@@ -418,7 +418,7 @@ async function setTitle(element, method) {
 
     async function getValues() {
         var id__in = ''
-        var str = extractUUIDs(element.innerText).toLowerCase() ;
+        var str = extractUUIDs(element.innerText).toLowerCase();
         element.innerHTML = '<span class="spinner-border text-primary" role="status">\n' +
             '                    <span class="visually-hidden">Loading...</span>\n' +
             '                  </span>'
@@ -447,8 +447,9 @@ async function setTitle(element, method) {
             await new Promise(r => setTimeout(r, 50));
         }
     }
+
     let res = await getValues()
-    if (res.length > 0){
+    if (res.length > 0) {
         element.innerText = res[0].label
     } else {
         element.innerText = '-'
@@ -457,8 +458,8 @@ async function setTitle(element, method) {
 }
 
 class ModalHandler {
-    constructor(modalId) {
-        this.modal = new bootstrap.Modal(modalId);
+    constructor(element) {
+        this.modal = new bootstrap.Modal(element);
         this.init();
     }
 
@@ -469,31 +470,40 @@ class ModalHandler {
             console.log(event);
             event.target.remove();
         });
+        this.dragElement(this.modal._element);
     }
 
-    createDragModal() {
-        const header = this.modal._element.querySelector('.modal-header');
-        if (!header) {
-            return;
+    // Функция для перемещения модального окна
+    dragElement(element) {
+        const header = element.querySelector('.modal-header');
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+        header.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
         }
-        header.onmousedown = (e) => {
-            var offsetX = e.clientX - this.modal._element.getBoundingClientRect().left;
-            var offsetY = e.clientY - this.modal._element.getBoundingClientRect().top;
 
-            const mouseMoveHandler = (e) => {
-                this.modal._element.style.position = 'absolute';
-                this.modal._element.style.left = `${e.clientX - offsetX}px`;
-                this.modal._element.style.top = `${e.clientY - offsetY}px`;
-            };
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            element.style.top = (element.offsetTop - pos2) + "px";
+            element.style.left = (element.offsetLeft - pos1) + "px";
+        }
 
-            const mouseUpHandler = () => {
-                document.removeEventListener('mousemove', mouseMoveHandler);
-                document.removeEventListener('mouseup', mouseUpHandler);
-            };
-
-            document.addEventListener('mousemove', mouseMoveHandler);
-            document.addEventListener('mouseup', mouseUpHandler);
-        };
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
     }
 }
 

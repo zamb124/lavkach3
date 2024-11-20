@@ -3,7 +3,7 @@
         <div id="{{ 'table' ~'--'~ line.p.class_key }}"
              hx-get="/base/table/{{ line.v.model.name }}"
              hx-target="this"
-             hx-swap="innerHTML transition:true"
+             hx-swap="innerHTML"
              hx-trigger="change from:{{ '#filter' ~'--'~ line.p.class_key }} delay:500ms, load, update delay:500ms"
              hx-include="{{ '#filter' ~'--'~ line.p.class_key }}"
         >
