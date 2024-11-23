@@ -83,8 +83,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 raise ModuleException(status_code=406, enum=MoveErrors.SUGGESTS_ALREADY_CREATED)
             if move.type == MoveType.PRODUCT:
                 """Если это перемещение товара из виртуальцой локации, то идентификация локации не нужна"""
-                location_src = await location_service.get(move.location_src_id)
-                location_dest = await location_service.get(move.location_dest_id)
+                location_src = await location_service.get(move.location_src_zone_id)
+                location_dest = await location_service.get(move.location_dest_zone_id)
                 if not location_src.location_class in VirtualLocationZones:
                     in_location_suggest_src = suggest_model(**{
                         "move_id": move.id,
@@ -542,7 +542,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
 
             """Создаем MoveLog только для записей, когда товар меняет одно из свойств таблицы, """
             """если движение на перемещение упаковки, то нет нужны """
-            total_quantity = sum(float(s.value) for s in move.suggest_list_rel if s.type == SuggestType.IN_QUANTITY)
+            total_quantity = sum(float(s.result_value) for s in move.suggest_list_rel if s.type == SuggestType.IN_QUANTITY)
             move_logs = await self.env['move_log'].service.list({'move_id__in': [move.id]})
             reserve_quantity = sum(float(s.reserved_quantity) for s in move_logs)
             incoming_quantity = sum(float(s.incoming_quantity) for s in move_logs)

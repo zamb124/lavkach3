@@ -38,11 +38,12 @@ async def test_crud_location_type(inventory_client, headers, stores, companies):
 @pytest.mark.asyncio
 async def test_crud_location(inventory_client, headers, stores, companies, location_types, product_categories, uom_categories, uoms, products):
     """
-    Проверяем rруд вокруг товаров
+    Проверяем rруд вокруг локаций
     """
     create_data = {
         'company_id': companies[0].id.__str__(),
         'title': 'place location',
+        'location_class': 'place',
         'store_id': stores[0].id.__str__(),
         'is_active': True,
         'location_type_id': location_types['place'].id.__str__(),

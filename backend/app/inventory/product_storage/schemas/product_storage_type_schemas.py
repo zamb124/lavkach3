@@ -15,9 +15,9 @@ class ProductStorageTypeBaseScheme(BasicModel):
     storage_uom_id: Optional[UUID] = Field(default=None)  # Единица измерения склада
     storage_image_url: Optional[str] = Field(default=None)  # Картинка для склада
     allowed_storage_uom_ids: Optional[List[UUID]] = Field(default=[])  # Разрешенные единицы измерения склада
-    allowed_package_ids: Optional[List[UUID]] = Field(default=[])  # Разрешенные типы упаковок
+    allowed_package_type_ids: Optional[List[UUID]] = Field(default=[])  # Разрешенные типы упаковок
     is_homogeneity: bool = Field(default=False)  # Товар может хранится только в гомогенных ячейках
-    storage_type_id: Optional[UUID] = Field(default=None)  # Стратегии хранения
+    storage_type_id: UUID = Field(title='Storage Type ', form=True, model='storage_type')  # Стратегии хранения
 
     class Config:
         orm_model = ProductStorageType
@@ -39,14 +39,9 @@ class ProductStorageTypeScheme(ProductStorageTypeCreateScheme, TimeStampScheme):
 class ProductStorageTypeFilter(BaseFilter):
     product_id__in: Optional[List[UUID]] = Field(default=False, title='Product', form=True, model='product')
 
-    class Config:
-        populate_by_name = True
-
     class Constants(Filter.Constants):
         model = ProductStorageType
-        ordering_field_name = "order_by"
-        search_field_name = "search"
-        search_model_fields = ["product_id", ]
+        search_model_fields = []
 
 
 class ProductStorageTypeListSchema(GenericListSchema):

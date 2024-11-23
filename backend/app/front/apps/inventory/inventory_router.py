@@ -12,6 +12,8 @@ from app.front.apps.inventory.store import store_router
 from app.front.apps.inventory.store_monitor.store_monitor import store_monitor_router
 from app.front.apps.inventory.store_staff import store_staff_router
 from app.front.apps.inventory.suggest import suggest_router
+from app.front.apps.inventory.product_storage_type import product_storage_type_router
+from app.front.apps.inventory.storage_type import storage_type_router
 
 inventory_router = APIRouter()
 inventory_router.include_router(inventory)
@@ -24,5 +26,8 @@ inventory_router.include_router(location_type_router, prefix="/location_type", t
 inventory_router.include_router(move_router, prefix="/move", tags=["move"])
 inventory_router.include_router(move_log_router, prefix="/move_log", tags=["move_log"])
 inventory_router.include_router(suggest_router, prefix="/suggest", tags=["suggest"])
+inventory_router.include_router(product_storage_type_router, prefix="/product_storage_type", tags=["product_storage_type"])
+inventory_router.include_router(storage_type_router, prefix="/storage_type", tags=["storage_type"])
+
 inventory_router.include_router(store_router, prefix="/store", tags=["store"])
 inventory_router.include_router(store_staff_router, prefix="/store_staff", tags=["store_staff"])

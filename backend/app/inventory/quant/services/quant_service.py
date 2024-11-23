@@ -3,9 +3,11 @@ from typing import Any, Optional, List
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select, or_
+from sqlalchemy.orm import joinedload
 from starlette.requests import Request
 
 from app.inventory.location import Location
+from app.inventory.location.enums import BlockerEnum
 from app.inventory.quant.models.quants_models import Quant
 from app.inventory.quant.schemas.quants_schemas import QuantCreateScheme, QuantUpdateScheme, QuantFilter
 from core.permissions import permit
@@ -24,11 +26,11 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
         return await super(QuantService, self).update(id, obj)
 
     @permit('quant_list')
-    async def list(self, _filter: FilterSchemaType, size: int):
+    async def list(self, _filter: FilterSchemaType, size: int = 100):
         return await super(QuantService, self).list(_filter, size)
 
     @permit('quant_create')
-    async def create(self, obj: CreateSchemaType, commit=False) -> ModelType:
+    async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
         return await super(QuantService, self).create(obj, commit)
 
     @permit('quant_delete')
@@ -52,7 +54,11 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
         """
             Метод получения квантов по параметрам
         """
-        query = select(self.model).join(Location, self.model.location_id == Location.id)
+        query = (select(self.model)
+                 .join(Location, self.model.location_id == Location.id)
+                 .options(joinedload(self.model.location_rel))
+                 .options(joinedload(self.model.package_rel))
+                 )
         if id:
             query = query.where(self.model.id == id)
         else:

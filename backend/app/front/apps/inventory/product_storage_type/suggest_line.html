@@ -1,0 +1,72 @@
+{% autoescape false %}
+    <tr
+            id="{{ suggest.p.key }}"
+            class="line"
+            ui_key="{{ suggest.p.ui_key }}"
+            lsn="{{ suggest.p.lsn }}"
+            hx-trigger="backend_update"
+            hx-get="/inventory/suggest/line?suggest_id={{ suggest._id }}"
+            hx-swap="outerHTML swap:1s"
+            hx-target="#{{ suggest.p.key }}"
+    >
+        <th scope="row" style="white-space: nowrap; vertical-align: middle;">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-check fs-5 d-flex align-items-center" style="display: inline-block;">
+                        <input class="form-check-input" type="checkbox"
+                               name="{{ suggest.p.key ~ '--check' }}" value="">
+                    </div>
+                </div>
+            </div>
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            <a href="/inventory/move/detail?move_id={{ suggest._id }}"
+               hx-trigger="click"
+               hx-push-url="false"
+               hx-target="#htmx_content"
+               hx-swap="beforeend"
+               class="text-danger form-control">
+                {{ suggest.type.val }}</a>
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ suggest.priority.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {% if suggest.type.val == 'in_product' %}
+                {{ suggest.value.as_a(model='product') }}
+            {% elif suggest.type.val == 'in_location' %}
+                {{ suggest.value.as_a(model='location') }}
+            {% else %}
+                {{ suggest.value.as_get }}
+            {% endif %}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ suggest.result_value.as_update }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+        {% if suggest.status.val == 'waiting' %}
+             {{ suggest.h.as_action('action_suggest_confirm', 'as_a', label=False, icon='solar:double-alt-arrow-right-bold-duotone') }}
+            {% else %}
+            <iconify-icon data-color-theme="#0c881a" icon="solar:verified-check-bold-duotone" class="fs-8"></iconify-icon>
+        {% endif %}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ suggest.user_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {% if suggest.status.val == 'created' %}
+                <span class="mb-0 badge text-bg-light">{{ suggest.status.val }}</span>
+            {% elif suggest.status.val == 'waiting' %}
+                <span class="mb-0 badge text-bg-info">{{ suggest.status.val }}</span>
+            {% elif suggest.status.val == 'confirmed' %}
+                <span class="mb-0 badge text-bg-secondary">{{ suggest.status.val }}</span>
+            {% elif suggest.status.val == 'processing' %}
+                <span class="mb-0 badge text-bg-primary">{{ suggest.status.val }}</span>
+            {% elif suggest.status.val == 'done' %}
+                <span class="mb-0 badge text-bg-success">{{ suggest.status.val }}</span>
+            {% elif suggest.status.val == 'canceled' %}
+                <span class="mb-0 badge text-bg-dark">{{ suggest.status.val }}</span>
+            {% endif %}
+        </th>
+    </tr>
+{% endautoescape %}

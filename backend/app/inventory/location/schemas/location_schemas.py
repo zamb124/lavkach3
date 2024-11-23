@@ -20,7 +20,6 @@ class LocationBaseScheme(BasicModel):
     location_class: LocationClass = Field(title='Location Class', form=True, table=True)
     location_type_id: UUID4 = Field(title='Location Type', model='location_type', form=True, table=True)
     location_id: Optional[UUID4] = Field(default=None, title='Parent Location', model='location', form=True, table=True)
-    zone_id: Optional[UUID4] = Field(default=None, title='Zone', model='location', form=True, table=True, filter={'location_class__in': LocationClass.ZONE.value})
     block: BlockerEnum = Field(default=BlockerEnum.FREE, title='Block', form=True, table=True)
 
     class Config:
@@ -47,7 +46,6 @@ class LocationFilter(BaseFilter):
     location_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Location Type', model='location_type')
     location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Location Class')
     location_id__in: Optional[List[UUID4]] = Field(default=None, title='Zone', model='location')
-    zone_id__in: Optional[List[UUID4]] = Field(default=None, title='Zone', model='location')
     is_active: Optional[bool] = Field(default=None, title='Active')
 
     class Constants(Filter.Constants):

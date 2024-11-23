@@ -89,13 +89,32 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
 
         return locations
 
-    async def get_all_parent_zones(self, location_ids: List[UUID]) -> Dict[UUID, List[Optional[Location]]]:
-        LocationAlias = aliased(Location)
+    async def get_all_parent_zones(self, location_ids: List[UUID]) -> Dict[UUID, List[Optional[UUID]]]:
+        """
+        Метод отдает словарь с ключом location_id, который был на входе в виде списка, и значением -
+        все родительские зоны по каждому location_id.
+        При этом, если location_id сам является зоной, то в результате будет также сам location_id.
 
+        :param location_ids: Список идентификаторов локаций (UUID), для которых нужно найти родительские зоны.
+        :return: Dict[UUID, List[UUID] Словарь, где ключом является location_id, а значением - список всех родительских
+        зон для данного location_id.
+        """
+        # Сначала получаем location_id для каждого id из location_ids
+        initial_query = select(
+            Location.id, Location.location_id, Location.location_class).where(Location.id.in_(location_ids))
+        initial_result = await self.session.execute(initial_query)
+        initial_rows = initial_result.fetchall()
+
+        parent_zones = {
+            row.id: [row.id] if row.location_class == LocationClass.ZONE else []
+            for row in initial_rows
+        }
+        # Обновляем location_ids на основе полученных location_id
+        location_ids = {row.id: row.location_id for row in initial_rows}
         # Создаем рекурсивный CTE-запрос для поиска всех родителей для каждого location_id
         cte = (
             select(Location.id, Location.location_id, Location.location_class)
-            .where(Location.id.in_(location_ids))
+            .where(Location.id.in_(location_ids.values()))
             .cte(name="cte", recursive=True)
         )
 
@@ -106,7 +125,7 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
 
         # Запрос для получения всех родителей с location_class == ZONE для каждого location_id
         query = (
-            select(cte.c.id, cte.c.location_id, cte.c.location_class)
+            select(cte.c.id, cte.c.location_id)
             .where(cte.c.location_class == LocationClass.ZONE)
         )
 
@@ -114,19 +133,17 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
         rows = result.fetchall()
 
         # Формируем словарь, где ключом является location_id, а значением - список всех родительских зон
-        parent_zones = {location_id: [] for location_id in location_ids}
-        for row in rows:
-            if row.location_id:
-                parent_zones[row.id].append(row.location_id)
+        rows_dict = {row.id: row.location_id for row in rows}
 
-        # Добавляем сами зоны, если они не имеют родителей
-        for location_id in location_ids:
-            if not parent_zones[location_id]:
-                location = await self.session.execute(
-                    select(Location).where(Location.id == location_id)
-                )
-                location = location.scalar_one_or_none()
-                if location and location.location_class == LocationClass.ZONE:
-                    parent_zones[location_id].append(location_id)
+        for _id, location_id in location_ids.items():
+            current_id = location_id
+            while current_id in rows_dict:
+                parent_id = rows_dict[current_id]
+                if parent_id:
+                    parent_zones[_id].append(current_id)
+                    current_id = parent_id
+                else:
+                    parent_zones[_id].append(current_id)
+                    break
 
         return parent_zones

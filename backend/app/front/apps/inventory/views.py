@@ -16,7 +16,7 @@ class MoveView(ClassView):
 
     def __init__(self, request: Request):
         permits = ['move_list']
-        super().__init__(request=request, model='move',)
+        super().__init__(request=request, model='move', )
 
 
 class SuggestView(ClassView):
@@ -25,6 +25,22 @@ class SuggestView(ClassView):
     def __init__(self, request: Request):
         permits = ['suggest_list']
         super().__init__(request=request, model='suggest')
+
+
+class ProductStorageTypeView(ClassView):
+    """Переопределяем модель"""
+
+    def __init__(self, request: Request):
+        permits = ['product_storage_type_list']
+        super().__init__(request=request, model='product_storage_type')
+
+
+class StorageTypeView(ClassView):
+    """Переопределяем модель"""
+
+    def __init__(self, request: Request):
+        permits = ['storage_type_list']
+        super().__init__(request=request, model='storage_type')
 
 
 class MoveLogView(ClassView):

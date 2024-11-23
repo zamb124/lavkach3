@@ -14,6 +14,7 @@ class MoveErrors(str, Enum):
     SET_DONE_ERROR: str = 'Move SET_DONE_ERROR'
     SUGGESTS_NOT_DONE: str = 'Suggests not done for move {move_id}'
     CHANGE_LOCATION_ERROR: str = 'Change location error for move {move_id}'
+    PRODUCT_STORAGE_TYPE_ERROR: str = 'The product {product} does not have a storage strategy'
 
 class OrderErrors(str, Enum):
     WRONG_STATUS: str = 'Move is not in CREATED status'

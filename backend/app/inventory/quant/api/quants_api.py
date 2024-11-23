@@ -9,7 +9,7 @@ from app.inventory.quant.schemas import (
     QuantUpdateScheme,
     ExceptionResponseSchema,
     QuantListSchema,
-    QuantFilter
+    QuantFilter, GetAvailableQuantsSchema
 )
 from app.inventory.quant.services import QuantService
 
@@ -47,3 +47,12 @@ async def quant_update(quant_id: uuid.UUID, schema: QuantUpdateScheme, service: 
 @quant_router.delete("/{quant_id}")
 async def quant_delete(quant_id: uuid.UUID, service: QuantService = Depends()):
     await service.delete(id=quant_id)
+
+
+@quant_router.post("/get_available_quants", response_model=QuantListSchema)
+async def get_available_quants(
+        schema: GetAvailableQuantsSchema,
+        service: QuantService = Depends()
+):
+    quants = await service.get_available_quants(**schema.model_dump(mode='python'))
+    return {'data': quants}

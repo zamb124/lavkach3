@@ -1,11 +1,12 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
 from fastapi_filter.contrib.sqlalchemy import Filter
-from pydantic import computed_field
+from pydantic import computed_field, BaseModel
 from pydantic.types import UUID4
 
 from app.inventory.location.enums import LocationClass
+
 from app.inventory.quant.models import Quant
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel, BasicField as Field
@@ -42,6 +43,7 @@ class QuantBaseScheme(BasicModel):
         orm_model = Quant
         service = 'app.inventory.quant.services.QuantService'
 
+
 class QuantUpdateScheme(QuantBaseScheme):
     store_id: Optional[UUID4] = Field(default=None, title='Store ID', model='store')
     quantity: Optional[float] = Field(default=None, title='Quantity')
@@ -57,6 +59,7 @@ class QuantScheme(QuantCreateScheme, TimeStampScheme):
     company_id: UUID4 = Field(title='Company ID', model='company')
     lsn: int
     id: UUID4
+    available_quantity: Optional[float] = Field(default=0.0, title='Available Quantity')
 
     @computed_field
     @property
@@ -65,6 +68,9 @@ class QuantScheme(QuantCreateScheme, TimeStampScheme):
 
 
 class QuantFilter(BaseFilter):
+    package_id__in: Optional[List[UUID4]] = Field(default=None, title='Package IDs')
+    location_id__in: Optional[List[UUID4]] = Field(default=None, title='Location IDs')
+
     class Config:
         populate_by_name = True
 
@@ -77,3 +83,18 @@ class QuantFilter(BaseFilter):
 
 class QuantListSchema(GenericListSchema):
     data: Optional[List[QuantScheme]]
+
+
+class GetAvailableQuantsSchema(BaseModel):
+    store_id: UUID4
+    product_ids: Optional[List[UUID4]] = Field(default=None)
+    id: Optional[UUID4] = Field(default=None)
+    exclude_id: Optional[UUID4] = Field(default=None)
+    location_classes: Optional[List[str]] = Field(default=None)
+    location_ids: Optional[List[UUID4]] = Field(default=None)
+    package_ids: Optional[List[UUID4]] = Field(default=None)
+    location_type_ids: Optional[List[UUID4]] = Field(default=None)
+    lot_ids: Optional[List[UUID4]] = Field(default=None)
+    partner_id: Optional[UUID4] = Field(default=None)
+    quantity: Optional[float] = Field(default=0.0)
+

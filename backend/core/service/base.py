@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import traceback
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
@@ -206,7 +207,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         relcations_to_create = []
         for key, value in obj.__dict__.items():
             if is_pydantic(value):
-                if isinstance(value, list):
+                if isinstance(value, list) and obj.model_fields.get(key).json_schema_extra.get('model'):
                     for _obj in value:
                         try:
                             rel_service = self.env[_obj.Config.orm_model.__tablename__].service
@@ -237,14 +238,19 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 await self.session.refresh(entity)
             except IntegrityError as e:
                 await self.session.rollback()
+                logging.error("Произошла ошибка: %s", e)
+                logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
                 if "duplicate key" in str(e):
                     raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
                 else:
                     raise HTTPException(status_code=500, detail=f"ERROR:  {str(e)}")
+
             except TimeoutError as e:
                 await asyncio.sleep(1)
                 await self.session.refresh(entity)
             except Exception as e:
+                logging.error("Произошла ошибка: %s", e)
+                logging.error("Трейсбек ошибки:\n%s", traceback.format_exc())
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         else:
             await self.session.flush([entity])

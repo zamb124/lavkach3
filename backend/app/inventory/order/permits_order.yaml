@@ -27,3 +27,8 @@ permits:
   move_log_list: Может получать список квант
   move_log_delete: Может удалять квант
   move_log get: Может смотреть на квант
+  order_type_create: Может создавать квант
+  order_type_update: Может редактировать квант
+  order_type_list: Может получать список квант
+  order_type_delete: Может удалять квант
+  order_type_get: Может смотреть на квант

@@ -4,6 +4,8 @@ import os
 from datetime import datetime
 from typing import Any
 from uuid import uuid4
+from core.types import custom_dumps  # ВАЖНАЯ ДИЧ
+from app.inventory.product_storage import StorageTypeCreateScheme, ProductStorageTypeCreateScheme
 from core.db_config import config
 import pytest
 import pytest_asyncio
@@ -41,6 +43,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 session_id = str(uuid4())
 context = set_session_context(session_id=session_id)
+
 
 @pytest.fixture(scope='session', autouse=True)
 def load_env():
@@ -252,6 +255,11 @@ async def products(env: Env, user_admin, companies, uoms,
 @pytest_asyncio.fixture(scope="session")
 async def location_types(env: Env, user_admin, companies) -> Company:
     location_type = env['location_type'].service
+    location_type_package = await location_type.create(LocationTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'PACKAGE',
+        'location_class': LocationClass.PACKAGE
+    }))
     location_type_partner = await location_type.create(LocationTypeCreateScheme(**{
         'company_id': companies[0].id.__str__(),
         'title': 'PARTNER',
@@ -267,15 +275,12 @@ async def location_types(env: Env, user_admin, companies) -> Company:
         'title': 'RESOURCE',
         'location_class': LocationClass.RESOURCE
     }))
-    location_type_package = await location_type.create(LocationTypeCreateScheme(**{
-        'company_id': companies[0].id.__str__(),
-        'title': 'PACKAGE',
-        'location_class': LocationClass.PACKAGE
-    }))
+
     location_type_zone = await location_type.create(LocationTypeCreateScheme(**{
         'company_id': companies[0].id.__str__(),
         'title': 'ZONE',
-        'location_class': LocationClass.ZONE
+        'location_class': LocationClass.ZONE,
+        'allowed_package_type_ids': [location_type_package.id]
     }))
     location_type_lost = await location_type.create(LocationTypeCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -300,7 +305,8 @@ async def location_types(env: Env, user_admin, companies) -> Company:
     location_type_buffer = await location_type.create(LocationTypeCreateScheme(**{
         'company_id': companies[0].id.__str__(),
         'title': 'BUFFER',
-        'location_class': LocationClass.PLACE
+        'location_class': LocationClass.PLACE,
+        'allowed_package_type_ids': [location_type_package.id]
     }))
     yield {
         'partner': location_type_partner,
@@ -330,6 +336,7 @@ async def location_types(env: Env, user_admin, companies) -> Company:
 @pytest_asyncio.fixture(scope="session")
 async def locations(env: Env, user_admin, companies, stores, location_types) -> dict:
     location = env['location'].service
+    location_type_service = env['location_type'].service
     location_partner = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
         'title': 'PARTNER',
@@ -338,14 +345,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'is_active': True,
         'location_type_id': location_types['partner'].id.__str__()
     }))
-    location_place = await location.create(LocationCreateScheme(**{
-        'company_id': companies[0].id.__str__(),
-        'title': 'PLACE',
-        'store_id': stores[0].id.__str__(),
-        'location_class': LocationClass.PLACE,
-        'is_active': True,
-        'location_type_id': location_types['place'].id.__str__()
-    }))
+
     location_resource = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
         'title': 'RESOURCE',
@@ -354,21 +354,51 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'is_active': True,
         'location_type_id': location_types['resource'].id.__str__()
     }))
-    location_package = await location.create(LocationCreateScheme(**{
-        'company_id': companies[0].id.__str__(),
-        'title': 'PACKAGE',
-        'store_id': stores[0].id.__str__(),
-        'location_class': LocationClass.PACKAGE,
-        'is_active': True,
-        'location_type_id': location_types['package'].id.__str__()
-    }))
+
     location_zone = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
-        'title': 'ZONE',
+        'title': 'MAIN ZONE',
         'store_id': stores[0].id.__str__(),
         'location_class': LocationClass.ZONE,
         'is_active': True,
         'location_type_id': location_types['zone'].id.__str__()
+    }))
+
+    location_place = await location.create(LocationCreateScheme(**{
+        'company_id': companies[0].id,
+        'title': 'PLACE',
+        'location_id': location_zone.id,
+        'store_id': stores[0].id,
+        'location_class': LocationClass.PLACE,
+        'is_active': True,
+        'location_type_id': location_types['place'].id
+    }))
+    location_subzone = await location.create(LocationCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'SUBZONE',
+        'store_id': stores[0].id.__str__(),
+        'location_id': location_zone.id,
+        'location_class': LocationClass.ZONE,
+        'is_active': True,
+        'location_type_id': location_types['zone'].id.__str__()
+    }))
+    location_subzone_place = await location.create(LocationCreateScheme(**{
+        'company_id': companies[0].id,
+        'title': 'SUBZONE PLACE',
+        'location_id': location_subzone.id,
+        'store_id': stores[0].id,
+        'location_class': LocationClass.PLACE,
+        'is_active': True,
+        'location_type_id': location_types['place'].id
+    }))
+    location_package = await location.create(LocationCreateScheme(**{
+        'company_id': companies[0].id,
+        'title': 'PACKAGE',
+        'store_id': stores[0].id,
+        'location_id': location_zone.id,
+        'location_class': LocationClass.PACKAGE,
+        'is_active': True,
+        'location_type_id': location_types['package'].id.__str__()
     }))
     location_lost = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -406,11 +436,11 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
     }))
     location_buffer = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
-        'title': 'SCRAPPED',
+        'title': 'INBOUND_BUFFER',
         'store_id': stores[0].id.__str__(),
-        'location_class': LocationClass.SCRAPPED,
+        'location_class': LocationClass.ZONE,
         'is_active': True,
-        'location_type_id': location_types['buffer'].id.__str__(),
+        'location_type_id': location_types['zone'].id.__str__(),
 
     }))
     yield {
@@ -419,6 +449,8 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'resource': location_resource,
         'package': location_package,
         'zone': location_zone,
+        'subzone': location_subzone,
+        'subzone_place': location_subzone_place,
         'lost': location_lost,
         'inventory': location_inventory,
         'scrap': location_scrap,
@@ -486,15 +518,65 @@ async def quants(env: Env, user_admin, companies, lots, products, stores, locati
         'expiration_datetime': datetime.now().isoformat(),
         'uom_id': uoms[0].id.__str__()
     }))
-    yield [quant1, quant2]
+    quant3 = await quant.create(QuantCreateScheme(**{
+        'company_id': companies[0].id,
+        'product_id': products[0].id,
+        'store_id': stores[0].id,
+        'location_id': locations['zone'].id,
+        'quantity': 15,
+        'reserved_quantity': 0,
+        'location_class': LocationClass.PLACE,
+        'expiration_datetime': datetime.now().isoformat(),
+        'uom_id': uoms[0].id
+    }))
+    quant4 = await quant.create(QuantCreateScheme(**{
+        'company_id': companies[0].id,
+        'product_id': products[0].id,
+        'store_id': stores[0].id,
+        'location_id': locations['zone'].id,
+        'package_id': locations['package'].id,
+        'quantity': 15,
+        'reserved_quantity': 0,
+        'location_class': LocationClass.PLACE,
+        'expiration_datetime': datetime.now().isoformat(),
+        'uom_id': uoms[0].id
+    }))
+    quant44 = await quant.create(QuantCreateScheme(**{
+        'company_id': companies[0].id,
+        'product_id': products[0].id,
+        'store_id': stores[0].id,
+        'location_id': locations['zone'].id,
+        'package_id': locations['package'].id,
+        'quantity': 10,
+        'reserved_quantity': 0,
+        'location_class': LocationClass.PLACE,
+        'expiration_datetime': datetime.now().isoformat(),
+        'uom_id': uoms[0].id
+    }))
+    quant5 = await quant.create(QuantCreateScheme(**{
+        'company_id': companies[0].id,
+        'product_id': products[0].id,
+        'store_id': stores[0].id,
+        'location_id': locations['subzone_place'].id,
+        'quantity': 15,
+        'reserved_quantity': 0,
+        'location_class': LocationClass.PLACE,
+        'expiration_datetime': datetime.now().isoformat(),
+        'uom_id': uoms[0].id
+    }))
+    yield [quant1, quant2, quant3, quant4, quant44, quant5]
     await quant.delete(quant1)
     await quant.delete(quant2)
+    await quant.delete(quant3)
+    await quant.delete(quant4)
+    await quant.delete(quant44)
+    await quant.delete(quant5)
     await quant.session.commit()
 
 
 @pytest_asyncio.fixture(scope="session")
 async def order_types(env: Env, user_admin, companies, lots, products, stores, locations, uoms,
-                      token) -> Company:
+                      token, location_types) -> Company:
     order_type = env['order_type'].service
     inbound_order_type = await order_type.create(OrderTypeCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -502,7 +584,7 @@ async def order_types(env: Env, user_admin, companies, lots, products, stores, l
         'title': 'Inbound Type',
         'order_class': 'incoming',
         'allowed_zone_src_ids': [locations['partner'].id.__str__(), ],
-        'allowed_zone_dest_ids': [locations['buffer'].id.__str__(), ],
+        'allowed_zone_dest_ids': [locations['buffer'].id, ],
         'order_type_id': None,
         'backorder_action_type': 'ask',
         'store_id': None,
@@ -523,8 +605,8 @@ async def order_types(env: Env, user_admin, companies, lots, products, stores, l
         'prefix': 'LO',
         'title': 'Lost Type',
         'order_class': 'incoming',
-        'allowed_zone_src_ids': None,
-        'allowed_zone_dest_ids': [locations['lost'].id.__str__(), ],
+        'allowed_zone_src_ids': [locations['buffer'].id, locations['zone'].id, ],
+        'allowed_zone_dest_ids': [locations['buffer'].id, locations['zone'].id, ],
         'order_type_id': None,
         'backorder_action_type': 'never',
         'store_id': None,
@@ -545,8 +627,10 @@ async def order_types(env: Env, user_admin, companies, lots, products, stores, l
         'prefix': 'PL',
         'title': 'Placement Type',
         'order_class': 'internal',
-        'allowed_zone_src_ids': [locations['buffer'].id.__str__(), ],
-        'allowed_zone_dest_ids': [locations['place'].id.__str__(), ],
+        'allowed_zone_src_ids': [locations['buffer'].id, locations['zone'].id],
+        'allowed_zone_dest_ids': [locations['zone'].id, locations['buffer'].id],
+        'allowed_location_type_dest_ids': [location_types['package'].id, location_types['zone'].id,
+                                           location_types['place'].id, location_types['buffer'].id],
         'order_type_id': lost_order_type.id.__str__(),
         'backorder_action_type': 'always',
         'store_id': None,
@@ -596,6 +680,43 @@ async def order_types(env: Env, user_admin, companies, lots, products, stores, l
     await order_type.delete(lost_order_type)
     await order_type.delete(shipment_order_type)
     await order_type.session.commit()
+
+
+@pytest_asyncio.fixture(scope="session")
+async def storage_types(env: Env, user_admin, companies, lots, products, stores, locations, uoms,
+                        token, location_types) -> Company:
+    storage_type_service = env['storage_type'].service
+    storage_type = await storage_type_service.create(StorageTypeCreateScheme(**{
+        'company_id': companies[0].id.__str__(),
+        'title': 'Default Storage Type',
+        'allowed_location_type_ids': [location_types['package'].id.__str__(), location_types['zone'].id.__str__()],
+        'allowed_zones': [
+            {'zone_id': locations['zone'].id, 'priority': 1},
+            {'zone_id': locations['buffer'].id, 'priority': 2},
+        ],
+    }))
+
+    yield {
+        'default': storage_type,
+    }
+    await storage_type_service.delete(storage_type)
+
+
+@pytest_asyncio.fixture(scope="session")
+async def product_storage_types(env: Env, companies, storage_types, products, uoms, locations):
+    product_storage_type_service = env['product_storage_type'].service
+    product_storage_type_1 = await product_storage_type_service.create(ProductStorageTypeCreateScheme(**{
+        'company_id': companies[0].id,
+        'product_id': products[0].id,
+        'storage_uom_id': uoms[0].id,
+        'allowed_storage_uom_ids': [i.id for i in uoms],
+        'allowed_package_type_ids': [locations['package'].id],
+        'storage_type_id': storage_types['default'].id,
+    }))
+    yield {
+        'product_storage_type_1': product_storage_type_1,
+    }
+    await product_storage_type_service.delete(product_storage_type_1)
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -682,7 +803,9 @@ async def headers(token) -> dict:
         'company_support': {'Authorization': token['company_support']['token']}
     }
 
+
 @pytest.mark.asyncio
-async def test_health(base_client, headers, stores, product_categories, uom_categories, uoms, products, locations, quants):
+async def test_health(base_client, headers, stores, product_categories, uom_categories, uoms, products, locations,
+                      quants):
     response = await base_client.get("/api/base/health", headers=headers['superadmin'])
     assert response.status_code == 200

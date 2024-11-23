@@ -22,6 +22,7 @@ class ChoiceHandler {
             itemSelectText: '',
             removeItemButton: !(method === 'get' || this.element.getAttribute('readonly'))
         };
+        this.element.classList.add('form-control');
         this.choices = new Choices(this.element, this.attrs);
         this.init();
     }
@@ -415,13 +416,13 @@ async function choiceMultiEnum(element, method) {
 
 async function setTitle(element, method) {
     var model_name = element.getAttribute('model-name')
-
-    async function getValues() {
-        var id__in = ''
-        var str = extractUUIDs(element.innerText).toLowerCase();
-        element.innerHTML = '<span class="spinner-border text-primary" role="status">\n' +
+    var elem_value = element.innerText
+    element.innerHTML = '<span class="spinner-border text-primary" role="status">\n' +
             '                    <span class="visually-hidden">Loading...</span>\n' +
             '                  </span>'
+    async function getValues() {
+        var id__in = ''
+        var str = extractUUIDs(elem_value).toLowerCase();
         let values = str ? str.split(',') : [];
 
         for (let v in values) {
@@ -471,6 +472,12 @@ class ModalHandler {
             event.target.remove();
         });
         this.dragElement(this.modal._element);
+        const modalContent = this.modal._element.querySelector('.modal-content');
+        if (modalContent) {
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle';
+            modalContent.appendChild(resizeHandle);
+        }
     }
 
     // Функция для перемещения модального окна

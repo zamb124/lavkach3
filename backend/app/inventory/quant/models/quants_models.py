@@ -2,9 +2,11 @@ import datetime
 import uuid
 from typing import Optional
 
-from sqlalchemy import Sequence, Uuid, DateTime, UniqueConstraint
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy import Sequence, Uuid, DateTime, UniqueConstraint, ForeignKey
+from sqlalchemy.orm import mapped_column, Mapped, relationship, foreign, aliased
 
+from app.inventory.location import Location
+from app.inventory.location.enums import BlockerEnum
 from app.inventory.mixins import StockMixin
 from core.db import Base
 from core.db.mixins import AllMixin
@@ -52,7 +54,25 @@ class Quant(Base, AllMixin, StockMixin):
     expiration_datetime: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime(timezone=True))
     uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True, nullable=False)
     move_ids: Mapped[Optional[ids]] = mapped_column(index=True)
+    location_id: Mapped[uuid.UUID] = mapped_column(                   # локация
+        ForeignKey("location.id", ondelete="RESTRICT"), index=True
+    )
+    location_rel: Mapped[Optional[Location]] = relationship(
+        lazy='noload', primaryjoin=foreign(location_id) == Location.id
+    )
+    package_id: Mapped[Optional[uuid.UUID]] = mapped_column(              # Упаковка, если есть
+        ForeignKey("location.id", ondelete="RESTRICT"), index=True
+    )
+    package_rel: Mapped[Optional[Location]] = relationship(
+        lazy='noload', primaryjoin=foreign(package_id) == Location.id
+    )
 
     @property
     def available_quantity(self):
+        if self.location_rel.block:
+            if self.location_rel.block == BlockerEnum.FULL_BLOCK:
+                return 0.0
+        if self.package_rel:
+            if self.package_rel.block == BlockerEnum.FULL_BLOCK:
+                return 0.0
         return self.quantity - self.reserved_quantity

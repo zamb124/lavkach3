@@ -215,13 +215,17 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
   display: block;
   opacity: 1;
 }
-
-
-.formline {
-     opacity: 0;
-      transition: opacity 0.5s ease-in-out;
+.resize-handle {
+  width: 10px;
+  height: 10px;
+  background: #ccc;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  cursor: se-resize;
 }
-.formline.show {
-  display: block;
-  opacity: 1;
+
+.table {
+     opacity: 1;
+      transition: opacity 0.5s ease-in-out;
 }

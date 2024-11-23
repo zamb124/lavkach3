@@ -34,7 +34,7 @@ class MoveBaseScheme(BasicModel):
     uom_id: Optional[UUID4] = Field(default=None, title='Uom', table=True, model='uom')
     quant_src_id: Optional[UUID4] = Field(default=None, title='Quant source', table=True, model='quant')
     quant_dest_id: Optional[UUID4] = Field(default=None, title='Quant dest', table=True, model='quant')
-    status: MoveStatus = Field(title='Status', table=True, readonly=True)
+    status: Optional[MoveStatus] = Field(default=MoveStatus.CREATED, title='Status', table=True, readonly=True)
     processing_steps: Optional[Dict[str, dict]] = Field(default={},title='Processing Steps', readonly=True)
 
     class Config:

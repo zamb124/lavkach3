@@ -90,7 +90,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                 )
             location_entity = await self.env['location'].service.get(val_in_cleaned)
             if location_entity:
-                if move.location_dest_id != location_entity.id:
+                if move.location_dest_zone_id != location_entity.id:
                     await move_service.change_dest_location(move, location_entity)
                 suggest_entity.result_value = value
                 suggest_entity.status = SuggestStatus.DONE
@@ -108,7 +108,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
         if commit:
             try:
                 if is_last:
-                    move.status = MoveStatus.COMPLETING
+                    move.status = MoveStatus.COMPLETE
                 await self.session.commit()
                 if is_last:
                     await self.env['move'].service.set_done.kiq(None, move_id=move_id, user_id=self.user.user_id)

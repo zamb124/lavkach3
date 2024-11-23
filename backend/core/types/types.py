@@ -156,3 +156,19 @@ class UUIDEncoder(json.JSONEncoder):
             # if the obj is uuid, we simply return the value of uuid
             return obj.__str__()
         return json.JSONEncoder.default(self, obj)
+
+
+origin_dumps = json.dumps  # save the original json.dumps
+
+
+def custom_dumps(obj, **kwargs):
+    encoder = UUIDEncoder
+    if 'cls' in kwargs:
+        encoder = kwargs['cls']
+        del kwargs['cls']
+    return origin_dumps(obj, cls=encoder, **kwargs)
+
+
+# Заменяем json.dumps на custom_dumps
+
+json.dumps = custom_dumps

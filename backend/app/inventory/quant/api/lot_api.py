@@ -47,3 +47,4 @@ async def lot_update(lot_id: uuid.UUID, schema: LotUpdateScheme, service: LotSer
 @lot_router.delete("/{lot_id}")
 async def lot_delete(lot_id: uuid.UUID, service: LotService = Depends()):
     await service.delete(id=lot_id)
+

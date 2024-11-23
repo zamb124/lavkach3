@@ -17,10 +17,7 @@ class AllowedZoneScheme(BasicModel):
 
 class StorageTypeBaseScheme(BasicModel):
     """"""
-    product_id: UUID = Field(title='Product', form=True, model='product')
-    storage_uom_id: Optional[UUID] = Field(default=None)  # Единица измерения склада
     title: str = Field(title='Title', form=True)
-    priority: int = Field(title='Priority', form=True)  # Приоритет данной стратегии хранения
     allowed_location_type_ids: List[UUID] = Field(
         default=[], title='Allowed Location Types',
         model='location_type'

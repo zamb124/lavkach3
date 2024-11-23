@@ -36,7 +36,7 @@
        href="/base/modal/{{ field.model_name }}/{{ field.cls.p.id }}"
        hx-trigger="click consume"
        hx-target="#htmx_content"
-       hx-swap="afterend"
+       hx-swap="beforeend"
        disabled
     > {{ field.cls.p.display_title }}
     </a>
