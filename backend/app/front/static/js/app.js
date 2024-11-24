@@ -139,6 +139,40 @@ class App {
             } else if (evt.detail.xhr.status === 418) {
                 evt.detail.shouldSwap = true;
                 evt.detail.target = htmx.find("#teapot");
+            } else if (evt.detail.xhr.status === 422) {
+                const responseText = JSON.parse(evt.detail.xhr.responseText);
+                if (responseText.detail) {
+                    responseText.detail.forEach(error => {
+                        const fieldName = error.loc[error.loc.length - 1];
+                        let errorMessage = error.msg;
+
+                        // Найти элементы, у которых name равен или содержит fieldName в квадратных скобках
+                        let elements = document.querySelectorAll(`[name="${fieldName}"], [name*="[${fieldName}]"]`);
+                        if (elements.length === 0) {
+                            // Показать Toast на 5 секунд с цветом primary
+                            Toastify({
+                                text: errorMessage,
+                                duration: 5000,
+                                close: true,
+                                style: {
+                                    background: "var(--bs-primary)",
+                                },
+                            }).showToast();
+                        } else {
+                            elements.forEach(element => {
+                                // Создать тултип
+                                const tooltip = new bootstrap.Tooltip(element, {
+                                    title: errorMessage,
+                                    placement: 'right',
+                                    trigger: 'manual',
+                                    delay: {"show": 500, "hide": 500}
+                                });
+                                // Показать тултип
+                                tooltip.show();
+                            });
+                        }
+                    });
+                }
             } else {
                 const responseText = JSON.parse(evt.detail.xhr.responseText);
                 if (responseText.detail) {

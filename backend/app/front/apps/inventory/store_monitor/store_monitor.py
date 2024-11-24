@@ -81,8 +81,8 @@ async def create_movements(request: Request):
 
 
 @store_monitor_router.get("/create_movements/add_product", response_class=HTMLResponse)
-async def create_movements_add_product(request: Request):
-    product = ClassView(request=request, model=Product)
+async def create_movements_add_product(request: Request, key: str):
+    product = ClassView(request=request, model=Product, parent_field=key)
     return render(
         request, 'inventory/store_monitor/create_movements/create_movements_product_line.html',
         context={'product': product}

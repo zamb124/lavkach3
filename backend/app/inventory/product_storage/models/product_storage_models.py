@@ -46,9 +46,8 @@ class ProductStorageType(Base, AllMixin):
     product_id: Mapped[uuid.UUID] = mapped_column(index=True)
     storage_uom_id: Mapped[Optional[uuid.UUID]]  # Единица измерения склада
     allowed_storage_uom_ids: Mapped[Optional[ids]]  # Разрешенные единицы измерения склада
-    storage_image_url: Mapped[Optional[str]]  # Картинка для склада
     allowed_package_type_ids: Mapped[Optional[ids]]
-    is_homogeneity: Mapped[bool] = mapped_column(default=False,
-                                                 index=True)  # Товар может хранится только в гомогенных ячейках
+    storage_image_url: Mapped[Optional[str]]  # Картинка для склада
+    is_homogeneity: Mapped[bool] = mapped_column(default=False,index=True)  # Товар может хранится в гомогенных ячейках
     storage_type_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("storage_type.id"))  # Стратегия хранения товара
     storage_type_rel: Mapped[Optional[StorageType]] = relationship(lazy="noload")

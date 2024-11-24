@@ -636,7 +636,7 @@ class ClassView:
 
     def __init__(self,
                  request: Request,
-                 model: str | BaseModel,
+                 model: str | BaseModel | BasicModel,
                  params: Optional[dict] = None,
                  exclude: list = [],
                  join_related: bool = False,

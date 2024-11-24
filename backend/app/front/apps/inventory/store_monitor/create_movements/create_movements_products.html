@@ -29,7 +29,7 @@
         type="button"
         href="#"
         hx-push-url="false"
-        hx-get="/inventory/store_monitor/create_movements/add_product?key={{ order.products.key }}"
+        hx-get="/inventory/store_monitor/create_movements/add_product?key={{ order.products.field_name }}"
         hx-trigger="click"
         hx-target="#tbody-{{ products.p.class_key }}"
         hx-swap="beforeend"

@@ -2,12 +2,16 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator, ValidationError
 
 from app.inventory.location.enums import LocationClass, PhysicalStoreLocationClass
 from app.inventory.order import MoveCreateScheme, OrderTypeScheme
 from app.inventory.quant import QuantScheme
 from core.schemas.basic_schemes import BasicField as Field
+
+
+class CreateMovementsError(ValueError):
+    ...
 
 
 class Quant(QuantScheme):
@@ -58,3 +62,11 @@ class CreateMovements(BaseModel):
     description: Optional[str] = Field(default=None, title='Description', form=True)
     products: list[Product] = Field(default=[], title='Products', form=True)
     packages: list[Package] = Field(default=[], title='Packages', form=True)
+
+    @model_validator(mode='before')
+    def check_at_least_one_field(cls, values):
+        if not any(values.get(field) for field in
+                   ['location_src_zone_id', 'location_src_id', 'location_type_src_id', 'products', 'packages']):
+            raise CreateMovementsError(
+                'At least one of location_src_zone_id, location_src_id, location_type_src_id, products, or packages must be provided.')
+        return values

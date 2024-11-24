@@ -5,15 +5,13 @@ htmx.defineExtension('json-enc', {
         }
     },
 
-
     encodeParameters: function (xhr, parameters, elt) {
         xhr.overrideMimeType('text/json');
 
-        // Преобразование параметров в нужный формат
         let result = {};
         for (const [key, value] of Object.entries(parameters)) {
             if (key === 'search_terms') {
-                continue; // Пропустить ключ 'search_terms'
+                continue;
             }
             const match = key.match(/(\w+)\[(\w+)\]\[(\w+)\]/);
             if (match) {
@@ -29,7 +27,6 @@ htmx.defineExtension('json-enc', {
                 result[key] = value;
             }
 
-            // Проверка наличия атрибута multiple и преобразование значения
             const element = elt.querySelector(`[name="${key}"]`);
             if (element && element.tagName === 'SELECT' && element.multiple) {
                 if (typeof value === 'string') {
@@ -37,7 +34,6 @@ htmx.defineExtension('json-enc', {
                 }
             }
 
-            // Проверка, заканчивается ли key на _ids и преобразование значения
             if (key.endsWith('_ids') && typeof value === 'string') {
                 result[key] = value === '' ? [] : [value];
             }
@@ -47,7 +43,7 @@ htmx.defineExtension('json-enc', {
             if (typeof obj === 'string' && obj === '') {
                 return null;
             } else if (Array.isArray(obj)) {
-                return obj
+                return obj.map(replaceEmptyStrings);
             } else if (typeof obj === 'object' && obj !== null) {
                 const newObj = {};
                 for (const key in obj) {
@@ -60,14 +56,12 @@ htmx.defineExtension('json-enc', {
             return obj;
         }
 
-    // Преобразование объектов в списки только для тех, которые соответствуют паттерну
         for (const listName in result) {
             if (result.hasOwnProperty(listName) && typeof result[listName] === 'object' && !Array.isArray(result[listName])) {
                 result[listName] = Object.values(result[listName]);
             }
         }
 
-// Замена пустых строк на null рекурсивно
         result = replaceEmptyStrings(result);
 
         return JSON.stringify(result);
