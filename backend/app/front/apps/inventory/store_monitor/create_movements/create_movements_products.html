@@ -1,6 +1,6 @@
-<table class="table table-responsive align-middle table-hover mb-0 last-items-borderless text-uppercase">
+<table class="table table-responsive align-middle table-hover mb-0 last-items-borderless">
     <thead>
-    <tr class="fs-5 text-center" style="text-align: center">
+    <tr class="fs-5 text-center small" style="text-align: center">
         <th scope="col">
             <p>
             <div class="form-check">
@@ -12,8 +12,9 @@
         </th>
         {{ products.product_id.as_th_title }}
         {{ products.lot_id.as_th_title }}
-        {{ products.uom_id.as_th_title }}
+
         {{ products.quantity.as_th_title }}
+                {{ products.uom_id.as_th_title }}
         <th scope="col">
             <p data-key="t-delete"> Actions </p>
         </th>

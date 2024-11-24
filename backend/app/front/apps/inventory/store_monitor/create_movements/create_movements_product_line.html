@@ -1,5 +1,5 @@
 {% autoescape false %}
-    <tr id="{{ product.p.key }}">
+    <tr id="{{ product.p.key }}" class="small">
         <th scope="row" style="white-space: nowrap; vertical-align: middle;">
             <div class="row">
                 <div class="col-6">
@@ -16,13 +16,12 @@
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {{ product.lot_id.as_update }}
         </th>
+
+        <th class="line-col text-center" style="white-space: nowrap">
+            {{ product.quantity.as_update }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {{ product.uom_id.as_update }}
-        </th>
-        </th>
-        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ product.quantity.as_update }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             <button class="btn danger" hx-target="#{{ product.p.key }}" hx-swap="outerHTML" hx-delete="/front/delete">

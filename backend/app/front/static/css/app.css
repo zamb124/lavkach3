@@ -229,3 +229,7 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
      opacity: 1;
       transition: opacity 0.5s ease-in-out;
 }
+
+.container .small-element {
+    font-size: 0.875em; /* Размер шрифта для small */
+}

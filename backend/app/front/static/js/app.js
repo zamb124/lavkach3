@@ -151,7 +151,7 @@ class App {
                         if (elements.length === 0) {
                             // Показать Toast на 5 секунд с цветом primary
                             Toastify({
-                                text: errorMessage,
+                                text: `${fieldName}: ${errorMessage}`,
                                 duration: 5000,
                                 close: true,
                                 style: {
@@ -161,14 +161,14 @@ class App {
                         } else {
                             elements.forEach(element => {
                                 // Создать тултип
-                                const tooltip = new bootstrap.Tooltip(element, {
-                                    title: errorMessage,
-                                    placement: 'right',
-                                    trigger: 'manual',
-                                    delay: {"show": 500, "hide": 500}
-                                });
-                                // Показать тултип
-                                tooltip.show();
+                                Toastify({
+                                text: `${fieldName}: ${errorMessage}`,
+                                duration: 5000,
+                                close: true,
+                                style: {
+                                    background: "var(--bs-primary)",
+                                },
+                            }).showToast();
                             });
                         }
                     });

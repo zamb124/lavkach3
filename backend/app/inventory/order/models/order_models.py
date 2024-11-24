@@ -52,22 +52,11 @@ class OrderType(Base, AllMixin, CreatedEdited):
     title: Mapped[str] = mapped_column(index=True)  # Человекочетабельное имя
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, index=True, default=uuid.uuid4)
     order_class: Mapped[OrderClass]  # Класс ордера
-    allowed_zone_src_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные зоны для подбора
-    exclude_zone_src_ids: Mapped[ids] = mapped_column(index=True)  # Искличенные зоны из подбора
-    allowed_zone_dest_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные зона для назначения
-    exclude_zone_dest_ids: Mapped[ids] = mapped_column(index=True)  # Исключение зон из назначения
-    allowed_location_type_src_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные типы зоны для подбора
-    exclude_location_type_src_ids: Mapped[ids] = mapped_column(index=True)  # Искличенные типы зоны из подбора
-    allowed_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные типы зоны для назначения
-    exclude_location_type_dest_ids: Mapped[ids] = mapped_column(index=True)  # Искличенные типы зоны для назначения
-    allowed_location_class_src_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}',
-                                                                          index=True)  # Разрешенные классы зона для подбора
-    exclude_location_class_src_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}',
-                                                                          index=True)  # Исключение классы зон для подбора
-    allowed_location_class_dest_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}',
-                                                                           index=True)  # Разрешенные классы зона для назначения
-    exclude_location_class_dest_ids: Mapped[Optional[ids]] = mapped_column(ARRAY(String), server_default='{}',
-                                                                           index=True)  # Исключение классы зон для назначения
+    allowed_zone_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные зона для назначения
+    allowed_location_type_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные типы зоны для назначения
+    allowed_location_class_ids: Mapped[Optional[ARRAY[LocationClass]]] = mapped_column(
+        ARRAY(String), server_default='{}', index=True
+    )  # Разрешенные классы зона для назначения
     order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         ForeignKey("order_type.id", ondelete='CASCADE'))  # Тип Ордера возврата разницы
     backorder_action_type: Mapped[BackOrderAction] = mapped_column(
@@ -120,14 +109,6 @@ class Order(Base, AllMixin, CreatedEdited):
     move_list_rel: Mapped[Optional[list["Move"]]] = relationship(back_populates="order_rel", lazy="selectin")
     processing_steps: Mapped[dict] = mapped_column(JSON)
 
-
-    def __init__(self, **kwargs):
-        """
-            Разрешает экстра поля, но удаляет, если их нет в табличке
-        """
-        allowed_args = self.__mapper__.class_manager  # returns a dict
-        kwargs = {k: v for k, v in kwargs.items() if k in allowed_args}
-        super().__init__(**kwargs)
 
 
 class Move(Base, AllMixin, CreatedEdited):

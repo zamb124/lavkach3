@@ -208,7 +208,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             qty_to_move = 0.0
             order_type = await order_type.service.get(move.order_type_id)
             available_src_locations = await self.get_avalible_locations(
-                allowed_zone_ids=order_type.allowed_zone_src_ids,
+                allowed_zone_ids=order_type.allowed_zone_ids,
                 exclude_zone_ids=order_type.exclude_zone_src_ids,
                 allowed_location_type_ids=order_type.allowed_location_type_src_ids,
                 exclude_location_type_ids=order_type.exclude_location_type_src_ids,
@@ -280,12 +280,9 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
 
             available_dest_locations = await self.get_avalible_locations(
-                allowed_zone_ids=order_type.allowed_zone_dest_ids,
-                exclude_zone_ids=order_type.exclude_zone_dest_ids,
-                allowed_location_type_ids=order_type.allowed_location_type_dest_ids,
-                exclude_location_type_ids=order_type.exclude_location_type_dest_ids,
-                allowed_location_class=order_type.allowed_location_class_dest_ids,
-                exclude_location_class=order_type.exclude_location_class_dest_ids,
+                allowed_zone_ids=order_type.allowed_zone_ids,
+                allowed_location_type_ids=order_type.allowed_location_type_ids,
+                allowed_location_class=order_type.allowed_location_class_ids,
             )
             if not available_dest_locations:
                 raise ModuleException(status_code=406, enum=MoveErrors.DESTINATION_LOCATION_ERROR)

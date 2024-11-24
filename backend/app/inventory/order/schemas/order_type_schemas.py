@@ -16,69 +16,20 @@ class OrderTypeBaseScheme(BasicModel):
     prefix: str = Field(title='Prefix', table=True, form=True)
     order_class: OrderClass = Field(title='Order Class', table=True, form=True)
     title: str = Field(title='Titile', table=True, form=True)
-    allowed_zone_src_ids: Optional[list[UUID4]] = Field(
-        default=[], model='location',
-        title='Allowed zones source',
-        description='Allowed Zones for the source of this order type',
-        filter={'location_class__in': [item.value for item in ZonesVirtPhis]},
-        form=True
-    )
-    exclude_zone_src_ids: Optional[list[UUID4]] = Field(
-        default=[], model='location',
-        title='Exclude zones source',
-        filter={'location_class__in': [item.value for item in ZonesVirtPhis]},
-        form=True
-    )
-    allowed_zone_dest_ids: Optional[list[UUID4]] = Field(
+    allowed_zone_ids: Optional[list[UUID4]] = Field(
         default=[], model='location',
         title='Allowed zones dest',
         filter={'location_class__in': [item.value for item in ZonesVirtPhis]},
         form=True
     )
-    exclude_zone_dest_ids: Optional[list[UUID4]] = Field(
-        default=[], model='location',
-        title='Exclude locations dest',
-        filter={'location_class__in': [item.value for item in ZonesVirtPhis]},
-        form=True
-    )
-    allowed_location_type_src_ids: Optional[list[UUID4]] = Field(
-        default=[], model='location_type',
-        title='Allowed locations type source',
-        form=True
-    )
-    exclude_location_type_src_ids: Optional[list[UUID4]] = Field(
-        default=[], model='location_type',
-        title='Exclude locations type source',
-        form=True
-    )
-    allowed_location_type_dest_ids: Optional[list[UUID4]] = Field(
+    allowed_location_type_ids: Optional[list[UUID4]] = Field(
         default=[], model='location_type',
         title='Allowed locations type dest',
         form=True
     )
-    exclude_location_type_dest_ids: Optional[list[UUID4]] = Field(
-        default=[], model='location_type',
-        title='Exclude locations type dest',
-        form=True
-    )
-    allowed_location_class_src_ids: Optional[list[LocationClass]] = Field(
-        default=[],
-        title='Allowed locations class source',
-        form=True
-    )
-    exclude_location_class_src_ids: Optional[list[LocationClass]] = Field(
-        default=[],
-        title='Exclude locations class source',
-        form=True
-    )
-    allowed_location_class_dest_ids: Optional[list[LocationClass]] = Field(
+    allowed_location_class_ids: Optional[list[LocationClass]] = Field(
         default=[],
         title='Allowed locations class dest ',
-        form=True
-    )
-    exclude_location_class_dest_ids: Optional[list[LocationClass]] = Field(
-        default=[],
-        title='Exclude locations class dest ',
         form=True
     )
     order_type_id: Optional[UUID4] = Field(default=None, title='Back Order', form=True, model='order_type')

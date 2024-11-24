@@ -15,6 +15,7 @@ from starlette.requests import Request
 
 from core.env import Model, Env
 from core.frontend.enviroment import reserved_fields, environment, _crud_filter
+from core.frontend.exceptions import HTMXException
 from core.frontend.field import Field, Fields
 from core.frontend.types import ViewVars, MethodType
 from core.frontend.utils import get_types
@@ -1025,7 +1026,7 @@ class ClassView:
         try:
             method_schema_obj = self.v.model.schemas.create(**data)
         except ValidationError as e:
-            raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
+            raise HTTPException(status_code=422, detail=e.errors())  # type: ignore
         _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
         line = await self.v.model.adapter.create(json=_json)
         new_data.append(line)

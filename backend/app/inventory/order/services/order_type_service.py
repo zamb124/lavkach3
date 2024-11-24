@@ -98,19 +98,23 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
             # Подбираем подходящие order_type для товара
             for order_type in order_types:
                 zone_src_ids = parents_location_src_map.get(zone_src_id, [])
-                if (any(zone_src_id in order_type.allowed_zone_src_ids for zone_src_id in zone_src_ids)
-                        and any(zone in order_type.allowed_zone_dest_ids for zone in allowed_zones)
-                        and any(loc_type_id in order_type.allowed_location_type_dest_ids
-                                for loc_type_id in allowed_location_type_ids
-                                )):
+                if (
+                         any(zone in order_type.allowed_zone_ids for zone in allowed_zones)
+                        and any(loc_type_id in order_type.allowed_location_type_ids for loc_type_id in allowed_location_type_ids)
+                ):
                     if order_type not in product_order_types[product_id]:
                         product_order_types[product_id].append(order_type)
-
+                else:
+                    raise ModuleException(
+                        status_code=406, enum=OrderTypeErrors.SOURCE_LOCATION_ERROR,
+                        message='No allowed zones found for the product',
+                        args={'product_id': product_id}
+                    )
             # Сортируем order_type по приоритету зон
             product_order_types[product_id].sort(
                 key=lambda ot: next(
                     (zone['priority'] for zone in pst.storage_type_rel.allowed_zones
-                     if zone['zone_id'] in ot.allowed_zone_dest_ids),
+                     if zone['zone_id'] in ot.allowed_zone_ids),
                     float('inf')
                 )
             )
@@ -143,7 +147,8 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
             location_ids=[package[1] for package in packages]
         )
 
-        package_location_type_query = select(Location.location_type_id, Location.id).where(Location.id.in_([package[0] for package in packages]))
+        package_location_type_query = select(Location.location_type_id, Location.id).where(
+            Location.id.in_([package[0] for package in packages]))
         package_location_type_result = await self.session.execute(package_location_type_query)
         package_location_type_ids = {row.id: row.location_type_id for row in package_location_type_result.fetchall()}
 
@@ -194,8 +199,7 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
                         message='No allowed zones found for the package',
                         args={'package_id': package_id}
                     )
-                if (any(zone_src_id in order_type.allowed_zone_src_ids for zone_src_id in zone_src_ids)
-                        and any(zone in order_type.allowed_zone_dest_ids for zone in allowed_zones)):
+                if any(zone in order_type.allowed_zone_ids for zone in allowed_zones):
                     if order_type not in package_order_types[package_id]:
                         package_order_types[package_id].append(order_type)
                 else:

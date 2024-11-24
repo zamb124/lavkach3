@@ -42,7 +42,7 @@ class OrderBaseScheme(BasicModel):
 
 
 class OrderUpdateScheme(OrderBaseScheme):
-    move_list_rel: Optional[list['MoveUpdateScheme']] = Field(default=[], title='Order Movements')
+    move_list_rel: Optional[list['MoveUpdateScheme']] = Field(default=[], title='Order Movements', model='move')
     order_type_id: Optional[UUID] = Field(
         default=None,
         title='Order type',
@@ -53,7 +53,7 @@ class OrderUpdateScheme(OrderBaseScheme):
 
 
 class OrderCreateScheme(OrderBaseScheme):
-    move_list_rel: Optional[list[MoveCreateScheme]] = Field(default=[], title='Order Movements')
+    move_list_rel: Optional[list[MoveCreateScheme]] = Field(default=[], title='Order Movements', model='move')
 
 
 class OrderScheme(OrderCreateScheme, TimeStampScheme):
@@ -67,7 +67,7 @@ class OrderScheme(OrderCreateScheme, TimeStampScheme):
     edited_by: UUID = Field(title='Edit By', model='user')
     user_ids: Optional[list[UUID]] = Field(default=[], title='Users', readonly=False, model='user', table=True)
     order_type_rel: OrderTypeScheme = Field(title='Order Type', table=True, form=False, readonly=True)
-    move_list_rel: Optional[list["MoveScheme"]] = Field(default=[], title='Order Movements')
+    move_list_rel: Optional[list["MoveScheme"]] = Field(default=[], title='Order Movements', model='move')
 
     @computed_field(title='Order #', json_schema_extra={'table': False})
     def title(self) -> str:
