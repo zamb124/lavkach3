@@ -908,10 +908,27 @@ def upgrade():
             "company_id": company_1_id,
             'created_at': datetime.now(),
             'updated_at': datetime.now(),
-            'allowed_zones': {
+            'allowed_zones': [{
                 'zone_id': location_buffer_company_1,
                 'priority': 1
             },
+                {
+                    'zone_id': location_zone_company_1,
+                    'priority': 2
+                }
+            ],
+            'allowed_location_type_ids': [
+                location_type_partner_company_1,
+                location_type_place_company_1,
+                location_type_resource_company_1,
+                location_type_package_company_1,
+                location_type_zone_company_1,
+                location_type_lost_company_1,
+                location_type_inventory_company_1,
+                location_type_scrap_company_1,
+                location_type_scrapped_company_1,
+                location_type_buffer_company_1,
+            ],
             "title": f"Putaway Strategy 1",
         },
         {
@@ -920,10 +937,20 @@ def upgrade():
             "company_id": company_2_id,
             'created_at': datetime.now(),
             'updated_at': datetime.now(),
-            'allowed_zones': {
+            'allowed_zones': [{
                 'zone_id': location_buffer_company_2,
                 'priority': 1
             },
+                {
+                    'zone_id': location_zone_company_2,
+                    'priority': 2
+                }
+            ],
+            'allowed_location_type_ids': [
+                location_type_package_company_2,
+                location_type_place_company_2,
+                location_type_buffer_company_2
+            ],
             "title": f"Putaway Strategy 1",
         },
     ])
@@ -1080,7 +1107,13 @@ def upgrade():
             'title': 'Incoming type',
             'order_class': 'incoming',
             'allowed_zone_ids': [location_buffer_company_1, ],
-            'allowed_location_type_ids': [location_type_package_company_1, location_type_place_company_1],
+            'allowed_location_type_ids': [
+                location_type_place_company_1,
+                location_type_resource_company_1,
+                location_type_package_company_1,
+                location_type_zone_company_1,
+                location_type_buffer_company_1,
+            ],
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'store_id': None,
@@ -1109,7 +1142,9 @@ def upgrade():
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'allowed_zone_ids': [location_partner_company_1, ],
-            'allowed_location_type_ids': [location_type_package_company_1],
+            'allowed_location_type_ids': [
+                location_type_partner_company_1,
+            ],
             'store_id': None,
             'partner_id': None,
             'reservation_method': 'at_confirm',
@@ -1134,7 +1169,14 @@ def upgrade():
             'title': 'Internal type',
             'order_class': 'internal',
             'allowed_zone_ids': [location_buffer_company_1, location_zone_company_1, ],
-            'allowed_location_type_ids': [location_type_package_company_1],
+            'allowed_location_type_ids': [
+                location_type_place_company_1,
+                location_type_resource_company_1,
+                location_type_package_company_1,
+                location_type_zone_company_1,
+                location_type_lost_company_1,
+                location_type_buffer_company_1,
+            ],
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'store_id': None,
@@ -1162,7 +1204,13 @@ def upgrade():
             'title': 'Incoming type',
             'order_class': 'incoming',
             'allowed_zone_ids': [location_buffer_company_2, ],
-            'allowed_location_type_ids': [location_type_package_company_2, location_type_place_company_2],
+            'allowed_location_type_ids': [
+                location_type_place_company_2,
+                location_type_resource_company_2,
+                location_type_package_company_2,
+                location_type_zone_company_2,
+                location_type_buffer_company_2,
+            ],
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'store_id': None,
@@ -1189,7 +1237,9 @@ def upgrade():
             'title': 'OUT',
             'order_class': 'outgoing',
             'allowed_zone_ids': [location_partner_company_2, ],
-            'allowed_location_type_ids': [location_type_package_company_2],
+            'allowed_location_type_ids': [
+                location_type_partner_company_2,
+            ],
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'store_id': None,
@@ -1215,8 +1265,14 @@ def upgrade():
             'prefix': 'INT',
             'title': 'Internal type',
             'order_class': 'internal',
-            'allowed_zone_ids': [location_buffer_company_2, location_zone_company_2, ],
-            'allowed_location_type_ids': [location_type_package_company_2],
+            'allowed_zone_ids': [location_buffer_company_2, location_zone_company_2,],
+            'allowed_location_type_ids': [
+                location_type_place_company_2,
+                location_type_resource_company_2,
+                location_type_package_company_2,
+                location_type_zone_company_2,
+                location_type_buffer_company_2,
+            ],
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'store_id': None,

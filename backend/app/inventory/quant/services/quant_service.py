@@ -22,15 +22,15 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
         super(QuantService, self).__init__(request, Quant, QuantCreateScheme, QuantUpdateScheme)
 
     @permit('quant_update')
-    async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:
+    async def update(self, id: Any, obj: UpdateSchemaType | dict , joined: Optional[List] = None,) -> Optional[ModelType]:
         return await super(QuantService, self).update(id, obj)
 
     @permit('quant_list')
-    async def list(self, _filter: FilterSchemaType, size: int = 100):
+    async def list(self, _filter: FilterSchemaType, joined: Optional[List] = None, size: int = 100):
         return await super(QuantService, self).list(_filter, size)
 
     @permit('quant_create')
-    async def create(self, obj: CreateSchemaType, commit=True) -> ModelType:
+    async def create(self, obj: CreateSchemaType, joined: Optional[List] = None, commit=True) -> ModelType:
         return await super(QuantService, self).create(obj, commit)
 
     @permit('quant_delete')

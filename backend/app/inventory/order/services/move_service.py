@@ -71,7 +71,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return await super(MoveService, self).list(_filter, size)
 
     @list_brocker.task(queue_name='model')
-    async def create_suggests(self, move_ids: list, user_id: str):
+    async def create_suggests(self, move_ids: List, user_id: str):
         """
             Создаются саджесты в зависимости от OrderType и Product
         """
@@ -86,8 +86,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 raise ModuleException(status_code=406, enum=MoveErrors.SUGGESTS_ALREADY_CREATED)
             if move.type == MoveType.PRODUCT:
                 """Если это перемещение товара из виртуальцой локации, то идентификация локации не нужна"""
-                location_src = await location_service.get(move.location_src_zone_id)
-                location_dest = await location_service.get(move.location_dest_zone_id)
+                location_src = await location_service.get(move.location_src_id)
+                location_dest = await location_service.get(move.location_dest_id)
                 if not location_src.location_class in VirtualLocationZones:
                     in_location_suggest_src = suggest_model(**{
                         "move_id": move.id,
@@ -162,7 +162,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return move
 
     @list_brocker.task(queue_name='model')
-    async def confirm(self, move_ids: List[UUID], user_id: str, order_id: UUID = None):
+    async def confirm(self, move_ids: List[UUID], user_id: str, order_id: Optional[UUID] = None):
         self = self or list_brocker.state.data['env'].get_env()['move'].service
         try:
             await self._confirm(move_ids=move_ids, user_id=user_id)
@@ -183,27 +183,100 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             "detail": "Move is confirmed"
         }
 
-    async def _prepare_move_args(
-            self,
-            product_id: UUID,
-            location_src_zone_id: Optional[UUID] = None,
-            location_src_id: Optional[UUID] = None,
-            location_type_src_id: Optional[UUID] = None,
-            order_type_id: Optional[UUID] = None,
+    async def _set_src_quant(self, move: Move, quants: List[Quant], location_src) -> tuple[Quant, float]:
+        location = self.env['location']
+        location_type = self.env['location_type']
+        quant = self.env['quant']
+        qty_to_move = 0.0
+        quant_src_entity = None
+        quantity = move.quantity
+        for src_quant in quants:
+            if move.uom_id != src_quant.uom_id:
+                continue  # TODO: единицы измерения
+            if src_quant.available_quantity <= 0.0:
+                continue
+            if quantity <= src_quant.available_quantity:
+                qty_to_move += quantity
+                quantity = 0.0
+                quant_src_entity = src_quant
+                break
+            quantity -= src_quant.available_quantity
+            qty_to_move += src_quant.available_quantity
+            quant_src_entity = src_quant
+            break
 
-    ):
-        quant_model: Model = self.env['quant']
-        order_type_model: Model = self.env['order_type']
-        location_model: Model = self.env['location']
-        move_model: Model = self.env['move']
-        location_src_ids: list[Location] = []
-        # 1 - Сначала надо подобрать order_type_id, если его нет
-        # 2 - Берем все типы ордеров, у которых класс internal
-        order_types = await order_type_model.service.list({
-            'order_class__in': [OrderClass.INTERNAL],
-        })
+        if quantity:
+            for src_quant in quants:
+                if move.uom_id != src_quant.uom_id:
+                    continue  # TODO: единицы измерения
+                if not src_quant.location_rel:
+                    src_quant.location_rel = await location.service.get(
+                        src_quant.location_id, joined=['location_type_rel']
+                    )
+                location_type = await location_type.service.get(src_quant.location_rel.location_type_id)
+                if location_type.is_can_negative:
+                    qty_to_move += quantity
+                    quantity = 0.0
+                    quant_src_entity = src_quant
+                    break
+            else:
+                logger.warning('The number in the move has been reduced')
+                qty_to_move -= quantity
+        if not quant_src_entity and location_src:
+            for loc in location_src:
+                if not loc.location_type_rel:
+                    loc.location_type_rel = await location_type.service.get(loc.location_type_id)
+                if loc.location_type_rel.is_can_negative:
+                    quant_src_entity = quant.model(**{
+                        "product_id": move.product_id,
+                        "company_id": loc.company_id,
+                        "store_id": move.store_id,
+                        "location_id": loc.id,
+                        "location_class": loc.location_class,
+                        "lot_id": move.lot_id,
+                        "partner_id": move.partner_id,
+                        "quantity": 0.0,
+                        "reserved_quantity": 0.0,
+                        "incoming_quantity": 0.0,
+                        "uom_id": move.uom_id,
+                    })
+                    quant_src_entity.location_rel = loc
+        if not quant_src_entity:
+            raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
+        return quant_src_entity, qty_to_move
 
-        return None
+    async def _set_dest_quant(self, move, locations_dest: List):
+        quant = self.env['quant']
+        quant_dest_entity = None
+        available_dest_quants = await quant.service.get_available_quants(
+            product_ids=[move.product_id, ],
+            store_id=move.store_id,
+            location_ids=[i.id for i in locations_dest],
+            lot_ids=[move.lot_id] if move.lot_id else None,
+            partner_id=move.partner_id if move.partner_id else None
+        )
+        if not available_dest_quants:
+            """Поиск локаций, которые могут быть negative"""
+            for loc_dest in locations_dest:
+                quant_dest_entity = quant.model(**{
+                    "product_id": move.product_id,
+                    "company_id": move.company_id,
+                    "store_id": move.store_id,
+                    "location_id": loc_dest.id,
+                    "location_class": loc_dest.location_class,
+                    "lot_id": move.lot_id if move.lot_id else None,
+                    "partner_id": move.partner_id if move.partner_id else None,
+                    "quantity": 0.0,
+                    "reserved_quantity": 0.0,
+                    "incoming_quantity": 0.0,
+                    "uom_id": move.uom_id,
+                })
+                quant_dest_entity.location_rel =loc_dest
+                break
+        if not quant_dest_entity:
+            raise ModuleException(status_code=406, enum=MoveErrors.DEST_QUANT_ERROR)
+        return quant_dest_entity
+
 
     async def _confirm(self, move_ids: List[UUID], user_id: str):
         """
@@ -238,146 +311,47 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 'location_dest_id': key[1],
                 'products': [move.product_id for move in group],
                 'packages': [move.package_id for move in group if move.package_id],
-                'uom_id': group[5],
                 'lot_ids': [key[2]],
                 'move_type': key[3],
             }
             result = await self._prepare_movements(**params)
             results[key] = result
         for move in moves:
-            prepared_products, prepared_packaged = results[move.group_key]
+            prepared_products = results[move.group_key]['products']
+            prepared_packaged = results[move.group_key]['packages']
+            location_src = results[move.group_key]['location_src']
             if move.status == MoveStatus.CONFIRMED:
                 continue
-            order_type = self.env['order_type']
-            quant = self.env['quant']
-            location = self.env['location']
+
             if move.type == MoveType.PRODUCT:
-                quant_src_entity: Quant | None = None
+                prepared_map = prepared_products[0]['order_types'][0] if prepared_products else None
+                prepared_order_type = prepared_map['order_type'] if prepared_map else None
+                prepared_allowed_zone_ids = prepared_map['allowed_zone_ids'] if prepared_map else None
+                prepared_quants = prepared_products[0]['quants'] if prepared_products else []
+                allowed_dest_location_type_ids = prepared_map['allowed_location_type_ids'] if prepared_map else None
                 quant_dest_entity: Quant | None = None
-                qty_to_move = 0.0
-                order_type = await order_type.service.get(move.order_type_id)
-                if not move.location_src_id:
-                    available_src_locations = await self.get_avalible_locations(
-                        allowed_zone_ids=order_type.allowed_zone_ids,
-                        allowed_location_type_ids=order_type.allowed_location_type_ids,
-                        allowed_location_classes=order_type.allowed_location_classes,
-                    )
-                else:
-                    available_src_locations = [await location.service.get(move.location_src_id), ]
-                if not available_src_locations:
-                    raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_LOCATION_ERROR)
-                if not move.quant_src_id:
-                    available_src_quants = await quant.service.get_available_quants(
-                        product_ids=[move.product_id, ],
-                        store_id=move.store_id,
-                        location_ids=[i.id for i in available_src_locations],
-                        lot_ids=[move.lot_id] if move.lot_id else None,
-                        partner_id=move.partner_id if move.partner_id else None
-                    )
-                else:
-                    quant_src_entity = await quant.service.get(move.quant_src_id)
-                    available_src_quants = [quant_src_entity, ]
 
-                remainder = move.quantity
-                if available_src_quants:
-                    for src_quant in available_src_quants:
-                        if move.uom_id != src_quant.uom_id:
-                            continue  # TODO: единицы измерения
-
-                        if src_quant.available_quantity <= 0.0:
-                            continue
-
-                        if remainder <= src_quant.available_quantity:
-                            qty_to_move += remainder
-                            remainder = 0.0
-                            quant_src_entity = src_quant
-                            break
-
-                        remainder -= src_quant.available_quantity
-                        qty_to_move += src_quant.available_quantity
-                        quant_src_entity = src_quant
-                        break
-
-                    if remainder:
-                        if remainder == move.quantity:
-                            for src_quant in available_src_quants:
-                                if move.uom_id != src_quant.uom_id:
-                                    continue  # TODO: единицы измерения
-
-                                q_location = await location.service.get(src_quant.location_id)
-                                if q_location.location_type_rel.is_can_negative:
-                                    qty_to_move += remainder
-                                    remainder = 0.0
-                                    quant_src_entity = src_quant
-                                    break
-                        else:
-                            logger.warning('The number in the move has been reduced')
-                            move.quantity -= remainder
-                else:
-                    for loc_src in available_src_locations:
-                        if loc_src.location_type_rel.is_can_negative:
-                            quant_src_entity = quant.model(**{
-                                "product_id": move.product_id,
-                                "company_id": move.company_id,
-                                "store_id": move.store_id,
-                                "location_id": loc_src.id,
-                                "location_class": loc_src.location_class,
-                                "lot_id": move.lot_id if move.lot_id else None,
-                                "partner_id": move.partner_id if move.partner_id else None,
-                                "quantity": 0.0,
-                                "reserved_quantity": 0.0,
-                                "incoming_quantity": 0.0,
-                                "uom_id": move.uom_id,
-                            })
-                            break
-                if not quant_src_entity:
-                    raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
+                quant_src_entity, qty_to_move = await self._set_src_quant(
+                    move=move,
+                    quants=prepared_quants if prepared_products else [],
+                    location_src=location_src,
+                )
+                move.quantity = qty_to_move
+                move.quant_src_id = quant_src_entity.id
 
                 available_dest_locations = await self.get_avalible_locations(
-                    allowed_zone_ids=order_type.allowed_zone_ids,
-                    allowed_location_type_ids=order_type.allowed_location_type_ids,
-                    allowed_location_classes=order_type.allowed_location_classes,
+                    allowed_zone_ids=prepared_allowed_zone_ids,
+                    allowed_location_type_ids=allowed_dest_location_type_ids,
                 )
                 if not available_dest_locations:
                     raise ModuleException(status_code=406, enum=MoveErrors.DESTINATION_LOCATION_ERROR)
-                available_dest_quants = await quant.service.get_available_quants(
-                    product_ids=[move.product_id, ],
-                    store_id=move.store_id,
-                    location_ids=[i.id for i in available_dest_locations],
-                    lot_ids=[move.lot_id] if move.lot_id else None,
-                    partner_id=move.partner_id if move.partner_id else None
-                )
-                if not available_dest_quants:
-                    """Поиск локаций, которые могут быть negative"""
-                    for loc_dest in available_dest_locations:
-                        quant_dest_entity = quant.model(**{
-                            "product_id": move.product_id,
-                            "company_id": move.company_id,
-                            "store_id": move.store_id,
-                            "location_id": loc_dest.id,
-                            "location_class": loc_dest.location_class,
-                            "lot_id": move.lot_id if move.lot_id else None,
-                            "partner_id": move.partner_id if move.partner_id else None,
-                            "quantity": 0.0,
-                            "reserved_quantity": 0.0,
-                            "incoming_quantity": 0.0,
-                            "uom_id": move.uom_id,
-                        })
-                        available_dest_quants = [quant_dest_entity, ]
-                        break
-                for dest_quant in available_dest_quants:
-                    quant_dest_entity = dest_quant
-                    # quant_dest_entity.incoming_quantity += move.quantity
-                    # self.session.add(quant_dest_entity)
-                    break
-
-                if not quant_dest_entity:
-                    raise ModuleException(status_code=406, enum=MoveErrors.DEST_QUANT_ERROR)
+                quant_dest_entity = await self._set_dest_quant(move, available_dest_locations)
+                move.quant_dest_id = quant_dest_entity.id
 
                 if quant_src_entity == quant_dest_entity:
                     raise ModuleException(status_code=406, enum=MoveErrors.EQUAL_QUANT_ERROR)
                 # TODO: это надо убрать в отдельный вызов
-                move_logs = await self.set_reserve(
+                await self.set_reserve(
                     move=move, src_quant=quant_src_entity,
                     dest_quant=quant_dest_entity,
                     qty_to_move=qty_to_move
@@ -389,11 +363,10 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             self,
             allowed_zone_ids: List[UUID],
             allowed_location_type_ids: List[UUID],
-            allowed_location_classes: List[str],
+            allowed_location_classes: Optional[List[str]] = None,
     ):
         """ ПОДБОР ИСХОДЯЩЕГО КВАНТА/ЛОКАЦИИ"""
         location = self.env['location']
-        """Проверяем, что мув может быть создан согласно праавилам в Order type """
         location_ids = await location.service.get_location_hierarchy(
             location_ids=allowed_zone_ids,
             location_type_ids=allowed_location_type_ids,
@@ -464,9 +437,15 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             total_quantity = qty_to_move
             # Пепепроверяем, что остатка в кванте источнике достаточно для движения
             if not src_quant.available_quantity >= total_quantity:
-                locations_src = await self.env['location'].service.get(src_quant.location_id)
-                if not locations_src.location_type_rel.is_can_negative:
-                    raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
+                locations_src = await self.env['location'].service.get(src_quant.location_id,
+                                                                       joined=['location_type_rel'])
+                if not locations_src.location_type_rel:
+                    location_type_rel = await self.env['location_type'].service.get(locations_src.location_type_id)
+                    if not location_type_rel.is_can_negative:
+                        raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
+                else:
+                    if not locations_src.location_type_rel.is_can_negative:
+                        raise ModuleException(status_code=406, enum=MoveErrors.SOURCE_QUANT_ERROR)
             # Проверяем, что у мува уже не созданы саджесты
             if move.suggest_list_rel:
                 raise ModuleException(status_code=406, enum=MoveErrors.SUGGESTS_ALREADY_CREATED)
@@ -738,11 +717,10 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             location_dest_zone_id: Optional[UUID] = None,
             location_type_src_id: Optional[UUID] = None,
             products: Optional[List[UUID]] = None,  # type: ignore
-            uom_id: Optional[UUID] = None,
             packages: Optional[List[UUID]] = None,
             lot_ids: Optional[List[UUID]] = None,
             move_type: Optional[MoveType] = None,
-    ) -> dict[str, List[dict[str, Any]]]:
+    ):  # type: ignore
         """
          Метод позволяет по разным параметрам создать перемещение товаров
         """
@@ -759,10 +737,10 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             })
         else:
             order_types: List[OrderType] = await order_type_model.service.list({'id__in': [order_type_id]})
-                                                                               # type: ignore
+            # type: ignore
         for ot in order_types:
             if ot.order_class == OrderClass.INCOMING:
-                location_class_src = [LocationClass.PARTNER,]
+                location_class_src = [LocationClass.PARTNER, ]
             elif ot.order_class == OrderClass.OUTGOING:
                 location_class_src = [LocationClass.PARTNER, ]
         assert any([location_src_zone_id, location_src_id, location_type_src_id, products, packages]), \
@@ -777,6 +755,12 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 location_ids=[location_src_zone_id],
                 location_type_ids=[location_type_src_id],
             )
+        else:
+            # Если не указана локация, то ищем все локации, которые подходят под правила OrderType
+            location_src_ids = await location_model.service.list({
+                'location_class__in': location_class_src,
+                'store_id__in': [store_id],
+            })
         # for loc in location_src_ids:
         #     # Если указана локация НЕ физическая зона, то выдаем ошибку
         #     if loc.location_class not in list(PhysicalLocationClass):
@@ -795,27 +779,6 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             location_classes=location_class_src,
             lot_ids=lot_ids if lot_ids else None,
         )
-        if location_class_src == [LocationClass.PARTNER] and location_src_ids:
-            # Если источник - партнер, то надо проверить, на все ли товары есть кванты, если нет создаем
-            for product in products:
-                if not any([q.product_id == product for q in available_src_quants]):
-                    # Создаем квант
-                    for loc in location_src_ids:
-                        if loc.location_class == LocationClass.PARTNER:
-                            quant = quant_model.service.create(**{
-                                "product_id": product,
-                                "company_id": loc.company_id,
-                                "store_id": store_id,
-                                "location_id": loc.id,
-                                "location_class": loc.location_class,
-                                "lot_id": lot_ids[0] if lot_ids else None,
-                                "partner_id": partner_id if partner_id else None,
-                                "quantity": 0.0,
-                                "reserved_quantity": 0.0,
-                                "incoming_quantity": 0.0,
-                                "uom_id": uom_id,
-                            })
-                            available_src_quants.append(quant)
 
         packages_map = defaultdict(list)  # type: ignore
         for q in available_src_quants:
@@ -836,7 +799,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                         'package_id': pack,
                         'quants': pack_quants
                     })
-            packade_order_type_map = await order_type_model.service.get_appropriate_order_types_for_packages(
+            package_order_type_map = await order_type_model.service.get_appropriate_order_types_for_packages(
                 packages=[(i['package_id'], q.location_id) for i in new_packages for q in i['quants'] if i['quants']],
                 zone_dest_id=location_dest_zone_id,
                 location_dest_id=location_dest_id,
@@ -845,8 +808,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 store_id=store_id
             )
             for pack in new_packages:
-                pack_order_types = packade_order_type_map.get(pack['package_id'])
-                pack['order_types'] = [i.id for i in pack_order_types] if pack_order_types else None
+                pack_order_types = package_order_type_map.get(pack['package_id'])
+                pack['order_types'] = pack_order_types
                 pack['location_dest_id'] = location_dest_id
 
         new_products: List = []
@@ -855,15 +818,25 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 lambda: {'quantity': 0.0, 'available_quantity': 0.0, 'quants': []}
             )
             for quant in available_src_quants:
-                if not quant.available_quantity > 0:
-                    continue
                 key = (quant.product_id, quant.lot_id, quant.uom_id, quant.partner_id)
                 grouped_quants[key]['quantity'] += quant.quantity
                 grouped_quants[key]['available_quantity'] += quant.available_quantity
                 grouped_quants[key]['quants'].append(quant)  # type: ignore
 
+            # Добавляем товары из products, для которых не нашлось квантов
+            for product_id in products:
+                if not any(key[0] == product_id for key in grouped_quants):
+                    key = (product_id, None, None, None)
+                    grouped_quants[key] = {'quantity': 0.0, 'available_quantity': 0.0, 'quants': []}
+
             product_order_types_map = await order_type_model.service.get_appropriate_order_types(
-                products=[(i[0], q['location_id']) for i in grouped_quants for q in i['quants']],
+                products=[
+                             (q.product_id, q.location_id) for key, data in grouped_quants.items() for q in
+                             data['quants']
+                         ] + [
+                             (key[0], loc.id) for key, data in grouped_quants.items() if not data['quants'] for loc in
+                             location_src_ids
+                         ],
                 zone_dest_id=location_dest_zone_id,
                 location_dest_id=location_dest_id,
                 order_types=order_types,
@@ -875,20 +848,18 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 'product_id': key[0],
                 'lot_id': key[1],
                 'uom_id': key[2],
-                'order_type_ids': product_order_types_map.get(key[0]),
+                'order_types': product_order_types_map.get(key[0]),
                 'partner_id': key[3],
                 'quantity': data['quantity'],
                 'avaliable_quantity': data['available_quantity'],
-                'quants': data['quants']  # type: ignore
+                'quants': data['quants'] ,
+                'location_dest_id': location_dest_id# type: ignore
             }
                 for key, data in grouped_quants.items()
             ]
-
-            for prod in new_products:  # Сколько надо переместить
-                prod_order_types = product_order_types_map.get(prod['product_id'])
-                prod['order_types'] = [i.id for i in prod_order_types] if prod_order_types else None
-                prod['location_dest_id'] = location_dest_id
         return {
             'products': new_products,
-            'packages': new_packages
+            'packages': new_packages,
+            'location_src': location_src_ids,
+            'available_src_quants': available_src_quants
         }

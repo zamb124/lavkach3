@@ -38,16 +38,12 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
         return await super(LocationService, self).delete(id)
 
     async def get_location_hierarchy(
-            self, location_ids: List[UUID],
-            exclude_location_ids: Optional[List[UUID]] = None,
+            self,
+            location_ids: List[UUID] = None,
             location_type_ids: Optional[List[UUID]] = None,
-            exclude_location_type_ids: Optional[List[UUID]] = None,
             location_classes: Optional[List[str]] = None,
-            exclude_location_classes: Optional[List[str]]= None,
     ) -> List[Location]:
 
-        if exclude_location_ids:
-            location_ids = list(set(location_ids) - set(exclude_location_ids))
         # Определяем CTE для рекурсивного запроса
         location_cte = (
             select(
@@ -74,8 +70,6 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
             .where(Location.location_id == location_alias.c.id)
             .where(Location.location_class.in_(location_classes) if location_classes else True)  # type: ignore
             .where(Location.location_type_id.in_(location_type_ids) if location_type_ids else True)  # type: ignore
-            .where(Location.location_class.notin_(exclude_location_classes) if exclude_location_classes else True)# type: ignore
-            .where(Location.location_type_id.notin_(exclude_location_type_ids) if exclude_location_type_ids else True)# type: ignore
         )
 
         # Выполняем запрос

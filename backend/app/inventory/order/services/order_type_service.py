@@ -108,13 +108,15 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
             # Подбираем подходящие order_type для товара
             for order_type in order_types:
                 zone_src_ids = parents_location_src_map.get(zone_src_id, [])
-                if (
-                        any(zone in order_type.allowed_zone_ids for zone in allowed_zones)
-                        and any(
-                    loc_type_id in order_type.allowed_location_type_ids for loc_type_id in allowed_location_type_ids)
-                ):
+                allowed_zone_for_product_and_ot = set(order_type.allowed_zone_ids) & set(allowed_zones)
+                allowed_lt_fo_product_ot = set(order_type.allowed_location_type_ids) & set(allowed_location_type_ids)
+                if allowed_zone_for_product_and_ot and allowed_lt_fo_product_ot:
                     if order_type not in product_order_types[product_id]:
-                        product_order_types[product_id].append(order_type)
+                        product_order_types[product_id].append({
+                            'order_type': order_type,
+                            'allowed_zone_ids': allowed_zone_for_product_and_ot,
+                            'allowed_location_type_ids': allowed_lt_fo_product_ot
+                        })
                 else:
                     raise ModuleException(
                         status_code=406, enum=OrderTypeErrors.SOURCE_LOCATION_ERROR,
@@ -125,7 +127,7 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
             product_order_types[product_id].sort(
                 key=lambda ot: next(
                     (zone['priority'] for zone in pst.storage_type_rel.allowed_zones
-                     if zone['zone_id'] in ot.allowed_zone_ids),
+                     if zone['zone_id'] in ot['allowed_zone_ids']),
                     float('inf')
                 )
             )
@@ -214,15 +216,15 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
             # Подбираем подходящие order_type для пакета
             for order_type in order_types:
                 zone_src_ids = parents_location_src_map.get(location_src_id, [])
-                if not zone_src_ids:
-                    raise ModuleException(
-                        status_code=406, enum=OrderTypeErrors.SOURCE_LOCATION_ERROR,
-                        message='No allowed zones found for the package',
-                        args={'package_id': package_id}
-                    )
-                if any(zone in order_type.allowed_zone_ids for zone in allowed_zones):
+                allowed_zone_for_package_and_ot = set(order_type.allowed_zone_ids) & set(allowed_zones)
+                if allowed_zone_for_package_and_ot:
                     if order_type not in package_order_types[package_id]:
                         package_order_types[package_id].append(order_type)
+                    else:
+                        package_order_types[package_id].append({
+                            'order_type': order_type,
+                            'allowed_zone_ids': allowed_zone_for_package_and_ot
+                        })
                 else:
                     raise ModuleException(
                         status_code=406, enum=OrderTypeErrors.SOURCE_LOCATION_ERROR,

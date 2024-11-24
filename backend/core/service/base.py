@@ -4,7 +4,7 @@ import traceback
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, Type, TypeVar, Optional, List
 from uuid import uuid4
 
 from fastapi_filter.contrib.sqlalchemy import Filter
@@ -144,11 +144,11 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
     async def check_func_status_get_entity(self, func, entity: uuid.UUID | str | Row, for_update=False) -> Row:
         """Может проверить, что функция выполняется ровно в том статусе, в котором нужно"""
         if isinstance(entity, uuid.UUID):
-            entity = await self.get(entity, for_update)
+            entity = await self.get(entity, for_update=for_update)
         elif isinstance(entity, str):
-            entity = await self.get(entity, for_update)
+            entity = await self.get(entity, for_update=for_update)
         elif isinstance(entity, Row) and for_update:
-            entity = await self.get(entity, for_update)
+            entity = await self.get(entity, for_update=for_update)
         if hasattr(func, '_estatus'):
             if entity.status not in func._estatus:
                 raise HTTPException(status_code=409, detail=f"Estatus Error")
@@ -158,20 +158,23 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         self.user = CurrentUser(id=uuid4(), is_admin=True)
         return self
 
-    async def _get(self, id: Any, for_update=False) -> Row | RowMapping:
+    async def _get(self, id: Any, joined: Optional[List] = [], for_update=False) -> Row | RowMapping:
         query = select(self.model).where(self.model.id == id)
         if for_update:
             query.with_for_update()
         if self.user.is_admin:
             query = select(self.model).where(self.model.id == id)
+        if joined:
+            for join_field in joined:
+                query = query.join(getattr(self.model, join_field))
         result = await self.session.execute(query)
         entity = result.scalars().first()
         if not entity:
             raise HTTPException(status_code=404, detail=f"Not found")
         return entity
 
-    async def get(self, id: Any, for_update=False):
-        entity = await self._get(id, for_update)
+    async def get(self, id: Any, joined: Optional[List] = [], for_update=False):
+        entity = await self._get(id, joined, for_update)
         return entity
 
     async def _list(self, _filter: FilterSchemaType | dict, size: int = 100, for_update=False):
@@ -195,7 +198,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
         # self.basecache.set(entitys)
         return entitys
 
-    async def _create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:
+    async def _create(self, obj: CreateSchemaType | dict, joined: Optional[List] = [], commit=True) -> ModelType:
         if isinstance(obj, dict):
             try:
                 obj = self.create_schema(**obj)
@@ -254,6 +257,13 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
                 raise HTTPException(status_code=409, detail=f"Conflict Error entity {str(e)}")
         else:
             await self.session.flush([entity])
+            # Присоединение полей из списка joined
+            if joined:
+                query = select(self.model).where(self.model.id == entity.id)
+                for join_field in joined:
+                    query = query.join(getattr(self.model, join_field))
+                result = await self.session.execute(query)
+                entity = result.scalars().first()
         return entity
 
     async def create(self, obj: CreateSchemaType | dict, commit=True) -> ModelType:

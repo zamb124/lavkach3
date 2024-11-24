@@ -148,7 +148,7 @@ class Move(Base, AllMixin, CreatedEdited):
     @property
     def group_key(self):
         #Нужен для удобства
-        return self.location_src_id, self.location_dest_id, self.lot_id, self.type, self.order_type_id, self.uom_id
+        return self.location_src_id, self.location_dest_id, self.lot_id, self.type, self.order_type_id
 
 
 class Suggest(Base, AllMixin):
