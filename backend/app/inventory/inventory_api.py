@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.inventory.inventory_service import InventoryService
+from app.inventory.order import MoveService
 from app.inventory.order.schemas import (
     ExceptionResponseSchema,
 )
@@ -12,6 +12,6 @@ inventory_router = APIRouter(
 
 
 @inventory_router.post("/create_movements", response_model=CreateMovements)
-async def create_movements(schema: CreateMovements, service: InventoryService = Depends()):
-    res = await service.create_movements(schema)
+async def create_movements(schema: CreateMovements, service: MoveService = Depends()):
+    res = await service._prepare_movements(schema)
     return res

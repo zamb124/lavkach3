@@ -42,7 +42,10 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
     async def get_appropriate_order_types(
             self, products: List[Tuple[UUID, UUID]],
             zone_dest_id: Optional[UUID] = None,
-            location_dest_id: Optional[UUID] = None
+            location_dest_id: Optional[UUID] = None,
+            order_types: Optional[List[OrderType]] = None,
+            partner_id: Optional[UUID] = None,
+            store_id: Optional[UUID] = None
     ) -> Dict[UUID, List[OrderType]]:
         """
         Метод подбирает подходящие order_type для каждого товара, основываясь на допустимых зонах и типах локаций.
@@ -50,14 +53,21 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
         :param products: Список кортежей, где каждый кортеж содержит product_id и zone_src_id.
         :param zone_dest_id: Зона для дополнительной фильтрации order_type.
         :param location_dest_id: Идентификатор локации назначения для дополнительной фильтрации order_type.
+        :param order_types: Список order_type для фильтрации.
+        :param partner_id: Идентификатор партнера для фильтрации.
+        :param store_id: Идентификатор склада для фильтрации.
         :return: Словарь, где ключом является product_id, а значением - список подходящих order_type в приоритетном
         порядке.
         """
         # Получаем все order_type
         location_model = self.env['location']
-        order_types = await self.list({
-            'order_class__in': [OrderClass.INTERNAL],
-        })
+        if not order_types:
+            _filter: dict = {'order_class__in': [OrderClass.INTERNAL]}
+            if store_id:
+                _filter.update({'store_id__in': [store_id, ]})
+            if partner_id:
+                _filter.update({'partner_id__in': [partner_id, ]})
+            order_types = await self.list(_filter)
         # Получаем все product_storage_type для указанных товаров
         product_ids = [product[0] for product in products]
         product_storage_types = await self.session.execute(
@@ -73,7 +83,7 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
         }
 
         # Создаем словарь для хранения подходящих order_type для каждого товара
-        product_order_types = defaultdict(list)
+        product_order_types = defaultdict(list)  # type: ignore
         parents_location_src_map = await location_model.service.get_all_parent_zones(
             location_ids=[product[1] for product in products]
         )
@@ -99,8 +109,9 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
             for order_type in order_types:
                 zone_src_ids = parents_location_src_map.get(zone_src_id, [])
                 if (
-                         any(zone in order_type.allowed_zone_ids for zone in allowed_zones)
-                        and any(loc_type_id in order_type.allowed_location_type_ids for loc_type_id in allowed_location_type_ids)
+                        any(zone in order_type.allowed_zone_ids for zone in allowed_zones)
+                        and any(
+                    loc_type_id in order_type.allowed_location_type_ids for loc_type_id in allowed_location_type_ids)
                 ):
                     if order_type not in product_order_types[product_id]:
                         product_order_types[product_id].append(order_type)
@@ -124,7 +135,10 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
     async def get_appropriate_order_types_for_packages(
             self, packages: List[Tuple[UUID, UUID]],
             zone_dest_id: Optional[UUID] = None,
-            location_dest_id: Optional[UUID] = None
+            location_dest_id: Optional[UUID] = None,
+            order_types: Optional[List[OrderType]] = None,
+            partner_id: Optional[UUID] = None,
+            store_id: Optional[UUID] = None
     ) -> Dict[UUID, List[OrderType]]:
         """
         Метод подбирает подходящие order_type для каждого пакета, основываясь на допустимых зонах и типах локаций.
@@ -132,14 +146,21 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
         :param packages: Список кортежей, где каждый кортеж содержит package_id и location_src_id.
         :param zone_dest_id: Зона для дополнительной фильтрации order_type.
         :param location_dest_id: Идентификатор локации назначения для дополнительной фильтрации order_type.
+        :param order_types: Список order_type для фильтрации.
+        :param partner_id: Идентификатор партнера для фильтрации.
+        :param store_id: Идентификатор склада для фильтрации.
         :return: Словарь, где ключом является package_id, а значением - список подходящих order_type в приоритетном порядке.
         """
         # Получаем все order_type
         location_model = self.env['location']
         location_type_model = self.env['location_type']
-        order_types = await self.list({
-            'order_class__in': [OrderClass.INTERNAL],
-        })
+        if not order_types:
+            _filter: dict = {'order_class__in': [OrderClass.INTERNAL]}
+            if store_id:
+                _filter.update({'store_id__in': [store_id, ]})
+            if partner_id:
+                _filter.update({'partner_id__in': [partner_id, ]})
+            order_types = await self.list(_filter)
 
         # Создаем словарь для хранения подходящих order_type для каждого пакета
         package_order_types = defaultdict(list)

@@ -40,15 +40,15 @@ class QuantService(BaseService[Quant, QuantCreateScheme, QuantUpdateScheme, Quan
     async def get_available_quants(
             self,
             store_id: uuid.UUID,
-            product_ids: [uuid.UUID] = None,
-            id: uuid.UUID = None,
-            exclude_id: uuid.UUID = None,
-            location_classes: List[str] = None,
-            location_ids: List[uuid.UUID] = None,
-            package_ids: List[uuid.UUID] = None,
-            location_type_ids: List[uuid.UUID] = None,
-            lot_ids: List[uuid.UUID] = None,
-            partner_id: uuid.UUID = None,
+            product_ids: Optional[List[uuid.UUID]] = None,
+            id: Optional[uuid.UUID] = None,
+            exclude_id: Optional[uuid.UUID] = None,
+            location_classes: Optional[List[str]] = None,
+            location_ids: Optional[List[uuid.UUID]] = None,
+            package_ids: Optional[List[uuid.UUID]] = None,
+            location_type_ids: Optional[List[uuid.UUID]] = None,
+            lot_ids: Optional[List[uuid.UUID]] = None,
+            partner_id: Optional[uuid.UUID] = None,
             quantity: float = 0
     ) -> List[Quant]:
         """

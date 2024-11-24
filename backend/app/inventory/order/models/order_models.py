@@ -3,7 +3,7 @@ import uuid
 from typing import Optional
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint, ARRAY, \
-    String, JSON
+    String, JSON, Enum
 from sqlalchemy.orm import relationship, mapped_column, Mapped, validates
 
 # from app.inventory.location.models import Location, LocationClass
@@ -54,8 +54,8 @@ class OrderType(Base, AllMixin, CreatedEdited):
     order_class: Mapped[OrderClass]  # Класс ордера
     allowed_zone_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные зона для назначения
     allowed_location_type_ids: Mapped[ids] = mapped_column(index=True)  # Разрешенные типы зоны для назначения
-    allowed_location_class_ids: Mapped[Optional[ARRAY[LocationClass]]] = mapped_column(
-        ARRAY(String), server_default='{}', index=True
+    allowed_location_classes: Mapped[Optional[list[LocationClass]]] = mapped_column(
+        ARRAY(Enum(LocationClass)), server_default='{}', index=True
     )  # Разрешенные классы зона для назначения
     order_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         ForeignKey("order_type.id", ondelete='CASCADE'))  # Тип Ордера возврата разницы
@@ -144,6 +144,11 @@ class Move(Base, AllMixin, CreatedEdited):
         if package_id and package_id.location_class != LocationClass.PACKAGE:
             raise ValueError("package_id must refer to a location with location_class 'PACKAGE'")
         return package_id
+
+    @property
+    def group_key(self):
+        #Нужен для удобства
+        return self.location_src_id, self.location_dest_id, self.lot_id, self.type, self.order_type_id, self.uom_id
 
 
 class Suggest(Base, AllMixin):

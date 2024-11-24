@@ -2,7 +2,7 @@ import uuid
 from typing import Optional
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, Sequence
+from sqlalchemy import ForeignKey, Sequence, Integer
 from sqlalchemy import Numeric, Uuid
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
@@ -16,6 +16,15 @@ if TYPE_CHECKING:
 
 
 class Uom(Base, AllMixin):
+    """
+    Ratio (коэффициент) представляет собой множитель, который используется для конвертации данной единицы измерения в
+    эталонную единицу измерения в рамках одной категории. Например, если у вас есть единица измерения "килограмм" с
+    коэффициентом 1 и единица измерения "грамм" с коэффициентом 1000, это означает, что 1 килограмм равен 1000 граммам.
+
+    Precision (точность) определяет количество знаков после запятой, которые будут использоваться при округлении
+    значений. Это важно для обеспечения точности вычислений при конвертации между различными единицами измерения.
+    Например, если точность установлена на 2, то значения будут округляться до двух знаков после запятой.
+    """
     __tablename__ = "uom"
 
     lsn_seq = Sequence(f'uom_lsn_seq')
@@ -25,4 +34,4 @@ class Uom(Base, AllMixin):
     uom_category_rel: Mapped['UomCategory'] = relationship(back_populates='uom_list_rel', lazy='selectin')
     type: Mapped[str] = mapped_column(index=True, default=UomType.STANDART)
     ratio: Mapped[float] = mapped_column(Numeric(12, 2), default=1)
-    precision: Mapped[float] = mapped_column(Numeric(12, 2), default=0.01)
+    precision: Mapped[int] = mapped_column(Integer, default=2)

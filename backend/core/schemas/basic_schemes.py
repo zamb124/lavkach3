@@ -91,7 +91,6 @@ class BasicModel(BaseModel):
     class Config:
         extra = 'allow'
         from_attributes = True
-        orm_mode = True
 
 
 _Unset: Any = PydanticUndefined

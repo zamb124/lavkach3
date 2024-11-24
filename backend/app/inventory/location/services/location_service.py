@@ -26,7 +26,7 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
         return await super(LocationService, self).update(id, obj)
 
     @permit('location_list')
-    async def list(self, _filter: FilterSchemaType, size: int = None):
+    async def list(self, _filter: FilterSchemaType, size: int = 100):
         return await super(LocationService, self).list(_filter, size)
 
     @permit('location_create')
@@ -39,11 +39,11 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
 
     async def get_location_hierarchy(
             self, location_ids: List[UUID],
-            exclude_location_ids: List[UUID] = None,
-            location_type_ids: List[UUID] = None,
-            exclude_location_type_ids: List[UUID] = None,
-            location_classes: List[str] = None,
-            exclude_location_classes: List[str] = None,
+            exclude_location_ids: Optional[List[UUID]] = None,
+            location_type_ids: Optional[List[UUID]] = None,
+            exclude_location_type_ids: Optional[List[UUID]] = None,
+            location_classes: Optional[List[str]] = None,
+            exclude_location_classes: Optional[List[str]]= None,
     ) -> List[Location]:
 
         if exclude_location_ids:
@@ -72,10 +72,10 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
                 Location.location_type_id,
             )
             .where(Location.location_id == location_alias.c.id)
-            .where(Location.location_class.in_(location_classes) if location_classes else True)
-            .where(Location.location_type_id.in_(location_type_ids) if location_type_ids else True)
-            .where(Location.location_class.notin_(exclude_location_classes) if exclude_location_classes else True)
-            .where(Location.location_type_id.notin_(exclude_location_type_ids) if exclude_location_type_ids else True)
+            .where(Location.location_class.in_(location_classes) if location_classes else True)  # type: ignore
+            .where(Location.location_type_id.in_(location_type_ids) if location_type_ids else True)  # type: ignore
+            .where(Location.location_class.notin_(exclude_location_classes) if exclude_location_classes else True)# type: ignore
+            .where(Location.location_type_id.notin_(exclude_location_type_ids) if exclude_location_type_ids else True)# type: ignore
         )
 
         # Выполняем запрос
@@ -110,11 +110,11 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
             for row in initial_rows
         }
         # Обновляем location_ids на основе полученных location_id
-        location_ids = {row.id: row.location_id for row in initial_rows}
+        location_ids = {row.id: row.location_id for row in initial_rows}  # type: ignore
         # Создаем рекурсивный CTE-запрос для поиска всех родителей для каждого location_id
         cte = (
             select(Location.id, Location.location_id, Location.location_class)
-            .where(Location.id.in_(location_ids.values()))
+            .where(Location.id.in_(location_ids.values()))  # type: ignore
             .cte(name="cte", recursive=True)
         )
 
@@ -135,7 +135,7 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
         # Формируем словарь, где ключом является location_id, а значением - список всех родительских зон
         rows_dict = {row.id: row.location_id for row in rows}
 
-        for _id, location_id in location_ids.items():
+        for _id, location_id in location_ids.items():  # type: ignore
             current_id = location_id
             while current_id in rows_dict:
                 parent_id = rows_dict[current_id]

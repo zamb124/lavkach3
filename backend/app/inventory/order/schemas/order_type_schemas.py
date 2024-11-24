@@ -27,7 +27,7 @@ class OrderTypeBaseScheme(BasicModel):
         title='Allowed locations type dest',
         form=True
     )
-    allowed_location_class_ids: Optional[list[LocationClass]] = Field(
+    allowed_location_classes: Optional[list[LocationClass]] = Field(
         default=[],
         title='Allowed locations class dest ',
         form=True
@@ -74,7 +74,7 @@ class OrderTypeScheme(OrderTypeCreateScheme, TimeStampScheme):
 class OrderTypeFilter(BaseFilter):
     store_id__in: Optional[List[UUID4]] = Field(default=None, model='store')
     order_class__in: Optional[List[OrderClass]] = Field(default=None)
-
+    partner_id__in: Optional[List[UUID4]] = Field(default=None, model='partner')
     class Config:
         populate_by_name = True
 

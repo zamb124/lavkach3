@@ -7,6 +7,7 @@ from app.basic.product.models.product_models import Product, ProductCategory
 from app.basic.store.models.store_models import Store
 from app.basic.uom.models.uom_category_models import UomCategory
 from app.basic.uom.models.uom_models import Uom
+from app.front.apps.inventory.location.location_type import location_type
 from app.inventory.location.models import Location, LocationType
 from app.inventory.order.models import OrderType, Order
 from app.inventory.product_storage import StorageType
@@ -18,9 +19,9 @@ from core.core_apps.base.user.models.user_models import User
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'
-down_revision = '955a6511aa0a'
+down_revision = '67dbe5983b8e'
 branch_labels = None
-depends_on = '955a6511aa0a'
+depends_on = '67dbe5983b8e'
 
 
 def upgrade():
@@ -150,7 +151,7 @@ def upgrade():
     ])
     op.bulk_insert(Product.__table__, [
         {
-            'id': product_storage_type_1_company_1,
+            'id': product_1_company_1_id,
             'lsn': 1,
             "company_id": company_1_id,
             "title": "Product Storage type 1",
@@ -162,7 +163,7 @@ def upgrade():
             'updated_at': datetime.now(),
         },
         {
-            'id': product_storage_type_1_company_2,
+            'id': product_1_company_2_id,
             'lsn': 2,
             "company_id": company_2_id,
             "title": "Product Storage type 1",
@@ -936,6 +937,8 @@ def upgrade():
             'created_at': datetime.now(),
             'updated_at': datetime.now(),
             'product_id': product_1_company_1_id,
+            'allowed_storage_uom_ids': [uom_1_company_1],
+            'allowed_package_type_ids': [location_type_package_company_1],
             'is_homogeneity': False,
             'storage_type_id': storage_type_1_company_1
         },
@@ -946,6 +949,8 @@ def upgrade():
             'created_at': datetime.now(),
             'updated_at': datetime.now(),
             'product_id': product_1_company_2_id,
+            'allowed_storage_uom_ids': [uom_1_company_2],
+            'allowed_package_type_ids': [location_type_package_company_2],
             'is_homogeneity': False,
             'storage_type_id': storage_type_1_company_2
         },
@@ -1074,10 +1079,8 @@ def upgrade():
             'prefix': 'INC',
             'title': 'Incoming type',
             'order_class': 'incoming',
-            'allowed_location_src_ids': [location_partner_company_1, ],
-            'exclusive_location_src_ids': None,
-            'allowed_location_dest_ids': [location_buffer_company_1, ],
-            'exclusive_location_dest_ids': None,
+            'allowed_zone_ids': [location_buffer_company_1, ],
+            'allowed_location_type_ids': [location_type_package_company_1, location_type_place_company_1],
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'store_id': None,
@@ -1102,13 +1105,11 @@ def upgrade():
             'company_id': company_1_id,
             'prefix': 'OUT',
             'title': 'OUT',
-            'order_class': 'incoming',
-            'allowed_location_src_ids': [location_buffer_company_1, ],
-            'exclusive_location_src_ids': None,
-            'allowed_location_dest_ids': [location_partner_company_1, ],
-            'exclusive_location_dest_ids': None,
+            'order_class': 'outgoing',
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
+            'allowed_zone_ids': [location_partner_company_1, ],
+            'allowed_location_type_ids': [location_type_package_company_1],
             'store_id': None,
             'partner_id': None,
             'reservation_method': 'at_confirm',
@@ -1131,11 +1132,9 @@ def upgrade():
             'company_id': company_1_id,
             'prefix': 'INT',
             'title': 'Internal type',
-            'order_class': 'incoming',
-            'allowed_location_src_ids': [],
-            'exclusive_location_src_ids': None,
-            'allowed_location_dest_ids': [],
-            'exclusive_location_dest_ids': None,
+            'order_class': 'internal',
+            'allowed_zone_ids': [location_buffer_company_1, location_zone_company_1, ],
+            'allowed_location_type_ids': [location_type_package_company_1],
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'store_id': None,
@@ -1162,10 +1161,8 @@ def upgrade():
             'prefix': 'INC',
             'title': 'Incoming type',
             'order_class': 'incoming',
-            'allowed_location_src_ids': [location_partner_company_2, ],
-            'exclusive_location_src_ids': None,
-            'allowed_location_dest_ids': [location_buffer_company_2, ],
-            'exclusive_location_dest_ids': None,
+            'allowed_zone_ids': [location_buffer_company_2, ],
+            'allowed_location_type_ids': [location_type_package_company_2, location_type_place_company_2],
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'store_id': None,
@@ -1190,11 +1187,9 @@ def upgrade():
             'company_id': company_2_id,
             'prefix': 'OUT',
             'title': 'OUT',
-            'order_class': 'incoming',
-            'allowed_location_src_ids': [location_buffer_company_2, ],
-            'exclusive_location_src_ids': None,
-            'allowed_location_dest_ids': [location_partner_company_2, ],
-            'exclusive_location_dest_ids': None,
+            'order_class': 'outgoing',
+            'allowed_zone_ids': [location_partner_company_2, ],
+            'allowed_location_type_ids': [location_type_package_company_2],
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'store_id': None,
@@ -1219,11 +1214,9 @@ def upgrade():
             'company_id': company_2_id,
             'prefix': 'INT',
             'title': 'Internal type',
-            'order_class': 'incoming',
-            'allowed_location_src_ids': [],
-            'exclusive_location_src_ids': None,
-            'allowed_location_dest_ids': [],
-            'exclusive_location_dest_ids': None,
+            'order_class': 'internal',
+            'allowed_zone_ids': [location_buffer_company_2, location_zone_company_2, ],
+            'allowed_location_type_ids': [location_type_package_company_2],
             'backorder_order_type_id': None,
             'backorder_action_type': 'ask',
             'store_id': None,

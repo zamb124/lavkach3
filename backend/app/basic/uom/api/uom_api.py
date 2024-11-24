@@ -93,5 +93,6 @@ async def uom_delete(uom_id: uuid.UUID, service: UomService = Depends()):
 
 
 @uom_router.post("/convert", response_model=list[ConvertSchema])
-async def uom_convert(schema: list[ConvertSchema], service: UomService = Depends()):
-    await service.convert(schema)
+async def convert(schema: list[ConvertSchema], service: UomService = Depends()):
+    res = await service.convert(schema)
+    return res

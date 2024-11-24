@@ -1,9 +1,13 @@
 import json
 from uuid import UUID
 
+from pydantic import BaseModel
+
 from app.basic.basic_config import config
+from app.basic.uom.schemas import ConvertSchema
 from core.fastapi.adapters import BaseAdapter
 from core.fastapi.adapters.action_decorator import action
+from core.schemas.basic_schemes import BasicModel
 
 
 class BasicAdapter(BaseAdapter):
@@ -81,5 +85,16 @@ class BasicAdapter(BaseAdapter):
         path = f'/api/basic/project/assign_store'
         if isinstance(payload, str):
             payload = json.loads(payload)
+        responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()
+
+    @action(model='uom', schema=ConvertSchema, multiple=False, permits=[])  # type: ignore
+    async def action_assign_store(self, payload: dict | str):
+        """Метод прикрепления к складу """
+        path = f'/api/basic/uom/convert'
+        if isinstance(payload, str):
+            payload = json.loads(payload)
+        elif isinstance(payload, BaseModel):
+            payload = payload.model_dump_json()
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()
