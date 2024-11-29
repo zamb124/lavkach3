@@ -133,7 +133,9 @@ class Move(Base, AllMixin, CreatedEdited):
     quantity: Mapped[float]     # Если перемещение кпаковки, то всегда 0
     uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=False) # Если перемещение упаковкой то None
     quant_src_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("quant.id", ondelete="NO ACTION"), index=True)
+    quant_src_rel: Mapped[Optional[Quant]] = relationship(lazy="noload", foreign_keys="Move.quant_src_id")
     quant_dest_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("quant.id", ondelete="NO ACTION"), index=True)
+    quant_dest_rel: Mapped[Optional[Quant]] = relationship(lazy="noload", foreign_keys="Move.quant_dest_id")
     status: Mapped[MoveStatus] = mapped_column(default=MoveStatus.CREATED)
     estatus: Mapped[Optional[str]] = mapped_column(index=True)
     suggest_list_rel: Mapped[Optional[list["Suggest"]]] = relationship(lazy="selectin")
@@ -144,6 +146,22 @@ class Move(Base, AllMixin, CreatedEdited):
         if package_id and package_id.location_class != LocationClass.PACKAGE:
             raise ValueError("package_id must refer to a location with location_class 'PACKAGE'")
         return package_id
+
+    @validates('quant_src_rel')
+    def validate_quant_src_rel(self, key, quant_src_rel):
+        if quant_src_rel:
+            self.quant_src_id = quant_src_rel.id
+            self.location_src_id = quant_src_rel.location_id
+            self.lot_id = quant_src_rel.lot_id
+            self.partner_id = quant_src_rel.partner_id
+        return quant_src_rel
+
+    @validates('quant_dest_rel')
+    def validate_quant_dest_rel(self, key, quant_dest_rel):
+        if quant_dest_rel:
+            self.quant_dest_id = quant_dest_rel.id
+            self.location_dest_id = quant_dest_rel.location_id
+        return quant_dest_rel
 
     @property
     def group_key(self):

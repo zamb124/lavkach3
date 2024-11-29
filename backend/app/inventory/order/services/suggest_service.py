@@ -90,7 +90,7 @@ class SuggestService(BaseService[Suggest, SuggestCreateScheme, SuggestUpdateSche
                 )
             location_entity = await self.env['location'].service.get(val_in_cleaned)
             if location_entity:
-                if move.location_dest_zone_id != location_entity.id:
+                if move.location_dest_id != location_entity.id:
                     await move_service.change_dest_location(move, location_entity)
                 suggest_entity.result_value = value
                 suggest_entity.status = SuggestStatus.DONE
