@@ -20,7 +20,7 @@ from app.inventory.order.models.order_models import Move, MoveType, Order, MoveS
     SuggestType
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
-from app.inventory.schemas import CreateMovements
+from app.inventory.schemas import CreateMovements, Product
 from app.inventory.utills import compare_lists
 from core.exceptions.module import ModuleException
 # from app.inventory.order.services.move_tkq import move_set_done
@@ -938,6 +938,42 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         return move
     async def create_movements(self, schema: CreateMovements):
         prepared_data = await self._get_quants_and_allowed_locations_by_params(**schema.model_dump())
+        products: List[Product] = []
         for i in prepared_data['products']:
-            move = self.model(**i)
-            await self.create(move)
+            moves: List[Move] = []
+            qty_to_move = i['quantity']
+            for q in i['quants']:
+                qty_move = 0.0
+                if qty_to_move <= 0.0:
+                    continue
+                if q.available_quantity >= qty_to_move:
+                    qty_move = qty_to_move
+                    qty_to_move = 0.0
+                elif q.available_quantity < qty_to_move:
+                    qty_move = q.available_quantity
+                    qty_to_move -= qty_move
+                moves.append(Move(
+                    type=MoveType.PRODUCT,
+                    product_id=q.product_id,
+                    store_id=q.store_id,
+                    lot_id=q.lot_id,
+                    uom_id=q.uom_id,
+                    quantity=qty_move,
+                    order_type_id=i['order_type']['order_type'].id,
+                    partner_id=q.partner_id,
+                    location_src_id=q.location_id,
+                    quant_src_id=q.id,
+                ))
+            products.append(
+                Product(
+                    product_id=i['product_id'],
+                    lot_id=i['lot_id'],
+                    uom_id=i['uom_id'],
+                    quantity=i['quantity'],
+                    avaliable_quantity=i['avaliable_quantity'],
+                    quants=i['quants'],
+                    moves=moves
+                )
+            )
+            schema.products = products
+        return schema
