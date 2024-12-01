@@ -85,7 +85,7 @@ class OrderService(BaseService[Order, OrderCreateScheme, OrderUpdateScheme, Orde
             user_id = self.user.user_id
         try:
             '''Отправляем таску на подтверждение мувов'''
-            await self.env['move'].service.confirm.kiq(None, move_ids=move_ids, order_id=order_id, user_id=user_id)
+            await self.env['move'].service.confirm.kiq('move', move_ids=move_ids, order_id=order_id, user_id=user_id)
             order_entity.estatus = 'confirming'
             await self.session.commit()
             await self.session.refresh(order_entity)

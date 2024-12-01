@@ -3,6 +3,7 @@ import logging
 import os
 from datetime import datetime
 from typing import Any
+from unittest.mock import patch
 from uuid import uuid4
 from core.types import custom_dumps  # ВАЖНАЯ ДИЧ
 from app.inventory.product_storage import StorageTypeCreateScheme, ProductStorageTypeCreateScheme
@@ -38,6 +39,7 @@ from core.env import Env, env_context
 from core.fastapi.schemas import CurrentUser
 from core.helpers.broker import list_brocker  # noqa: F401, isort:skip
 from core.permissions import permits
+from core.utils.uom import calculate_quantity
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -137,6 +139,8 @@ async def user_admin(env: Env) -> User:
     await user.session.commit()
 
 
+
+
 @pytest_asyncio.fixture(scope="session")
 async def companies(env: Env, user_admin) -> Company:
     company = env['company'].service
@@ -202,19 +206,19 @@ async def uoms(env: Env, user_admin, companies, uom_categories) -> Company:
     uom = env['uom'].service
     uom1 = await uom.create(UomCreateScheme(**{
         'company_id': companies[0].id.__str__(),
-        'title': 'ST',
+        'title': 'KG',
         'uom_category_id': uom_categories[0].id.__str__(),
         'type': UomType.STANDART,
         'ratio': 1,
-        'precision': 1
+        'precision': 0
     }))
     uom2 = await uom.create(UomCreateScheme(**{
         'company_id': companies[0].id.__str__(),
-        'title': 'PAK10',
+        'title': 'G',
         'uom_category_id': uom_categories[0].id.__str__(),
         'type': UomType.BIGGER,
-        'ratio': 12,
-        'precision': 0.5
+        'ratio': 1000,
+        'precision': 2
     }))
     yield [uom1, uom2]
     await uom.delete(uom1)
@@ -527,7 +531,7 @@ async def quants(env: Env, user_admin, companies, lots, products, stores, locati
         'reserved_quantity': 0,
         'location_class': LocationClass.PLACE,
         'expiration_datetime': datetime.now().isoformat(),
-        'uom_id': uoms[0].id
+        'uom_id': uoms[1].id
     }))
     quant4 = await quant.create(QuantCreateScheme(**{
         'company_id': companies[0].id,
@@ -805,3 +809,38 @@ async def test_health(base_client, headers, stores, product_categories, uom_cate
                       quants):
     response = await base_client.get("/api/base/health", headers=headers['superadmin'])
     assert response.status_code == 200
+
+async def mock_convert(*args, **kwargs):
+    payload = kwargs.get('payload')
+    uoms = kwargs.get('uoms')
+    result = []
+    uoms_map = {uom.id: uom for uom in uoms}
+    for pay in payload:
+    # Используем данные из uoms и extra_param
+        uom_in = uoms_map.get(pay.get('uom_id_in'))
+        uom_out = uoms_map.get(pay.get('uom_id_out'))
+        quantity_in = pay.get('quantity_in')
+        quantity_out = calculate_quantity(
+            uom_in_type=uom_in.type,
+            uom_in_ratio=uom_in.ratio,
+            uom_out_type=uom_out.type,
+            uom_out_ratio=uom_out.ratio,
+            uom_out_precision=uom_out.precision,
+            quantity_in=quantity_in
+        )
+        result.append(
+            {
+                'quantity_out': quantity_out,
+                'uom_id_out': uom_out.id,
+                'quantity_in': quantity_in,
+                'uom_id_in': uom_in.id,
+            }
+        )
+    return result
+
+
+@pytest_asyncio.fixture(scope="session")
+def mock_uom_convert(uoms):
+    extra_param = 'some_value'  # Пример значения для extra_param
+    with patch('app.basic.basic_adapter.BasicAdapter.convert', lambda *args, **kwargs: mock_convert(*args, **kwargs, uoms=uoms, extra_param=extra_param)):
+        yield

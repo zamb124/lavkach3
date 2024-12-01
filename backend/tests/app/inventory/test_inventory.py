@@ -11,7 +11,7 @@ import pytest
 """
 @pytest.mark.asyncio
 async def test_create_movements_with_src_location_and_dest_zone(inventory_client, stores, headers, products, locations, location_types,
-                                                order_types, product_storage_types, quants):
+                                                order_types, product_storage_types, quants,mock_uom_convert):
     data = {
         "store_id": stores[0].id,
         "location_src_zone_id": None,
@@ -36,7 +36,7 @@ async def test_create_movements_with_src_location_and_dest_zone(inventory_client
 async def test_create_movements_with_location_src_id_and_products(
         inventory_client, stores, headers, products,
         locations, location_types, order_types,
-        product_storage_types, quants):
+        product_storage_types, quants, mock_uom_convert):
     data = {
         "store_id": stores[0].id,
         "location_src_zone_id": locations['zone'].id,
@@ -52,7 +52,7 @@ async def test_create_movements_with_location_src_id_and_products(
     response = await inventory_client.post("/api/inventory/create_movements", json=data, headers=headers['company_admin'])
     assert response.status_code == 200
     movement = response.json()
-    assert movement["products"][0]['avaliable_quantity'] == 15
+    assert movement["products"][0]['avaliable_quantity'] == 15000
     assert movement["products"][0]['quantity'] == 10
     assert len(movement["products"][0]['moves']) == 1
 
@@ -93,7 +93,7 @@ async def test_create_movements_with_location_types_and_products(inventory_clien
     response = await inventory_client.post("/api/inventory/create_movements", json=data, headers=headers['company_admin'])
     assert response.status_code == 200
     movement = response.json()
-    assert movement["products"][0]['avaliable_quantity'] == 30
+    assert movement["products"][0]['avaliable_quantity'] == 15
     assert movement["products"][0]['quantity'] == 10
     assert len(movement["packages"][0]['moves']) == 1
     assert len(movement["packages"][0]['quants']) == 2

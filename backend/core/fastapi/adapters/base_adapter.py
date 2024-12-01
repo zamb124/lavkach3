@@ -2,7 +2,7 @@ import json as _json
 import logging
 import uuid
 from typing import TYPE_CHECKING
-
+import os
 import httpx
 import redis.exceptions
 from fastapi import HTTPException
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class Client(httpx.AsyncClient):
 
-    async def request(self, method: str, url: str, json=None, params=None, timeout=None):
+    async def request(self, method: str, url: str, json=None, params=None, timeout=5):
         if isinstance(json, dict):
             json = _json.dumps(json, cls=UUIDEncoder)
         if isinstance(json, str):
@@ -99,11 +99,11 @@ class BaseAdapter:
 
         self.model = model
         self.domain = domain
-        self.host = f"{self.protocol}://{self.host}:{self.port}"
+        self.host = f"{self.protocol}://{self.host}:{self.port}"  # type: ignore
         self.env = env
         self.headers = {'Authorization': conn.headers.get("Authorization") or conn.cookies.get('token') or ''}
         # if self.headers.get('Authorization'):
-        self.client = Client(headers=self.headers)
+        self.client = Client(base_url=self.host, headers=self.headers)
 
     def get_actions(self):
         return actions.get(self.model.name, {})

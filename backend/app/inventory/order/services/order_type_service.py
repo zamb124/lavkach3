@@ -219,8 +219,6 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
                 allowed_zone_for_package_and_ot = set(order_type.allowed_zone_ids) & set(allowed_zones)
                 if allowed_zone_for_package_and_ot:
                     if order_type not in package_order_types[package_id]:
-                        package_order_types[package_id].append(order_type)
-                    else:
                         package_order_types[package_id].append({
                             'order_type': order_type,
                             'allowed_zone_ids': allowed_zone_for_package_and_ot

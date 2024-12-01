@@ -89,7 +89,7 @@ class BasicAdapter(BaseAdapter):
         return responce.json()
 
     @action(model='uom', schema=ConvertSchema, multiple=False, permits=[])  # type: ignore
-    async def action_assign_store(self, payload: dict | str):
+    async def convert(self, payload: dict | str):
         """Метод прикрепления к складу """
         path = f'/api/basic/uom/convert'
         if isinstance(payload, str):

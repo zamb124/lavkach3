@@ -15,7 +15,12 @@ class TaskSession(TaskiqMiddleware):
     def __init__(self,) -> None:
         ...
 
-    def pre_execute(self,message: "TaskiqMessage"):
+    def pre_execute(self, message: "TaskiqMessage"):  # type: ignore
+        if message.labels.get('type') == 'service_method':
+            # Если тип сообщения service_method, то меняем первый аргумент на сервис указанной при kiq
+            model = message.args[0]
+            model_service = self.broker.state.data['env'].get_env()[model].service
+            message.args[0] = model_service
         session_id  = str(uuid.uuid4())
         set_session_context(session_id)
         return message

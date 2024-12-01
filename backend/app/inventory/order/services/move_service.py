@@ -20,7 +20,7 @@ from app.inventory.order.models.order_models import Move, MoveType, Order, MoveS
     SuggestType
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
 from app.inventory.quant import Quant
-from app.inventory.schemas import CreateMovements, Product
+from app.inventory.schemas import CreateMovements, Product, Package
 from app.inventory.utills import compare_lists
 from core.exceptions.module import ModuleException
 # from app.inventory.order.services.move_tkq import move_set_done
@@ -72,7 +72,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
     async def list(self, _filter: FilterSchemaType | dict, size: int = 100):
         return await super(MoveService, self).list(_filter, size)
 
-    @list_brocker.task(queue_name='model')
+    @list_brocker.task(queue_name='model', model='move')
     async def create_suggests(self, move_ids: List, user_id: str):
         """
             Создаются саджесты в зависимости от OrderType и Product
@@ -163,9 +163,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         await self.session.commit()
         return move
 
-    @list_brocker.task(queue_name='model')
+    @list_brocker.task(queue_name='model', type='service_method')
     async def confirm(self, move_ids: List[UUID], user_id: str, order_id: Optional[UUID] = None):
-        self = self or list_brocker.state.data['env'].get_env()['move'].service
         try:
             await self._moves_confirm(move_ids=move_ids, user_id=user_id)
             if order_id:
@@ -907,73 +906,114 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             'location_src': locations_src,
             'available_src_quants': available_src_quants
         }
-    async def _create_moves_by_params(self, prepared_products: dict):
-        """
-            Создание мувов по параметрам
-        """
-        for product in prepared_products:
-            for quant in product['quants']:
-                move = self.model(
-                    product_id=quant.product_id,
-                    lot_id=quant.lot_id,
-                    uom_id=quant.uom_id,
-                    order_type_id=product['order_type'].id,
-                    partner_id=quant.partner_id,
-                    quantity=product.quantity,
-                )
-                await self.create(move)
-            move = self.model(
-                product_id=i['product_id'],
-                lot_id=i['lot_id'],
-                uom_id=i['uom_id'],
-                order_type_id=i['order_type'].id,
-                partner_id=i['partner_id'],
-                quantity=i['quantity'],
-                avaliable_quantity=i['avaliable_quantity'],
-                location_src_id=i['location_src_id'],
-                location_dest_id=i['location_dest_id'],
-            )
 
-        move = self.model(**params)
-        return move
     async def create_movements(self, schema: CreateMovements):
         prepared_data = await self._get_quants_and_allowed_locations_by_params(**schema.model_dump())
         products: List[Product] = []
-        for i in prepared_data['products']:
-            moves: List[Move] = []
-            qty_to_move = i['quantity']
-            for q in i['quants']:
-                qty_move = 0.0
-                if qty_to_move <= 0.0:
-                    continue
-                if q.available_quantity >= qty_to_move:
-                    qty_move = qty_to_move
-                    qty_to_move = 0.0
-                elif q.available_quantity < qty_to_move:
-                    qty_move = q.available_quantity
-                    qty_to_move -= qty_move
-                moves.append(Move(
-                    type=MoveType.PRODUCT,
-                    product_id=q.product_id,
-                    store_id=q.store_id,
-                    lot_id=q.lot_id,
-                    uom_id=q.uom_id,
-                    quantity=qty_move,
-                    order_type_id=i['order_type']['order_type'].id,
-                    partner_id=q.partner_id,
-                    location_src_id=q.location_id,
-                    quant_src_id=q.id,
-                ))
-            products.append(
-                Product(
-                    product_id=i['product_id'],
-                    lot_id=i['lot_id'],
-                    uom_id=i['uom_id'],
-                    quantity=i['quantity'],
-                    avaliable_quantity=i['avaliable_quantity'],
-                    quants=i['quants'],
-                    moves=moves
+        packages: List[Package] = []
+        if schema.products:
+            for prod in schema.products:
+                multiplicator = 1
+                matching_product = next(
+                    (p for p in prepared_data['products'] if
+                     p['lot_id'] == prod.lot_id and
+                     p['product_id'] == prod.product_id and
+                     p['partner_id'] == schema.partner_id),
+                    None
+                )
+                if matching_product:
+                    moves: List[Move] = []
+                    qty_to_move = prod.quantity
+                    for q in matching_product['quants']:
+                        qty_move = 0.0
+                        multiplicator = 1
+                        if q.uom_id != prod.uom_id:
+                            quantity_converter = await self.env['uom'].adapter.convert(payload=[{
+                                'uom_id_in': q.uom_id,
+                                'quantity_in': q.available_quantity,
+                                'uom_id_out': prod.uom_id
+                            }])
+                            available_quantity = quantity_converter[0]['quantity_out']
+                            multiplicator = quantity_converter[0]['quantity_out'] / quantity_converter[0]['quantity_in']
+                        else:
+                            available_quantity = q.available_quantity
+                        if qty_to_move <= 0.0:
+                            break
+                        if available_quantity >= qty_to_move:
+                            qty_move = qty_to_move
+                            qty_to_move = 0.0
+                        elif available_quantity < qty_to_move:
+                            qty_move = available_quantity
+                            qty_to_move -= qty_move
+                        moves.append(Move(
+                            type=MoveType.PRODUCT,
+                            product_id=q.product_id,
+                            store_id=q.store_id,
+                            lot_id=q.lot_id,
+                            uom_id=prod.uom_id,
+                            quantity=qty_move,
+                            order_type_id=matching_product['order_type']['order_type'].id,
+                            partner_id=q.partner_id,
+                            location_src_id=q.location_id,
+                            quant_src_id=q.id,
+                        ))
+                    prod.quantity -= qty_to_move
+                    prod.avaliable_quantity = sum(q.available_quantity for q in matching_product['quants']) * multiplicator
+                    prod.moves = [MoveCreateScheme.model_validate(move) for move in moves]
+        else:
+            for product in prepared_data['products']:
+                moves: List[Move] = []
+                qty_to_move = product['quantity']
+                for q in product['quants']:
+                    qty_move = 0.0
+                    if qty_to_move <= 0.0:
+                        break
+                    if q.available_quantity >= qty_to_move:
+                        qty_move = qty_to_move
+                        qty_to_move = 0.0
+                    elif q.available_quantity < qty_to_move:
+                        qty_move = q.available_quantity
+                        qty_to_move -= qty_move
+                    moves.append(Move(
+                        type=MoveType.PRODUCT,
+                        product_id=q.product_id,
+                        store_id=q.store_id,
+                        lot_id=q.lot_id,
+                        uom_id=q.uom_id,
+                        quantity=qty_move,
+                        order_type_id=product['order_type']['order_type'].id,
+                        partner_id=q.partner_id,
+                        location_src_id=q.location_id,
+                        quant_src_id=q.id,
+                    ))
+                products.append(
+                    Product(
+                        product_id=product['product_id'],
+                        lot_id=product['lot_id'],
+                        uom_id=product['uom_id'],
+                        quantity=product['quantity'],
+                        avaliable_quantity=product['avaliable_quantity'],
+                        quants=product['quants'],
+                        moves=moves
+                    )
+                )
+                schema.products = products
+        for package in prepared_data['packages']:
+            package_moves: List[Move] = []
+            package_moves.append(Move(
+                type=MoveType.PACKAGE,
+                store_id=package['quants'][0].store_id,
+                quantity=1,
+                order_type_id=package['order_type']['order_type'].id,
+                partner_id=package['quants'][0].partner_id,
+                location_src_id=package['quants'][0].location_id,
+            ))
+            packages.append(
+                Package(
+                    package_id=package['package_id'],
+                    quants=package['quants'],
+                    moves=package_moves
                 )
             )
-            schema.products = products
+            schema.packages = packages
         return schema

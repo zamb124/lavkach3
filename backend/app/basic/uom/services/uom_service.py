@@ -9,9 +9,14 @@ from app.basic.uom.schemas.uom_schemas import UomCreateScheme, UomUpdateScheme, 
 from core.service.base import BaseService
 from decimal import Decimal, ROUND_HALF_UP
 
+from core.utils.uom import calculate_quantity
+
+
 class UomService(BaseService[Uom, UomCreateScheme, UomUpdateScheme, UomFilter]):
     def __init__(self, request: Request):
         super(UomService, self).__init__(request, Uom, UomCreateScheme, UomUpdateScheme)
+
+
 
     async def convert(self, objs: list[ConvertSchema]):
         results = []
@@ -36,28 +41,17 @@ class UomService(BaseService[Uom, UomCreateScheme, UomUpdateScheme, UomFilter]):
             if uom_in.uom_category_id != uom_out.uom_category_id:
                 raise HTTPException(status_code=400, detail="Cannot convert between different UOM categories")
 
-            quantity_in = Decimal(obj.quantity_in)  # Преобразование quantity_in в Decimal
+              # Преобразование quantity_in в Decimal
 
-            if uom_in.type == 'smaller':
-                quantity_in /= uom_in.ratio
-            elif uom_in.type == 'bigger':
-                quantity_in *= uom_in.ratio
-
-            if uom_out.type == 'smaller':
-                quantity_out = quantity_in * uom_out.ratio
-            elif uom_out.type == 'bigger':
-                quantity_out = quantity_in / uom_out.ratio
-            else:
-                quantity_out = quantity_in
-
-            # Округление результата согласно precision
-            precision = Decimal('1.' + '0' * uom_out.precision)
-            quantity_out = quantity_out.quantize(precision, rounding=ROUND_HALF_UP)
+            quantity_out = calculate_quantity(
+                uom_in.type, uom_in.ratio, uom_out.type,
+                uom_out.ratio, uom_out.precision, obj.quantity_in
+            )
 
             results.append({
                 'uom_id_in': obj.uom_id_in,
                 'quantity_in': obj.quantity_in,
-                'uom_id_out': uom_out.id,
+                'uom_id_out': obj.uom_id_out,
                 'quantity_out': quantity_out
             })
 

@@ -45,8 +45,10 @@ class Model:  # type: ignore
     sort: list = []
     cache_strategy: 'CacheStrategy' = CacheStrategy.NONE
     actions: dict = {}
+    app: ASGIApp = None
 
-    def __init__(self, name, _adapter, _service, domain, schemas, model, sort=[], cache_strategy=CacheStrategy.NONE):
+    def __init__(self, name, _adapter, _service, domain, schemas, model, sort=[], cache_strategy=CacheStrategy.NONE,
+                 app=None):
         self.name = name
         self._adapter = _adapter
         self._service = _service
@@ -56,6 +58,7 @@ class Model:  # type: ignore
         self.sort = sort if sort else ['id', 'created_at', 'updated_at', 'lsn']
         self.cache_strategy = cache_strategy
         self.actions = actions.get(name, {})
+        self.app = app
 
     def __copy__(self):
         return self
@@ -82,7 +85,7 @@ class Domain:
     _adapter: 'BaseAdapter' = None
     domain: 'Domain'
 
-    def __init__(self, domain: dict, domain_type='EXTERNAL'):
+    def __init__(self, domain: dict, domain_type='EXTERNAL', app=None):
         self.name = domain['name']
         self.domain_type = domain_type
         self._adapter = domain.get('adapter', None)
@@ -98,7 +101,8 @@ class Domain:
                     schemas=shemas,
                     model=value.get('model'),
                     cache_strategy=value.get('cache_strategy'),
-                    domain=self
+                    domain=self,
+                    app=app
                 )})
         self.models = models
 
@@ -110,11 +114,9 @@ class Domain:
         return self._adapter(
             conn=self._env.request,
             domain=self,
-            env=self.domain._env
+            env=self.domain._env,
+            app=self.app
         )
-
-
-
 
 
 class Env:
@@ -123,7 +125,7 @@ class Env:
     broker: AsyncBroker
 
     def __init__(self, domains: list, conn: HTTPConnection | AsyncClient | Request,
-                 broker: AsyncBroker | None = None):
+                 broker: AsyncBroker | None = None, app: Optional[ASGIApp] = None):
         _domains: dict = {}
         if isinstance(domains, dict):
             domains = [domains]
@@ -218,7 +220,7 @@ class EnvMidlleWare:
         if scope['type'] in ("http", "websocket"):
             conn = HTTPConnection(scope)
             if not env:
-                env = Env(domains, conn)
+                env = Env(domains, conn, app=self.app)
                 scope['env'] = env
             else:
                 scope['env'] = env
