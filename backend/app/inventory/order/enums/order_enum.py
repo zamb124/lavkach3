@@ -117,6 +117,9 @@ TYPE_MAP = {
     (VirtualLocationZones.PARTNER, PhysicalLocationClass.ZONE): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
     (VirtualLocationZones.PARTNER, PhysicalLocationClass.PLACE): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
     (PhysicalLocationClass.PLACE, PhysicalLocationClass.PLACE): (MoveLogType.PUT_OUT, MoveLogType.PUT_IN),
+    (PhysicalLocationClass.PLACE, PhysicalLocationClass.ZONE): (MoveLogType.PUT_OUT, MoveLogType.PUT_IN),
+    (PhysicalLocationClass.ZONE, PhysicalLocationClass.PLACE): (MoveLogType.PUT_OUT, MoveLogType.PUT_IN),
+    (PhysicalLocationClass.ZONE, PhysicalLocationClass.ZONE): (MoveLogType.PUT_OUT, MoveLogType.PUT_IN),
     (PhysicalLocationClass.PLACE, VirtualLocationZones.PARTNER): (MoveLogType.SHIPMENT, MoveLogType.RECEIPT),
     (PhysicalLocationClass.PLACE, VirtualLocationZones.INVENTORY): (
         MoveLogType.INVENROTY_OUT, MoveLogType.INVENROTY_IN),

@@ -365,7 +365,8 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'store_id': stores[0].id.__str__(),
         'location_class': LocationClass.ZONE,
         'is_active': True,
-        'location_type_id': location_types['zone'].id.__str__()
+        'location_type_id': location_types['zone'].id.__str__(),
+        'sort': 0,
     }))
 
     location_place = await location.create(LocationCreateScheme(**{
@@ -375,7 +376,8 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'store_id': stores[0].id,
         'location_class': LocationClass.PLACE,
         'is_active': True,
-        'location_type_id': location_types['place'].id
+        'location_type_id': location_types['place'].id,
+        'sort': 1,
     }))
     location_subzone = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -384,7 +386,8 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'location_id': location_zone.id,
         'location_class': LocationClass.ZONE,
         'is_active': True,
-        'location_type_id': location_types['zone'].id.__str__()
+        'location_type_id': location_types['zone'].id.__str__(),
+        'sort': 2,
     }))
     location_subzone_place = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id,
@@ -393,7 +396,8 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'store_id': stores[0].id,
         'location_class': LocationClass.PLACE,
         'is_active': True,
-        'location_type_id': location_types['place'].id
+        'location_type_id': location_types['place'].id,
+        'sort': 3,
     }))
     location_package = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id,
@@ -402,7 +406,8 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'location_id': location_zone.id,
         'location_class': LocationClass.PACKAGE,
         'is_active': True,
-        'location_type_id': location_types['package'].id.__str__()
+        'location_type_id': location_types['package'].id.__str__(),
+        'sort': 4,
     }))
     location_lost = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -410,7 +415,8 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'store_id': stores[0].id.__str__(),
         'location_class': LocationClass.LOST,
         'is_active': True,
-        'location_type_id': location_types['lost'].id.__str__()
+        'location_type_id': location_types['lost'].id.__str__(),
+        'sort': 5,
     }))
     location_inventory = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -419,6 +425,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'location_class': LocationClass.LOST,
         'is_active': True,
         'location_type_id': location_types['inventory'].id.__str__(),
+        'sort': 6,
     }))
     location_scrap = await location.create(LocationCreateScheme(**{
         'company_id': companies[0].id.__str__(),
@@ -445,6 +452,7 @@ async def locations(env: Env, user_admin, companies, stores, location_types) -> 
         'location_class': LocationClass.ZONE,
         'is_active': True,
         'location_type_id': location_types['zone'].id.__str__(),
+        'sort': 888,
 
     }))
     yield {
@@ -811,32 +819,32 @@ async def test_health(base_client, headers, stores, product_categories, uom_cate
     assert response.status_code == 200
 
 async def mock_convert(*args, **kwargs):
-    payload = kwargs.get('payload')
+    pay = kwargs.get('payload')
     uoms = kwargs.get('uoms')
     result = []
     uoms_map = {uom.id: uom for uom in uoms}
-    for pay in payload:
     # Используем данные из uoms и extra_param
-        uom_in = uoms_map.get(pay.get('uom_id_in'))
-        uom_out = uoms_map.get(pay.get('uom_id_out'))
-        quantity_in = pay.get('quantity_in')
-        quantity_out = calculate_quantity(
-            uom_in_type=uom_in.type,
-            uom_in_ratio=uom_in.ratio,
-            uom_out_type=uom_out.type,
-            uom_out_ratio=uom_out.ratio,
-            uom_out_precision=uom_out.precision,
-            quantity_in=quantity_in
-        )
-        result.append(
-            {
-                'quantity_out': quantity_out,
-                'uom_id_out': uom_out.id,
-                'quantity_in': quantity_in,
-                'uom_id_in': uom_in.id,
-            }
-        )
-    return result
+    uom_in = uoms_map.get(pay.get('uom_id_in'))
+    uom_out = uoms_map.get(pay.get('uom_id_out'))
+    quantity_in = pay.get('quantity_in')
+    quantity_out = calculate_quantity(
+        uom_in_type=uom_in.type,
+        uom_in_ratio=uom_in.ratio,
+        uom_out_type=uom_out.type,
+        uom_out_ratio=uom_out.ratio,
+        uom_out_precision=uom_out.precision,
+        quantity_in=quantity_in
+    )
+    return {
+            'quantity_out': quantity_out,
+            'uom_id_out': uom_out.id,
+            'uom_ratio_in': uom_in.ratio,
+            'uom_precision_in': uom_in.precision,
+            'quantity_in': quantity_in,
+            'uom_id_in': uom_in.id,
+            'uom_ratio_out': uom_out.ratio,
+            'uom_precision_out': uom_out.precision,
+        }
 
 
 @pytest_asyncio.fixture(scope="session")

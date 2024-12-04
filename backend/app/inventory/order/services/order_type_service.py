@@ -115,7 +115,8 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
                         product_order_types[product_id].append({
                             'order_type': order_type,
                             'allowed_zone_ids': allowed_zone_for_product_and_ot,
-                            'allowed_location_type_ids': allowed_lt_fo_product_ot
+                            'allowed_location_type_ids': allowed_lt_fo_product_ot,
+                            'product_storage_type': pst,
                         })
                 else:
                     raise ModuleException(
@@ -166,9 +167,6 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
 
         # Создаем словарь для хранения подходящих order_type для каждого пакета
         package_order_types = defaultdict(list)
-        parents_location_src_map = await location_model.service.get_all_parent_zones(
-            location_ids=[package[1] for package in packages]
-        )
 
         package_location_type_query = select(Location.location_type_id, Location.id).where(
             Location.id.in_([package[0] for package in packages]))
@@ -215,7 +213,6 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
                 allowed_zones = allowed_initial_zones
             # Подбираем подходящие order_type для пакета
             for order_type in order_types:
-                zone_src_ids = parents_location_src_map.get(location_src_id, [])
                 allowed_zone_for_package_and_ot = set(order_type.allowed_zone_ids) & set(allowed_zones)
                 if allowed_zone_for_package_and_ot:
                     if order_type not in package_order_types[package_id]:

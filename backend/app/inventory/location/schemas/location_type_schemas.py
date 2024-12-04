@@ -57,7 +57,7 @@ class LocationTypeScheme(LocationTypeCreateScheme, TimeStampScheme):
 
 class LocationTypeFilter(BaseFilter):
     location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Location Class')
-
+    allowed_package_type_ids__in: Optional[List[UUID4]] = Field(default=None, title='Allowed Package Types')
 
     class Constants(Filter.Constants):
         model = LocationType

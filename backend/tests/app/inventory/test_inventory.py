@@ -9,9 +9,13 @@ import pytest
 это сценарий когда известна "ячейка" и зона назначения
 
 """
+
+
 @pytest.mark.asyncio
-async def test_create_movements_with_src_location_and_dest_zone(inventory_client, stores, headers, products, locations, location_types,
-                                                order_types, product_storage_types, quants,mock_uom_convert):
+async def test_create_movements_with_src_location_and_dest_zone(inventory_client, stores, headers, products, locations,
+                                                                location_types,
+                                                                order_types, product_storage_types, quants,
+                                                                mock_uom_convert):
     data = {
         "store_id": stores[0].id,
         "location_src_zone_id": None,
@@ -21,15 +25,19 @@ async def test_create_movements_with_src_location_and_dest_zone(inventory_client
         "location_type_dest_id": None,
     }
     response = await inventory_client.post("/api/inventory/create_movements", json=data,
-                                               headers=headers['company_admin'])
+                                           headers=headers['company_admin'])
     assert response.status_code == 200
     movement = response.json()
     assert movement["products"][0]['avaliable_quantity'] == 5
     assert movement["products"][0]['quantity'] == 5
     assert movement["products"][1]['avaliable_quantity'] == 15
     assert movement["products"][1]['quantity'] == 15
-    assert len(movement["packages"][0]['moves']) == 1
+    assert len(movement["packages"][0]['moves_to_create']) == 1
     assert len(movement["packages"][0]['quants']) == 2
+    movement['commit'] = True
+    response = await inventory_client.post("/api/inventory/create_movements?commit=True", json=movement,headers=headers['company_admin'])
+    movement = response.json()
+    assert len(movement["packages"][0]['moves_created']) == 1
 
 
 @pytest.mark.asyncio
@@ -49,16 +57,19 @@ async def test_create_movements_with_location_src_id_and_products(
             "uom_id": products[0].uom_id,
         }]
     }
-    response = await inventory_client.post("/api/inventory/create_movements", json=data, headers=headers['company_admin'])
+    response = await inventory_client.post("/api/inventory/create_movements", json=data,
+                                           headers=headers['company_admin'])
     assert response.status_code == 200
     movement = response.json()
     assert movement["products"][0]['avaliable_quantity'] == 15000
     assert movement["products"][0]['quantity'] == 10
-    assert len(movement["products"][0]['moves']) == 1
+    assert len(movement["products"][0]['moves_to_create']) == 1
+
 
 @pytest.mark.asyncio
-async def test_create_movements_with_location_dest_id_and_packages(inventory_client, stores, headers, products, locations, location_types,
-                                                order_types, product_storage_types, quants):
+async def test_create_movements_with_location_dest_id_and_packages(inventory_client, stores, headers, products,
+                                                                   locations, location_types,
+                                                                   order_types, product_storage_types, quants):
     data = {
         "store_id": stores[0].id,
         "location_src_zone_id": locations['zone'].id,
@@ -69,18 +80,21 @@ async def test_create_movements_with_location_dest_id_and_packages(inventory_cli
             "package_id": locations['package'].id,
         }]
     }
-    response = await inventory_client.post("/api/inventory/create_movements", json=data, headers=headers['company_admin'])
+    response = await inventory_client.post("/api/inventory/create_movements", json=data,
+                                           headers=headers['company_admin'])
     assert response.status_code == 200
     movement = response.json()
     assert len(movement['packages'][0]['quants']) == 2
-    assert len(movement['packages'][0]['moves']) == 1
+    assert len(movement['packages'][0]['moves_to_create']) == 1
+
 
 @pytest.mark.asyncio
-async def test_create_movements_with_location_types_and_products(inventory_client, stores, headers, products, locations, location_types,
-                                                order_types, product_storage_types, quants):
+async def test_create_movements_with_location_types_and_products(inventory_client, stores, headers, products, locations,
+                                                                 location_types,
+                                                                 order_types, product_storage_types, quants):
     data = {
         "store_id": stores[0].id,
-        "location_src_zone_id":None,
+        "location_src_zone_id": None,
         "location_dest_zone_id": None,
         "location_type_src_id": location_types['zone'].id,
         "location_type_dest_id": location_types['buffer'].id,
@@ -90,17 +104,20 @@ async def test_create_movements_with_location_types_and_products(inventory_clien
             "uom_id": products[0].uom_id,
         }]
     }
-    response = await inventory_client.post("/api/inventory/create_movements", json=data, headers=headers['company_admin'])
+    response = await inventory_client.post("/api/inventory/create_movements", json=data,
+                                           headers=headers['company_admin'])
     assert response.status_code == 200
     movement = response.json()
     assert movement["products"][0]['avaliable_quantity'] == 15
     assert movement["products"][0]['quantity'] == 10
-    assert len(movement["packages"][0]['moves']) == 1
+    assert len(movement["packages"][0]['moves_to_create']) == 1
     assert len(movement["packages"][0]['quants']) == 2
 
+
 @pytest.mark.asyncio
-async def test_create_movements_with_location_types_and_packages(inventory_client, stores, headers, products, locations, location_types,
-                                                order_types, product_storage_types, quants):
+async def test_create_movements_with_location_types_and_packages(inventory_client, stores, headers, products, locations,
+                                                                 location_types,
+                                                                 order_types, product_storage_types, quants):
     data = {
         "store_id": stores[0].id,
         "location_src_zone_id": locations['zone'].id,
@@ -111,8 +128,9 @@ async def test_create_movements_with_location_types_and_packages(inventory_clien
             "package_id": locations['package'].id,
         }]
     }
-    response = await inventory_client.post("/api/inventory/create_movements", json=data, headers=headers['company_admin'])
+    response = await inventory_client.post("/api/inventory/create_movements", json=data,
+                                           headers=headers['company_admin'])
     assert response.status_code == 200
     movement = response.json()
     assert len(movement['packages'][0]['quants']) == 2
-    assert len(movement['packages'][0]['moves']) == 1
+    assert len(movement['packages'][0]['moves_to_create']) == 1

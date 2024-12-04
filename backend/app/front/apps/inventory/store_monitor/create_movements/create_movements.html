@@ -9,12 +9,28 @@
                         <div class="row align-items-center">
                             <div class="col-12">
                                 <div class="d-sm-flex align-items-center justify-space-between">
-                                    <h4 class="mb-4 mb-sm-0 card-title" data-key="t-order-create">
+                                    <h4 class="mb-4 mb-sm-0 card-title" data-key="t-movements-create">
                                         Create Movements
                                     </h4>
                                     {% include 'components/loader.html' %}
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
+                                            {% if order.filled.val == True %}
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                <a href="#"
+                                                   hx-post="/inventory/store_monitor/create_movements?commit=True"
+                                                   hx-select=".modal-content"
+                                                   hx-target="closest .modal-content"
+                                                   hx-swap="outerHTML"
+                                                   hx-ext="json-enc"
+                                                   hx-push-url="false"
+                                                   hx-include=".modal-content"
+                                                >
+                                                    <iconify-icon icon="solar:diskette-bold"
+                                                                  class="fs-8"></iconify-icon>
+                                                </a>
+                                            </li>
+                                            {% endif %}
                                             <li class="breadcrumb-item d-flex align-items-center">
                                                 <a href="#"
                                                    hx-post="/inventory/store_monitor/create_movements"
@@ -25,7 +41,7 @@
                                                    hx-push-url="false"
                                                    hx-include=".modal-content"
                                                 >
-                                                    <iconify-icon icon="solar:diskette-bold"
+                                                    <iconify-icon icon="solar:file-check-bold"
                                                                   class="fs-8"></iconify-icon>
                                                 </a>
                                             </li>

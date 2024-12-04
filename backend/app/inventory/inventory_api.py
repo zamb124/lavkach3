@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from websockets.version import commit
 
 from app.inventory.order import MoveService
 from app.inventory.order.schemas import (
@@ -15,3 +16,5 @@ inventory_router = APIRouter(
 async def create_movements(schema: CreateMovements, service: MoveService = Depends()):
     res = await service.create_movements(schema)
     return res
+
+

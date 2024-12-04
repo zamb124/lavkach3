@@ -84,6 +84,6 @@ class BlockerEnum(str, Enum):
         - FREE: Значит, что над упаковкой и товар в ней не совершается никаких движений и она свободна.
     """
     FULL_BLOCK: str = "full_block"
-    MOVE_BLOCK: str = "medium_block"
+    MOVE_BLOCK: str = "move_block"
     PRODUCT_BLOCK: str = "product_block"
     FREE: str = "free"

@@ -37,12 +37,5 @@ class Document(Base, AllMixin, CreatedEdited):
     status: Mapped['OrderStatus'] = mapped_column(default=OrderStatus.DRAFT)
     move_list_rel: Mapped[Optional[list["Move"]]] = relationship(back_populates="order_rel", lazy="selectin")
 
-    def __init__(self, **kwargs):
-        """
-            Разрешает экстра поля, но удаляет, если их нет в табличке
-        """
-        allowed_args = self.__mapper__.class_manager  # returns a dict
-        kwargs = {k: v for k, v in kwargs.items() if k in allowed_args}
-        super().__init__(**kwargs)
 
 

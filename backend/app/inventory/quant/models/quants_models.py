@@ -1,6 +1,7 @@
 import datetime
 import uuid
 from typing import Optional
+from uuid import uuid4
 
 from sqlalchemy import Sequence, Uuid, DateTime, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped, relationship, foreign, aliased

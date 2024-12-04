@@ -1,14 +1,14 @@
 from typing import Any, Optional, List, Dict
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, case
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased, joinedload
 from starlette.requests import Request
 
 from sqlalchemy import select, func
 from sqlalchemy.orm import aliased
-from app.inventory.location.models.location_models import Location, LocationClass
+from app.inventory.location.models.location_models import Location, LocationClass, LocationType
 
 from app.inventory.location.enums import LocationClass
 from app.inventory.location.models.location_models import Location
@@ -71,13 +71,14 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
             .where(Location.location_class.in_(location_classes) if location_classes else True)  # type: ignore
             .where(Location.location_type_id.in_(location_type_ids) if location_type_ids else True)  # type: ignore
         )
-
+        # Создаем условное выражение для сортировки
         # Выполняем запрос
         query = (
             select(Location)
             .options(joinedload(Location.location_type_rel))
             .where(Location.id.in_(select(location_cte.c.id)))
         )
+
         result = await self.session.execute(query)
         locations = result.scalars().all()
 

@@ -16,7 +16,7 @@ def calculate_quantity(uom_in_type, uom_in_ratio, uom_out_type, uom_out_ratio, u
         quantity_out = quantity_in
 
     # Округление результата согласно precision
-    precision = Decimal('1.' + '0' * uom_out_precision)
+    precision = Decimal('1.' + '0' * int(uom_out_precision))
     quantity_out = quantity_out.quantize(precision, rounding=ROUND_HALF_UP)
 
     return float(quantity_out)

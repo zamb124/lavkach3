@@ -1341,8 +1341,9 @@
   "t-products": "Products",
   "t-suggest_confirm": "Suggest Confirm",
   "t-packages": "Packages",
-  "t-order-create": "Order-create",
-  "t-order-add-fields": "Order-add-fields",
+  "t-movements-create": "Movements Create",
+  "t-order-add-fields": "Additional filtering",
   "t-store-performance": "Store-performance",
-  "t-no-store-attached-content": "No-store-attached-content"
+  "t-no-store-attached-content": "No-store-attached-content",
+  "t-Product-avaliable_quantity" : "Available"
 }

@@ -61,6 +61,10 @@ class UomListSchema(GenericListSchema):
 class ConvertSchema(BaseModel):
     # Схема для конвертации единиц измерения, если не указано количество для выходной единицы, то на выходе будет эталон
     uom_id_in: UUID4
+    uom_ratio_in: Optional[float] = None
+    uom_precision_in: Optional[int] = None
     quantity_in: float
     uom_id_out: Optional[UUID4]
+    uom_ratio_out: Optional[float] = None
+    uom_precision_out: Optional[int] = None
     quantity_out: Optional[float] = None

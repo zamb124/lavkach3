@@ -224,7 +224,8 @@
                         </li>
 
                         <li class="sidebar-item">
-                            <a href="/inventory/store_monitor" hx-target="#htmx_content" hx-swap="innerHTML transition:true"
+                            <a href="/inventory/store_monitor" hx-target="#htmx_content"
+                               hx-swap="innerHTML transition:true"
                                class="sidebar-link">
                                 <iconify-icon
                                         icon="solar:monitor-broken"></iconify-icon>
@@ -232,12 +233,33 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/inventory/store_staff" hx-target="#htmx_content" hx-swap="innerHTML transition:true"
+                            <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
+                                <span class="hide-menu">Stock Reports</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level">
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="/inventory/store_monitor1">
+                                        <span class="icon-small"></span>
+                                        Stocks
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link" href="/inventory/store_monitor2">
+                                        <span class="icon-small"></span>
+                                        Stock Moves
+                                    </a>
+                                </li>
+                            </ul>
+                        <li class="sidebar-item">
+                            <a href="/inventory/store_staff" hx-target="#htmx_content"
+                               hx-swap="innerHTML transition:true"
                                class="sidebar-link">
                                 <iconify-icon icon="solar:people-nearby-broken"></iconify-icon>
                                 <span class="hide-menu" data-key="t-store-staff">Store Staff</span>
                             </a>
                         </li>
+
 
                         <li class="nav-small-cap">
                             <span class="hide-menu" data-key="t-inventory">Inventory</span>
@@ -252,7 +274,7 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/inventory/order" hx-target="#htmx_content"  hx-swap="innerHTML transition:true"
+                            <a href="/inventory/order" hx-target="#htmx_content" hx-swap="innerHTML transition:true"
                                class="sidebar-link">
                                 <iconify-icon
                                         icon="solar:notes-line-duotone"></iconify-icon>
@@ -268,7 +290,7 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="/inventory/suggest" hx-target="#htmx_content"  hx-swap="innerHTML transition:true"
+                            <a href="/inventory/suggest" hx-target="#htmx_content" hx-swap="innerHTML transition:true"
                                class="sidebar-link">
                                 <iconify-icon
                                         icon="solar:accessibility-line-duotone"></iconify-icon>

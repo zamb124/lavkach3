@@ -162,13 +162,13 @@ class App {
                             elements.forEach(element => {
                                 // Создать тултип
                                 Toastify({
-                                text: `${fieldName}: ${errorMessage}`,
-                                duration: 5000,
-                                close: true,
-                                style: {
-                                    background: "var(--bs-primary)",
-                                },
-                            }).showToast();
+                                    text: `${fieldName}: ${errorMessage}`,
+                                    duration: 5000,
+                                    close: true,
+                                    style: {
+                                        background: "var(--bs-primary)",
+                                    },
+                                }).showToast();
                             });
                         }
                     });
@@ -708,22 +708,30 @@ class App {
             if (elements) {
                 elements.classList.add("active");
             }
-
-            document.querySelectorAll("#sidebarnav a").forEach(link => {
+            var is_dobble = false
+            document.querySelectorAll("#sidebarnav a").forEach(function (link) {
                 link.addEventListener("click", function (e) {
                     const isActive = this.classList.contains("active");
                     const parentUl = this.closest("ul");
+                    if (!isActive && !e.is_double) {
+                        // hide any open menus and remove all other classes
+                        e.is_double = true
+                        parentUl.querySelectorAll("ul").forEach(function (submenu) {
+                            submenu.classList.remove("in");
+                        });
+                        parentUl.querySelectorAll("a").forEach(function (navLink) {
+                            navLink.classList.remove("active");
+                        });
 
-                    if (!isActive) {
-                        parentUl.querySelectorAll("ul").forEach(submenu => submenu.classList.remove("in"));
-                        parentUl.querySelectorAll("a").forEach(navLink => navLink.classList.remove("active"));
-
+                        // open our new menu and add the open class
                         const submenu = this.nextElementSibling;
                         if (submenu) {
                             submenu.classList.add("in");
                         }
+
                         this.classList.add("active");
-                    } else {
+                    } else if (!e.is_double) {
+                        e.is_double = true
                         this.classList.remove("active");
                         parentUl.classList.remove("active");
                         const submenu = this.nextElementSibling;

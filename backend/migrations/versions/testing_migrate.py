@@ -19,9 +19,9 @@ from core.core_apps.base.user.models.user_models import User
 
 # revision identifiers, used by Alembic.
 revision = '6ea1b38aba41'
-down_revision = '67dbe5983b8e'
+down_revision = '110ad937142c'
 branch_labels = None
-depends_on = '67dbe5983b8e'
+depends_on = '110ad937142c'
 
 
 def upgrade():

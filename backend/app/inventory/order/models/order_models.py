@@ -3,7 +3,7 @@ import uuid
 from typing import Optional
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, DateTime, UniqueConstraint, ARRAY, \
-    String, JSON, Enum
+    String, JSON, Enum, CheckConstraint
 from sqlalchemy.orm import relationship, mapped_column, Mapped, validates
 
 # from app.inventory.location.models import Location, LocationClass
@@ -130,8 +130,8 @@ class Move(Base, AllMixin, CreatedEdited):
     # ONE OF Возможно либо location_id либо product_id
     product_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
-    quantity: Mapped[float]     # Если перемещение кпаковки, то всегда 0
-    uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=False) # Если перемещение упаковкой то None
+    quantity: Mapped[float] = mapped_column(CheckConstraint('quantity >= 0'), comment='Если перемещение упаковки, то всегда 0')    # Если перемещение кпаковки, то всегда 0
+    uom_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True) # Если перемещение упаковкой то None
     quant_src_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("quant.id", ondelete="NO ACTION"), index=True)
     quant_src_rel: Mapped[Optional[Quant]] = relationship(lazy="noload", foreign_keys="Move.quant_src_id")
     quant_dest_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("quant.id", ondelete="NO ACTION"), index=True)
@@ -141,11 +141,7 @@ class Move(Base, AllMixin, CreatedEdited):
     suggest_list_rel: Mapped[Optional[list["Suggest"]]] = relationship(lazy="selectin")
     processing_steps: Mapped[dict] = mapped_column(JSON)
 
-    @validates('package_id')
-    def validate_package_id(self, key, package_id):
-        if package_id and package_id.location_class != LocationClass.PACKAGE:
-            raise ValueError("package_id must refer to a location with location_class 'PACKAGE'")
-        return package_id
+
 
     @validates('quant_src_rel')
     def validate_quant_src_rel(self, key, quant_src_rel):

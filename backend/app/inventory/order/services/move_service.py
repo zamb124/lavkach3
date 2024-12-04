@@ -1,7 +1,9 @@
 import logging
 import logging
+import os
 import traceback
 import typing
+import uuid
 from collections import defaultdict
 from optparse import Option
 
@@ -12,15 +14,17 @@ from starlette.requests import Request
 from uuid import UUID
 
 from app.inventory.estatus import estatus
-from app.inventory.location.enums import VirtualLocationZones, PhysicalLocationClass, LocationClass
-from app.inventory.order import OrderType
+from app.inventory.location import LocationType, Location
+from app.inventory.location.enums import VirtualLocationZones, PhysicalLocationClass, LocationClass, BlockerEnum
+from app.inventory.order import OrderType, MoveScheme
 from app.inventory.order.enums.exceptions_move_enums import MoveErrors
 from app.inventory.order.enums.order_enum import OrderStatus, SuggestStatus, TYPE_MAP, OrderClass
 from app.inventory.order.models.order_models import Move, MoveType, Order, MoveStatus, \
     SuggestType
 from app.inventory.order.schemas.move_schemas import MoveCreateScheme, MoveUpdateScheme, MoveFilter
+from app.inventory.product_storage import ProductStorageType
 from app.inventory.quant import Quant
-from app.inventory.schemas import CreateMovements, Product, Package
+from app.inventory.schemas import CreateMovements, Product, Package, Quant
 from app.inventory.utills import compare_lists
 from core.exceptions.module import ModuleException
 # from app.inventory.order.services.move_tkq import move_set_done
@@ -263,6 +267,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         available_dest_quants = await quant.service.get_available_quants(
             product_ids=[move.product_id, ],
             store_id=move.store_id,
+            exclude_id=move.quant_src_id,
             location_ids=[i.id for i in locations_dest],
             lot_ids=[move.lot_id] if move.lot_id else None,
             partner_id=move.partner_id if move.partner_id else None
@@ -273,6 +278,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             """Поиск локаций, которые могут быть negative"""
             for loc_dest in locations_dest:
                 quant_dest_entity = quant.model(**{
+                    "id": uuid.uuid4(),  # Генерация значения по умолчанию для поля id
                     "product_id": move.product_id,
                     "company_id": move.company_id,
                     "store_id": move.store_id,
@@ -314,7 +320,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 'order_type_id': key[4],
                 'location_src_id': key[0],
                 'location_dest_id': key[1],
-                'products': [move.product_id for move in group],
+                'products': [move.product_id for move in group if move.product_id],
                 'packages': [move.package_id for move in group if move.package_id],
                 'lot_ids': [key[2]],
                 'move_type': key[3],
@@ -323,35 +329,119 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             results[key] = result
         return results
 
+    async def _sort_location_by_product_storage_type(
+            self, product_storage_type: ProductStorageType,
+            locations: List[Location]
+    ):
+        """
+         Метод на входж получает ProductStorageType и список локаций, которые нужно отсортировать
+         Сначала берутся локации, которые принадлежат к зонам, которые разрешены для данного ProductStorageType
+            Затем сортируются локации внутри зон по приоритету(sort)
+        """
+        location_hierarchy = defaultdict(list)
+
+        # Заполняем словарь, где ключами являются id родителя, а значениями - списки дочерних объектов
+        for location in locations:
+            location_hierarchy[location.location_id].append(location)
+
+        # Получаем приоритеты для сортировки верхнего уровня
+        zone_priorities = {UUID(zone['zone_id']): zone['priority'] for zone in
+                           product_storage_type.storage_type_rel.allowed_zones}
+
+        # Функция для построения иерархии
+        def build_hierarchy(location_id):
+            children = location_hierarchy[location_id]
+            children.sort(key=lambda loc: (loc.location_class != LocationClass.ZONE, loc.sort))
+            return {
+                location.id: build_hierarchy(location.id)
+                for location in children
+            }
+
+        # Находим корневые объекты (у которых location_class == ZONE)
+        root_ids = {loc.id for loc in locations if loc.location_class == LocationClass.ZONE}
+
+        # Сортируем корневые объекты по приоритету
+        sorted_root_ids = sorted(root_ids, key=lambda root_id: zone_priorities.get(root_id, 9999999))
+
+        # Строим иерархию, начиная с корневых объектов
+        hierarchical_dict = {root_id: build_hierarchy(root_id) for root_id in sorted_root_ids}
+
+        # Функция для сортировки locations на основе hierarchical_dict
+        def sort_locations(hierarchy, sorted_locations):
+            for loc_id, sub_hierarchy in hierarchy.items():
+                loc = next(loc for loc in locations if loc.id == loc_id)
+                sorted_locations.append(loc)
+                sort_locations(sub_hierarchy, sorted_locations)
+
+        sorted_locations: List[Location] = []
+        sort_locations(hierarchical_dict, sorted_locations)
+
+        return sorted_locations
+
     async def _fill_move_by_result(self, move: Move, prepared_result: dict):
         """
             Метод на основании параметров подобранных квантов заполняет мув
         """
-        prepared_products = prepared_result['products']
-        location_src = prepared_result['location_src']
-        prepared_map = prepared_products[0]['order_type']
-        prepared_order_type = prepared_map['order_type']
-        prepared_allowed_dest_zone_ids = prepared_map['allowed_zone_ids']
-        prepared_quants = prepared_products[0]['quants']
-        prepared_allowed_dest_location_type_ids = prepared_map['allowed_location_type_ids']
+        if move.type == MoveType.PACKAGE:
+            prepared_package = next(
+                (pkg for pkg in prepared_result['packages'] if pkg['package_id'] == move.package_id), None)
+            prepared_allowed_dest_zone_ids = prepared_package['order_type']['allowed_zone_ids']
+            if not prepared_package:
+                raise ModuleException(status_code=406, enum=MoveErrors.PACKAGE_ERROR)
+            # Проверяем, что package_id находится не в FULL_BLOCK и не в MOVE_BLOCK
+            package_rel = await self.env['location'].service.get(move.package_id)
+            if package_rel.block in [BlockerEnum.FULL_BLOCK, BlockerEnum.MOVE_BLOCK]:
+                raise ModuleException(status_code=406, enum=MoveErrors.PACKAGE_ERROR)
+            if not move.location_dest_id:
+                query = select(LocationType).where(
+                    LocationType.allowed_package_type_ids.contains([package_rel.location_type_id])
+                )
+                result = await self.session.execute(query)
+                location_types = result.scalars().all()
+                available_dest_locations = await self.get_avalible_locations(
+                    allowed_zone_ids=prepared_allowed_dest_zone_ids,
+                    allowed_location_type_ids=[i.id for i in location_types],
+                )
+                # TODO: Нужно сделать сортировку для ячеек под упаковки
+                if not available_dest_locations:
+                    raise ModuleException(status_code=406, enum=MoveErrors.DESTINATION_LOCATION_ERROR)
+                move.location_dest_id = available_dest_locations[0].id
+            package_rel.block = 'MOVE_BLOCK'
+            for q in prepared_package['quants']:
+                q.move_ids.append(move.id)
+            self.session.add(package_rel)
+            move.estatus = 'done'
+            move.status = MoveStatus.CONFIRMED
+        elif move.type == MoveType.PRODUCT:
+            prepared_products = prepared_result['products']
+            location_src = prepared_result['location_src']
+            prepared_map = prepared_products[0]['order_type']
+            prepared_order_type = prepared_map['order_type']
+            prepared_allowed_dest_zone_ids = prepared_map['allowed_zone_ids']
+            prepared_product_storage_type = prepared_map['product_storage_type']
+            prepared_quants = prepared_products[0]['quants']
+            prepared_allowed_dest_location_type_ids = prepared_map['allowed_location_type_ids']
 
-        #  Выбор кванта источника
-        await self._set_src_quant(
-            move=move,
-            quants=prepared_quants if prepared_products else [],
-            location_src=location_src,
-        )
-        available_dest_locations = await self.get_avalible_locations(
-            allowed_zone_ids=prepared_allowed_dest_zone_ids,
-            allowed_location_type_ids=prepared_allowed_dest_location_type_ids,
-        )
-        if not available_dest_locations:
-            raise ModuleException(status_code=406, enum=MoveErrors.DESTINATION_LOCATION_ERROR)
-        # Выбор кванта назначения
-        await self._set_dest_quant(move, available_dest_locations)
+            #  Выбор кванта источника
+            await self._set_src_quant(
+                move=move,
+                quants=prepared_quants if prepared_products else [],
+                location_src=location_src,
+            )
+            available_dest_locations = await self.get_avalible_locations(
+                allowed_zone_ids=prepared_allowed_dest_zone_ids,
+                allowed_location_type_ids=prepared_allowed_dest_location_type_ids,
+            )
+            available_dest_locations = await self._sort_location_by_product_storage_type(
+                prepared_product_storage_type, available_dest_locations
+            )
+            if not available_dest_locations:
+                raise ModuleException(status_code=406, enum=MoveErrors.DESTINATION_LOCATION_ERROR)
+            # Выбор кванта назначения
+            await self._set_dest_quant(move, available_dest_locations)
 
-        if move.quant_src_id == move.quant_dest_id:
-            raise ModuleException(status_code=406, enum=MoveErrors.EQUAL_QUANT_ERROR)
+            if move.quant_src_id == move.quant_dest_id:
+                raise ModuleException(status_code=406, enum=MoveErrors.EQUAL_QUANT_ERROR)
         # TODO: это надо убрать в отдельный вызов
 
     async def _moves_confirm(self, move_ids: List[UUID] | List[Move], user_id: str):
@@ -382,17 +472,18 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
         for move in moves:
             if move.status == MoveStatus.CONFIRMED:
                 continue
+            prepared_result_by_move = prepared_results[move.group_key]
             if move.type == MoveType.PRODUCT:
-                prepared_result_by_move = prepared_results[move.group_key]
                 await self._fill_move_by_result(move, prepared_result_by_move)
                 await self.set_reserve(move=move)
-
+            elif move.type == MoveType.PACKAGE:
+                await self._fill_move_by_result(move, prepared_result_by_move)
         return moves
 
     async def get_avalible_locations(
             self,
             allowed_zone_ids: List[UUID],
-            allowed_location_type_ids: List[UUID],
+            allowed_location_type_ids: Optional[List[UUID]] = None,
             allowed_location_classes: Optional[List[str]] = None,
     ):
         """ ПОДБОР DEST ЛОКАЦИИ"""
@@ -525,6 +616,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             })
             move.quant_dest_rel.incoming_quantity += total_quantity
             move.status = MoveStatus.CONFIRMED
+            move.estatus = 'done'
 
             if not move.quant_src_rel.move_ids:
                 move.quant_src_rel.move_ids = [move.id]
@@ -907,13 +999,18 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             'available_src_quants': available_src_quants
         }
 
-    async def create_movements(self, schema: CreateMovements):
+    async def create_movements(self, schema: CreateMovements, commit=False):
         prepared_data = await self._get_quants_and_allowed_locations_by_params(**schema.model_dump())
         products: List[Product] = []
         packages: List[Package] = []
         if schema.products:
             for prod in schema.products:
-                multiplicator = 1
+                if not prod.uom_id:
+                    prod_uom_rel = await self.session.execute(
+                        select(ProductStorageType).where(ProductStorageType.product_id == prod.product_id)
+                    )
+                    prod_uom = prod_uom_rel.scalars().first()
+                    prod.uom_id = prod_uom.storage_uom_id
                 matching_product = next(
                     (p for p in prepared_data['products'] if
                      p['lot_id'] == prod.lot_id and
@@ -926,19 +1023,18 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                     qty_to_move = prod.quantity
                     for q in matching_product['quants']:
                         qty_move = 0.0
-                        multiplicator = 1
                         if q.uom_id != prod.uom_id:
-                            quantity_converter = await self.env['uom'].adapter.convert(payload=[{
+                            quantity_converter = await self.env['uom'].adapter.convert(payload={
                                 'uom_id_in': q.uom_id,
                                 'quantity_in': q.available_quantity,
                                 'uom_id_out': prod.uom_id
-                            }])
-                            available_quantity = quantity_converter[0]['quantity_out']
-                            multiplicator = quantity_converter[0]['quantity_out'] / quantity_converter[0]['quantity_in']
+                            })
+                            available_quantity = quantity_converter['quantity_out']
                         else:
                             available_quantity = q.available_quantity
+                        prod.avaliable_quantity += available_quantity
                         if qty_to_move <= 0.0:
-                            break
+                            continue
                         if available_quantity >= qty_to_move:
                             qty_move = qty_to_move
                             qty_to_move = 0.0
@@ -958,8 +1054,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                             quant_src_id=q.id,
                         ))
                     prod.quantity -= qty_to_move
-                    prod.avaliable_quantity = sum(q.available_quantity for q in matching_product['quants']) * multiplicator
-                    prod.moves = [MoveCreateScheme.model_validate(move) for move in moves]
+                    prod.moves_to_create = [MoveCreateScheme.model_validate(move) for move in moves]
+                    prod.quants = [Quant.model_validate(q) for q in matching_product['quants']]
         else:
             for product in prepared_data['products']:
                 moves: List[Move] = []
@@ -994,7 +1090,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                         quantity=product['quantity'],
                         avaliable_quantity=product['avaliable_quantity'],
                         quants=product['quants'],
-                        moves=moves
+                        moves_to_create=moves
                     )
                 )
                 schema.products = products
@@ -1004,6 +1100,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 type=MoveType.PACKAGE,
                 store_id=package['quants'][0].store_id,
                 quantity=1,
+                package_id=package['package_id'],
                 order_type_id=package['order_type']['order_type'].id,
                 partner_id=package['quants'][0].partner_id,
                 location_src_id=package['quants'][0].location_id,
@@ -1012,8 +1109,32 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 Package(
                     package_id=package['package_id'],
                     quants=package['quants'],
-                    moves=package_moves
+                    moves_to_create=package_moves
                 )
             )
             schema.packages = packages
+        schema.filled = True
+        if schema.commit:
+            new_moves: List[Move] = []
+            for product in schema.products:
+                for move in product.moves_to_create:
+                    new_move = await self.create(move, commit=False)
+                    new_moves.append(new_move)
+                    product.moves_created.append(MoveScheme.model_validate(new_move))
+            # Добавляем мувы из packages
+            for package in schema.packages:
+                for move in package.moves_to_create:
+                    new_move = await self.create(move, commit=False)
+                    new_moves.append(new_move)
+                    package.moves_created.append(MoveScheme.model_validate(new_move))
+
+            await self.session.commit()
+            task = await self.confirm.kiq(
+                'move',
+                move_ids=[move.id for move in new_moves],
+                user_id=self.user.user_id
+            )
+            if os.environ.get('ENV') == 'test':
+                result = await task.wait_result()
+                a = 1
         return schema

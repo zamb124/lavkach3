@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, model_validator, ValidationError
 
 from app.inventory.location.enums import LocationClass, PhysicalStoreLocationClass
-from app.inventory.order import MoveCreateScheme, OrderTypeScheme
+from app.inventory.order import MoveCreateScheme, OrderTypeScheme, MoveScheme
 from app.inventory.quant import QuantScheme
 from core.schemas.basic_schemes import BasicField as Field
 
@@ -27,17 +27,20 @@ class Product(BaseModel):
     lot_id: Optional[UUID] = Field(default=None, title='Lot', form=True, model='lot')
     uom_id: Optional[UUID] = Field(default=None, title='UOM', form=True, model='uom')
     quants: Optional[list[Quant]] = Field(default=[], title='Quants', form=True)
-    moves: Optional[list[MoveCreateScheme]] = Field(default=[], title='Moves', form=True, model='move')
+    moves_to_create: Optional[list[MoveCreateScheme]] = Field(default=[], title='Moves to create', form=True, model='move')
+    moves_created: Optional[list[MoveScheme]] = Field(default=[], title='Moves created', form=True, model='move')
 
 
 class Package(BaseModel):
     package_id: UUID = Field(title='Package', form=True, model='location',
                              filter={'location_class__in': LocationClass.PACKAGE.value})
     quants: Optional[list[Quant]] = Field(default=[], title='Quants', form=True)
-    moves: Optional[list[MoveCreateScheme]] = Field(default=[], title='Moves', form=True, model='move')
-
+    moves_to_create: Optional[list[MoveCreateScheme]] = Field(default=[], title='Moves', form=True, model='move')
+    moves_created: Optional[list[MoveScheme]] = Field(default=[], title='Moves created', form=True, model='move')
 
 class CreateMovements(BaseModel):
+    filled: bool = Field(default=False, title='Filled', form=False)
+    commit: bool = Field(default=False, title='Commit', form=False)
     external_number: Optional[str] = Field(default=None, title='External ID', form=True)
     order_type_id: Optional[UUID] = Field(default=None, title='Order type', form=True, model='order_type')
     store_id: UUID = Field(title='Store', table=True, form=True, model='store')

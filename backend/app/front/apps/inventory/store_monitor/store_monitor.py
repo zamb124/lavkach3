@@ -73,12 +73,13 @@ async def create_movements(request: Request, order: CreateMovementsView = Depend
 @store_monitor_router.post("/create_movements", response_class=HTMLResponse)  # type: ignore
 async def create_movements(request: Request):
     data = await request.json()
+    if request.query_params.get('commit'):
+        data['commit'] = True
     async with request.scope['env']['order'].adapter as a:
         movements = await a.create_movements(data)
         cm = CreateMovementsView(request)
         await cm.init(data=[movements])
     return render(request, 'inventory/store_monitor/create_movements/create_movements.html', context={'order': cm})
-
 
 @store_monitor_router.get("/create_movements/add_product", response_class=HTMLResponse)
 async def create_movements_add_product(request: Request, key: str):
