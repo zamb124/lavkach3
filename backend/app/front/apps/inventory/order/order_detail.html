@@ -10,7 +10,7 @@
          hx-disinherit="*"
     >
         <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
-            <div  class="modal-content slide-right" id="modal_content_{{ order.p.id }}"
+            <div class="modal-content slide-right" id="modal_content_{{ order.p.id }}"
             >
                 <div class="modal-header">
                     <div class="card-body">
@@ -42,25 +42,25 @@
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                            {% if order.status.val in ('created', 'reservation_failed', 'confirming') %}
-                                                {{ order.h.as_action('order_confirm', 'as_a', css_class="btn btn-sm btn-primary") }}
-                                            </li>
-                                        {% endif %}
-                                        {% if order.status.val in ('waiting', 'processing') %}
-                                            <li class="breadcrumb-item d-flex align-items-center">
-                                                {{ order.h.as_action('order_assign', 'as_a', css_class="btn btn-sm btn-primary") }}
-                                            </li>
-                                        {% endif %}
-                                        {% if order.status.val == 'confirmed' %}
-                                            <li class="breadcrumb-item d-flex align-items-center">
-                                                {{ order.h.as_action('order_start', 'as_a', css_class="btn btn-sm btn-primary") }}
-                                            </li>
-                                        {% endif %}
-                                        {% if order.status.val =='processing' %}
-                                            <li class="breadcrumb-item d-flex align-items-center">
-                                                {{ order.h.as_action('order_complete', 'as_a', css_class="btn btn-sm btn-primary") }}
-                                            </li>
-                                        {% endif %}
+                                                {% if order.status.val in ('created', 'reservation_failed', 'confirming') %}
+                                                    {{ order.h.as_action('order_confirm', 'as_a', css_class="btn btn-sm btn-primary") }}
+                                                    </li>
+                                                {% endif %}
+                                            {% if order.status.val in ('waiting', 'processing') %}
+                                                <li class="breadcrumb-item d-flex align-items-center">
+                                                    {{ order.h.as_action('order_assign', 'as_a', css_class="btn btn-sm btn-primary") }}
+                                                </li>
+                                            {% endif %}
+                                            {% if order.status.val == 'confirmed' %}
+                                                <li class="breadcrumb-item d-flex align-items-center">
+                                                    {{ order.h.as_action('order_start', 'as_a', css_class="btn btn-sm btn-primary") }}
+                                                </li>
+                                            {% endif %}
+                                            {% if order.status.val =='processing' %}
+                                                <li class="breadcrumb-item d-flex align-items-center">
+                                                    {{ order.h.as_action('order_complete', 'as_a', css_class="btn btn-sm btn-primary") }}
+                                                </li>
+                                            {% endif %}
                                             <li class="breadcrumb-item d-flex align-items-center">
                                                 <a href="#" data-bs-dismiss="modal" class="d-flex align-items-center">
                                                     <iconify-icon icon="solar:close-circle-outline"
@@ -132,12 +132,15 @@
                                 </ul>
                             </li>
                         </ul>
-                        <div class="tab-content" style="min-height: 300px" id="moves-tab">
-                            {% with moves = order.move_list_rel.val %}
-                                {% include 'inventory/move/move_table.html' %}
-                            {% endwith %}
-                            <div class="table-responsive tab-pane fade" id="move_logs" role="tabpanel" aria-labelledby="move_logs-tab">
-
+                        <div class="tab-content" style="min-height: 300px">
+                            <div class="tab-pane active show" id="moves" role="tabpanel"
+                                 aria-labelledby="moves-tab">
+                                {% with moves = order.move_list_rel.val, scroll=False %}
+                                    {% include 'inventory/move/move_table.html' %}
+                                {% endwith %}
+                            </div>
+                            <div class="tab-pane fade" id="move_logs" role="tabpanel"
+                                 aria-labelledby="move_logs-tab">
                             </div>
 
                         </div>

@@ -1,4 +1,4 @@
-<div class="table-responsive tab-pane fade active show" id="moves"
+<div class="table-responsive tab-pane fade active show"
      aria-labelledby="home-tab">
     <table class="table text-truncate">
         <thead>
@@ -12,7 +12,7 @@
                 </div>
                 </p>
             </th>
-            {{ moves.type.as_th_title }}
+            {{ moves.order_id.as_th_title }}
             {{ moves.product_id.as_th_title }}
             {{ moves.edited_by.as_th_title }}
             {{ moves.location_src_id.as_th_title }}
@@ -22,8 +22,12 @@
             {{ moves.status.as_th_title }}
         </tr>
         </thead>
-        <tbody>
-        {% with moves=moves %}
+        <tbody
+                hx-trigger="change from:#move-filters delay:500ms"
+               hx-include="#move-filters"
+               hx-get="/inventory/move/lines"
+        >
+        {% with moves=moves, scroll=False %}
             {% include 'inventory/move/move_lines.html' %}
         {% endwith %}
         </tbody>

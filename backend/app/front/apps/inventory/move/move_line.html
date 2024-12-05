@@ -20,14 +20,9 @@
             </div>
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            <a hx-get="/inventory/move/detail?move_id={{ move._id }}"
-               hx-trigger="click"
-               hx-push-url="false"
-               hx-target="#htmx_content"
-               hx-swap="beforeend"
-               class="text-danger form-control">
-                {{ move.type.val }}</a>
+            {{ move.order_id.as_a(model='order', url='/inventory/order/detail') }}
         </th>
+
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {% if move.type.val == 'product' %}
                 {{ move.product_id.as_get }}
@@ -64,7 +59,15 @@
                 {{ move.suggest_list_count.val }}
             </a>
         </th>
-        <th class="line-col" style="padding-left: 2px; padding-right: 2px;">
+        <th class="line-col" style="padding-left: 2px; padding-right: 2px;"
+        {% if move.p.is_last and scroll %}
+            hx-trigger="revealed"
+            hx-include="#move-filters"
+            hx-get="/inventory/move/lines?cursor_lt={{ move.p.lsn }}"
+             hx-swap="afterend"
+             {% endif %}
+        >
+
             {% if move.status.val == 'created' %}
                 <span class="mb-0 badge text-bg-light">{{ move.status.val }}</span>
             {% elif move.status.val == 'waiting' %}

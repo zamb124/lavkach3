@@ -81,6 +81,7 @@ class MoveFilter(BaseFilter):
     partner_id__in: Optional[List[UUID4]] = Field(default=None, title='Partner', model='partner')
     status__in: Optional[List[MoveStatus]] = Field(default=None, title='Status')
     package_id__in: Optional[List[UUID4]] = Field(default=None, title='Package', model='location')
+    order_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Order type', model='order_type')
     type__in: Optional[List[MoveType]] = Field(default=None, title='Type')
 
     class Config:

@@ -42,7 +42,7 @@
     </select>
 {% endblock %}
 {% block as_get %}
-    <a class="uuid-get text-center text-danger fw-bold form-control"
+    <a class="uuid-get text-center text-danger form-control"
             id="{{ field.field_name }}"
             href="#"
             hx-get="/base/modal/{{ field.model_name }}/{{ field.val }}"

@@ -2,8 +2,7 @@ from fastapi import APIRouter
 
 from app.front.apps.inventory.app import inventory_app
 from app.front.apps.inventory.inventory import inventory
-from app.front.apps.inventory.location.location_type import location_type_router
-from app.front.apps.inventory.location_type import location_router
+from app.front.apps.inventory.location import location_router
 from app.front.apps.inventory.move import move_router
 from app.front.apps.inventory.move_log import move_log_router
 from app.front.apps.inventory.order.order import order_router
@@ -23,7 +22,6 @@ inventory_router.include_router(inventory_app, prefix="/app")
 inventory_router.include_router(order_router, prefix="/order", tags=["order"])
 inventory_router.include_router(order_type_router, prefix="/order_type", tags=["order"])
 inventory_router.include_router(location_router, prefix="/location", tags=["location"])
-inventory_router.include_router(location_type_router, prefix="/location_type", tags=["location_type"])
 inventory_router.include_router(move_router, prefix="/move", tags=["move"])
 inventory_router.include_router(stocks_reports_router, prefix="/stock_reports", tags=["stocks_reports"])
 inventory_router.include_router(move_log_router, prefix="/move_log", tags=["move_log"])

@@ -1,0 +1,188 @@
+{% autoescape false %}
+    <div class="modal" id="{{ 'modal_'~location.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
+            <div class="modal-content slide-right">
+                <div class="modal-header modal-colored-header bg-primary text-white">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-12">
+                                <div class="d-sm-flex align-items-center justify-space-between">
+                                    <h4 class="mb-4 mb-sm-0 card-title">{{ location.title }}</h4>
+                                    <nav aria-label="breadcrumb" class="ms-auto">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                <a class="text-decoration-none d-flex text-muted"
+                                                   href="../main/index.html">
+                                                    <iconify-icon icon="solar:home-2-line-duotone"
+                                                                  class="fs-8"></iconify-icon>
+                                                </a>
+                                            </li>
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                <a href="#" data-bs-dismiss="modal" class="d-flex align-items-center text-muted">
+                                                    <iconify-icon icon="solar:close-circle-outline"
+                                                                  class="fs-8"></iconify-icon>
+                                                </a>
+                                            </li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body form-control">
+                    <div class="form-body">
+                        <div class="card-body">
+                            <h5 class="card-title mb-0">Main Info</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.title.data_key }}">{{ location.title._field_name }}</label>
+                                        <div class="col-md-9">
+                                            <p class="form-control-static">{{ location.title }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.store_id.data_key }}">{{ location.store_id._field_name }}</label>
+                                        <div class="col-md-9">
+                                            <p class="form-control-static">{{ location.store_id.as_a() }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.location_class.data_key }}">{{ location.location_class._field_name }}</label>
+                                        <div class="col-md-9">
+                                            <p class="form-control-static">{{ location.location_class }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.location_type_id.data_key }}">{{ location.location_type_id._field_name }}</label>
+                                        <div class="col-md-9">
+                                            <p class="form-control-static">{{ location.location_type_id.as_a() }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.location_id.data_key }}">{{ location.location_id._field_name }}</label>
+                                        <div class="col-md-9">
+                                            <p class="form-control-static">{{ location.location_id.as_a() }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.is_active.data_key }}">{{ location.is_active._field_name }}</label>
+                                        <div class="col-md-9">
+                                            <p class="form-control-static">{{ location.is_active.as_get }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        {% for location in quants %}
+                                            <div class="col-md-6 col-lg-6 col-12">
+                                                <div class="card w-100 ">
+                                                    <div class="p-4 d-flex align-items-stretch h-100">
+                                                        <div class="row">
+                                                            <div class="col-6 col-md-4 d-flex align-items-center">
+                                                                <img src="{{ url_for('static' ,path='images/products/product-1.jpg') }}"
+                                                                     class="rounded img-fluid">
+                                                            </div>
+                                                            <div class="col-4 col-md-4 d-flex align-items-center">
+                                                                <div>
+                                                                    <a href="javascript:void(0)"
+                                                                       class="card-title link-primary fw-semibold text-dark">{{ location.product_id.as_a()}}</a>
+                                                                    <div class="row">
+                                                                        <div class="col-6">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <p class="card-subtitle mt-1" data-key="{{ location.quantity.data_key }}">
+                                                                                    {{ location.quantity._field_name }}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-6">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <p class="card-subtitle mt-1 ms-3">
+                                                                                    {{ location.quantity }}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-6">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <p class="card-subtitle mt-1" data-key="{{ location.incoming_quantity.data_key }}">
+                                                                                    {{ location.incoming_quantity._field_name }}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-6">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <p class="card-subtitle mt-1 ms-3">
+                                                                                    {{ location.incoming_quantity }}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-6">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <p class="card-subtitle mt-1" data-key="{{ location.reserved_quantity.data_key }}">
+                                                                                    {{ location.reserved_quantity._field_name }}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-6">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <p class="card-subtitle mt-1 ms-3">
+                                                                                    {{ location.reserved_quantity }}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <!--/row-->
+
+                                <!--/span-->
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-offset-3 col-md-9">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="ti ti-edit fs-5"></i>
+                                                    Edit
+                                                </button>
+                                                <button type="button" class="btn bg-danger-subtle text-danger ms-6">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endautoescape %}

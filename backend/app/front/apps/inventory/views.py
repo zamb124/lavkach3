@@ -93,6 +93,7 @@ class LocationView(ClassView):
 
 
 
+
 views.update({
     'order': OrderView,
     'move': MoveView,

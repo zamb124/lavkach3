@@ -7,23 +7,12 @@ from fastapi.responses import HTMLResponse
 from app.front.apps.inventory.common_depends import get_user_store
 from app.front.apps.inventory.views import QuantView, LocationView, StoreStaffView, MoveView
 from app.front.template_spec import templates
-from app.front.utills import render
-from app.inventory.location.enums import PhysicalLocationClass
+from app.front.utills import render, convert_query_params_to_dict
+from app.inventory.location.enums import PhysicalLocationClass, LocationClass
 
 stocks_reports_router = APIRouter()
 
 
-def convert_query_params_to_dict(query_params):
-    params_dict: dict = {}
-    for key, value in query_params._list:
-        if old_val := params_dict.get(key):
-            if isinstance(old_val, list):
-                params_dict[key].append(value)
-            else:
-                params_dict[key] = [old_val, value]
-        else:
-            params_dict[key] = value
-    return params_dict
 
 
 @stocks_reports_router.get("/quants", response_class=HTMLResponse)
@@ -65,7 +54,7 @@ async def quant_lines(quants: QuantView = Depends(), store_user: StoreStaffView 
 async def move_list(moves: MoveView = Depends(), zones: LocationView = Depends(),
                     store_user: StoreStaffView = Depends(get_user_store)):
     # Отчет по остаткам
-    filter = {'location_class__in': list(PhysicalLocationClass)}
+    filter = {'location_class__in': list(LocationClass)}
     filter.update(moves.r.query_params)
     await moves.init(params=filter)
     await zones.init(params={'location_class__in': ['zone']})
@@ -73,7 +62,7 @@ async def move_list(moves: MoveView = Depends(), zones: LocationView = Depends()
         moves.r, 'inventory/stock_reports/move/moves.html',
         context={
             'moves': moves,
-            'classes': PhysicalLocationClass,
+            'classes': LocationClass,
             'zones': zones,
             'store_user': store_user
         }
@@ -83,14 +72,14 @@ async def move_list(moves: MoveView = Depends(), zones: LocationView = Depends()
 @stocks_reports_router.get("/moves/lines", response_class=HTMLResponse)
 async def move_lines(quants: QuantView = Depends(), store_user: StoreStaffView = Depends(get_user_store)):
     # Отчет по остаткам
-    filter = {'location_class__in': list(PhysicalLocationClass)}
+    filter = {'location_class__in': list(LocationClass)}
     filter.update(convert_query_params_to_dict(quants.r.query_params))
     await quants.init(params=filter)
     return render(
-        quants.r, 'inventory/stock_reports/move/move_lines.html',
+        quants.r, 'inventory/move/move_lines.html',
         context={
             'quants': quants,
-            'classes': PhysicalLocationClass,
+            'classes': LocationClass,
             'store_user': store_user
         }
     )

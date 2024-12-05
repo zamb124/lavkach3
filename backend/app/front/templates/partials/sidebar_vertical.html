@@ -333,6 +333,47 @@
                                       data-key="t-product_storage_type">Product Storage</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
+                                <span class="hide-menu" data-key="t-locations-menu">Locations</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level">
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/location">
+                                        <span class="icon-small"></span>
+                                        All Locations
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/location/zones">
+                                        <span class="icon-small"></span>
+                                        Zones
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/location/places">
+                                        <span class="icon-small"></span>
+                                        Places
+                                    </a>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/location_type">
+                                        <span class="icon-small"></span>
+                                        Location Types
+                                    </a>
+                            </ul>
 
 
                     </ul>

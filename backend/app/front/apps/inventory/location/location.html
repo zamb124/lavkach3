@@ -7,9 +7,8 @@
                     <nav aria-label="breadcrumb" class="ms-auto">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item d-flex align-items-center">
-                                <a class="text-muted text-decoration-none d-flex" type="button"
-                                   data-bs-toggle="offcanvas"
-                                   data-bs-target="#move-filters" aria-controls="move-filters">
+                                <a class="text-muted text-decoration-none d-flex" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#location-filters" aria-controls="location-filters">
                                     <iconify-icon icon="solar:filter-bold-duotone" class="fs-7"></iconify-icon>
                                 </a>
                             </li>
@@ -20,7 +19,7 @@
                             </li>
                             <li class="breadcrumb-item" aria-current="page">
                         <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
-                          Moves
+                          Quants
                         </span>
                             </li>
                         </ol>
@@ -31,11 +30,11 @@
     </div>
 
     <div class="card position-relative overflow-hidden">
-        <div class="shop-part d-flex w-200">
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="move-filters"
-                 aria-labelledby="quant-filters-label">
+        <div class="shop-part d-flex w-100">
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="location-filters"
+                 aria-labelledby="location-filters-label">
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="move-filters-label">Filters</h5>
+                    <h5 class="offcanvas-title" id="location-filters-label">Filters</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
@@ -43,42 +42,64 @@
                         <h6 class="my-3 mx-4 fw-semibold">Locations</h6>
                         <li class="list-group-item border-0 p-0 mx-4 mb-2">
                             <div>
-                                {{ moves.location_src_id__in.as_update }}
-                            </div>
-                        </li>
-                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
-                            <div>
-                                {{ moves.location_dest_id__in.as_update }}
+                                {{ locations.location_id__in.as_update }}
                             </div>
                         </li>
                     </ul>
                     <ul class="list-group pt-2 border-bottom rounded-0">
-                        <h6 class="my-3 mx-4 fw-semibold">Order Type</h6>
-                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
-                            <div>
-                                {{ moves.order_type_id__in.as_update }}
-                            </div>
-                        </li>
+                        <h6 class="my-3 mx-4 fw-semibold">Location Class</h6>
+                        {% for class in classes %}
+                            <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                                <div>
+                                    <input type="checkbox" name="{{ locations.location_class__in.field_name }}"
+                                           value="{{ class.value }}"
+                                           class="btn-check" id="{{ class.value }}" autocomplete="off">
+                                    <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
+                                           for="{{ class.value }}">{{ class.name }}</label>
+                                </div>
+                            </li>
+                        {% endfor %}
                     </ul>
                     <ul class="list-group pt-2 border-bottom rounded-0">
-                        <h6 class="my-3 mx-4 fw-semibold">Move Type</h6>
+                        <h6 class="my-3 mx-4 fw-semibold">Zones</h6>
+                        {% for zone in zones %}
+                            <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                                <div>
+                                    <input type="checkbox" name="zone_id__in"
+                                           value="{{ zone.id }}"
+                                           class="btn-check" id="{{ zone.p.key }}" autocomplete="off">
+                                    <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
+                                           for="{{ zone.p.key }}">{{ zone.title }}</label>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <ul class="list-group pt-2 border-bottom rounded-0">
+                        <h6 class="my-3 mx-4 fw-semibold">Partners</h6>
                         <li class="list-group-item border-0 p-0 mx-4 mb-2">
-                            <div>
-                                <input type="checkbox" name="type__in"
-                                       value="product"
-                                       class="btn-check" id="type-product" autocomplete="off">
-                                <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
-                                       for="type-product">Product type</label>
-                                <input type="checkbox" name="type__in"
-                                       value="package"
-                                       class="btn-check" id="type-package" autocomplete="off">
-                                <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
-                                       for="type-package">Package type</label>
-                            </div>
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-sort-descending-2 fs-5"></i>Partner 1
+                            </a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-sort-descending-2 fs-5"></i>
+                                Partner 2
+                            </a>
                         </li>
                     </ul>
 
 
+                    <div class="p-4">
+                        <button
+                                hx-target="#location-filters"
+                                class="btn btn-primary w-100"
+                                hx-on="click: htmx.trigger('#target-element', 'backend_update')"
+                        >Apply Filters
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="card-body p-4 pb-0">
@@ -91,15 +112,15 @@
                     <div class="d-flex align-items-center gap-6">
                         <div class="position-relative">
                             <input type="text" class="form-control search-chat py-2 ps-5" id="text-srh"
-                                   placeholder="Search Moves">
+                                   placeholder="Search Quants">
                             <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
                         </div
                         >
                     </div>
                 </div>
-                <div class="row" id="moves-table">
-                    {% with moves=moves %}
-                        {% include 'inventory/move/move_table.html' %}
+                <div class="row" id="locations-table">
+                    {% with locations=locations %}
+                        {% include 'inventory/location/location_table.html' %}
                     {% endwith %}
                 </div>
             </div>

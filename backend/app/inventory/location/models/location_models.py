@@ -78,7 +78,7 @@ class Location(Base, AllMixin):
     sort: Mapped[int] = mapped_column(default=0, index=True)
 
     @classmethod
-    def get_query_locations_by_zone_ids(cls, location_ids, location_classes, location_type_ids):
+    def get_query_locations_by_zone_ids(cls, location_ids, location_classes=None, location_type_ids=None):
         """
             Метод отдает дополнительный query, который позволяет получить все местоположения по зонам,
             классам локаций и типам локаций

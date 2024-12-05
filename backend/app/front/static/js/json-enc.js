@@ -48,7 +48,11 @@ htmx.defineExtension('json-enc', {
                 const newObj = {};
                 for (const key in obj) {
                     if (obj.hasOwnProperty(key)) {
-                        newObj[key] = replaceEmptyStrings(obj[key]);
+                        if (key.startsWith('is_') && Array.isArray(obj[key]) && obj[key].length === 2) {
+                            newObj[key] = true;
+                        } else {
+                            newObj[key] = replaceEmptyStrings(obj[key]);
+                        }
                     }
                 }
                 return newObj;

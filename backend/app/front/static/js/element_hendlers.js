@@ -472,12 +472,6 @@ class ModalHandler {
             event.target.remove();
         });
         this.dragElement(this.modal._element);
-        const modalContent = this.modal._element.querySelector('.modal-content');
-        if (modalContent) {
-            const resizeHandle = document.createElement('div');
-            resizeHandle.className = 'resize-handle';
-            modalContent.appendChild(resizeHandle);
-        }
     }
 
     // Функция для перемещения модального окна

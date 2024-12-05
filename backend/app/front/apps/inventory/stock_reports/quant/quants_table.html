@@ -26,7 +26,8 @@
             {{ quants.move_ids.as_th_title }}
         </tr>
         </thead>
-        <tbody hx-trigger="change from:#quant-filters delay:500ms"
+        <tbody
+                hx-trigger="change from:#quant-filters delay:500ms"
                hx-include="#quant-filters"
                hx-get="/inventory/stock_reports/quants/lines"
         >

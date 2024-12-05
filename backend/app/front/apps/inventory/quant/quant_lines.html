@@ -1,0 +1,5 @@
+{% for location in locations %}
+    {% with location=location %}
+        {% include 'inventory/location/location_line.html' %}
+    {% endwith %}
+{% endfor %}

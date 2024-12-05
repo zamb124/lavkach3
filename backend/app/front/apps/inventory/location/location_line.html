@@ -1,0 +1,57 @@
+{% autoescape false %}
+    <tr
+            id="{{ location.p.key }}"
+            class="line"
+            ui_key="{{ location.p.ui_key }}"
+            lsn="{{ location.p.lsn }}"
+            hx-trigger="backend_update consume"
+            hx-get="/inventory/location/lines?location_id={{ location._id }}"
+            hx-swap="outerHTML swap:0.3s"
+            hx-target="#{{ location.p.key }}" style="background-color: #0a7ea4"
+    >
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            <input class="form-check-input fs-5" type="checkbox"
+                   name="{{ location.p.key ~ '--check' }}" value="">
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            <a href="/inventory/location/detail?location_id={{ location._id }}"
+               hx-trigger="click"
+               hx-push-url="false"
+               hx-target="#htmx_content"
+               hx-swap="beforeend transition:true"
+               class="text-danger form-control">
+                {{ location.title }}</a>
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ location.store_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ location.location_class.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ location.location_type_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ location.location_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ location.is_active.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ location.block.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;"
+                {% if location.p.is_last %}
+            hx-trigger="revealed"
+            hx-include="#location-filters"
+            hx-get="/inventory/location/lines?cursor_lt={{ location.p.lsn }}"
+            hx-swap="afterend">
+                {% endif %}
+        {{ location.sort.as_get }}
+        </th>
+
+
+        {% include 'components/loader.html' %}
+    </tr>
+
+{% endautoescape %}

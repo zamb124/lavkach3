@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic.types import UUID4
@@ -10,7 +10,8 @@ from core.schemas.basic_schemes import BasicField as Field, bollean
 from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
-
+from sqlalchemy.orm import Query, aliased
+from sqlalchemy.sql.selectable import Select
 
 class LocationBaseScheme(BasicModel):
     vars: Optional[dict] = None
@@ -21,6 +22,7 @@ class LocationBaseScheme(BasicModel):
     location_type_id: UUID4 = Field(title='Location Type', model='location_type', form=True, table=True)
     location_id: Optional[UUID4] = Field(default=None, title='Parent Location', model='location', form=True, table=True)
     block: BlockerEnum = Field(default=BlockerEnum.FREE, title='Block', form=True, table=True)
+    sort: int = Field(default=0, title='Sort', form=True, table=True)
 
     class Config:
         orm_model = Location
@@ -47,6 +49,7 @@ class LocationFilter(BaseFilter):
     location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Location Class')
     location_id__in: Optional[List[UUID4]] = Field(default=None, title='Zone', model='location')
     is_active: Optional[bool] = Field(default=None, title='Active')
+    zone_id__in: Optional[List[UUID4]] = Field(default=None, title='Zone', model='location')
 
     class Constants(Filter.Constants):
         model = Location
@@ -54,6 +57,11 @@ class LocationFilter(BaseFilter):
         search_field_name = "search"
         search_model_fields = ["title"]
 
-
+    def filter(self, query: Union[Query, Select]):
+        if self.zone_id__in:
+            query = Location.get_query_locations_by_zone_ids(self.zone_id__in)
+        if hasattr(self, 'zone_id__in'):
+            del self.zone_id__in
+        return super().filter(query)
 class LocationListSchema(GenericListSchema):
     data: Optional[List[LocationScheme]]

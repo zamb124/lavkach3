@@ -1,4 +1,6 @@
-
+:root {
+    --bs-modal-inner-border-radius: 15px; /* Установите нужное значение */
+}
 .form-control:focus {
     border-color: #ff7f5d !important;
     border-width: 2px !important;
@@ -229,4 +231,8 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
 
 .container .small-element {
     font-size: 0.875em; /* Размер шрифта для small */
+}
+.modal-header {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
 }

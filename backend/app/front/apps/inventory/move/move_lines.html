@@ -1,5 +1,5 @@
 {% for move in moves %}
-    {% with move=move %}
+    {% with move=move, scroll=False %}
         {% include 'inventory/move/move_line.html' %}
     {% endwith %}
 {% endfor %}

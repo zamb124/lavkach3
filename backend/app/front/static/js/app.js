@@ -465,6 +465,26 @@ class App {
             if (elements) {
                 elements.forEach(app.translateElement);
             }
+            // Обработчик для чекбокса в заголовке таблицы
+            var tables = elt.querySelectorAll('table');
+            tables.forEach(table => {
+                const headerCheckbox = table.querySelector('thead .form-check-input');
+                if (headerCheckbox) {
+                    headerCheckbox.addEventListener('change', function (event) {
+                        const isChecked = event.target.checked;
+                        const columnIndex = Array.from(headerCheckbox.closest('tr').children).indexOf(headerCheckbox.closest('th'));
+
+                        // Обновление состояния всех чекбоксов в строках таблицы в соответствующем столбце
+                        table.querySelectorAll('tbody tr').forEach(function (row) {
+                            const checkbox = row.children[columnIndex].querySelector('.form-check-input');
+                            if (checkbox) {
+                                checkbox.checked = isChecked;
+                            }
+                        });
+                    });
+                }
+            });  // Перебор всех таблиц на странице
+
 
             var elements_tooltips = elt.querySelectorAll('[data-bs-toggle="tooltip"]');
             var tooltipList = Array.from(elements_tooltips).map(function (tooltipTriggerEl) {
@@ -550,6 +570,8 @@ class App {
                     }
 
                     check_valid()
+                } else if (element.classList.contains('list-enum-get')) {
+                    choicesMultiBadges(element, 'get');
                 }
             });
         })

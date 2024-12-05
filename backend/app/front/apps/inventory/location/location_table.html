@@ -1,0 +1,29 @@
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+        <tr class="line fs-5 text-center" style="text-align: center">
+            <th>
+                <p>
+                <input class="form-check-input" type="checkbox" id="{{ locations.p.class_key ~'--'~ 'checkAll' }}" value="option">
+                </p>
+            </th>
+            {{ locations.title.as_th_title }}
+            {{ locations.store_id.as_th_title }}
+            {{ locations.location_class.as_th_title }}
+            {{ locations.location_type_id.as_th_title }}
+            {{ locations.location_id.as_th_title }}
+            {{ locations.is_active.as_th_title }}
+            {{ locations.block.as_th_title }}
+            {{ locations.sort.as_th_title }}
+        </tr>
+        </thead>
+        <tbody hx-trigger="change from:#location-filters delay:500ms"
+               hx-include="#location-filters"
+               hx-get="/inventory/location/lines"
+        >
+        {% with locations=locations %}
+            {% include 'inventory/location/location_lines.html' %}
+        {% endwith %}
+        </tbody>
+    </table>
+</div>

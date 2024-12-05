@@ -34,7 +34,7 @@ async def location_create(schema: LocationCreateScheme, service: LocationService
     return await service.create(obj=schema)
 
 
-@location_router.get("/{Location_id}")
+@location_router.get("/{location_id}")
 async def location_get(location_id: uuid.UUID, service: LocationService = Depends()) -> typing.Union[None, LocationScheme]:
     return await service.get(id=location_id)
 
