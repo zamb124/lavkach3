@@ -1,0 +1,307 @@
+{% block content %}
+    <div class="card card-body py-3">
+        <div class="row align-items-center">
+            <div class="col-12">
+                <div class="d-sm-flex align-items-center justify-space-between">
+                    <h4 class="mb-4 mb-sm-0 card-title">{{ store_user.store_id.as_card_title }}</h4>
+                    <nav aria-label="breadcrumb" class="ms-auto">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item d-flex align-items-center">
+                                <a class="text-muted text-decoration-none d-flex" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#quant-filters" aria-controls="quant-filters">
+                                    <iconify-icon icon="solar:filter-bold-duotone" class="fs-7"></iconify-icon>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item d-flex align-items-center">
+                                <a class="text-muted text-decoration-none d-flex" href="../main/index.html">
+                                    <iconify-icon icon="solar:home-2-line-duotone" class="fs-7"></iconify-icon>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item" aria-current="page">
+                        <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
+                          Quants
+                        </span>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card position-relative overflow-hidden">
+        <div class="shop-part d-flex w-100">
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="quant-filters"
+                 aria-labelledby="quant-filters-label">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="quant-filters-label">Filters</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="list-group pt-2 border-bottom rounded-0">
+                        <h6 class="my-3 mx-4 fw-semibold">Locations</h6>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <div>
+                                {{ quants.location_id__in.as_update }}
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="list-group pt-2 border-bottom rounded-0">
+                        <h6 class="my-3 mx-4 fw-semibold">Location Class</h6>
+                        {% for class in classes %}
+                            <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                                <div>
+                                    <input type="checkbox" name="{{ quants.location_class__in.field_name }}"
+                                           value="{{ class.value }}"
+                                           class="btn-check" id="{{ class.value }}" autocomplete="off">
+                                    <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
+                                           for="{{ class.value }}">{{ class.name }}</label>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <ul class="list-group pt-2 border-bottom rounded-0">
+                        <h6 class="my-3 mx-4 fw-semibold">Zones</h6>
+                        {% for zone in zones %}
+                            <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                                <div>
+                                    <input type="checkbox" name="zone_id__in"
+                                           value="{{ zone.id }}"
+                                           class="btn-check" id="{{ zone.p.key }}" autocomplete="off">
+                                    <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
+                                           for="{{ zone.p.key }}">{{ zone.title }}</label>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <ul class="list-group pt-2 border-bottom rounded-0">
+                        <h6 class="my-3 mx-4 fw-semibold">Partners</h6>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-sort-descending-2 fs-5"></i>Partner 1
+                            </a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-sort-descending-2 fs-5"></i>
+                                Partner 2
+                            </a>
+                        </li>
+                    </ul>
+
+
+                    <div class="p-4">
+                        <button
+                                hx-target="#quant-filters"
+                                class="btn btn-primary w-100"
+                                hx-on="click: htmx.trigger('#target-element', 'backend_update')"
+                        >Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4 pb-0">
+                <div class="d-flex justify-content-between align-items-center gap-6 mb-4">
+                    <a class="btn btn-primary d-lg-none d-flex" data-bs-toggle="offcanvas" href="#filtercategory"
+                       role="button" aria-controls="filtercategory">
+                        <i class="ti ti-menu-2 fs-6"></i>
+                    </a>
+                    <h5 class="fs-5 mb-0 d-none d-lg-block">Products</h5>
+                    <div class="d-flex align-items-center gap-6">
+                        <div class="position-relative">
+                            <input type="text" class="form-control search-chat py-2 ps-5" id="text-srh"
+                                   placeholder="Search Quants">
+                            <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                        </div
+                        >
+                    </div>
+                </div>
+                <div class="row" id="quants-table">
+                    {% with quants=quants %}
+                        {% include 'inventory/stock_reports/quant/quants_table.html' %}
+                    {% endwith %}
+                </div>
+            </div>
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="filtercategory"
+                 aria-labelledby="filtercategoryLabel">
+                <div class="offcanvas-body shop-filters w-100 p-0">
+                    <ul class="list-group pt-2 border-bottom rounded-0">
+                        <h6 class="my-3 mx-4 fw-semibold">Filter by Category</h6>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-circles fs-5"></i>All
+                            </a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-hanger fs-5"></i>Fashion
+                            </a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-notebook fs-5"></i>
+                                Books
+                            </a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-mood-smile fs-5"></i>Toys
+                            </a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-device-laptop fs-5"></i>Electronics
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="list-group pt-2 border-bottom rounded-0">
+                        <h6 class="my-3 mx-4 fw-semibold">Sort By</h6>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-ad-2 fs-5"></i>Newest
+                            </a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-sort-ascending-2 fs-5"></i>Price: High-Low
+                            </a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-sort-descending-2 fs-5"></i>
+                                Price: Low-High
+                            </a>
+                        </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
+                               href="javascript:void(0)">
+                                <i class="ti ti-ad-2 fs-5"></i>Discounted
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="by-gender border-bottom rounded-0">
+                        <h6 class="mt-4 mb-3 mx-4 fw-semibold">By Gender</h6>
+                        <div class="pb-4 px-4">
+                            <div class="form-check py-2 mb-0">
+                                <input class="form-check-input p-2" type="radio" name="exampleRadios"
+                                       id="exampleRadios10" value="option1" checked="">
+                                <label class="form-check-label d-flex align-items-center ps-2" for="exampleRadios10">
+                                    All
+                                </label>
+                            </div>
+                            <div class="form-check py-2 mb-0">
+                                <input class="form-check-input p-2" type="radio" name="exampleRadios"
+                                       id="exampleRadios11" value="option1">
+                                <label class="form-check-label d-flex align-items-center ps-2" for="exampleRadios11">
+                                    Men
+                                </label>
+                            </div>
+                            <div class="form-check py-2 mb-0">
+                                <input class="form-check-input p-2" type="radio" name="exampleRadios"
+                                       id="exampleRadios12" value="option1">
+                                <label class="form-check-label d-flex align-items-center ps-2" for="exampleRadios12">
+                                    Women
+                                </label>
+                            </div>
+                            <div class="form-check py-2 mb-0">
+                                <input class="form-check-input p-2" type="radio" name="exampleRadios"
+                                       id="exampleRadios13" value="option1">
+                                <label class="form-check-label d-flex align-items-center ps-2" for="exampleRadios13">
+                                    Kids
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="by-pricing border-bottom rounded-0">
+                        <h6 class="mt-4 mb-3 mx-4 fw-semibold">By Pricing</h6>
+                        <div class="pb-4 px-4">
+                            <div class="form-check py-2 mb-0">
+                                <input class="form-check-input p-2" type="radio" name="exampleRadios"
+                                       id="exampleRadios14" value="option1" checked="">
+                                <label class="form-check-label d-flex align-items-center ps-2" for="exampleRadios14">
+                                    All
+                                </label>
+                            </div>
+                            <div class="form-check py-2 mb-0">
+                                <input class="form-check-input p-2" type="radio" name="exampleRadios"
+                                       id="exampleRadios15" value="option1">
+                                <label class="form-check-label d-flex align-items-center ps-2" for="exampleRadios15">
+                                    0-50
+                                </label>
+                            </div>
+                            <div class="form-check py-2 mb-0">
+                                <input class="form-check-input p-2" type="radio" name="exampleRadios"
+                                       id="exampleRadios16" value="option1">
+                                <label class="form-check-label d-flex align-items-center ps-2" for="exampleRadios16">
+                                    50-100
+                                </label>
+                            </div>
+                            <div class="form-check py-2 mb-0">
+                                <input class="form-check-input p-2" type="radio" name="exampleRadios"
+                                       id="exampleRadios17" value="option1">
+                                <label class="form-check-label d-flex align-items-center ps-2" for="exampleRadios17">
+                                    100-200
+                                </label>
+                            </div>
+                            <div class="form-check py-2 mb-0">
+                                <input class="form-check-input p-2" type="radio" name="exampleRadios"
+                                       id="exampleRadios18" value="option1">
+                                <label class="form-check-label d-flex align-items-center ps-2" for="exampleRadios18">
+                                    Over 200
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="by-colors border-bottom rounded-0">
+                        <h6 class="mt-4 mb-3 mx-4 fw-semibold">By Colors</h6>
+                        <div class="pb-4 px-4">
+                            <ul class="list-unstyled d-flex flex-wrap align-items-center gap-2 mb-0">
+                                <li class="shop-color-list">
+                                    <a class="shop-colors-item rounded-circle d-block shop-colors-1"
+                                       href="javascript:void(0)"></a>
+                                </li>
+                                <li class="shop-color-list">
+                                    <a class="shop-colors-item rounded-circle d-block shop-colors-2"
+                                       href="javascript:void(0)"></a>
+                                </li>
+                                <li class="shop-color-list">
+                                    <a class="shop-colors-item rounded-circle d-block shop-colors-3"
+                                       href="javascript:void(0)"></a>
+                                </li>
+                                <li class="shop-color-list">
+                                    <a class="shop-colors-item rounded-circle d-block shop-colors-4"
+                                       href="javascript:void(0)"></a>
+                                </li>
+                                <li class="shop-color-list">
+                                    <a class="shop-colors-item rounded-circle d-block shop-colors-5"
+                                       href="javascript:void(0)"></a>
+                                </li>
+                                <li class="shop-color-list">
+                                    <a class="shop-colors-item rounded-circle d-block shop-colors-6"
+                                       href="javascript:void(0)"></a>
+                                </li>
+                                <li class="shop-color-list">
+                                    <a class="shop-colors-item rounded-circle d-block shop-colors-7"
+                                       href="javascript:void(0)"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <a href="javascript:void(0)" class="btn btn-primary w-100">Reset Filters</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

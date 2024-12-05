@@ -135,6 +135,18 @@ class P:
         return self.cls.v.key
 
     @property
+    def is_last(self):
+        if not self.cls.v.data:
+            return True
+        elif len(self.cls._lines) == 1:
+            return True
+        else:
+            last_line = self.cls._lines[-1]
+            if last_line._id == self.cls._id:
+                return True
+        return False
+
+    @property
     def display_title(self):
         return self.cls.title.val if hasattr(self.cls, 'title') else self.cls._id
 

@@ -1,0 +1,5 @@
+{% for move in moves %}
+    {% with move=move %}
+        {% include 'inventory/move/move_line.html' %}
+    {% endwith %}
+{% endfor %}

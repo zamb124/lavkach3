@@ -133,38 +133,9 @@
                             </li>
                         </ul>
                         <div class="tab-content" style="min-height: 300px" id="moves-tab">
-                            <div role="tabpanel" class=" table-responsive tab-pane fade active show" id="moves"
-                                 aria-labelledby="home-tab">
-                                <table class="table text-truncate">
-                                    <thead>
-                                    <tr class="fs-5 text-center" style="text-align: center">
-                                        <th scope="col">
-                                            <p>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
-                                                       id="{{ order.p.class_key ~'--'~ 'checkAll' }}"
-                                                       value="option">
-                                            </div>
-                                            </p>
-                                        </th>
-                                        {{ order.move_list_rel.val.type.as_th_title }}
-                                        {{ order.move_list_rel.val.product_id.as_th_title }}
-                                        {{ order.move_list_rel.val.edited_by.as_th_title }}
-                                        {{ order.move_list_rel.val.location_src_id.as_th_title }}
-                                        {{ order.move_list_rel.val.location_dest_id.as_th_title }}
-                                        {{ order.move_list_rel.val.quantity.as_th_title }}
-                                        {{ order.move_list_rel.val.suggest_list_rel.as_th_title }}
-                                        {{ order.move_list_rel.val.status.as_th_title }}
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for move in  order.move_list_rel.val %}
-                                        {% include 'inventory/move/move_line.html' %}
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-
-                            </div>
+                            {% with moves = order.move_list_rel.val %}
+                                {% include 'inventory/move/move_table.html' %}
+                            {% endwith %}
                             <div class="table-responsive tab-pane fade" id="move_logs" role="tabpanel" aria-labelledby="move_logs-tab">
 
                             </div>

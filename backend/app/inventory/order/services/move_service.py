@@ -1127,11 +1127,11 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                     new_move = await self.create(move, commit=False)
                     new_moves.append(new_move)
                     package.moves_created.append(MoveScheme.model_validate(new_move))
-
+            created_move_ids = [move.id for move in new_moves]
             await self.session.commit()
             task = await self.confirm.kiq(
                 'move',
-                move_ids=[move.id for move in new_moves],
+                move_ids = created_move_ids,
                 user_id=self.user.user_id
             )
             if os.environ.get('ENV') == 'test':

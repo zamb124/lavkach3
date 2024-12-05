@@ -8,6 +8,7 @@ from app.front.apps.inventory.move import move_router
 from app.front.apps.inventory.move_log import move_log_router
 from app.front.apps.inventory.order.order import order_router
 from app.front.apps.inventory.order_type.order_type import order_type_router
+from app.front.apps.inventory.stock_reports import stocks_reports_router
 from app.front.apps.inventory.store import store_router
 from app.front.apps.inventory.store_monitor.store_monitor import store_monitor_router
 from app.front.apps.inventory.store_staff import store_staff_router
@@ -24,6 +25,7 @@ inventory_router.include_router(order_type_router, prefix="/order_type", tags=["
 inventory_router.include_router(location_router, prefix="/location", tags=["location"])
 inventory_router.include_router(location_type_router, prefix="/location_type", tags=["location_type"])
 inventory_router.include_router(move_router, prefix="/move", tags=["move"])
+inventory_router.include_router(stocks_reports_router, prefix="/stock_reports", tags=["stocks_reports"])
 inventory_router.include_router(move_log_router, prefix="/move_log", tags=["move_log"])
 inventory_router.include_router(suggest_router, prefix="/suggest", tags=["suggest"])
 inventory_router.include_router(product_storage_type_router, prefix="/product_storage_type", tags=["product_storage_type"])

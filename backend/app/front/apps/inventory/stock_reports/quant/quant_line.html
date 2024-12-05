@@ -1,0 +1,71 @@
+{% autoescape false %}
+    <tr
+            id="{{ quant.p.key }}"
+            class="line"
+            ui_key="{{ quant.p.ui_key }}"
+            lsn="{{ quant.p.lsn }}"
+            hx-trigger="backend_update consume"
+            hx-get="/inventory/quant/line?quant_id={{ quant._id }}"
+            hx-swap="outerHTML swap:0.3s"
+            hx-target="#{{ quant.p.key }}" style="background-color: #0a7ea4"
+    >
+        <th scope="row" style="white-space: nowrap; vertical-align: middle;">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-check fs-5" style="display: inline-block;">
+                        <input class="form-check-input" type="checkbox"
+                               name="{{ quant.p.key ~ '--check' }}" value="">
+                    </div>
+                </div>
+            </div>
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.product_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.store_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.location_class.as_get }}
+        </th>
+         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.partner_id.as_get }}
+        </th>
+         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.lot_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.location_id.as_get }}
+        </th>
+         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.package_id.as_get }}
+        </th>
+        <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.reserved_quantity.as_get }}
+        </th>
+         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.incoming_quantity.as_get }}
+        </th>
+         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.quantity.as_get }}
+        </th>
+         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
+            {{ quant.uom_id.as_get }}
+        </th>
+         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;"
+             {% if quant.p.is_last %}
+            hx-trigger="revealed"
+            hx-include="#quant-filters"
+            hx-get="/inventory/stock_reports/quants/lines?cursor_lt={{ quant.p.lsn }}"
+             hx-swap="afterend"
+             {% endif %}
+         >
+            {{ quant.move_ids.as_get }}
+        </th>
+
+
+
+    {% include 'components/loader.html' %}
+    </tr>
+
+{% endautoescape %}

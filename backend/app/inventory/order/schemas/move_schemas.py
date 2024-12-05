@@ -74,6 +74,14 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
 class MoveFilter(BaseFilter):
     store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', model='store')
     order_id__in: Optional[List[UUID4]] = Field(default=None, title='Order', model='order')
+    location_src_id__in: Optional[List[UUID4]] = Field(default=None, title='Location src', model='location')
+    location_dest_id__in: Optional[List[UUID4]] = Field(default=None, title='Location dest', model='location')
+    product_id__in: Optional[List[UUID4]] = Field(default=None, title='Product', model='product')
+    lot_id__in: Optional[List[UUID4]] = Field(default=None, title='Lot', model='lot')
+    partner_id__in: Optional[List[UUID4]] = Field(default=None, title='Partner', model='partner')
+    status__in: Optional[List[MoveStatus]] = Field(default=None, title='Status')
+    package_id__in: Optional[List[UUID4]] = Field(default=None, title='Package', model='location')
+    type__in: Optional[List[MoveType]] = Field(default=None, title='Type')
 
     class Config:
         populate_by_name = True

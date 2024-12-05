@@ -239,17 +239,22 @@
                             </a>
                             <ul aria-expanded="false" class="collapse first-level">
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link" href="/inventory/store_monitor1">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/stock_reports/quants">
                                         <span class="icon-small"></span>
-                                        Stocks
+                                        Quants
                                     </a>
                                 </li>
                                 <li class="sidebar-item">
-                                    <a class="sidebar-link" href="/inventory/store_monitor2">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/stock_reports/moves">
                                         <span class="icon-small"></span>
                                         Stock Moves
                                     </a>
-                                </li>
                             </ul>
                         <li class="sidebar-item">
                             <a href="/inventory/store_staff" hx-target="#htmx_content"

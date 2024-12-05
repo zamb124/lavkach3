@@ -3,7 +3,7 @@ from email.policy import default
 from typing import Optional
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, text, JSON, select
-from sqlalchemy.orm import mapped_column, Mapped, relationship, column_property
+from sqlalchemy.orm import mapped_column, Mapped, relationship, column_property, aliased, joinedload
 
 from app.inventory.location.enums import LocationClass, PutawayStrategy, BlockerEnum
 from app.inventory.mixins import LocationMixin
@@ -76,6 +76,47 @@ class Location(Base, AllMixin):
     is_active: Mapped[Optional[bool]] = mapped_column(default=True)
     block: Mapped[BlockerEnum] = mapped_column(default=BlockerEnum.FREE, index=True)
     sort: Mapped[int] = mapped_column(default=0, index=True)
+
+    @classmethod
+    def get_query_locations_by_zone_ids(cls, location_ids, location_classes, location_type_ids):
+        """
+            Метод отдает дополнительный query, который позволяет получить все местоположения по зонам,
+            классам локаций и типам локаций
+        """
+        location_cte = (
+            select(
+                Location.id,
+                Location.location_id,
+                Location.location_class,
+                Location.location_type_id,
+            )
+            .where(Location.id.in_(location_ids))
+            .cte(name="location_cte", recursive=True)
+        )
+
+        # Определяем алиас для CTE
+        location_alias = aliased(location_cte)
+
+        # Добавляем рекурсивную часть запроса
+        location_cte = location_cte.union_all(
+            select(
+                Location.id,
+                Location.location_id,
+                Location.location_class,
+                Location.location_type_id,
+            )
+            .where(Location.location_id == location_alias.c.id)
+            .where(Location.location_class.in_(location_classes) if location_classes else True)  # type: ignore
+            .where(Location.location_type_id.in_(location_type_ids) if location_type_ids else True)  # type: ignore
+        )
+        # Создаем условное выражение для сортировки
+        # Выполняем запрос
+        return (
+            select(Location)
+            .options(joinedload(Location.location_type_rel))
+            .where(Location.id.in_(select(location_cte.c.id)))
+        )
+
 
 class LocationLog(Base, AllMixin):
     """

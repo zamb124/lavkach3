@@ -1,0 +1,5 @@
+{% for quant in moves %}
+    {% with quant=quant %}
+        {% include 'inventory/stock_reports/quant/quant_line.html' %}
+    {% endwith %}
+{% endfor %}

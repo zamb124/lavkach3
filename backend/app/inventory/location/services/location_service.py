@@ -43,7 +43,6 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
             location_type_ids: Optional[List[UUID]] = None,
             location_classes: Optional[List[str]] = None,
     ) -> List[Location]:
-
         # Определяем CTE для рекурсивного запроса
         location_cte = (
             select(

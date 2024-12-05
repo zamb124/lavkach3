@@ -709,12 +709,13 @@ class App {
                 elements.classList.add("active");
             }
             var is_dobble = false
+
             document.querySelectorAll("#sidebarnav a").forEach(function (link) {
                 link.addEventListener("click", function (e) {
                     const isActive = this.classList.contains("active");
                     const parentUl = this.closest("ul");
                     if (!isActive && !e.is_double) {
-                        // hide any open menus and remove all other classes
+                        // Этот код скрывает все открытые меню и удаляет все другие классы:
                         e.is_double = true
                         parentUl.querySelectorAll("ul").forEach(function (submenu) {
                             submenu.classList.remove("in");
@@ -723,7 +724,7 @@ class App {
                             navLink.classList.remove("active");
                         });
 
-                        // open our new menu and add the open class
+                        // Этот код открывает новое меню и добавляет класс open к элементу
                         const submenu = this.nextElementSibling;
                         if (submenu) {
                             submenu.classList.add("in");

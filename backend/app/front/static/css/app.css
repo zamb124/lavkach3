@@ -90,7 +90,10 @@ input[type="date"] {
     height: 10px;
     text-align: center !important;
     opacity: 1;
-
+    & .form-control {
+        background-color: transparent !important;
+        border: transparent !important;
+    }
 }
 
 .table > :not(caption) > * > * {
@@ -123,12 +126,6 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
     margin: 0 auto;
 }
 
-.line-col {
-    & .form-control {
-        background-color: transparent !important;
-        border: transparent !important;
-    }
-}
 .form-check .form-check-input {
     float: left;
     margin-left: 0;

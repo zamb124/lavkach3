@@ -77,6 +77,21 @@ class StoreStaffView(ClassView):
         permits = ['store_staff_list']
         super().__init__(request=request, model='store_staff')
 
+class QuantView(ClassView):
+    """Переопределяем модель"""
+
+    def __init__(self, request: Request):
+        permits = ['quant_list']
+        super().__init__(request=request, model='quant')
+
+class LocationView(ClassView):
+    """Переопределяем модель"""
+
+    def __init__(self, request: Request):
+        permits = ['location_list']
+        super().__init__(request=request, model='location')
+
+
 
 views.update({
     'order': OrderView,
