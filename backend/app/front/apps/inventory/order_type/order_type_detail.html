@@ -1,0 +1,236 @@
+{% autoescape false %}
+    <div class="modal" id="{{ 'modal_'~order_type.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
+            <div class="modal-content slide-right">
+                <div class="modal-header modal-colored-header bg-primary text-white">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-12">
+                                <div class="d-sm-flex align-items-center justify-space-between">
+                                    <h4 class="mb-4 mb-sm-0 card-title">{{ order_type.title }}</h4>
+                                    <nav aria-label="breadcrumb" class="ms-auto">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                <a class="text-decoration-none d-flex text-muted"
+                                                   href="../main/index.html">
+                                                    <iconify-icon icon="solar:home-2-line-duotone"
+                                                                  class="fs-8"></iconify-icon>
+                                                </a>
+                                            </li>
+                                            <li class="breadcrumb-item d-flex align-items-center">
+                                                <a href="#" data-bs-dismiss="modal"
+                                                   class="d-flex align-items-center text-muted">
+                                                    <iconify-icon icon="solar:close-circle-outline"
+                                                                  class="fs-8"></iconify-icon>
+                                                </a>
+                                            </li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body form-control">
+                    <div class="form-body">
+                        <div class="card-body">
+                            <h5 class="card-title mb-0">Main Info</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-lg-5" id="order_type-form">
+                                    <div class="form-group row d-flex align-items-center mb-2">
+                                        <label class="form-label text-end col-md-4"
+                                               data-key="{{ order_type.title.data_key }}">{{ order_type.title._field_name }}</label>
+                                        <div class="col-md-8">
+                                            {% if edit %}
+                                                {{ order_type.title.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.title }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-4"
+                                               data-key="{{ order_type.store_id.data_key }}">{{ order_type.store_id._field_name }}</label>
+                                        <div class="col-md-8">
+                                            {% if edit %}
+                                                {{ order_type.store_id.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.store_id.as_a() }}</p>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-4"
+                                               data-key="{{ order_type.order_class.data_key }}">{{ order_type.order_class._field_name }}</label>
+                                        <div class="col-md-8">
+                                            <p class="form-label">{{ order_type.order_class }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-4"
+                                               data-key="{{ order_type.order_type_id.data_key }}">{{ order_type.order_type_id._field_name }}</label>
+                                        <div class="col-md-8">
+                                            {% if edit %}
+                                                {{ order_type.order_type_id.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.order_type_id.as_a() }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-4"
+                                               data-key="{{ order_type.is_overdelivery.data_key }}">{{ order_type.is_overdelivery._field_name }}</label>
+                                        <div class="col-md-8">
+                                            {% if edit %}
+                                                {{ order_type.is_overdelivery.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.is_overdelivery.as_get }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-4"
+                                               data-key="{{ order_type.is_homogeneity.data_key }}">{{ order_type.is_homogeneity._field_name }}</label>
+                                        <div class="col-md-8">
+                                            {% if edit %}
+                                                {{ order_type.is_homogeneity.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.is_homogeneity.as_get }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-4"
+                                               data-key="{{ order_type.is_allow_create_package.data_key }}">{{ order_type.is_allow_create_package._field_name }}</label>
+                                        <div class="col-md-8">
+                                            {% if edit %}
+                                                {{ order_type.is_allow_create_package.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.is_allow_create_package.as_get }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-4"
+                                               data-key="{{ order_type.is_can_create_order_manualy.data_key }}">{{ order_type.is_can_create_order_manualy._field_name }}</label>
+                                        <div class="col-md-8">
+                                            {% if edit %}
+                                                {{ order_type.is_can_create_order_manualy.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.is_can_create_order_manualy.as_get }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-7" id="order_type-form">
+                                    <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ order_type.allowed_zone_ids.data_key }}">{{ order_type.allowed_zone_ids._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if edit %}
+                                                {{ order_type.allowed_zone_ids.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.allowed_zone_ids.as_get }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ order_type.allowed_location_type_ids.data_key }}">{{ order_type.allowed_location_type_ids._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if edit %}
+                                                {{ order_type.allowed_location_type_ids.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.allowed_location_type_ids.as_get }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ order_type.allowed_location_classes.data_key }}">{{ order_type.allowed_location_classes._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if edit %}
+                                                {{ order_type.allowed_location_classes.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.allowed_location_classes.as_get }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ order_type.allowed_package_ids.data_key }}">{{ order_type.allowed_package_ids._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if edit %}
+                                                {{ order_type.allowed_package_ids.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.allowed_package_ids.as_get }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-3">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ order_type.barcode.data_key }}">{{ order_type.barcode._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if edit %}
+                                                {{ order_type.barcode.as_update }}
+                                            {% else %}
+                                                <p class="form-label">{{ order_type.barcode.as_get }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-md-offset-3 col-md-9">
+                                            {% if edit %}
+                                                <button type="submit"
+                                                        class="btn btn-primary"
+                                                        hx-post="/inventory/order_type/detail?order_type_id={{ order_type._id }}&edit=true"
+                                                        hx-ext="json-enc"
+                                                        hx-include="#order_type-form"
+                                                        hx-swap="outerHTML"
+                                                        hx-target="closest .modal-body"
+                                                        hx-select=".modal-body"
+                                                >
+                                                    <i class="ti ti-download fs-5"></i>
+                                                    Save
+                                                </button>
+                                            {% else %}
+                                                <button type="submit"
+                                                        class="btn btn-primary"
+                                                        hx-get="/inventory/order_type/detail?order_type_id={{ order_type._id }}&edit=true"
+                                                        hx-swap="outerHTML"
+                                                        hx-target="closest .modal-body"
+                                                        hx-select=".modal-body"
+                                                >
+                                                    <i class="ti ti-edit fs-5"></i>
+                                                    Edit
+                                                </button>
+                                            {% endif %}
+                                            <button type="button" class="btn bg-danger-subtle text-danger ms-6"
+                                                    data-bs-dismiss="modal">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endautoescape %}

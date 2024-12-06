@@ -1,0 +1,5 @@
+{% for store in stores %}
+    {% with store=store, scroll=scroll %}
+        {% include 'inventory/store/store_line.html' %}
+    {% endwith %}
+{% endfor %}

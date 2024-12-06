@@ -35,7 +35,7 @@
             {{ quant.lot_id.as_get }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ quant.location_id.as_get }}
+            {{ quant.location_id.as_a('/inventory/location/detail')}}
         </th>
          <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {{ quant.package_id.as_get }}

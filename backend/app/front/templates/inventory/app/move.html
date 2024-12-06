@@ -1,4 +1,4 @@
-{% block as_card %}
+{% block as_card() %}
 {% autoescape false %}
 
 <div class="card" id="{{ move.id }}" ui_key="move--{{ move.id }}" lsn="{{ move.lsn }}"
@@ -7,7 +7,7 @@
      ws-send
      hx-vals='{
                 "model": "move",
-                "mode": "as_card",
+                "mode": "as_card()",
                 "key": "{{ key }}",
                 "type": "update",
                 "id": "{{ move.id }}"

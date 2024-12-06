@@ -56,8 +56,9 @@ htmx.defineExtension('json-enc', {
                     }
                 }
                 return newObj;
+            } else {
+                return obj;
             }
-            return obj;
         }
 
         for (const listName in result) {
@@ -66,7 +67,7 @@ htmx.defineExtension('json-enc', {
             }
         }
 
-        result = replaceEmptyStrings(result);
+       // result = replaceEmptyStrings(result);
 
         return JSON.stringify(result);
     }

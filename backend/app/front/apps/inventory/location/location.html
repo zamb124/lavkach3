@@ -3,7 +3,7 @@
         <div class="row align-items-center">
             <div class="col-12">
                 <div class="d-sm-flex align-items-center justify-space-between">
-                    <h4 class="mb-4 mb-sm-0 card-title">{{ store_user.store_id.as_card_title }}</h4>
+                    <h4 class="mb-4 mb-sm-0 card-title"><h4>All Locations- </h4> {{ store_user.store_id.as_card_title }}</h4>
                     <nav aria-label="breadcrumb" class="ms-auto">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item d-flex align-items-center">
@@ -30,7 +30,7 @@
     </div>
 
     <div class="card position-relative overflow-hidden">
-        <div class="shop-part d-flex w-100">
+        <div class="shop-part w-100">
             <div class="offcanvas offcanvas-end" tabindex="-1" id="location-filters"
                  aria-labelledby="location-filters-label">
                 <div class="offcanvas-header">
@@ -90,16 +90,6 @@
                             </a>
                         </li>
                     </ul>
-
-
-                    <div class="p-4">
-                        <button
-                                hx-target="#location-filters"
-                                class="btn btn-primary w-100"
-                                hx-on="click: htmx.trigger('#target-element', 'backend_update')"
-                        >Apply Filters
-                        </button>
-                    </div>
                 </div>
             </div>
             <div class="card-body p-4 pb-0">
@@ -108,7 +98,6 @@
                        role="button" aria-controls="filtercategory">
                         <i class="ti ti-menu-2 fs-6"></i>
                     </a>
-                    <h5 class="fs-5 mb-0 d-none d-lg-block">Products</h5>
                     <div class="d-flex align-items-center gap-6">
                         <div class="position-relative">
                             <input type="text" class="form-control search-chat py-2 ps-5" id="text-srh"
@@ -119,7 +108,7 @@
                     </div>
                 </div>
                 <div class="row" id="locations-table">
-                    {% with locations=locations %}
+                    {% with locations=locations, scroll=True %}
                         {% include 'inventory/location/location_table.html' %}
                     {% endwith %}
                 </div>

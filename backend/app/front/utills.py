@@ -32,5 +32,8 @@ def convert_query_params_to_dict(query_params):
             else:
                 params_dict[key] = [old_val, value]
         else:
-            params_dict[key] = value
+            if key.endswith('__in'):
+                params_dict[key] = [value]
+            else:
+                params_dict[key] = value
     return params_dict

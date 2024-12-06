@@ -140,14 +140,15 @@ class Field:
             field=self,
         )
 
-    @property
-    def as_card(self):
+    def as_card(self, url=None, model=None):
         """Отобразить как маленькую карточку"""
         return render_block(
             environment=environment,
             template_name=f'field/as_card.html',
             block_name='as_card',
             field=self,
+            url=url,
+            movel=model
         )
 
     def as_a(self, url=None, model=None):
@@ -160,7 +161,6 @@ class Field:
             url=url,
             model=model
         )
-
 
     @property
     def data_key(self) -> str:

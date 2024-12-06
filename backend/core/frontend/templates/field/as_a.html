@@ -1,7 +1,8 @@
 {% block as_a %}
 <a
    {% if url %}
-       href="{{ url }}?{{ field.field_name }}={{ field.val }}"
+       href="#"
+       hx-get="{{ url }}?{{ field.model_name }}_id={{ field.val }}"
     {% else %}
         href="#"
         hx-get="/base/modal/{{ field.model_name }}/{{ field.val }}"

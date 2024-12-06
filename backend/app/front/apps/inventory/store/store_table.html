@@ -1,0 +1,29 @@
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+        <tr class="line fs-5 text-center" style="text-align: center">
+            <th>
+                <p>
+                <input class="form-check-input" type="checkbox" id="{{ stores.p.class_key ~'--'~ 'checkAll' }}" value="option">
+                </p>
+            </th>
+            {{ stores.title.as_th_title }}
+            {{ stores.order_class.as_th_title }}
+            {{ stores.order_type_id.as_th_title }}
+            {{ stores.backorder_action_type.as_th_title }}
+            {{ stores.store_id.as_th_title }}
+            {{ stores.partner_id.as_th_title }}
+            {{ stores.reservation_method.as_th_title }}
+            {{ stores.is_homogeneity.as_th_title }}
+        </tr>
+        </thead>
+        <tbody hx-trigger="change from:#store-filters delay:500ms"
+               hx-include="#store-filters"
+               hx-get="/inventory/store/lines"
+        >
+        {% with stores=stores, scroll=True %}
+            {% include 'inventory/store/store_lines.html' %}
+        {% endwith %}
+        </tbody>
+    </table>
+</div>

@@ -241,6 +241,7 @@ async function choiceMultiBabel(element) {
         allowHTML: true,
         placeholderValue: "Enter " + display_title
     }
+
     if (method === 'get' || element.getAttribute('readonly')) {
         attrs.removeItemButton = false
     } else {
@@ -362,56 +363,19 @@ async function choiceMultiEnum(element, method) {
     }
     choices.containerInner.element.classList.add('form-control');
 
-    function check_valid(event) {
-        if (method === 'get' || element.getAttribute('readonly')) { // Если метод get или reanonly, то нет смысла от валидования
-            // Если метод get или reanonly, то нет смысла от валидования
-            return
-        }
-        if (element.required) {
-            if (event) {
-                if (event.type === 'choice') {
-                    if (event.detail.choice.value) {
-                        choices.containerInner.element.classList.remove('is-invalid');
-                        choices.containerInner.element.classList.add('is-valid');
-                    }
-                } else if (event.type === 'removeItem') {
-                    if (event.detail.value) {
-                        if (!choices.containerInner.element.innerText) {
-                            choices.containerInner.element.classList.add('is-invalid');
-                            choices.containerInner.element.classList.remove('is-valid');
-                        } else {
-                            choices.containerInner.element.classList.add('is-valid');
-                            choices.containerInner.element.classList.remove('is-invalid');
-                        }
-
-                    }
-                }
-
+    if (is_filter) {
+        function check_valid() {
+            if (element.required) {
+                choices.containerInner.element.classList.add('is-invalid');
+                choices.containerInner.element.classList.remove('is-valid');
             } else {
-                if (!choices.containerInner.element.innerText) {
-                    choices.containerInner.element.classList.add('is-invalid');
-                    choices.containerInner.element.classList.remove('is-valid');
-                } else {
-                    choices.containerInner.element.classList.add('is-valid');
-                    choices.containerInner.element.classList.remove('is-invalid');
-                }
-            }
-        } else if (element.id.includes('__in')) {
-            choices.containerInner.element.classList.remove('is-invalid');
-            choices.containerInner.element.classList.remove('is-invalid');
-        } else {
-            try {
                 choices.containerInner.element.classList.remove('is-invalid');
-            } catch (err) {
-
+                choices.containerInner.element.classList.add('is-valid');
             }
-            choices.containerInner.element.classList.add('is-valid');
         }
+
+        check_valid()
     }
-
-    choices.containerInner.element.classList.add('form-control');
-
-    check_valid()
 }
 
 async function setTitle(element, method) {

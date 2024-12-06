@@ -27,17 +27,17 @@
             {% if move.type.val == 'product' %}
                 {{ move.product_id.as_get }}
             {% else %}
-                {{ move.location_id.as_get }}
+                {{ move.location_id.as_a(model='location', url='/inventory/location/detail') }}
             {% endif %}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             {{ move.edited_by.as_get }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ move.location_src_id.as_get }}
+            {{ move.location_src_id.as_a(model='location', url='/inventory/location/detail') }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ move.location_dest_id.as_get }}
+            {{ move.location_dest_id.as_a('/inventory/location/detail') }}
         </th>
         <th class="line-col">
             {% if move.status.val in ('created', 'reservation_failed') %}

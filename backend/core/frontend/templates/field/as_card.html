@@ -17,7 +17,12 @@
                     <a class="uuid-get text-danger text-center"
                        id="{{ field.field_name }}"
                        model-name="{{ field.model_name }}"
-                       href="/base/modal/{{ field.model_name }}/{{ field.val }}"
+                       href="#"
+                       {% if url %}
+                       hx-get="{{ url }}?{{ field.model_name }}_id={{ field.val }}"
+                       {% else %}
+                       hx-get="/base/modal/{{ field.model_name }}/{{ field.val }}"
+                       {% endif %}
                        hx-include="none"
                        hx-trigger="click consume"
                        hx-target="#htmx_content"
@@ -29,7 +34,11 @@
                     <h4 class="card-title mb-0 mt-0" id="{{ field.field_name }}" model-name="{{ field.model_name }}">
                     <a class="text-danger text-center"
                        href="#"
-                       hx-get="/base/modal/{{ field.model_name }}/{{ field.val.p.id }}"
+                      {% if url %}
+                       hx-get="{{ url }}?{{ field.model_name }}_id={{ field.val.id }}"
+                       {% else %}
+                       hx-get="/base/modal/{{ field.model_name }}/{{ field.val.id }}"
+                       {% endif %}
                        hx-include="none"
                        hx-trigger="click consume"
                        hx-target="#htmx_content"

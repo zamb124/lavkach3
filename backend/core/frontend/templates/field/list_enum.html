@@ -36,7 +36,8 @@
 {% endblock %}
 {% block as_get %}
     <select id="{{ field.field_name }}"
-            class="list-enum-get form-control"
+            class="list-enum-get form-control align-items-center"
+            disabled
             display-title="{{ field.update.title }}"
             title="{{ field.update.description }}"
             {% if field.update.readonly %} readonly='1' {% endif %}

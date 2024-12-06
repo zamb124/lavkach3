@@ -12,7 +12,7 @@
         <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
             <div class="modal-content slide-right" id="modal_content_{{ order.p.id }}"
             >
-                <div class="modal-header">
+                <div class="modal-header modal-colored-header bg-primary text-white">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-12">
@@ -43,26 +43,26 @@
                                         <ol class="breadcrumb">
                                             <li class="breadcrumb-item d-flex align-items-center">
                                                 {% if order.status.val in ('created', 'reservation_failed', 'confirming') %}
-                                                    {{ order.h.as_action('order_confirm', 'as_a', css_class="btn btn-sm btn-primary") }}
+                                                    {{ order.h.as_action('order_confirm', 'as_a', css_class="btn btn-sm btn-secondary") }}
                                                     </li>
                                                 {% endif %}
                                             {% if order.status.val in ('waiting', 'processing') %}
                                                 <li class="breadcrumb-item d-flex align-items-center">
-                                                    {{ order.h.as_action('order_assign', 'as_a', css_class="btn btn-sm btn-primary") }}
+                                                    {{ order.h.as_action('order_assign', 'as_a', css_class="btn btn-sm btn-secondary") }}
                                                 </li>
                                             {% endif %}
                                             {% if order.status.val == 'confirmed' %}
                                                 <li class="breadcrumb-item d-flex align-items-center">
-                                                    {{ order.h.as_action('order_start', 'as_a', css_class="btn btn-sm btn-primary") }}
+                                                    {{ order.h.as_action('order_start', 'as_a', css_class="btn btn-sm btn-secondary") }}
                                                 </li>
                                             {% endif %}
                                             {% if order.status.val =='processing' %}
                                                 <li class="breadcrumb-item d-flex align-items-center">
-                                                    {{ order.h.as_action('order_complete', 'as_a', css_class="btn btn-sm btn-primary") }}
+                                                    {{ order.h.as_action('order_complete', 'as_a', css_class="btn btn-sm btn-secondary") }}
                                                 </li>
                                             {% endif %}
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                                <a href="#" data-bs-dismiss="modal" class="d-flex align-items-center">
+                                                <a href="#" data-bs-dismiss="modal" class="d-flex align-items-center text-muted">
                                                     <iconify-icon icon="solar:close-circle-outline"
                                                                   class="fs-8"></iconify-icon>
                                                 </a>
@@ -78,19 +78,19 @@
                     <div class="card-body p-3">
                         <div class="row">
                             <div class="col-md-4 col-lg-2 col-6 small-padding">
-                                {{ order.number.as_card }}
+                                {{ order.number.as_card() }}
                             </div>
                             <div class="col-md-3 col-lg-2 col-6 small-padding">
-                                {{ order.created_at.as_card }}
+                                {{ order.created_at.as_card() }}
                             </div>
                             <div class="col-md-4 col-lg-2 col-12 small-padding">
-                                {{ order.partner_id.as_card }}
+                                {{ order.partner_id.as_card() }}
                             </div>
                             <div class="col-md-4 col-lg-2 col-6 small-padding">
-                                {{ order.order_type_rel.as_card }}
+                                {{ order.order_type_rel.as_card(url='/inventory/order_type/detail') }}
                             </div>
                             <div class="col-md-4 col-lg-2  small-padding">
-                                {{ order.user_ids.as_card }}
+                                {{ order.user_ids.as_card() }}
                             </div>
                         </div>
                     </div>

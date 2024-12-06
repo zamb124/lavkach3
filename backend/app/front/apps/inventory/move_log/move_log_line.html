@@ -32,7 +32,7 @@
             {{ move_log.location_class.as_get }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
-            {{ move_log.location_id.as_get }}
+            {{ move_log.location_id.as_a(model='location', url='/inventory/location/detail') }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;" data-label="Дата создания">
             {{ move_log.lot_id.as_get }}

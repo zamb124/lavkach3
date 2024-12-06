@@ -13,7 +13,9 @@ class OrderView(ClassView):
 
 class MoveView(ClassView):
     """Переопределяем модель"""
-
+    _urls = {
+        'get': '/inventory/move/detail',
+    }
     def __init__(self, request: Request):
         permits = ['move_list']
         super().__init__(request=request, model='move', )
@@ -53,9 +55,12 @@ class MoveLogView(ClassView):
 
 class OrderTypeView(ClassView):
     """Переопределяем модель"""
-
+    _urls = {
+        'get': '/inventory/order_type/detail',
+    }
     def __init__(self, request: Request):
         permits = ['order_type_list']
+
         super().__init__(request=request, model='order_type')
 
 

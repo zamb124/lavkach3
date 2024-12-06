@@ -611,10 +611,10 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                 "partner_id": move.partner_id if move.partner_id else None,
                 "quantity": 0.0,
                 "reserved_quantity": 0.0,
-                "incoming_quantity": total_quantity,
+                "incoming_quantity": abs(total_quantity),
                 "uom_id": move.uom_id,
             })
-            move.quant_dest_rel.incoming_quantity += total_quantity
+            move.quant_dest_rel.incoming_quantity += abs(total_quantity)
             move.status = MoveStatus.CONFIRMED
             move.estatus = 'done'
 

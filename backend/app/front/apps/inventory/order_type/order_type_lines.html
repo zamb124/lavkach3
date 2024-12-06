@@ -1,0 +1,5 @@
+{% for order_type in order_types %}
+    {% with order_type=order_type, scroll=scroll %}
+        {% include 'inventory/order_type/order_type_line.html' %}
+    {% endwith %}
+{% endfor %}

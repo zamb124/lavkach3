@@ -198,8 +198,8 @@
 }
 
 .is-disabled .choices__list--multiple .choices__item {
-    background-color: #aaa;
-    border: 1px solid #919191
+    background-color: var(--bs-secondary);
+    background-color: var(--bs-secondary);
 }
 
 .choices__list--dropdown, .choices__list[aria-expanded] {

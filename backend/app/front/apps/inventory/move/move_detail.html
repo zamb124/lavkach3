@@ -2,7 +2,7 @@
     <div class="modal" id="{{ 'modal_'~move.p.key }}" tabindex="-1" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
             <div class="modal-content slide-right">
-                <div class="modal-header">
+                <div class="modal-header modal-colored-header bg-primary text-white">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-12">
@@ -25,17 +25,12 @@
                                     {% endif %}
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
+
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                                <a class="text-muted text-decoration-none d-flex"
-                                                   href="../main/index.html">
-                                                    <iconify-icon icon="solar:home-2-line-duotone"
-                                                                  class="fs-6"></iconify-icon>
+                                                <a href="#" data-bs-dismiss="modal" class="d-flex align-items-center text-muted">
+                                                    <iconify-icon icon="solar:close-circle-outline"
+                                                                  class="fs-8"></iconify-icon>
                                                 </a>
-                                            </li>
-                                            <li class="breadcrumb-item" aria-current="page">
-                                            <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
-                                              Modals
-                                            </span>
                                             </li>
                                         </ol>
                                     </nav>
@@ -61,16 +56,16 @@
                                 </div>
                             </div>
                             <div class="col-md-3 col-lg-2 col-6 small-padding">
-                                {{ move.order_type_id.as_card }}
+                                {{ move.order_type_id.as_card(url='/inventory/order_type/detail') }}
                             </div>
                             <div class="col-md-4 col-lg-2 col-12 small-padding">
-                                {{ move.store_id.as_card }}
+                                {{ move.store_id.as_card() }}
                             </div>
                             <div class="col-md-4 col-lg-2 col-6 small-padding">
-                                {{ move.location_src_id.as_card }}
+                                {{ move.location_src_id.as_card(url='/inventory/location/detail') }}
                             </div>
                             <div class="col-md-4 col-lg-2  small-padding">
-                                {{ move.location_dest_id.as_card }}
+                                {{ move.location_dest_id.as_card(url='/inventory/location/detail') }}
                             </div>
                         </div>
                     </div>

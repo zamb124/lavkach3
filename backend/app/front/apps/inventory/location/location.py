@@ -29,13 +29,14 @@ async def location_list(request: Request, store_user: StoreStaffView = Depends(g
             'locations': locations,
             'classes': LocationClass,
             'zones': zones,
-            'store_user': store_user
+            'store_user': store_user,
+            'scroll': True
         }
     )
 
 
 @location_router.get("/lines", response_class=HTMLResponse)
-async def location_lines(request: Request, store_user: StoreStaffView = Depends(get_user_store)):
+async def location_lines(request: Request, store_user: StoreStaffView = Depends(get_user_store), scroll: bool = False):
     # Отчет по остаткам
 
     locations = LocationView(request)
@@ -46,7 +47,8 @@ async def location_lines(request: Request, store_user: StoreStaffView = Depends(
         locations.r, 'inventory/location/location_lines.html',
         context={
             'locations': locations,
-            'store_user': store_user
+            'store_user': store_user,
+            'scroll': scroll
         }
     )
 

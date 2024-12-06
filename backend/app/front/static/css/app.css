@@ -236,3 +236,6 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
 }
+a.text-danger {
+    font-weight: 600;
+}

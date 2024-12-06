@@ -3,12 +3,12 @@
         <div class="row align-items-center">
             <div class="col-12">
                 <div class="d-sm-flex align-items-center justify-space-between">
-                    <h4 class="mb-4 mb-sm-0 card-title"><h4>Quants-</h4>{{ store_user.store_id.as_card_title }}</h4>
+                    <h4 class="mb-4 mb-sm-0 card-title">{{ store_user.store_id.as_card_title }}</h4>
                     <nav aria-label="breadcrumb" class="ms-auto">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item d-flex align-items-center">
                                 <a class="text-muted text-decoration-none d-flex" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#quant-filters" aria-controls="quant-filters">
+            data-bs-target="#store-filters" aria-controls="store-filters">
                                     <iconify-icon icon="solar:filter-bold-duotone" class="fs-7"></iconify-icon>
                                 </a>
                             </li>
@@ -30,76 +30,23 @@
     </div>
 
     <div class="card position-relative overflow-hidden">
-        <div class="shop-part  w-100">
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="quant-filters"
-                 aria-labelledby="quant-filters-label">
+        <div class="shop-part d-flex w-100">
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="store-filters"
+                 aria-labelledby="store-filters-label">
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="quant-filters-label">Filters</h5>
+                    <h5 class="offcanvas-title" id="store-filters-label">Filters</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
                     <ul class="list-group pt-2 border-bottom rounded-0">
-                        <h6 class="my-3 mx-4 fw-semibold">Locations</h6>
+                        <h6 class="my-3 mx-4 fw-semibold">Source</h6>
                         <li class="list-group-item border-0 p-0 mx-4 mb-2">
                             <div>
-                                {{ quants.location_id__in.as_update }}
+                                {{ stores.source.as_update }}
                             </div>
                         </li>
-                    </ul>
-                    <ul class="list-group pt-2 border-bottom rounded-0">
-                        <h6 class="my-3 mx-4 fw-semibold">Location Class</h6>
-                        {% for class in classes %}
-                            <li class="list-group-item border-0 p-0 mx-4 mb-2">
-                                <div>
-                                    <input type="checkbox" name="{{ quants.location_class__in.field_name }}"
-                                           value="{{ class.value }}"
-                                           class="btn-check" id="{{ class.value }}" autocomplete="off">
-                                    <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
-                                           for="{{ class.value }}">{{ class.name }}</label>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    <ul class="list-group pt-2 border-bottom rounded-0">
-                        <h6 class="my-3 mx-4 fw-semibold">Zones</h6>
-                        {% for zone in zones %}
-                            <li class="list-group-item border-0 p-0 mx-4 mb-2">
-                                <div>
-                                    <input type="checkbox" name="zone_id__in"
-                                           value="{{ zone.id }}"
-                                           class="btn-check" id="{{ zone.p.key }}" autocomplete="off">
-                                    <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
-                                           for="{{ zone.p.key }}">{{ zone.title }}</label>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    <ul class="list-group pt-2 border-bottom rounded-0">
-                        <h6 class="my-3 mx-4 fw-semibold">Partners</h6>
-                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
-                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
-                               href="javascript:void(0)">
-                                <i class="ti ti-sort-descending-2 fs-5"></i>Partner 1
-                            </a>
-                        </li>
-                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
-                            <a class="d-flex align-items-center gap-6 list-group-item-action text-dark px-3 py-6 rounded-1"
-                               href="javascript:void(0)">
-                                <i class="ti ti-sort-descending-2 fs-5"></i>
-                                Partner 2
-                            </a>
-                        </li>
-                    </ul>
 
-
-                    <div class="p-4">
-                        <button
-                                hx-target="#quant-filters"
-                                class="btn btn-primary w-100"
-                                hx-on="click: htmx.trigger('#target-element', 'backend_update')"
-                        >Apply Filters
-                        </button>
-                    </div>
+                    </ul>
                 </div>
             </div>
             <div class="card-body p-4 pb-0">
@@ -108,6 +55,7 @@
                        role="button" aria-controls="filtercategory">
                         <i class="ti ti-menu-2 fs-6"></i>
                     </a>
+                    <h5 class="fs-5 mb-0 d-none d-lg-block">Products</h5>
                     <div class="d-flex align-items-center gap-6">
                         <div class="position-relative">
                             <input type="text" class="form-control search-chat py-2 ps-5" id="text-srh"
@@ -117,9 +65,9 @@
                         >
                     </div>
                 </div>
-                <div class="row" id="quants-table">
-                    {% with quants=quants %}
-                        {% include 'inventory/stock_reports/quant/quants_table.html' %}
+                <div class="row" id="stores-table">
+                    {% with stores=stores, scroll=True %}
+                        {% include 'inventory/store/store_table.html' %}
                     {% endwith %}
                 </div>
             </div>

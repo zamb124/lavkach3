@@ -1,59 +1,57 @@
 {% autoescape false %}
     <tr
-            id="{{ location.p.key }}"
+            id="{{ store.p.key }}"
             class="line"
-            ui_key="{{ location.p.ui_key }}"
-            lsn="{{ location.p.lsn }}"
+            ui_key="{{ store.p.ui_key }}"
+            lsn="{{ store.p.lsn }}"
             hx-trigger="backend_update consume"
-            hx-get="/inventory/location/lines?id={{ location._id }}"
+            hx-get="/inventory/store/lines?id={{ store._id }}"
             hx-swap="outerHTML swap:0.3s"
-            hx-target="#{{ location.p.key }}" style="background-color: #0a7ea4"
+            hx-target="#{{ store.p.key }}" style="background-color: #0a7ea4"
     >
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             <input class="form-check-input fs-5" type="checkbox"
-                   name="{{ location.p.key ~ '--check' }}" value="">
+                   name="{{ store.p.key ~ '--check' }}" value="">
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            <a href="/inventory/location/detail?location_id={{ location._id }}"
+            <a href="/inventory/store/detail?order_type_id={{ store._id }}"
                hx-trigger="click"
                hx-push-url="false"
                hx-target="#htmx_content"
                hx-swap="beforeend transition:true"
                class="text-danger form-control">
-                {{ location.title }}</a>
+                {{ store.title }}</a>
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ location.store_id.as_get }}
+            {{ store.order_class.as_get }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ location.location_class.as_get }}
+            {{ store.order_type_id.as_get }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ location.location_type_id.as_get }}
+            {{ store.backorder_action_type.as_get }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ location.location_id.as_a(url='/inventory/location/detail') }}
+            {{ store.store_id.as_get }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ location.is_active.as_get }}
+            {{ store.partner_id.as_get }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
-            {{ location.block.as_get }}
+            {{ store.reservation_method.as_get }}
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
 
-        {{ location.sort.as_get }}
+        {{ store.is_homogeneity.as_get }}
         </th>
-        <span{% if location.p.is_last and scroll %}
-                hx-trigger="revealed"
-                hx-include="#location-filters"
-                hx-get="/inventory/location/lines?cursor_lt={{ location.p.lsn }}"
-                hx-swap="afterend">
-            {% endif %}
-
-        </span>
-
         {% include 'components/loader.html' %}
+    <span
+    {% if store.p.is_last and scroll %}
+                hx-trigger="revealed"
+                hx-include="#store-filters"
+                hx-get="/inventory/store/lines?cursor_lt={{ store.p.lsn }}"
+                hx-swap="afterend">
+            {% endif %}></span>
     </tr>
 
 {% endautoescape %}

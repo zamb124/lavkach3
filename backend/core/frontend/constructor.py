@@ -580,6 +580,7 @@ class ClassView:
     _templates = {
         'as_tr_': 'line/as_tr.html',
     }
+    _urls: dict
     p: P
     h: H
 
@@ -1067,3 +1068,10 @@ class Method(str, enum.Enum):
     UPDATE_SAVE: str = 'save'  # Сохранить изменения
     CREATE_SAVE: str = 'save_create'  # Сохранить новую запись
     DELETE_SAVE: str = 'delete_delete'  # Подтвердить удаление записи
+
+
+def get_model(request: Request, model: str) -> ClassView:
+    cls = views.get(model)
+    if not cls:
+        return ClassView(request=request, model=model)
+    return cls(request=request)

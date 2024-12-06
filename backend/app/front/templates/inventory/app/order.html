@@ -1,4 +1,4 @@
-{% block as_card %}
+{% block as_card() %}
 {% autoescape false %}
 <div class="card" id="{{ order.id }}" ui_key="order--{{ order.id }}" lsn="{{ order.lsn }}"
      hx-trigger="backend_update"
@@ -6,7 +6,7 @@
      ws-send
      hx-vals='{
                 "model": "order",
-                "mode": "as_card",
+                "mode": "as_card()",
                 "key": "{{ key }}",
                 "type": "update",
                 "id": "{{ order.id }}"

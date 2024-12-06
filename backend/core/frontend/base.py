@@ -6,17 +6,17 @@ from uuid import UUID
 import openpyxl
 from fastapi import APIRouter, UploadFile, File
 from fastapi import Request
+from fastapi.params import Depends
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
 
 from app.front.front_tasks import import_prepare_data, import_save
-from core.frontend.constructor import ClassView, Method
+from core.frontend.constructor import ClassView, Method, views, get_model
 from core.frontend.utils import clean_filter
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 class ExceptionResponseSchema(BaseModel):
     error: str
@@ -32,7 +32,11 @@ async def _filter(request: Request, model: str):
     """
      Универсальный запрос, который отдает фильтр обьекта по его модулю и модели
     """
-    cls = ClassView(request, model=model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     return cls.h.as_filter_get
 
 
@@ -79,21 +83,25 @@ async def get_by_ids(request: Request, model: str, id__in: str):
 
 
 @router.get("/table/{model}", response_class=HTMLResponse)
-async def table(request: Request, model: str, cursor_lt: Optional[int] = None):
+async def table(request: Request, model: str, cls: ClassView = Depends(get_model)):
     """
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
-    cls = ClassView(request, model=model)
     await cls.init(params=dict(request.query_params))
     return cls.h.as_table_get
 
 
 @router.get("/line/{model}", response_class=HTMLResponse)
-async def line(request: Request, model: str, mode: str = 'tr', method: str = 'get', parent_field: str = None):
+async def line(request: Request, model: str, parent_field: str = None):
     """
      Универсальный запрос, который отдает/изменяет обьект
     """
-    cls = ClassView(request, model, parent_field=parent_field)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model, parent_field=parent_field)
+    else:
+        cls = cls_view(request)
+        cls.v.parent_field = parent_field
     """Отдать обьект на создание, в зависимости от mode (tr/div)"""
     return cls.h.as_tr_create
 
@@ -103,7 +111,11 @@ async def line(request: Request, model: str, line_id: UUID, mode: str = 'tr', me
     """
      Универсальный запрос, который отдает/изменяет обьект
     """
-    cls = ClassView(request, model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     match method:
         case Method.UPDATE:
             """Отдать обьект на редактирование, в зависимости от mode (tr/div)"""
@@ -142,7 +154,11 @@ async def line(request: Request, model: str):
     """
      Универсальный запрос, который отдает/изменяет обьект
     """
-    cls = ClassView(request, model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     """Сохранение записи при создании"""
     data = await request.json()
     line = await cls.create_line(data)
@@ -154,7 +170,11 @@ async def line_delete(request: Request, model: str, line_id: UUID):
     """
      Универсальный запрос, который отдает/изменяет обьект
     """
-    cls = ClassView(request, model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     await cls.delete_lines(ids=[line_id])
     """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
 
@@ -164,7 +184,11 @@ async def line_update(request: Request, model: str, line_id: UUID):
     """
      Универсальный запрос, который отдает/изменяет обьект
     """
-    cls = ClassView(request, model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     """Сохранение записи при измененнии"""
     data = await request.json()
     await cls.update_line(id=line_id, data=data)
@@ -175,7 +199,11 @@ async def modal(request: Request, model: str, line_id: Optional[str | UUID] = No
     """
      Универсальный запрос модалки, который отдает форму модели
     """
-    cls = ClassView(request, model=model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     match method:
         case Method.GET:
             line = await cls.get_lines(ids=[line_id])
@@ -195,7 +223,11 @@ async def field_get(request: Request, model: str, line_id: UUID, field_name: str
     """
      Универсальный запрос на получение as_update поля
     """
-    cls = ClassView(request, model=model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     line = await cls.get_lines(ids=[line_id])
     return getattr(line, field_name).as_('update', button=True)
 
@@ -205,7 +237,11 @@ async def field_update(request: Request, model: str, line_id: UUID, field_name: 
     """
      Универсальный запрос на получение as_update поля
     """
-    cls = ClassView(request, model=model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     data = await request.json()
     async with cls.v.model.adapter as a:
         line = await a.get(id=line_id)
@@ -229,7 +265,11 @@ async def action(request: Request, model: str, action_name: str, line_id: UUID):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    cls = ClassView(request, model=model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     return await cls.get_action(action_name=action_name, line_id=line_id)
 
 
@@ -238,7 +278,11 @@ async def action(request: Request, model: str, action_name: str, line_id: UUID):
     """
      Универсальный запрос, который отдает форму модели (черпает из ModelUpdateSchema
     """
-    cls = ClassView(request, model=model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     func: Callable = getattr(cls.v.model.adapter, action_name)
     result = []
     if action_schema := cls.v.actions[action_name].get('schema'):
@@ -262,7 +306,11 @@ async def modal(request: Request, model: str, method: str):
     """
      Универсальный запрос модалки, который отдает форму модели
     """
-    cls = ClassView(request, model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     return cls.get_import
 
 
@@ -271,7 +319,11 @@ async def modal(request: Request, model: str, method: str):
     """
      Универсальный запрос модалки, который отдает форму модели
     """
-    cls = ClassView(request, model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     data = await request.json()
     lines = await import_save(model, data)
     await cls.init(params={}, data=lines)
@@ -284,7 +336,11 @@ async def import_upload(request: Request, model: str, file: UploadFile = File(..
      Универсальный запрос модалки, который отдает форму модели
     """
     model, key = request.query_params.values()
-    cls: ClassView = ClassView(request, model)
+    cls_view = views.get(model)
+    if not cls_view:
+        cls = ClassView(request, model)
+    else:
+        cls = cls_view(request)
     format: str = file.filename.split('.')[-1]  # type: ignore
     data: list = []
     header: list = []

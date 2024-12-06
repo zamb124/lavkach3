@@ -1,0 +1,29 @@
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+        <tr class="line fs-5 text-center" style="text-align: center">
+            <th>
+                <p>
+                <input class="form-check-input" type="checkbox" id="{{ order_types.p.class_key ~'--'~ 'checkAll' }}" value="option">
+                </p>
+            </th>
+            {{ order_types.title.as_th_title }}
+            {{ order_types.order_class.as_th_title }}
+            {{ order_types.order_type_id.as_th_title }}
+            {{ order_types.backorder_action_type.as_th_title }}
+            {{ order_types.store_id.as_th_title }}
+            {{ order_types.partner_id.as_th_title }}
+            {{ order_types.reservation_method.as_th_title }}
+            {{ order_types.is_homogeneity.as_th_title }}
+        </tr>
+        </thead>
+        <tbody hx-trigger="change from:#order_type-filters delay:500ms"
+               hx-include="#order_type-filters"
+               hx-get="/inventory/order_type/lines"
+        >
+        {% with order_types=order_types, scroll=True %}
+            {% include 'inventory/order_type/order_type_lines.html' %}
+        {% endwith %}
+        </tbody>
+    </table>
+</div>

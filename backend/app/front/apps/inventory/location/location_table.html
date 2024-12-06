@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <table class="table align-middle">
+    <table class="table align-middle text-nowrap">
         <thead>
         <tr class="line fs-5 text-center" style="text-align: center">
             <th>
@@ -21,7 +21,7 @@
                hx-include="#location-filters"
                hx-get="/inventory/location/lines"
         >
-        {% with locations=locations %}
+        {% with locations=locations, scroll=True %}
             {% include 'inventory/location/location_lines.html' %}
         {% endwith %}
         </tbody>

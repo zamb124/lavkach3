@@ -31,7 +31,7 @@
         <th class="line-col text-center"
             style="padding-left: 2px; padding-right: 2px;">{{ order.created_at.as_get }}</th>
         <th class="line-col text-center"
-            style="padding-left: 2px; padding-right: 2px;">{{ order.order_type_rel.as_get }}</th>
+            style="padding-left: 2px; padding-right: 2px;">{{ order.order_type_id.as_a(url='/inventory/order_type/detail') }}</th>
         <th class="line-col text-center"
             style="padding-left: 2px; padding-right: 2px;">{{ order.partner_id.as_get }}</th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">{{ order.user_ids.as_get }}</th>

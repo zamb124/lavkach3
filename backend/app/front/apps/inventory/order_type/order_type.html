@@ -3,12 +3,12 @@
         <div class="row align-items-center">
             <div class="col-12">
                 <div class="d-sm-flex align-items-center justify-space-between">
-                    <h4 class="mb-4 mb-sm-0 card-title"><h4>Quants-</h4>{{ store_user.store_id.as_card_title }}</h4>
+                    <h4 class="mb-4 mb-sm-0 card-title"><h4>Order Types-</h4>{{ store_user.store_id.as_card_title }}</h4>
                     <nav aria-label="breadcrumb" class="ms-auto">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item d-flex align-items-center">
                                 <a class="text-muted text-decoration-none d-flex" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#quant-filters" aria-controls="quant-filters">
+            data-bs-target="#order_type-filters" aria-controls="order_type-filters">
                                     <iconify-icon icon="solar:filter-bold-duotone" class="fs-7"></iconify-icon>
                                 </a>
                             </li>
@@ -30,11 +30,11 @@
     </div>
 
     <div class="card position-relative overflow-hidden">
-        <div class="shop-part  w-100">
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="quant-filters"
-                 aria-labelledby="quant-filters-label">
+        <div class="shop-part w-100">
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="order_type-filters"
+                 aria-labelledby="order_type-filters-label">
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="quant-filters-label">Filters</h5>
+                    <h5 class="offcanvas-title" id="order_type-filters-label">Filters</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
@@ -42,16 +42,22 @@
                         <h6 class="my-3 mx-4 fw-semibold">Locations</h6>
                         <li class="list-group-item border-0 p-0 mx-4 mb-2">
                             <div>
-                                {{ quants.location_id__in.as_update }}
+                                {{ order_types.strategy.as_update }}
                             </div>
                         </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <div>
+                                {{ order_types.is_overdelivery.as_update }}
+                            </div>
+                        </li>
+
                     </ul>
                     <ul class="list-group pt-2 border-bottom rounded-0">
                         <h6 class="my-3 mx-4 fw-semibold">Location Class</h6>
                         {% for class in classes %}
                             <li class="list-group-item border-0 p-0 mx-4 mb-2">
                                 <div>
-                                    <input type="checkbox" name="{{ quants.location_class__in.field_name }}"
+                                    <input type="checkbox" name="{{ order_types.location_class__in.field_name }}"
                                            value="{{ class.value }}"
                                            class="btn-check" id="{{ class.value }}" autocomplete="off">
                                     <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
@@ -90,16 +96,6 @@
                             </a>
                         </li>
                     </ul>
-
-
-                    <div class="p-4">
-                        <button
-                                hx-target="#quant-filters"
-                                class="btn btn-primary w-100"
-                                hx-on="click: htmx.trigger('#target-element', 'backend_update')"
-                        >Apply Filters
-                        </button>
-                    </div>
                 </div>
             </div>
             <div class="card-body p-4 pb-0">
@@ -117,9 +113,9 @@
                         >
                     </div>
                 </div>
-                <div class="row" id="quants-table">
-                    {% with quants=quants %}
-                        {% include 'inventory/stock_reports/quant/quants_table.html' %}
+                <div class="row" id="order_types-table">
+                    {% with order_types=order_types, scroll=True %}
+                        {% include 'inventory/order_type/order_type_table.html' %}
                     {% endwith %}
                 </div>
             </div>

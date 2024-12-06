@@ -1,5 +1,5 @@
 {% for location in locations %}
-    {% with location=location %}
+    {% with location=location, scroll=scroll %}
         {% include 'inventory/location/location_line.html' %}
     {% endwith %}
 {% endfor %}
