@@ -10,7 +10,7 @@ from app.front.apps.inventory.common_depends import get_user_store
 from app.front.apps.inventory.views import LocationView, StoreStaffView, QuantView
 from app.front.template_spec import templates
 from app.front.utills import render, convert_query_params_to_dict
-from app.inventory.location.enums import LocationClass
+from app.inventory.location.enums import LocationClass, PhysicalLocationClass, PhysicalStoreLocationClass
 from app.inventory.location.schemas import UpdateParent
 from core.frontend.constructor import ClassView
 
@@ -102,7 +102,7 @@ async def location_detail(
     if isinstance(location_id, int):
         location = await location.create_line(data)
     else:
-        location = await location.update_line(data)
+        location = await location.update_line(location_id, data)
     filter = {'store_id__in': [store_user.store_id.val], 'id__in': [location._id]}
     filter.update(convert_query_params_to_dict(location.r.query_params))
     await quants.init(params={'location_id__in': [location._id]})
@@ -134,7 +134,7 @@ async def location_map(request: Request, store_user: StoreStaffView = Depends(ge
         params={
             'location_id__isnull': True,
             'store_id__in': [store_user.store_id.val],
-            'location_class__in': [LocationClass.ZONE, LocationClass.SCRAP]
+            'location_class__in': list(PhysicalStoreLocationClass)
         })
     async with zones.v.model.adapter as a:
         locations = await a.get_location_tree({'location_ids': [i._id for i in zones]})

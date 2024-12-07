@@ -10,7 +10,7 @@
                        hx-target="#htmx_content"
                        hx-swap="beforeend transition:true"
                        class="text-danger">
-                        {{ loc.title }}</a>
+                        {{ loc.title }}<span class="mb-1 badge text-bg-warning small text-end">{{ loc.location_class }}</span></a>
                     {% if loc.child_locations_rel %}
                         {{ render_location_tree(loc.child_locations_rel) }}
                     {% endif %}
@@ -31,7 +31,7 @@
                            hx-target="#htmx_content"
                            hx-swap="beforeend transition:true"
                            class="text-danger">
-                            {{ parent.title }}</a>
+                            {{ parent.title }}<span class="mb-1 badge text-bg-warning">{{ parent.location_class }}</span></a>
                         {% if parent.child_locations_rel %}
                             {{ render_location_tree(parent.child_locations_rel) }}
                         {% endif %}

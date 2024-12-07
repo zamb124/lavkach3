@@ -1022,11 +1022,16 @@ class ClassView:
         await self.get_data(params={'id__in': ids})
         return self
 
-    async def update_line(self, data: dict, id: uuid.UUID) -> 'ClassView':
+    async def update_line(self, id: uuid.UUID, data: dict) -> 'ClassView':
         """Метод обновления обьектов"""
         new_data = []
+        async with self.v.model.adapter as a:
+            line = await a.get(id=id)
+            if not line:
+                raise HTTPException(status_code=404, detail=f"Line with id {id} not found")
+            line.update(data)
         try:
-            method_schema_obj = self.v.model.schemas.update(**data)
+            method_schema_obj = self.v.model.schemas.update(**line)
         except ValidationError as e:
             raise HTTPException(status_code=406, detail=f"Error: {str(e)}")
         _json = method_schema_obj.model_dump(mode='json', exclude_unset=True)
