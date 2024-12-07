@@ -1,14 +1,17 @@
+from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
+from starlette.responses import JSONResponse
 
 from app.front.apps.inventory.common_depends import get_user_store
 from app.front.apps.inventory.views import LocationView, StoreStaffView, QuantView
 from app.front.template_spec import templates
 from app.front.utills import render, convert_query_params_to_dict
 from app.inventory.location.enums import LocationClass
+from app.inventory.location.schemas import UpdateParent
 from core.frontend.constructor import ClassView
 
 location_router = APIRouter()
@@ -66,13 +69,16 @@ async def location_detail(
     filter.update(convert_query_params_to_dict(location.r.query_params))
     await location.init(params=filter)
     await quants.init(params={'location_id__in': [location._id]})
+    async with location.v.model.adapter as a:
+        location_tree = await a.get_location_tree({'location_ids': [location_id]})
     return render(
         location.r, 'inventory/location/location_detail.html',
         context={
             'location': location,
             'store_user': store_user,
             'quants': quants,
-            'edit': edit
+            'edit': edit,
+            'location_tree': location_tree
         }
     )
 
@@ -104,3 +110,12 @@ async def location_detail(
             'edit': False
         }
     )
+
+@location_router.post("/update_parent", response_class=HTMLResponse)  # type: ignore
+async def update_parent(
+        request: Request,
+        schema: UpdateParent
+):
+    async with request.scope['env']['location'].adapter as a:
+        origin_location = await a.location_update_parent({'id': schema.id, 'parent_id': schema.parent_id})
+    return JSONResponse({'status': 'ok'})

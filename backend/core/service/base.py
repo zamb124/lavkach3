@@ -11,6 +11,7 @@ from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import BaseModel
 from sqlalchemy import select, Row, RowMapping
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
+from sqlalchemy.orm import joinedload
 from starlette.requests import Request
 
 from core.db.session import Base, session
@@ -166,7 +167,7 @@ class BaseService(Generic[ModelType, CreateSchemaType, UpdateSchemaType, FilterS
             query = select(self.model).where(self.model.id == id)
         if joined:
             for join_field in joined:
-                query = query.join(getattr(self.model, join_field))
+                query = query.options(joinedload(getattr(self.model, join_field)))
         result = await self.session.execute(query)
         entity = result.scalars().first()
         if not entity:

@@ -76,6 +76,7 @@ class Location(Base, AllMixin):
     is_active: Mapped[Optional[bool]] = mapped_column(default=True)
     block: Mapped[BlockerEnum] = mapped_column(default=BlockerEnum.FREE, index=True)
     sort: Mapped[int] = mapped_column(default=0, index=True)
+    child_locations_rel: Mapped[Optional[list['Location']]] = relationship(lazy="noload")
 
     @classmethod
     def get_query_locations_by_zone_ids(cls, location_ids, location_classes=None, location_type_ids=None):

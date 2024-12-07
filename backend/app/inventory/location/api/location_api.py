@@ -10,7 +10,7 @@ from app.inventory.location.schemas import (
     LocationUpdateScheme,
     ExceptionResponseSchema,
     LocationListSchema,
-    LocationFilter
+    LocationFilter, LocationTreeSchema, GetLocationTreeSchema, UpdateParent
 )
 from app.inventory.location.services import LocationService
 
@@ -47,3 +47,13 @@ async def location_update(location_id: uuid.UUID, schema: LocationUpdateScheme, 
 @location_router.delete("/{location_id}")
 async def location_delete(location_id: uuid.UUID, service: LocationService = Depends()):
     await service.delete(id=location_id)
+
+
+@location_router.post("/get_location_tree", response_model=typing.List[LocationTreeSchema])
+async def get_location_tree(schema: GetLocationTreeSchema, service: LocationService = Depends()):
+    return await service.get_location_tree(schema.location_ids)
+
+@location_router.post("/update_parent", response_model=LocationScheme)
+async def update_parent_id(schema: UpdateParent, service: LocationService = Depends()):
+    return await service.update_parent(id=schema.id, parent_id=schema.parent_id)
+

@@ -1,12 +1,12 @@
 :root {
     --bs-modal-inner-border-radius: 15px; /* Установите нужное значение */
 }
+
 .form-control:focus {
     border-color: #ff7f5d !important;
     border-width: 2px !important;
     box-shadow: 0px 0px 5px #f7666e !important; /*here change the color*/
 }
-
 
 
 input[type="date"] {
@@ -64,6 +64,7 @@ input[type="date"] {
     background-position: right calc(2.375em + 5px) center;
     padding-right: calc(5.5em + 20px);
 }
+
 .form-control.is-valid, .was-validated .form-control:valid {
     /*border-color: var(--bs-form-invalid-border-color);*/
     border: var(--bs-border-width) solid #e0e6eb;
@@ -92,6 +93,7 @@ input[type="date"] {
     height: 10px;
     text-align: center !important;
     opacity: 1;
+
     & .form-control {
         background-color: transparent !important;
         border: transparent !important;
@@ -132,22 +134,25 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
     float: left;
     margin-left: 0;
 }
+
 .form-check {
     padding-left: 0;
 }
+
 .toastify.on {
     border-radius: 5px;
 }
 
-[data-bs-theme=dark] .app-calendar .event-fc-color:hover,[data-bs-theme=dark] .app-calendar .fc-theme-standard th,[data-bs-theme=dark] .bg-white,[data-bs-theme=dark] .dropdown-item:focus,[data-bs-theme=dark] .dropdown-item:hover,[data-bs-theme=dark] .form-control:disabled,[data-bs-theme=dark] .theme-tab.nav-tabs .nav-item .nav-link {
+[data-bs-theme=dark] .app-calendar .event-fc-color:hover, [data-bs-theme=dark] .app-calendar .fc-theme-standard th, [data-bs-theme=dark] .bg-white, [data-bs-theme=dark] .dropdown-item:focus, [data-bs-theme=dark] .dropdown-item:hover, [data-bs-theme=dark] .form-control:disabled, [data-bs-theme=dark] .theme-tab.nav-tabs .nav-item .nav-link {
     background-color: transparent !important;
 }
 
 .modal-xl {
     max-width: 90%; /* Установите нужную ширину */
 }
+
 .form-control:disabled {
-    background-color:transparent;
+    background-color: transparent;
     opacity: 1
 }
 
@@ -155,12 +160,14 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
     padding-left: 5px; /* Установите нужное значение отступа */
     padding-right: 5px; /* Установите нужное значение отступа */
 }
+
 .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
     color: var(--bs-nav-tabs-link-active-color);
     background-color: var(--bs-primary);
     border-color: var(--bs-nav-tabs-link-active-border-color);
 }
-.tab-content{
+
+.tab-content {
     min-height: 300px;
 }
 
@@ -175,6 +182,7 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
 .tooltip-arrow::before {
     border-top-color: var(--bs-secondary);
 }
+
 .table {
     vertical-align: middle;
 }
@@ -186,56 +194,75 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
 }
 
 .line {
-  opacity: 1;
-  transition: opacity 1s ease-in;
+    opacity: 1;
+    transition: opacity 1s ease-in;
 }
 
 .line.htmx-swapping {
-  opacity: 0;
-  background-color: var(--bs-secondary-bg-subtle) !important;
-  transition: opacity 1s ease-out;
+    opacity: 0;
+    background-color: var(--bs-secondary-bg-subtle) !important;
+    transition: opacity 1s ease-out;
 }
+
 .line.htmx-swapping * {
     background-color: inherit;
 }
 
 .line.htmx-added {
-  background-color: var(--bs-secondary-bg-subtle) !important;
-  opacity: 0;
+    background-color: var(--bs-secondary-bg-subtle) !important;
+    opacity: 0;
 }
+
 .line.htmx-added * {
     background-color: inherit;
 }
+
 .modal {
-     opacity: 0;
-      transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
 }
+
 .modal.show {
-  display: block;
-  opacity: 1;
+    display: block;
+    opacity: 1;
 }
+
 .resize-handle {
-  width: 10px;
-  height: 10px;
-  background: #ccc;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  cursor: se-resize;
+    width: 10px;
+    height: 10px;
+    background: #ccc;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    cursor: se-resize;
 }
 
 .table {
-     opacity: 1;
-      transition: opacity 0.5s ease-in-out;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
 }
 
 .container .small-element {
     font-size: 0.875em; /* Размер шрифта для small */
 }
+
 .modal-header {
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
 }
+
 a.text-danger {
     font-weight: 600;
+}
+
+.nest-card {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px;
+    background-color: #f9f9f9;
+}
+
+.nested {
+    margin-left: 20px;
 }

@@ -493,7 +493,7 @@ class App {
                 });
             });
 
-            const elmts = elt.querySelectorAll('.modal, .uuid-create, .uuid-update, .list-uuid-create, .list-uuid-update, .uuid-get, .list-uuid-get, .babel-create, .babel-update, .list-str, .list-enum-update, .list-enum-get, .list-enum-create, .list-rel');
+            const elmts = elt.querySelectorAll('.modal, .uuid-create, .uuid-update, .list-uuid-create, .list-uuid-update, .uuid-get, .list-uuid-get, .babel-create, .babel-update, .list-str, .list-enum-update, .list-enum-get, .list-enum-create, .list-rel, .nest');
             if (elt.classList.contains('modal')) {
                 new ModalHandler(elt);
             }
@@ -572,6 +572,8 @@ class App {
                     check_valid()
                 } else if (element.classList.contains('list-enum-get')) {
                     choicesMultiBadges(element, 'get');
+                }   else if (element.classList.contains('nest')) {
+                    createSortable(element);
                 }
             });
         })
@@ -1205,4 +1207,5 @@ class App {
 // Инициализация класса App
 const app = new App();
 document.write('<script src="/static/js/element_hendlers.js"></script>');
+document.write('<script src="/static/js/sortable.js"></script>');
 

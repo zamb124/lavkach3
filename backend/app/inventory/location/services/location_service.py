@@ -1,6 +1,7 @@
 from typing import Any, Optional, List, Dict
 from uuid import UUID
 
+from mypy.checkexpr import defaultdict
 from sqlalchemy import select, case
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased, joinedload
@@ -10,12 +11,29 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import aliased
 from app.inventory.location.models.location_models import Location, LocationClass, LocationType
 
-from app.inventory.location.enums import LocationClass
+from app.inventory.location.enums import LocationClass, LocationErrors
 from app.inventory.location.models.location_models import Location
 from app.inventory.location.schemas.location_schemas import LocationCreateScheme, LocationUpdateScheme, LocationFilter
+from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
+
+# Словарь разрешенных классов локаций для каждого класса локации
+location_class_hierarchy_allowed = {
+    LocationClass.ZONE: [LocationClass.ZONE, LocationClass.PLACE, LocationClass.PACKAGE,LocationClass.RESOURCE], # Зона может содержать зону, ячейки, упаковки, и ресурсы
+    LocationClass.PACKAGE: [LocationClass.PACKAGE],  # Упаковка содержать другую упаковку
+    LocationClass.PLACE: [LocationClass.PACKAGE,],  # Ячейка может быть только в зоне
+    LocationClass.RESOURCE: [LocationClass.PACKAGE],  # Ресурс может быть только в зоне
+}
+location_class_allowed_none_parent = [
+    LocationClass.ZONE,  # Зона может быть корневой
+    LocationClass.PARTNER,
+    LocationClass.INVENTORY,
+    LocationClass.SCRAPPED,
+    LocationClass.SCRAP,
+    LocationClass.LOST
+]
 
 class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdateScheme, LocationFilter]):
     def __init__(self, request: Request):
@@ -43,7 +61,7 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
             location_type_ids: Optional[List[UUID]] = None,
             location_classes: Optional[List[str]] = None,
     ) -> List[Location]:
-        # Определяем CTE для рекурсивного запроса
+        # Создаем CTE-запрос для поиска всех дочерних локаций
         location_cte = (
             select(
                 Location.id,
@@ -141,3 +159,106 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
                     break
 
         return parent_zones
+
+    async def get_location_tree(
+            self,
+            location_ids: List[UUID],
+            location_classes : Optional[List[str]] = None,
+            location_type_ids: Optional[List[UUID]] = None
+    ) -> Dict[UUID, List[Optional[UUID]]]:
+        """
+        Метод отдает словарь с ключом location_id, который был на входе в виде списка, и значением -
+        все родительские зоны по каждому location_id.
+        При этом, если location_id сам является зоной, то в результате будет также сам location_id.
+
+        :param location_ids: Список идентификаторов локаций (UUID), для которых нужно найти родительские зоны.
+        :return: Dict[UUID, List[UUID] Словарь, где ключом является location_id, а значением - список всех родительских
+        локейшенов для данного location_id.
+        """
+        location_cte = (
+            select(
+                Location.id,
+                Location.location_id,
+                Location.location_class,
+                Location.location_type_id,
+            )
+            .where(Location.id.in_(location_ids))
+            .cte(name="location_cte", recursive=True)
+        )
+
+        # Определяем алиас для CTE
+        location_alias = aliased(location_cte)
+
+        # Добавляем рекурсивную часть запроса
+        location_cte = location_cte.union_all(
+            select(
+                Location.id,
+                Location.location_id,
+                Location.location_class,
+                Location.location_type_id,
+            )
+            .where(Location.location_id == location_alias.c.id)
+            .where(Location.location_class.in_(location_classes) if location_classes else True)  # type: ignore
+            .where(Location.location_type_id.in_(location_type_ids) if location_type_ids else True)  # type: ignore
+        )
+        # Создаем условное выражение для сортировки
+        # Выполняем запрос
+        query = (
+            select(Location)
+            .options(joinedload(Location.location_type_rel))
+            .where(Location.id.in_(select(location_cte.c.id)))
+        )
+
+        result = await self.session.execute(query)
+        locations = result.scalars().all()
+
+        # Создаем словарь для хранения дочерних локаций
+        location_dict = {location.id: location for location in locations}
+        children_dict = defaultdict(list)
+
+        # Заполняем словарь дочерних локаций
+        for location in locations:
+            if location.location_id:
+                children_dict[location.location_id].append(location)
+
+        # Рекурсивная функция для построения иерархии
+        def set_children(location: Location):
+            location.child_locations_rel = children_dict[location.id]
+            for child in location.child_locations_rel:
+                set_children(child)
+
+        # Заполняем поле child_locations_rel для корневых локаций
+        for location in locations:
+            if location.location_id is None:
+                set_children(location)
+        locations = [location for location in locations if location.id in location_ids]
+        return locations
+
+    async def update_parent(
+            self,
+            id: UUID,
+            parent_id: Optional[UUID] = None,
+    ) -> Dict[UUID, List[Optional[UUID]]]:
+        """
+            Метод изменяет location_id у локации(на основании parent_id)
+            При этом проверяет, что новый parent_id не является дочерним для текущего location_id
+            Проверяем, что класс локации можнт быть в классе parent'a
+            Проверяем, что тип локации может быть в типе parent'a
+
+        """
+        location = await self.get(id, joined=['location_type_rel'])
+        if parent_id:
+            parent_location = await self.get(parent_id, joined=['location_type_rel'])
+            allowed_classes = location_class_hierarchy_allowed.get(parent_location.location_class, [])
+            if not location.location_class in allowed_classes:
+                raise ModuleException(status_code=406, enum=LocationErrors.LOCATION_CLASS_NOT_ALLOWED)
+            if location.location_class == LocationClass.PACKAGE:
+                if not location.location_type_id in parent_location.location_type_rel.allowed_package_types:
+                    raise ModuleException(status_code=406, enum=LocationErrors.LOCATION_TYPE_NOT_ALLOWED)
+        else:
+            if location.location_class not in location_class_allowed_none_parent:
+                raise ModuleException(status_code=406, enum=LocationErrors.LOCATION_CLASS_NOT_ALLOWED)
+        location.location_id = parent_id
+        await self.session.commit()
+        await self.session.refresh(location)
+        return location

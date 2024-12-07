@@ -3,12 +3,14 @@
         <div class="row align-items-center">
             <div class="col-12">
                 <div class="d-sm-flex align-items-center justify-space-between">
-                    <h4 class="mb-4 mb-sm-0 card-title"><h4>All Locations- </h4> {{ store_user.store_id.as_card_title }}</h4>
+                    <h4 class="mb-4 mb-sm-0 card-title"><h4>All Locations- </h4> {{ store_user.store_id.as_card_title }}
+                    </h4>
                     <nav aria-label="breadcrumb" class="ms-auto">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item d-flex align-items-center">
-                                <a class="text-muted text-decoration-none d-flex" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#location-filters" aria-controls="location-filters">
+                                <a class="text-muted text-decoration-none d-flex" type="button"
+                                   data-bs-toggle="offcanvas"
+                                   data-bs-target="#location-filters" aria-controls="location-filters">
                                     <iconify-icon icon="solar:filter-bold-duotone" class="fs-7"></iconify-icon>
                                 </a>
                             </li>
@@ -103,8 +105,17 @@
                             <input type="text" class="form-control search-chat py-2 ps-5" id="text-srh"
                                    placeholder="Search Quants">
                             <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
-                        </div
-                        >
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-6">
+                        <div class="position-relative text-end">
+                            <button type="button"
+                                    class="btn mb-1 btn-secondary rounded-circle round-40 btn-sm d-inline-flex align-items-center justify-content-center"
+                                    hx-get="/inventory/location/create" hx-swap="outerHTML swap:0.3s"
+                            >
+                                <i class="fs-5 ti ti-plus"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="row" id="locations-table">

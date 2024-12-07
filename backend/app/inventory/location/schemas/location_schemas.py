@@ -1,4 +1,4 @@
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Any
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic.types import UUID4
@@ -12,6 +12,7 @@ from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from sqlalchemy.orm import Query, aliased
 from sqlalchemy.sql.selectable import Select
+
 
 class LocationBaseScheme(BasicModel):
     vars: Optional[dict] = None
@@ -63,5 +64,19 @@ class LocationFilter(BaseFilter):
         if hasattr(self, 'zone_id__in'):
             del self.zone_id__in
         return super().filter(query)
+
+
 class LocationListSchema(GenericListSchema):
     data: Optional[List[LocationScheme]]
+
+
+class GetLocationTreeSchema(BasicModel):
+    location_ids: List[UUID4]
+
+
+class LocationTreeSchema(LocationScheme):
+    child_locations_rel: Optional[List['LocationTreeSchema']] = Field(default=None, title='Child Locations')
+
+class UpdateParent(BasicModel):
+    id: UUID4 = Field(title='ID', form=True, table=True)
+    parent_id: Optional[UUID4] = Field(default=None, title='Parent Location', model='location', form=True, table=True)

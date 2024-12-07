@@ -87,3 +87,8 @@ class BlockerEnum(str, Enum):
     MOVE_BLOCK: str = "move_block"
     PRODUCT_BLOCK: str = "product_block"
     FREE: str = "free"
+
+
+class LocationErrors(str, Enum):
+    LOCATION_CLASS_NOT_ALLOWED: str = 'Location class {location_class} is not allowed'
+    LOCATION_TYPE_NOT_ALLOWED: str = 'Location type {location_type} is not allowed'

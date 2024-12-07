@@ -2,6 +2,7 @@ import json
 from uuid import UUID
 
 from app.inventory.inventory_config import config
+from app.inventory.location.schemas import LocationTreeSchema, UpdateParent
 from app.inventory.order.schemas import SuggestConfirmScheme
 from app.inventory.order.schemas.order_schemas import AssignUser
 from app.inventory.schemas import CreateMovements
@@ -108,5 +109,23 @@ class InventoryAdapter(BaseAdapter):
         if isinstance(payload, dict):
             payload = json.dumps(payload, cls=UUIDEncoder)
         path = f'/api/inventory/create_movements'
+        responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()
+
+    @action(model='location', schema=LocationTreeSchema, multiple=False, permits=[])
+    async def get_location_tree(self, payload: dict, **kwargs):
+        """Переводит ордер из CONFIRMED в WAITING"""
+        if isinstance(payload, dict):
+            payload = json.dumps(payload, cls=UUIDEncoder)  # type: ignore
+        path = f'/api/inventory/location/get_location_tree'
+        responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()
+
+    @action(model='location', schema=UpdateParent, multiple=False, permits=[])
+    async def location_update_parent(self, payload: dict, **kwargs):
+        """Переводит ордер из CONFIRMED в WAITING"""
+        if isinstance(payload, dict):
+            payload = json.dumps(payload, cls=UUIDEncoder)  # type: ignore
+        path = f'/api/inventory/location/update_parent'
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()
