@@ -49,6 +49,7 @@ class LocationFilter(BaseFilter):
     location_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Location Type', model='location_type')
     location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Location Class')
     location_id__in: Optional[List[UUID4]] = Field(default=None, title='Zone', model='location')
+    location_id__isnull: Optional[bool] = Field(default=None, title='Parent Location')
     is_active: Optional[bool] = Field(default=None, title='Active')
     zone_id__in: Optional[List[UUID4]] = Field(default=None, title='Zone', model='location')
 

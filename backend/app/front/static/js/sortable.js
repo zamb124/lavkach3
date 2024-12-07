@@ -26,7 +26,7 @@ async function createSortable(el) {
                 parent_id: evt.to.closest('li') ? evt.to.closest('li').id : null
             };
             try {
-                const response = await fetch(url, {
+                const response = await fetch(evt.item.getAttribute('href'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

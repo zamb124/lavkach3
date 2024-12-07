@@ -58,8 +58,9 @@ async def location_lines(request: Request, store_user: StoreStaffView = Depends(
 @location_router.get("/detail", response_class=HTMLResponse)
 async def location_detail(
         request: Request,
-        location_id: UUID,
-        edit: bool = False,
+        location_id: Optional[UUID] = None,
+        edit: bool = True,
+        create: bool = False,
         store_user: StoreStaffView = Depends(get_user_store),
 
 ):
@@ -67,10 +68,15 @@ async def location_detail(
     quants = QuantView(request)
     filter = {'store_id__in': [store_user.store_id.val], 'id__in': [location_id]}
     filter.update(convert_query_params_to_dict(location.r.query_params))
-    await location.init(params=filter)
-    await quants.init(params={'location_id__in': [location._id]})
-    async with location.v.model.adapter as a:
-        location_tree = await a.get_location_tree({'location_ids': [location_id]})
+    location_tree = []
+    if not create:
+        await location.init(params=filter)
+        await quants.init(params={'location_id__in': [location._id]})
+        async with location.v.model.adapter as a:
+            location_tree = await a.get_location_tree({'location_ids': [location_id]})
+    else:
+            location.store_id.val = store_user.store_id.val
+            location.location_class.val = LocationClass.PLACE
     return render(
         location.r, 'inventory/location/location_detail.html',
         context={
@@ -78,6 +84,7 @@ async def location_detail(
             'store_user': store_user,
             'quants': quants,
             'edit': edit,
+            'create': create,
             'location_tree': location_tree
         }
     )
@@ -85,21 +92,19 @@ async def location_detail(
 @location_router.post("/detail", response_class=HTMLResponse)  # type: ignore
 async def location_detail(
         request: Request,
-        location_id: UUID,
+        location_id: Optional[UUID|int],
         store_user: StoreStaffView = Depends(get_user_store),
 
 ):
     location = LocationView(request)
     quants = QuantView(request)
-    filter = {'store_id__in': [store_user.store_id.val], 'id__in': [location_id]}
-    filter.update(convert_query_params_to_dict(location.r.query_params))
     data = await request.json()
-    async with request.scope['env']['location'].adapter as a:
-        origin_location = await a.get(location_id)
-        if origin_location:
-            origin_location.update(data)
-            updated_location = await a.update(location_id, origin_location)
-    await location.init(params=filter, data=[updated_location])
+    if isinstance(location_id, int):
+        location = await location.create_line(data)
+    else:
+        location = await location.update_line(data)
+    filter = {'store_id__in': [store_user.store_id.val], 'id__in': [location._id]}
+    filter.update(convert_query_params_to_dict(location.r.query_params))
     await quants.init(params={'location_id__in': [location._id]})
     return render(
         location.r, 'inventory/location/location_detail.html',
@@ -119,3 +124,25 @@ async def update_parent(
     async with request.scope['env']['location'].adapter as a:
         origin_location = await a.location_update_parent({'id': schema.id, 'parent_id': schema.parent_id})
     return JSONResponse({'status': 'ok'})
+
+
+@location_router.get("/map", response_class=HTMLResponse)
+async def location_map(request: Request, store_user: StoreStaffView = Depends(get_user_store)):
+    # Карта локаций склада
+    zones = LocationView(request)
+    await zones.init(
+        params={
+            'location_id__isnull': True,
+            'store_id__in': [store_user.store_id.val],
+            'location_class__in': [LocationClass.ZONE, LocationClass.SCRAP]
+        })
+    async with zones.v.model.adapter as a:
+        locations = await a.get_location_tree({'location_ids': [i._id for i in zones]})
+    return render(
+        zones.r, 'inventory/location/map.html',
+        context={
+            'locations': locations,
+            'zones': zones,
+            'store_user': store_user,
+        }
+    )

@@ -1,0 +1,44 @@
+{% autoescape false %}
+    {% macro render_location_tree(locations) %}
+        {% for loc in locations %}
+            <ul class="nested">
+                <li class="nest-card bg-primary-subtle" id="{{ loc.id }}"
+                    href="/inventory/location/update_parent">
+                    <a href="/inventory/location/detail?location_id={{ loc.id }}"
+                       hx-trigger="click"
+                       hx-push-url="false"
+                       hx-target="#htmx_content"
+                       hx-swap="beforeend transition:true"
+                       class="text-danger">
+                        {{ loc.title }}</a>
+                    {% if loc.child_locations_rel %}
+                        {{ render_location_tree(loc.child_locations_rel) }}
+                    {% endif %}
+                </li>
+            </ul>
+        {% endfor %}
+    {% endmacro %}
+    <div class="d-flex overflow-auto">
+    {% for parent in  location_tree %}
+        <div class="col-4 p-0 m-0 mb-0">
+            <ul class="nest" id="sortable-list">
+                <ul class="nested">
+                    <li class="nest-card bg-primary-subtle" id="{{ parent.id }}"
+                        href="/inventory/location/update_parent">
+                        <a href="/inventory/location/detail?location_id={{ parent.id }}"
+                           hx-trigger="click"
+                           hx-push-url="false"
+                           hx-target="#htmx_content"
+                           hx-swap="beforeend transition:true"
+                           class="text-danger">
+                            {{ parent.title }}</a>
+                        {% if parent.child_locations_rel %}
+                            {{ render_location_tree(parent.child_locations_rel) }}
+                        {% endif %}
+                    </li>
+                </ul>
+            </ul>
+        </div>
+    {% endfor %}
+    </div>
+{% endautoescape %}

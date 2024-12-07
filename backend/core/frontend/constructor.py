@@ -736,7 +736,7 @@ class ClassView:
             })
         view_vars_dict: dict[str, Any] = {}
         view_vars_dict.update({
-            'required': fielinfo.is_required() if isinstance(fielinfo, FieldInfo) else False,
+            'required': False if isinstance(fielinfo, ComputedFieldInfo) else fielinfo.is_required(),
             'description': fielinfo.description,
             'title': fielinfo.title or str(fielinfo),
         })
@@ -763,6 +763,8 @@ class ClassView:
     @lru_cache(maxsize=None)
     def _get_view_vars(self, fieldname: str, is_filter: bool) -> dict[str, ViewVars]:
         """Костыльный метод собирания ViewVars"""
+        if fieldname == 'title':
+            a=1
         create_fields = self._view.model.schemas.create.model_fields | self._view.model.schemas.create.model_computed_fields
         update_fields = self._view.model.schemas.update.model_fields | self._view.model.schemas.update.model_computed_fields
         get_fields = self._view.model.schemas.get.model_fields | self._view.model.schemas.get.model_computed_fields

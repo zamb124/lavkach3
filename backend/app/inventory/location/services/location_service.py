@@ -19,21 +19,6 @@ from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
 
-# Словарь разрешенных классов локаций для каждого класса локации
-location_class_hierarchy_allowed = {
-    LocationClass.ZONE: [LocationClass.ZONE, LocationClass.PLACE, LocationClass.PACKAGE,LocationClass.RESOURCE], # Зона может содержать зону, ячейки, упаковки, и ресурсы
-    LocationClass.PACKAGE: [LocationClass.PACKAGE],  # Упаковка содержать другую упаковку
-    LocationClass.PLACE: [LocationClass.PACKAGE,],  # Ячейка может быть только в зоне
-    LocationClass.RESOURCE: [LocationClass.PACKAGE],  # Ресурс может быть только в зоне
-}
-location_class_allowed_none_parent = [
-    LocationClass.ZONE,  # Зона может быть корневой
-    LocationClass.PARTNER,
-    LocationClass.INVENTORY,
-    LocationClass.SCRAPPED,
-    LocationClass.SCRAP,
-    LocationClass.LOST
-]
 
 class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdateScheme, LocationFilter]):
     def __init__(self, request: Request):
@@ -163,18 +148,10 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
     async def get_location_tree(
             self,
             location_ids: List[UUID],
-            location_classes : Optional[List[str]] = None,
+            location_classes: Optional[List[str]] = None,
             location_type_ids: Optional[List[UUID]] = None
-    ) -> Dict[UUID, List[Optional[UUID]]]:
-        """
-        Метод отдает словарь с ключом location_id, который был на входе в виде списка, и значением -
-        все родительские зоны по каждому location_id.
-        При этом, если location_id сам является зоной, то в результате будет также сам location_id.
-
-        :param location_ids: Список идентификаторов локаций (UUID), для которых нужно найти родительские зоны.
-        :return: Dict[UUID, List[UUID] Словарь, где ключом является location_id, а значением - список всех родительских
-        локейшенов для данного location_id.
-        """
+    ) -> List[Location]:
+        # Создаем CTE-запрос для поиска всех дочерних локаций
         location_cte = (
             select(
                 Location.id,
@@ -201,7 +178,7 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
             .where(Location.location_class.in_(location_classes) if location_classes else True)  # type: ignore
             .where(Location.location_type_id.in_(location_type_ids) if location_type_ids else True)  # type: ignore
         )
-        # Создаем условное выражение для сортировки
+
         # Выполняем запрос
         query = (
             select(Location)
@@ -229,10 +206,10 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
 
         # Заполняем поле child_locations_rel для корневых локаций
         for location in locations:
-            if location.location_id is None:
-                set_children(location)
-        locations = [location for location in locations if location.id in location_ids]
-        return locations
+            set_children(location)
+
+        # Возвращаем только те локации, которые были переданы в location_ids
+        return [location for location in locations if location.id in location_ids]
 
     async def update_parent(
             self,
@@ -247,17 +224,8 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
 
         """
         location = await self.get(id, joined=['location_type_rel'])
-        if parent_id:
-            parent_location = await self.get(parent_id, joined=['location_type_rel'])
-            allowed_classes = location_class_hierarchy_allowed.get(parent_location.location_class, [])
-            if not location.location_class in allowed_classes:
-                raise ModuleException(status_code=406, enum=LocationErrors.LOCATION_CLASS_NOT_ALLOWED)
-            if location.location_class == LocationClass.PACKAGE:
-                if not location.location_type_id in parent_location.location_type_rel.allowed_package_types:
-                    raise ModuleException(status_code=406, enum=LocationErrors.LOCATION_TYPE_NOT_ALLOWED)
-        else:
-            if location.location_class not in location_class_allowed_none_parent:
-                raise ModuleException(status_code=406, enum=LocationErrors.LOCATION_CLASS_NOT_ALLOWED)
+        parent_location = await self.get(parent_id, joined=['location_type_rel']) if parent_id else None
+        await location.parent_validate(parent_location)
         location.location_id = parent_id
         await self.session.commit()
         await self.session.refresh(location)

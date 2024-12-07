@@ -3,7 +3,7 @@
         <div class="row align-items-center">
             <div class="col-12">
                 <div class="d-sm-flex align-items-center justify-space-between">
-                    <h4 class="mb-4 mb-sm-0 card-title"><h4>All Locations- </h4> {{ store_user.store_id.as_card_title }}
+                    <h4 class="mb-4 mb-sm-0 card-title"><h4>Location Map-</h4> {{ store_user.store_id.as_card_title }}
                     </h4>
                     <nav aria-label="breadcrumb" class="ms-auto">
                         <ol class="breadcrumb">
@@ -16,15 +16,15 @@
                             </li>
                             <li class="breadcrumb-item d-flex align-items-center">
                                 <a class="text-muted text-decoration-none d-flex"
-                                   hx-get="/inventory/location/map"
+                                   hx-get="/inventory/location"
                                    hx-target="#htmx_content"
                                    href="#">
-                                    <iconify-icon icon="solar:map-broken" class="fs-7"></iconify-icon>
+                                    <iconify-icon icon="material-symbols:list" class="fs-7"></iconify-icon>
                                 </a>
                             </li>
                             <li class="breadcrumb-item" aria-current="page">
                         <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
-                          all locations
+                          location map
                         </span>
                             </li>
                         </ol>
@@ -36,7 +36,7 @@
 
     <div class="card position-relative overflow-hidden">
         <div class="shop-part w-100">
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="location-filters"
+            <div class="offcanvas" tabindex="-1" id="location-filters"
                  aria-labelledby="location-filters-label">
                 <div class="offcanvas-header">
                     <h5 class="offcanvas-title" id="location-filters-label">Filters</h5>
@@ -47,7 +47,7 @@
                         <h6 class="my-3 mx-4 fw-semibold">Locations</h6>
                         <li class="list-group-item border-0 p-0 mx-4 mb-2">
                             <div>
-                                {{ locations.location_id__in.as_update }}
+                                {{ zones.location_id__in.as_update }}
                             </div>
                         </li>
                     </ul>
@@ -56,7 +56,7 @@
                         {% for class in classes %}
                             <li class="list-group-item border-0 p-0 mx-4 mb-2">
                                 <div>
-                                    <input type="checkbox" name="{{ locations.location_class__in.field_name }}"
+                                    <input type="checkbox" name="{{ zones.location_class__in.field_name }}"
                                            value="{{ class.value }}"
                                            class="btn-check" id="{{ class.value }}" autocomplete="off">
                                     <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
@@ -114,18 +114,16 @@
                         <div class="position-relative">
                             <button type="button"
                                     class="btn mb-1 btn-secondary rounded-circle round-40 btn-sm d-inline-flex align-items-center justify-content-center"
-                                    hx-get="/inventory/location/detail?create=True" hx-target="#htmx_content"
-                                    hx-swap="afterend"
-
+                                    hx-get="/inventory/location/create" hx-swap="outerHTML swap:0.3s"
                             >
                                 <i class="fs-5 ti ti-plus"></i>
                             </button>
                         </div>
                     </div>
                 </div>
-                <div class="row" id="locations-table">
-                    {% with locations=locations, scroll=True %}
-                        {% include 'inventory/location/location_table.html' %}
+                <div class="row" id="zones-table">
+                    {% with location_tree=locations, scroll=True %}
+                        {% include 'inventory/location/location_tree.html' %}
                     {% endwith %}
                 </div>
             </div>

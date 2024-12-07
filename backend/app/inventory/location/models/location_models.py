@@ -4,14 +4,30 @@ from typing import Optional
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, text, JSON, select
 from sqlalchemy.orm import mapped_column, Mapped, relationship, column_property, aliased, joinedload
+from watchfiles import awatch
 
-from app.inventory.location.enums import LocationClass, PutawayStrategy, BlockerEnum
+from app.inventory.location.enums import LocationClass, PutawayStrategy, BlockerEnum, LocationErrors
 from app.inventory.mixins import LocationMixin
-from core.db import Base
+from core.db import Base, session
 from core.db.mixins import AllMixin
 from core.db.types import ids
+from core.exceptions.module import ModuleException
 
-
+# Словарь разрешенных классов локаций для каждого класса локации
+location_class_hierarchy_allowed = {
+    LocationClass.ZONE: [LocationClass.ZONE, LocationClass.PLACE, LocationClass.PACKAGE,LocationClass.RESOURCE], # Зона может содержать зону, ячейки, упаковки, и ресурсы
+    LocationClass.PACKAGE: [LocationClass.PACKAGE],  # Упаковка содержать другую упаковку
+    LocationClass.PLACE: [LocationClass.PACKAGE,],  # Ячейка может быть только в зоне
+    LocationClass.RESOURCE: [LocationClass.PACKAGE],  # Ресурс может быть только в зоне
+}
+location_class_allowed_none_parent = [
+    LocationClass.ZONE,  # Зона может быть корневой
+    LocationClass.PARTNER,
+    LocationClass.INVENTORY,
+    LocationClass.SCRAPPED,
+    LocationClass.SCRAP,
+    LocationClass.LOST
+]
 
 def default_capacity(context):
     if context.get_current_parameters()['location_class'] == LocationClass.PACKAGE:
@@ -118,6 +134,17 @@ class Location(Base, AllMixin):
             .where(Location.id.in_(select(location_cte.c.id)))
         )
 
+    async def parent_validate(self, parent_location: Optional['Location'] = None):
+        if parent_location:
+            allowed_classes = location_class_hierarchy_allowed.get(parent_location.location_class, [])
+            if not self.location_class in allowed_classes:
+                raise ModuleException(status_code=406, enum=LocationErrors.LOCATION_CLASS_NOT_ALLOWED)
+            if self.location_class == LocationClass.PACKAGE:
+                if not self.location_type_id in parent_location.location_type_rel.allowed_package_types:
+                    raise ModuleException(status_code=406, enum=LocationErrors.LOCATION_TYPE_NOT_ALLOWED)
+        else:
+            if self.location_class not in location_class_allowed_none_parent:
+                raise ModuleException(status_code=406, enum=LocationErrors.LOCATION_CLASS_NOT_ALLOWED)
 
 class LocationLog(Base, AllMixin):
     """

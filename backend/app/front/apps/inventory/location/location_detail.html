@@ -3,17 +3,17 @@
         <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
             <div class="modal-content slide-right">
                 <div class="modal-header modal-colored-header bg-primary text-white">
-                    <div class="card-body">
+                    <div class="card-body pb-0 pt-0">
                         <div class="row align-items-center">
                             <div class="col-12">
                                 <div class="d-sm-flex align-items-center justify-space-between">
-                                    <h4 class="mb-4 mb-sm-0 card-title">{{ location.title }}</h4>
+                                    <h4 class="mb-4 mb-sm-0 card-title">{{ location.title if location.val else 'NEW'}}</h4>
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
                                             <li class="breadcrumb-item d-flex align-items-center">
                                                 <a class="text-decoration-none d-flex text-muted"
                                                    href="../main/index.html">
-                                                    <iconify-icon icon="solar:home-2-line-duotone"
+                                                    <iconify-icon icon="solar:map-broken"
                                                                   class="fs-8"></iconify-icon>
                                                 </a>
                                             </li>
@@ -32,138 +32,146 @@
                     </div>
                 </div>
                 <div class="modal-body form-control">
+                    <div class="form-body ">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 text-start" id="location-form">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-0 text-start" data-key="t-location-quants">Info</h5>
+                                    </div>
 
-                    <ul class="nest" id="sortable-list">
-                        {% macro render_location_tree(locations) %}
-                            <ul class="nested" href="/inventory/location/update_parent">
-                                {% for loc in locations %}
-                                    <li class="nest-card" id="{{ loc.id }}">
-                                        <p class="text-danger">{{ loc.title }}</p>
-                                        {% if loc.child_locations_rel %}
-                                            {{ render_location_tree(loc.child_locations_rel) }}
-                                        {% endif %}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% endmacro %}
-                        {{ render_location_tree(location_tree) }}
-                    </ul>
-                        <div class="form-body">
-                            <div class="card-body">
-                                <h5 class="card-title mb-0">Main Info</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6" id="location-form">
-                                        <div class="form-group row d-flex align-items-center mb-2">
-                                            <label class="form-label text-end col-md-3"
-                                                   data-key="{{ location.title.data_key }}">{{ location.title._field_name }}</label>
-                                            <div class="col-md-9">
-                                                {% if edit %}
-                                                    {{ location.title.as_update }}
-                                                {% else %}
-                                                    <p class="form-control-static">{{ location.title }}</p>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="form-group row d-flex align-items-center mb-2">
-                                            <label class="form-label text-end col-md-3"
-                                                   data-key="{{ location.store_id.data_key }}">{{ location.store_id._field_name }}</label>
-                                            <div class="col-md-9">
-                                                <p class="form-control-static">{{ location.store_id.as_a() }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row d-flex align-items-center mb-2">
-                                            <label class="form-label text-end col-md-3"
-                                                   data-key="{{ location.location_class.data_key }}">{{ location.location_class._field_name }}</label>
-                                            <div class="col-md-9">
-                                                <p class="form-control-static">{{ location.location_class }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row d-flex align-items-center mb-2">
-                                            <label class="form-label text-end col-md-3"
-                                                   data-key="{{ location.location_type_id.data_key }}">{{ location.location_type_id._field_name }}</label>
-                                            <div class="col-md-9">
-                                                {% if edit %}
-                                                    {{ location.location_type_id.as_update }}
-                                                {% else %}
-                                                    <p class="form-control-static">{{ location.location_type_id.as_a() }}</p>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="form-group row d-flex align-items-center mb-2">
-                                            <label class="form-label text-end col-md-3"
-                                                   data-key="{{ location.location_id.data_key }}">{{ location.location_id._field_name }}</label>
-                                            <div class="col-md-9">
-                                                {% if edit %}
-                                                    {{ location.location_id.as_update }}
-                                                {% else %}
-                                                    <p class="form-control-static">{{ location.location_id.as_a() }}</p>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                        <div class="form-group row d-flex align-items-center mb-2">
-                                            <label class="form-label text-end col-md-3"
-                                                   data-key="{{ location.is_active.data_key }}">{{ location.is_active._field_name }}</label>
-                                            <div class="col-md-9">
-                                                {% if edit %}
-                                                    {{ location.is_active.as_update }}
-                                                {% else %}
-                                                    <p class="form-control-static">{{ location.is_active.as_get }}</p>
-                                                {% endif %}
-                                            </div>
+                                    <div class="form-group row d-flex align-items-center mb-2">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.title.data_key }}">{{ location.title._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if edit %}
+                                                {{ location.title.as_update }}
+                                            {% else %}
+                                                <p class="form-control-static">{{ location.title }}</p>
+                                            {% endif %}
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="form-group row d-flex align-items-center mb-2">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.store_id.data_key }}">{{ location.store_id._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if create %}
+                                                {{ location.store_id.as_update }}
+                                            {% else %}
+                                                 <p class="form-control-static">{{ location.store_id.as_a() }}</p>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-2">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.location_class.data_key }}">{{ location.location_class._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if create %}
+                                                {{ location.location_class.as_update }}
+                                            {% else %}
+                                                <p class="form-control-static">{{ location.location_class }}</p>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-2">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.location_type_id.data_key }}">{{ location.location_type_id._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if edit %}
+                                                {{ location.location_type_id.as_update }}
+                                            {% else %}
+                                                <p class="form-control-static">{{ location.location_type_id.as_a() }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-2">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.location_id.data_key }}">{{ location.location_id._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if edit %}
+                                                {{ location.location_id.as_update }}
+                                            {% else %}
+                                                <p class="form-control-static">{{ location.location_id.as_a() }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group row d-flex align-items-center mb-2">
+                                        <label class="form-label text-end col-md-3"
+                                               data-key="{{ location.is_active.data_key }}">{{ location.is_active._field_name }}</label>
+                                        <div class="col-md-9">
+                                            {% if edit %}
+                                                {{ location.is_active.as_update }}
+                                            {% else %}
+                                                <p class="form-control-static">{{ location.is_active.as_get }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-0 text-start" data-key="t-location-quants">Quants</h5>
+                                    </div>
+                                    <div class="card-body">
                                         {% with quants = quants %}
                                             {% include 'inventory/quant/quant_grid.html' %}
                                         {% endwith %}
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-actions">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="row">
-                                                <div class="col-md-offset-3 col-md-9">
-                                                    {% if edit %}
-                                                        <button type="submit"
-                                                                class="btn btn-primary"
-                                                                hx-post="/inventory/location/detail?location_id={{ location._id }}&edit=true"
-                                                                hx-ext="json-enc"
-                                                                hx-include="#location-form"
-                                                                hx-swap="outerHTML"
-                                                                hx-target=".modal-body"
-                                                                hx-select=".modal-body"
-                                                        >
-                                                            <i class="ti ti-download fs-5"></i>
-                                                            Save
-                                                        </button>
-                                                    {% else %}
-                                                        <button type="submit"
-                                                                class="btn btn-primary"
-                                                                hx-get="/inventory/location/detail?location_id={{ location._id }}&edit=true"
-                                                                hx-swap="outerHTML"
-                                                                hx-target=".modal-body"
-                                                                hx-select=".modal-body"
-                                                        >
-                                                            <i class="ti ti-edit fs-5"></i>
-                                                            Edit
-                                                        </button>
-                                                    {% endif %}
-                                                    <button type="button" class="btn bg-danger-subtle text-danger ms-6"
-                                                            data-bs-dismiss="modal">
-                                                        Cancel
+                            <div class="row">
+                                <div class="card-title text-start">
+                                    <h5 data-key="t-location-tree-title">Location Tree</h5>
+                                </div>
+                                {% with locations = locations %}
+                                    {% include 'inventory/location/location_tree.html' %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-offset-3 col-md-9 text-start">
+                                                {% if edit %}
+                                                    <button type="submit"
+                                                            class="btn btn-primary"
+                                                            hx-post="/inventory/location/detail?location_id={{ location._id }}&edit=true"
+                                                            hx-ext="json-enc"
+                                                            hx-include="#location-form"
+                                                            hx-swap="outerHTML"
+                                                            hx-target=".modal-body"
+                                                            hx-select=".modal-body"
+                                                    >
+                                                        <i class="ti ti-download fs-5"></i>
+                                                        Save
                                                     </button>
-                                                </div>
+                                                {% else %}
+                                                    <button type="submit"
+                                                            class="btn btn-primary"
+                                                            hx-get="/inventory/location/detail?location_id={{ location._id }}&edit=true"
+                                                            hx-swap="outerHTML"
+                                                            hx-target=".modal-body"
+                                                            hx-select=".modal-body"
+                                                    >
+                                                        <i class="ti ti-edit fs-5"></i>
+                                                        Edit
+                                                    </button>
+                                                {% endif %}
+                                                <button type="button" class="btn bg-danger-subtle text-danger ms-6"
+                                                        data-bs-dismiss="modal">
+                                                    Cancel
+                                                </button>
                                             </div>
                                         </div>
-                                        <div class="col-md-6"></div>
                                     </div>
+                                    <div class="col-md-6"></div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </div>
             </div>
         </div>
