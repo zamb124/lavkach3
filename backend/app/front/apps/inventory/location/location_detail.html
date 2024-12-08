@@ -7,11 +7,11 @@
                         <div class="row align-items-center">
                             <div class="col-12">
                                 <div class="d-sm-flex align-items-center justify-space-between">
-                                    <h4 class="mb-4 mb-sm-0 card-title">{{ location.title if location.val else 'NEW'}}</h4>
+                                    <h4 class="mb-4 mb-sm-0 card-title">{{ location.title if location.title.val else 'NEW' }}</h4>
                                     <nav aria-label="breadcrumb" class="ms-auto">
                                         <ol class="breadcrumb">
                                             <li class="breadcrumb-item d-flex align-items-center">
-                                                <a class="text-decoration-none d-flex text-muted"
+                                                <a class="text-decoration-none d-flex"
                                                    href="../main/index.html">
                                                     <iconify-icon icon="solar:map-broken"
                                                                   class="fs-8"></iconify-icon>
@@ -19,7 +19,7 @@
                                             </li>
                                             <li class="breadcrumb-item d-flex align-items-center">
                                                 <a href="#" data-bs-dismiss="modal"
-                                                   class="d-flex align-items-center text-muted">
+                                                   class="d-flex align-items-center">
                                                     <iconify-icon icon="solar:close-circle-outline"
                                                                   class="fs-8"></iconify-icon>
                                                 </a>
@@ -58,7 +58,7 @@
                                             {% if create %}
                                                 {{ location.store_id.as_update }}
                                             {% else %}
-                                                 <p class="form-control-static">{{ location.store_id.as_a() }}</p>
+                                                <p class="form-control-static">{{ location.store_id.as_a() }}</p>
                                             {% endif %}
 
                                         </div>
@@ -112,6 +112,9 @@
                                 <div class="col-md-6">
                                     <div class="card-body">
                                         <h5 class="card-title mb-0 text-start" data-key="t-location-quants">Quants</h5>
+                                        <button class="btn btn-secondary small"
+                                                hx-put="/inventory/quant/deep_tree?location_id={{ location._id }}"
+                                        ></button>
                                     </div>
                                     <div class="card-body">
                                         {% with quants = quants %}
@@ -122,11 +125,20 @@
                             </div>
                             <div class="row">
                                 <div class="card-title text-start">
-                                    <h5 data-key="t-location-tree-title">Location Tree</h5>
+                                    <h5 data-key="t-location-tree-title">Location Tree <span>
+                                        <button class="btn btn-sm btn-info"
+                                            hx-put="/inventory/location/deep_tree?location_id={{ location._id }}"
+                                            hx-target="#location_tree"
+                                    >Load quants in tree</button>
+                                    </span></h5>
+
                                 </div>
                                 {% with locations = locations %}
-                                    {% include 'inventory/location/location_tree.html' %}
+                                    <div class="div" id="location_tree">
+                                        {% include 'inventory/location/location_tree.html' %}
+                                    </div>
                                 {% endwith %}
+
                             </div>
                         </div>
                         <div class="form-actions">
@@ -151,7 +163,7 @@
                                                 {% else %}
                                                     <button type="submit"
                                                             class="btn btn-primary"
-                                                            hx-get="/inventory/location/detail?location_id={{ location._id }}&edit=true"
+                                                            hx-get="/inventory/location/detail?location_id={{ location._id }}&edit=True"
                                                             hx-swap="outerHTML"
                                                             hx-target=".modal-body"
                                                             hx-select=".modal-body"

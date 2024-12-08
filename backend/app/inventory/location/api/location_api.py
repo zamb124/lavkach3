@@ -51,7 +51,7 @@ async def location_delete(location_id: uuid.UUID, service: LocationService = Dep
 
 @location_router.post("/get_location_tree", response_model=typing.List[LocationTreeSchema])
 async def get_location_tree(schema: GetLocationTreeSchema, service: LocationService = Depends()):
-    return await service.get_location_tree(schema.location_ids)
+    return await service.get_location_tree(**schema.model_dump())
 
 @location_router.post("/update_parent", response_model=LocationScheme)
 async def update_parent_id(schema: UpdateParent, service: LocationService = Depends()):

@@ -112,9 +112,11 @@
                     </div>
                     <div class="d-flex align-items-center gap-6">
                         <div class="position-relative">
-                            <button type="button"
+                           <button type="button"
                                     class="btn mb-1 btn-secondary rounded-circle round-40 btn-sm d-inline-flex align-items-center justify-content-center"
-                                    hx-get="/inventory/location/create" hx-swap="outerHTML swap:0.3s"
+                                    hx-get="/inventory/location/detail?create=True" hx-target="#htmx_content"
+                                    hx-swap="afterend"
+
                             >
                                 <i class="fs-5 ti ti-plus"></i>
                             </button>

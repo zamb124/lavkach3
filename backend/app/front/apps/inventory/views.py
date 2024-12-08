@@ -1,5 +1,6 @@
 from starlette.requests import Request
 
+from app.inventory.location.schemas import GetLocationTreeSchema, LocationTreeSchema
 from core.frontend.constructor import ClassView, views
 
 
@@ -96,6 +97,16 @@ class LocationView(ClassView):
         permits = ['location_list']
         super().__init__(request=request, model='location')
 
+class LocationTreeView(ClassView):
+    """Переопределяем модель"""
+    _schemas = {
+        'location': {
+            'get': LocationTreeSchema
+        }
+    }
+    def __init__(self, request: Request):
+        permits = ['location_list']
+        super().__init__(request=request, model='location')
 
 
 

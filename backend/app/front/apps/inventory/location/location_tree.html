@@ -1,4 +1,19 @@
 {% autoescape false %}
+    {% macro get_location_class_link(location_class) %}
+        {% if location_class == 'place' %}
+            <span class="mb-1 badge text-bg-primary small text-end">{{ location_class }}</span>
+        {% elif location_class == 'zone' %}
+            <span class="mb-1 badge text-bg-purple small text-end">{{ location_class }}</span>
+        {% elif location_class == 'package' %}
+            <span class="mb-1 badge text-bg-secondary small text-end">{{ location_class }}</span>
+        {% elif location_class == 'scrap' %}
+            <span class="mb-1 badge text-bg-dark small text-end">{{ location_class }}</span>
+        {% elif location_class == 'resource' %}
+            <span class="mb-1 badge text-bg-light-gray small text-end">{{ location_class }}</span>
+        {% else %}
+            <span class="mb-1 badge text-bg-dark small text-end">{{ location_class }}</span>
+        {% endif %}
+    {% endmacro %}
     {% macro render_location_tree(locations) %}
         {% for loc in locations %}
             <ul class="nested">
@@ -10,35 +25,53 @@
                        hx-target="#htmx_content"
                        hx-swap="beforeend transition:true"
                        class="text-danger">
-                        {{ loc.title }}<span class="mb-1 badge text-bg-warning small text-end">{{ loc.location_class }}</span></a>
+                        {{ get_location_class_link(loc.location_class) }} {{ loc.title }}  </a>
                     {% if loc.child_locations_rel %}
                         {{ render_location_tree(loc.child_locations_rel) }}
+                    {% endif %}
+                    {% if deep %}
+                        {% for quant in loc.quants_rel %}
+                            <button type="button"
+                                    class="btn d-flex bg-success-subtle w-100 d-block text-success my-2">
+                                {{ quant.product_id }}
+                                <span class="badge ms-auto text-bg-success">{{ quant.quantity }}</span>
+                            </button>
+                        {% endfor %}
                     {% endif %}
                 </li>
             </ul>
         {% endfor %}
     {% endmacro %}
     <div class="d-flex overflow-auto">
-    {% for parent in  location_tree %}
-        <div class="col-4 p-0 m-0 mb-0">
-            <ul class="nest" id="sortable-list">
-                <ul class="nested">
-                    <li class="nest-card bg-primary-subtle" id="{{ parent.id }}"
-                        href="/inventory/location/update_parent">
-                        <a href="/inventory/location/detail?location_id={{ parent.id }}"
-                           hx-trigger="click"
-                           hx-push-url="false"
-                           hx-target="#htmx_content"
-                           hx-swap="beforeend transition:true"
-                           class="text-danger">
-                            {{ parent.title }}<span class="mb-1 badge text-bg-warning">{{ parent.location_class }}</span></a>
-                        {% if parent.child_locations_rel %}
-                            {{ render_location_tree(parent.child_locations_rel) }}
-                        {% endif %}
-                    </li>
+        {% for parent in  location_tree %}
+            <div class="col-12 col-md-6 col-lg-4 p-0 m-0 mb-0">
+                <ul class="nest" id="sortable-list">
+                    <ul class="nested">
+                        <li class="nest-card bg-primary-subtle" id="{{ parent.id }}"
+                            href="/inventory/location/update_parent">
+                            <a href="/inventory/location/detail?location_id={{ parent.id }}"
+                               hx-trigger="click"
+                               hx-push-url="false"
+                               hx-target="#htmx_content"
+                               hx-swap="beforeend transition:true"
+                               class="text-danger">
+                                {{ get_location_class_link(parent.location_class) }} {{ parent.title }}</a>
+                            {% if parent.child_locations_rel %}
+                                {{ render_location_tree(parent.child_locations_rel) }}
+                            {% endif %}
+                            {% if deep %}
+                                {% for quant in parent.quants_rel %}
+                                    <button type="button"
+                                            class="btn d-flex bg-success-subtle w-100 d-block text-success my-2">
+                                        {{ quant.product_id }}
+                                        <span class="badge ms-auto text-bg-success">{{ quant.quantity }}</span>
+                                    </button>
+                                {% endfor %}
+                            {% endif %}
+                        </li>
+                    </ul>
                 </ul>
-            </ul>
-        </div>
-    {% endfor %}
+            </div>
+        {% endfor %}
     </div>
 {% endautoescape %}

@@ -14,6 +14,7 @@ from app.inventory.location.models.location_models import Location, LocationClas
 from app.inventory.location.enums import LocationClass, LocationErrors
 from app.inventory.location.models.location_models import Location
 from app.inventory.location.schemas.location_schemas import LocationCreateScheme, LocationUpdateScheme, LocationFilter
+from app.inventory.quant import Quant
 from core.exceptions.module import ModuleException
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
@@ -149,7 +150,8 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
             self,
             location_ids: List[UUID],
             location_classes: Optional[List[str]] = None,
-            location_type_ids: Optional[List[UUID]] = None
+            location_type_ids: Optional[List[UUID]] = None,
+            deep: Optional[bool] = False
     ) -> List[Location]:
         # Создаем CTE-запрос для поиска всех дочерних локаций
         location_cte = (
@@ -192,9 +194,17 @@ class LocationService(BaseService[Location, LocationCreateScheme, LocationUpdate
         # Создаем словарь для хранения дочерних локаций
         location_dict = {location.id: location for location in locations}
         children_dict = defaultdict(list)
-
+        if deep:
+            quants_query = select(Quant).where(Quant.location_id.in_(location_dict.keys()))
+            quants_result = await self.session.execute(quants_query)
+            quants = quants_result.scalars().all()
+            quants_map = defaultdict(list)
+            for q in quants:
+                quants_map[q.location_id].append(q)
         # Заполняем словарь дочерних локаций
         for location in locations:
+            if deep:
+                location.quants_rel = quants_map.get(location.id, [])
             if location.location_id:
                 children_dict[location.location_id].append(location)
 

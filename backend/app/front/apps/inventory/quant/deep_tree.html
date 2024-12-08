@@ -1,0 +1,75 @@
+{% autoescape false %}
+<div class="row">
+    {% for quant in quants %}
+        <div class="col-md-6 col-lg-6 col-12">
+            <div class="card w-100 ">
+                <div class="p-4 d-flex align-items-stretch h-100">
+                    <div class="row">
+                        <div class="col-6 col-md-4 d-flex align-items-center">
+                            <img src="{{ url_for('static' ,path='images/products/product-1.jpg') }}"
+                                 class="rounded img-fluid">
+                        </div>
+                        <div class="col-4 col-md-4 d-flex align-items-center">
+                            <div>
+                                <a href="javascript:void(0)"
+                                   class="card-title link-primary fw-semibold text-dark">{{ quant.product_id.as_a() }}</a>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <p class="card-subtitle mt-1" data-key="{{ quant.quantity.data_key }}">
+                                                {{ quant.quantity._field_name }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <p class="card-subtitle mt-1 ms-3">
+                                                {{ quant.quantity }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <p class="card-subtitle mt-1"
+                                               data-key="{{ quant.incoming_quantity.data_key }}">
+                                                {{ quant.incoming_quantity._field_name }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <p class="card-subtitle mt-1 ms-3">
+                                                {{ quant.incoming_quantity }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <p class="card-subtitle mt-1"
+                                               data-key="{{ quant.reserved_quantity.data_key }}">
+                                                {{ quant.reserved_quantity._field_name }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <p class="card-subtitle mt-1 ms-3">
+                                                {{ quant.reserved_quantity }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endautoescape %}

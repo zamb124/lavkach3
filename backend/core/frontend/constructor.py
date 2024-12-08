@@ -9,6 +9,7 @@ from typing import Optional, Any
 from jinja2_fragments import render_block
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo, ComputedFieldInfo
+from pydantic.v1.schema import schema
 from pydantic_core import ValidationError
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
@@ -573,6 +574,8 @@ class ClassView:
     """
     _id: int
     _lsn: int | None = None
+    _schemas: Optional[dict] = None
+    _depp_sub: int = 0
     _view: View
     _exclude: list
     _lines: list
@@ -580,6 +583,7 @@ class ClassView:
     _templates = {
         'as_tr_': 'line/as_tr.html',
     }
+
     _urls: dict
     p: P
     h: H
@@ -656,8 +660,13 @@ class ClassView:
                  join_related: bool = False,
                  join_fields: list | None = None,
                  vars: dict | None = None,
-                 parent_field: 'Field' = None
+                 parent_field: 'Field' = None,
+                 schemas: Optional[dict] = None,
+                 depp_sub: int = 0,
                  ):
+        self._depp_sub += depp_sub
+        if schemas:
+            self._schemas = schemas
         self.p = P()
         self.p.cls = self
         self.h = H()
@@ -785,6 +794,8 @@ class ClassView:
         """
             Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
+        if field_name == 'quants_rel':
+            a=1
         fielinfo: FieldInfo = fields_merged[field_name]
         res: str = ''
         model: Model | None | BaseModel = None
@@ -811,27 +822,36 @@ class ClassView:
                 break
             elif issubclass(c, enum.Enum):  # type: ignore
                 res += 'enum'
-            elif issubclass(c, BasicModel):  # type: ignore
-                try:
-                    model_name = c.Config.orm_model.__tablename__  # type: ignore
-                except Exception as ex:
-                    model_name = c.Config.__name__.lower()  # type: ignore
-                res += 'rel'
-                model = self._view.env[model_name]
-                submodel = ClassView(
-                    request=self._view.request,
-                    model=model_name
-                )
-                self._view.submodels.update({field_name: submodel})
+            elif issubclass(c, BasicModel):
+                if self._depp_sub > 1:
+                    res +='str'
+                else:# type: ignore
+                    try:
+                        model_name = c.Config.orm_model.__tablename__  # type: ignore
+                    except Exception as ex:
+                        model_name = c.Config.__name__.lower()  # type: ignore
+                    res += 'rel'
+                    model = self._view.env[model_name]
+                    submodel = ClassView(
+                        request=self._view.request,
+                        model=model_name,
+                        schemas=self._schemas,
+                        depp_sub=self._depp_sub+1,
+                    )
+                    self._view.submodels.update({field_name: submodel})
             elif issubclass(c, BaseModel):
-                model_name = c.__name__.lower()  # type: ignore
-                res += 'rel'
-                model = c
-                submodel = ClassView(
-                    request=self._view.request,
-                    model=c,
-                )
-                self._view.submodels.update({field_name: submodel})
+                if self._depp_sub > 1:
+                    res +='str'
+                else:
+                    model_name = c.__name__.lower()  # type: ignore
+                    res += 'rel'
+                    model = c
+                    submodel = ClassView(
+                        request=self._view.request,
+                        model=c,
+                        depp_sub=self._depp_sub+1,
+                    )
+                    self._view.submodels.update({field_name: submodel})
             else:
                 res += c.__name__.lower()  # type: ignore
 
@@ -857,12 +877,16 @@ class ClassView:
             submodel.v.parent_field = field
         return field
 
-    @lru_cache(maxsize=None)
     def _get_schema_fields(self) -> Fields:
         """Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2 - а зачем?"""
         fields: list[tuple[str, Field]] = []
         n = 0
-        fields_merged = self._view.model.schemas.get.model_fields | self._view.model.schemas.get.model_computed_fields | self._view.model.schemas.filter.model_fields
+        if self._schemas:
+            model_shemas = self._schemas.get(self.v.model_name, {})
+            get_schema = model_shemas.get('get', self.v.model.schemas.get)
+        else:
+            get_schema = self.v.model.schemas.get
+        fields_merged = get_schema.model_fields | get_schema.model_computed_fields | self._view.model.schemas.filter.model_fields
         for k, v in fields_merged.items():
             if k in self._exclude:
                 continue
@@ -905,6 +929,8 @@ class ClassView:
             line_copied._id = row.get('id', id(line_copied))
             line_copied._lsn = row.get('lsn')
             for col in line_copied.get_fields():
+                if col._field_name == 'quants_rel':
+                    a=1
                 val = row.get(col._field_name, None)
                 if col.type in ('date', 'datetime'):
                     if isinstance(val, datetime):
@@ -916,6 +942,7 @@ class ClassView:
                         val = []
                 elif col.type.endswith('list_rel'):
                     submodel = line_copied.v.submodels[col._field_name].copy()
+                    submodel._lines = []
                     val = await submodel.fill_lines(data=val, join_related=False)
                     submodel.v.key = col.key
                     submodel.v.parent_field = col

@@ -50,8 +50,37 @@ class Field:
     def __call__(self, *args, **kwargs):
         return self.val
 
+    def __iter__(self):
+        from core.frontend.constructor import ClassView
+        if isinstance(self.val, ClassView):
+            return self.val
+        else:
+            return self.val.__iter__()
+
+    def __eq__(self, other):
+        if isinstance(other, Field):
+            return id(self) == id(other)
+        else:
+            return self.val == other
+
+    def __next__(self):
+        from core.frontend.constructor import ClassView
+        """Если использовать конструктор как итератор, то он будет возвращать строки"""
+        if isinstance(self.val, ClassView):
+            try:
+                line = self.val._lines[self.val.__state]
+                self.val.__state += 1
+                return line
+            except IndexError:
+                self.val.__state = 0
+                raise StopIteration
+        else:
+            next(self.val)
+
     def __getattr__(self, name):
         from core.frontend.constructor import ClassView
+        if name == 'val' and isinstance(self.val, ClassView):
+            return self.val
         if isinstance(self.val, ClassView):
             return getattr(self.val, name)
         if name == 'val':

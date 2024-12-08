@@ -5,6 +5,7 @@ from app.inventory.inventory_config import config
 from app.inventory.location.schemas import LocationTreeSchema, UpdateParent
 from app.inventory.order.schemas import SuggestConfirmScheme
 from app.inventory.order.schemas.order_schemas import AssignUser
+from app.inventory.quant.schemas import GetAvailableQuantsSchema
 from app.inventory.schemas import CreateMovements
 from core.fastapi.adapters import BaseAdapter
 from core.fastapi.adapters.action_decorator import action
@@ -127,5 +128,14 @@ class InventoryAdapter(BaseAdapter):
         if isinstance(payload, dict):
             payload = json.dumps(payload, cls=UUIDEncoder)  # type: ignore
         path = f'/api/inventory/location/update_parent'
+        responce = await self.client.post(self.host + path, json=payload, params={})
+        return responce.json()
+
+    @action(model='quant', schema=GetAvailableQuantsSchema, multiple=False, permits=[])
+    async def get_available_quants(self, payload: dict, **kwargs):
+        """Переводит ордер из CONFIRMED в WAITING"""
+        if isinstance(payload, dict):
+            payload = json.dumps(payload, cls=UUIDEncoder)  # type: ignore
+        path = f'/api/inventory/quant/get_available_quants'
         responce = await self.client.post(self.host + path, json=payload, params={})
         return responce.json()

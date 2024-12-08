@@ -5,7 +5,7 @@
                 readonly
                 class="str-update form-control disabled  text-center"
             {% else %}
-                class="str form-control {% if not field.is_filter %}is-valid{% endif %}"
+                class="str-update form-control {% if not field.is_filter %}is-valid{% endif %}"
                 placeholder="Enter {{ field.update.title }}"
             {% endif %}
             name="{{ field.field_name }}"

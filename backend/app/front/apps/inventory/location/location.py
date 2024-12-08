@@ -1,17 +1,19 @@
+from email.policy import default
 from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.responses import HTMLResponse
+from mypy.checkexpr import defaultdict
 from starlette.responses import JSONResponse
 
 from app.front.apps.inventory.common_depends import get_user_store
-from app.front.apps.inventory.views import LocationView, StoreStaffView, QuantView
+from app.front.apps.inventory.views import LocationView, StoreStaffView, QuantView, LocationTreeView
 from app.front.template_spec import templates
 from app.front.utills import render, convert_query_params_to_dict
 from app.inventory.location.enums import LocationClass, PhysicalLocationClass, PhysicalStoreLocationClass
-from app.inventory.location.schemas import UpdateParent
+from app.inventory.location.schemas import UpdateParent, GetLocationTreeSchema, LocationTreeSchema
 from core.frontend.constructor import ClassView
 
 location_router = APIRouter()
@@ -59,7 +61,7 @@ async def location_lines(request: Request, store_user: StoreStaffView = Depends(
 async def location_detail(
         request: Request,
         location_id: Optional[UUID] = None,
-        edit: bool = True,
+        edit: bool = False,
         create: bool = False,
         store_user: StoreStaffView = Depends(get_user_store),
 
@@ -106,13 +108,17 @@ async def location_detail(
     filter = {'store_id__in': [store_user.store_id.val], 'id__in': [location._id]}
     filter.update(convert_query_params_to_dict(location.r.query_params))
     await quants.init(params={'location_id__in': [location._id]})
+    location_tree = []
+    async with location.v.model.adapter as a:
+        location_tree = await a.get_location_tree({'location_ids': [location_id]})
     return render(
         location.r, 'inventory/location/location_detail.html',
         context={
             'location': location,
             'store_user': store_user,
             'quants': quants,
-            'edit': False
+            'edit': False,
+            'location_tree': location_tree
         }
     )
 
@@ -144,5 +150,37 @@ async def location_map(request: Request, store_user: StoreStaffView = Depends(ge
             'locations': locations,
             'zones': zones,
             'store_user': store_user,
+        }
+    )
+def flatten_location_tree(location_tree):
+    location_dict = {}
+
+    def extract_locations(location):
+        location_dict[location['id']] = location
+        for child in location.get('child_locations_rel', []):
+            extract_locations(child)
+
+    for location in location_tree:
+        extract_locations(location)
+
+    return location_dict
+
+@location_router.put("/deep_tree", response_class=HTMLResponse)
+async def location_deep_tree(request: Request, location_id: UUID, store_user: StoreStaffView = Depends(get_user_store)):
+    # Глубока Карта локации, с квантами
+    # где каждой локации приклеивается так же список квантов
+    location = LocationTreeView(request)
+    async with location.v.model.adapter as a:
+        location_tree = await a.get_location_tree({
+            'location_ids': [location_id],
+            'deep': True
+        })
+    await location.init(data=location_tree)
+    return render(
+        location.r, 'inventory/location/location_tree.html',
+        context={
+            'location_tree': location,
+            'store_user': store_user,
+            'deep': True,
         }
     )

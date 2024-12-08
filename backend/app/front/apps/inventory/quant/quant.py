@@ -5,69 +5,60 @@ from fastapi import Request
 from fastapi.responses import HTMLResponse
 
 from app.front.apps.inventory.common_depends import get_user_store
-from app.front.apps.inventory.views import LocationView, StoreStaffView, QuantView
+from app.front.apps.inventory.views import QuantView, StoreStaffView, QuantView, LocationView
 from app.front.template_spec import templates
 from app.front.utills import render, convert_query_params_to_dict
-from app.inventory.location.enums import LocationClass
+from app.inventory.location.enums import PhysicalLocationClass
 from core.frontend.constructor import ClassView
 
-location_router = APIRouter()
+quant_router = APIRouter()
 
 
-@location_router.get("", response_class=HTMLResponse)
-async def location_list(request: Request, store_user: StoreStaffView = Depends(get_user_store)):
+@quant_router.get("/quants", response_class=HTMLResponse)
+async def quant_list(quants: QuantView = Depends(), zones: LocationView = Depends(),
+                     store_user: StoreStaffView = Depends(get_user_store)):
     # Отчет по остаткам
-    locations = LocationView(request)
-    zones = LocationView(request)
-    filter = {'store_id__in': [store_user.store_id.val]}
-    filter.update(convert_query_params_to_dict(locations.r.query_params))
-    await locations.init(params=filter)
-    await zones.init(params={'location_class__in': ['zone'], 'store_id__in': [store_user.store_id.val]})
+    filter = {'location_class__in': list(PhysicalLocationClass)}
+    filter.update(quants.r.query_params)
+    await quants.init(params=filter)
+    await zones.init(params={'location_class__in': ['zone']})
     return render(
-        locations.r, 'inventory/location/location.html',
+        quants.r, 'inventory/stock_reports/quant/quants.html',
         context={
-            'locations': locations,
-            'classes': LocationClass,
+            'quants': quants,
+            'classes': PhysicalLocationClass,
             'zones': zones,
             'store_user': store_user
         }
     )
 
 
-@location_router.get("/lines", response_class=HTMLResponse)
-async def location_lines(request: Request, store_user: StoreStaffView = Depends(get_user_store)):
+@quant_router.get("/quants/lines", response_class=HTMLResponse)
+async def quant_lines(quants: QuantView = Depends(), store_user: StoreStaffView = Depends(get_user_store)):
     # Отчет по остаткам
-
-    locations = LocationView(request)
-    filter = {'store_id__in': [store_user.store_id.val]}
-    filter.update(convert_query_params_to_dict(locations.r.query_params))
-    await locations.init(params=filter)
+    filter = {'location_class__in': list(PhysicalLocationClass)}
+    filter.update(convert_query_params_to_dict(quants.r.query_params))
+    await quants.init(params=filter)
     return render(
-        locations.r, 'inventory/location/location_lines.html',
+        quants.r, 'inventory/stock_reports/quant/quant_lines.html',
         context={
-            'locations': locations,
+            'quants': quants,
+            'classes': PhysicalLocationClass,
             'store_user': store_user
         }
     )
 
-@location_router.get("/detail", response_class=HTMLResponse)
-async def location_detail(
-        request: Request,
-        location_id: UUID,
-        store_user: StoreStaffView = Depends(get_user_store),
-
-):
-    location = LocationView(request)
-    quants = QuantView(request)
-    filter = {'store_id__in': [store_user.store_id.val], 'id__in': [location_id]}
-    filter.update(convert_query_params_to_dict(location.r.query_params))
-    await location.init(params=filter)
-    await quants.init(params={'location_id__in': [location._id]})
+@quant_router.get("/quants/deep_tree", response_class=HTMLResponse)
+async def quant_deep_tree(quants: QuantView = Depends(), store_user: StoreStaffView = Depends(get_user_store)):
+    # Отчет по остаткам
+    filter = {'location_class__in': list(PhysicalLocationClass)}
+    filter.update(convert_query_params_to_dict(quants.r.query_params))
+    await quants.init(params=filter)
     return render(
-        location.r, 'inventory/location/location_detail.html',
+        quants.r, 'inventory/quant/deep_tree.html',
         context={
-            'location': location,
-            'store_user': store_user,
-            'quants': quants
+            'quants': quants,
+            'classes': PhysicalLocationClass,
+            'store_user': store_user
         }
     )

@@ -1,4 +1,4 @@
-from typing import Optional, List, Union, Any
+from typing import Optional, List, Union, Any, TYPE_CHECKING
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic.types import UUID4
@@ -12,6 +12,8 @@ from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
 from sqlalchemy.orm import Query, aliased
 from sqlalchemy.sql.selectable import Select
+
+from app.inventory.quant.schemas.quants_schemas import QuantScheme
 
 
 class LocationBaseScheme(BasicModel):
@@ -44,13 +46,11 @@ class LocationScheme(LocationCreateScheme, TimeStampScheme):
 
 
 class LocationFilter(BaseFilter):
-    title: Optional[str] = Field(default=None, title='Title')
     store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', model='store')
     location_type_id__in: Optional[List[UUID4]] = Field(default=None, title='Location Type', model='location_type')
     location_class__in: Optional[List[LocationClass]] = Field(default=None, title='Location Class')
     location_id__in: Optional[List[UUID4]] = Field(default=None, title='Zone', model='location')
     location_id__isnull: Optional[bool] = Field(default=None, title='Parent Location')
-    is_active: Optional[bool] = Field(default=None, title='Active')
     zone_id__in: Optional[List[UUID4]] = Field(default=None, title='Zone', model='location')
 
     class Constants(Filter.Constants):
@@ -73,10 +73,12 @@ class LocationListSchema(GenericListSchema):
 
 class GetLocationTreeSchema(BasicModel):
     location_ids: List[UUID4]
+    deep: Optional[bool] = Field(default=False, title='Deep')
 
 
 class LocationTreeSchema(LocationScheme):
     child_locations_rel: Optional[List['LocationTreeSchema']] = Field(default=None, title='Child Locations')
+    quants_rel: Optional[List['QuantScheme']] = Field(default=None, title='Quants', model='quant')
 
 class UpdateParent(BasicModel):
     id: UUID4 = Field(title='ID', form=True, table=True)

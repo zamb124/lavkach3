@@ -1,6 +1,6 @@
 import uuid
 from email.policy import default
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from sqlalchemy import Sequence, Uuid, ForeignKey, text, JSON, select
 from sqlalchemy.orm import mapped_column, Mapped, relationship, column_property, aliased, joinedload
@@ -12,6 +12,9 @@ from core.db import Base, session
 from core.db.mixins import AllMixin
 from core.db.types import ids
 from core.exceptions.module import ModuleException
+if TYPE_CHECKING:
+    from app.inventory.location.models.location_models import LocationType
+    from app.inventory.quant.models import Quant
 
 # Словарь разрешенных классов локаций для каждого класса локации
 location_class_hierarchy_allowed = {
@@ -93,6 +96,12 @@ class Location(Base, AllMixin):
     block: Mapped[BlockerEnum] = mapped_column(default=BlockerEnum.FREE, index=True)
     sort: Mapped[int] = mapped_column(default=0, index=True)
     child_locations_rel: Mapped[Optional[list['Location']]] = relationship(lazy="noload")
+    quants_rel: Mapped[Optional[list['Quant']]] = relationship(
+        'Quant',
+        primaryjoin='Location.id == Quant.location_id',
+        foreign_keys='Quant.location_id',
+        lazy = 'noload'
+    )
 
     @classmethod
     def get_query_locations_by_zone_ids(cls, location_ids, location_classes=None, location_type_ids=None):
