@@ -33,7 +33,7 @@
                         {% for quant in loc.quants_rel %}
                             <button type="button"
                                     class="btn d-flex bg-success-subtle w-100 d-block text-success my-2">
-                                {{ quant.product_id }}
+                                {{ quant.product_id.as_a() }}
                                 <span class="badge ms-auto text-bg-success">{{ quant.quantity }}</span>
                             </button>
                         {% endfor %}
@@ -47,8 +47,21 @@
             <div class="col-12 col-md-6 col-lg-4 p-0 m-0 mb-0">
                 <ul class="nest" id="sortable-list">
                     <ul class="nested">
-                        <li class="nest-card bg-primary-subtle" id="{{ parent.id }}"
+                        <li class="nest-card bg-primary-subtle align-items-center position-relative"
+                            id="{{ parent.id }}"
                             href="/inventory/location/update_parent">
+                            <a class="text-muted text-decoration-none d-flex collapsed position-absolute end-0 top-1"
+                               data-bs-toggle="tooltip" data-bs-target="#store-anal" href="#" aria-expanded="false"
+                               hx-put="/inventory/location/deep_tree?location_id={{ parent.id }}"
+                                hx-target="closest .nest" hx-swap="outerHTML"
+                                hx-select=".nest"
+                                data-key-description="t-deep_tree-description"
+                                data-key="t-deep_tree"
+                                title="Deep tree view"
+                            >
+                                <iconify-icon icon="line-md:download-loop" class="fs-6"></iconify-icon>
+                            </a>
+
                             <a href="/inventory/location/detail?location_id={{ parent.id }}"
                                hx-trigger="click"
                                hx-push-url="false"
@@ -63,7 +76,7 @@
                                 {% for quant in parent.quants_rel %}
                                     <button type="button"
                                             class="btn d-flex bg-success-subtle w-100 d-block text-success my-2">
-                                        {{ quant.product_id }}
+                                        {{ quant.product_id.as_a() }}
                                         <span class="badge ms-auto text-bg-success">{{ quant.quantity }}</span>
                                     </button>
                                 {% endfor %}

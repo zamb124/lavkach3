@@ -35,86 +35,83 @@
                     <div class="form-body ">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6 text-start" id="location-form">
+                                <div class="col-12 col-md-6 text-start" id="location-form">
                                     <div class="card-body">
                                         <h5 class="card-title mb-0 text-start" data-key="t-location-quants">Info</h5>
                                     </div>
 
-                                    <div class="form-group row d-flex align-items-center mb-2">
-                                        <label class="form-label text-end col-md-3"
+                                    <div class="form-group row d-flex align-items-center">
+                                        <label class="form-label text-end col-3"
                                                data-key="{{ location.title.data_key }}">{{ location.title._field_name }}</label>
-                                        <div class="col-md-9">
+                                        <div class="col-9">
                                             {% if edit %}
                                                 {{ location.title.as_update }}
                                             {% else %}
-                                                <p class="form-control-static">{{ location.title }}</p>
+                                                <div class="form-label">{{ location.title }}</div>
                                             {% endif %}
                                         </div>
                                     </div>
                                     <div class="form-group row d-flex align-items-center mb-2">
-                                        <label class="form-label text-end col-md-3"
+                                        <label class="form-label text-end col-3"
                                                data-key="{{ location.store_id.data_key }}">{{ location.store_id._field_name }}</label>
-                                        <div class="col-md-9">
+                                        <div class="col-9">
                                             {% if create %}
                                                 {{ location.store_id.as_update }}
                                             {% else %}
-                                                <p class="form-control-static">{{ location.store_id.as_a() }}</p>
+                                                <div class="form-label">{{ location.store_id.as_a() }}</div>
                                             {% endif %}
 
                                         </div>
                                     </div>
                                     <div class="form-group row d-flex align-items-center mb-2">
-                                        <label class="form-label text-end col-md-3"
+                                        <label class="form-label text-end col-3"
                                                data-key="{{ location.location_class.data_key }}">{{ location.location_class._field_name }}</label>
-                                        <div class="col-md-9">
+                                        <div class="col-9">
                                             {% if create %}
                                                 {{ location.location_class.as_update }}
                                             {% else %}
-                                                <p class="form-control-static">{{ location.location_class }}</p>
+                                                <div class="form-label">{{ location.location_class }}</div>
                                             {% endif %}
 
                                         </div>
                                     </div>
                                     <div class="form-group row d-flex align-items-center mb-2">
-                                        <label class="form-label text-end col-md-3"
+                                        <label class="form-label text-end col-3"
                                                data-key="{{ location.location_type_id.data_key }}">{{ location.location_type_id._field_name }}</label>
-                                        <div class="col-md-9">
+                                        <div class="col-9">
                                             {% if edit %}
                                                 {{ location.location_type_id.as_update }}
                                             {% else %}
-                                                <p class="form-control-static">{{ location.location_type_id.as_a() }}</p>
+                                                <div class="form-label">{{ location.location_type_id.as_a() }}</div>
                                             {% endif %}
                                         </div>
                                     </div>
                                     <div class="form-group row d-flex align-items-center mb-2">
-                                        <label class="form-label text-end col-md-3"
+                                        <label class="form-label text-end col-3"
                                                data-key="{{ location.location_id.data_key }}">{{ location.location_id._field_name }}</label>
-                                        <div class="col-md-9">
+                                        <div class="col-9">
                                             {% if edit %}
                                                 {{ location.location_id.as_update }}
                                             {% else %}
-                                                <p class="form-control-static">{{ location.location_id.as_a() }}</p>
+                                                <div class="form-label">{{ location.location_id.as_a() }}</div>
                                             {% endif %}
                                         </div>
                                     </div>
                                     <div class="form-group row d-flex align-items-center mb-2">
-                                        <label class="form-label text-end col-md-3"
+                                        <label class="form-label text-end col-3"
                                                data-key="{{ location.is_active.data_key }}">{{ location.is_active._field_name }}</label>
-                                        <div class="col-md-9">
+                                        <div class="col-9">
                                             {% if edit %}
                                                 {{ location.is_active.as_update }}
                                             {% else %}
-                                                <p class="form-control-static">{{ location.is_active.as_get }}</p>
+                                                <div class="form-label">{{ location.is_active.as_get }}</div>
                                             {% endif %}
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-12 col-md-6">
                                     <div class="card-body">
                                         <h5 class="card-title mb-0 text-start" data-key="t-location-quants">Quants</h5>
-                                        <button class="btn btn-secondary small"
-                                                hx-put="/inventory/quant/deep_tree?location_id={{ location._id }}"
-                                        ></button>
                                     </div>
                                     <div class="card-body">
                                         {% with quants = quants %}
@@ -125,12 +122,7 @@
                             </div>
                             <div class="row">
                                 <div class="card-title text-start">
-                                    <h5 data-key="t-location-tree-title">Location Tree <span>
-                                        <button class="btn btn-sm btn-info"
-                                            hx-put="/inventory/location/deep_tree?location_id={{ location._id }}"
-                                            hx-target="#location_tree"
-                                    >Load quants in tree</button>
-                                    </span></h5>
+                                    <h5 data-key="t-location-tree-title">Location Tree </h5>
 
                                 </div>
                                 {% with locations = locations %}

@@ -823,7 +823,7 @@ class ClassView:
             elif issubclass(c, enum.Enum):  # type: ignore
                 res += 'enum'
             elif issubclass(c, BasicModel):
-                if self._depp_sub > 1:
+                if self._depp_sub > 20:
                     res +='str'
                 else:# type: ignore
                     try:
@@ -840,7 +840,7 @@ class ClassView:
                     )
                     self._view.submodels.update({field_name: submodel})
             elif issubclass(c, BaseModel):
-                if self._depp_sub > 1:
+                if self._depp_sub > 20:
                     res +='str'
                 else:
                     model_name = c.__name__.lower()  # type: ignore
