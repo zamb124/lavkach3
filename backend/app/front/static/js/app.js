@@ -497,6 +497,9 @@ class App {
             if (elt.classList.contains('modal')) {
                 new ModalHandler(elt);
             }
+            if (elt.classList.contains('nest')) {
+                createSortable(elt);
+            }
             elmts.forEach(element => {
                 if (element.classList.contains('modal')) {
                     new ModalHandler(element);

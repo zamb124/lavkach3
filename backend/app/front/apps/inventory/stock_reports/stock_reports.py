@@ -59,7 +59,7 @@ async def move_list(moves: MoveView = Depends(), zones: LocationView = Depends()
     await moves.init(params=filter)
     await zones.init(params={'location_class__in': ['zone']})
     return render(
-        moves.r, 'inventory/stock_reports/move/moves.html',
+        moves.r, 'inventory/move/move.html',
         context={
             'moves': moves,
             'classes': LocationClass,
@@ -68,18 +68,3 @@ async def move_list(moves: MoveView = Depends(), zones: LocationView = Depends()
         }
     )
 
-
-@stocks_reports_router.get("/moves/lines", response_class=HTMLResponse)
-async def move_lines(quants: QuantView = Depends(), store_user: StoreStaffView = Depends(get_user_store)):
-    # Отчет по остаткам
-    filter = {'location_class__in': list(LocationClass)}
-    filter.update(convert_query_params_to_dict(quants.r.query_params))
-    await quants.init(params=filter)
-    return render(
-        quants.r, 'inventory/move/move_lines.html',
-        context={
-            'quants': quants,
-            'classes': LocationClass,
-            'store_user': store_user
-        }
-    )

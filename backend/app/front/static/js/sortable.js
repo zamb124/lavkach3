@@ -4,14 +4,14 @@ async function createSortable(el) {
         createSortable(el);
     });
     new Sortable(el, {
-        animation: 150,
+        animation: 300,
         group: {
             name: 'nested',
             pull: true,
             put: true
         },
         fallbackOnBody: true,
-        swapThreshold: 0.65,
+        swapThreshold: 0.2,
         onAdd: function (evt) {
             if (!evt.item.querySelector('ul')) {
                 const nestedList = document.createElement('ul');

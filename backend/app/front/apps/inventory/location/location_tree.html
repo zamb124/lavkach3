@@ -1,23 +1,29 @@
 {% autoescape false %}
     {% macro get_location_class_link(location_class) %}
         {% if location_class == 'place' %}
-            <span class="mb-1 badge text-bg-primary small text-end">{{ location_class }}</span>
+            <span class="mb-1 badge text-bg-primary small text-end p-2"
+                  style="border-top-left-radius: 15px">{{ location_class }}</span>
         {% elif location_class == 'zone' %}
-            <span class="mb-1 badge text-bg-purple small text-end">{{ location_class }}</span>
+            <span class="mb-1 badge text-bg-purple small text-end p-2"
+                  style="border-top-left-radius: 15px">{{ location_class }}</span>
         {% elif location_class == 'package' %}
-            <span class="mb-1 badge text-bg-secondary small text-end">{{ location_class }}</span>
+            <span class="mb-1 badge text-bg-secondary small text-end p-2"
+                  style="border-top-left-radius: 15px">{{ location_class }}</span>
         {% elif location_class == 'scrap' %}
-            <span class="mb-1 badge text-bg-dark small text-end">{{ location_class }}</span>
+            <span class="mb-1 badge text-bg-dark small text-endp-2 "
+                  style="border-top-left-radius: 15px">{{ location_class }}</span>
         {% elif location_class == 'resource' %}
-            <span class="mb-1 badge text-bg-light-gray small text-end">{{ location_class }}</span>
+            <span class="mb-1 badge text-bg-light-gray small text-end p-2"
+                  style="border-top-left-radius: 15px">{{ location_class }}</span>
         {% else %}
-            <span class="mb-1 badge text-bg-dark small text-end">{{ location_class }}</span>
+            <span class="mb-1 badge text-bg-dark small text-end p-2"
+                  style="border-top-left-radius: 15px">{{ location_class }}</span>
         {% endif %}
     {% endmacro %}
     {% macro render_location_tree(locations) %}
         {% for loc in locations %}
             <ul class="nested">
-                <li class="nest-card bg-primary-subtle" id="{{ loc.id }}"
+                <li class="nest-card bg-primary-subtle" id="{{ loc.id }}" draggable="false"
                     href="/inventory/location/update_parent">
                     <a href="/inventory/location/detail?location_id={{ loc.id }}"
                        hx-trigger="click"
@@ -31,33 +37,54 @@
                     {% endif %}
                     {% if deep %}
                         {% for quant in loc.quants_rel %}
-                            <button type="button"
-                                    class="btn d-flex bg-success-subtle w-100 d-block text-success my-2">
-                                {{ quant.product_id.as_a() }}
-                                <span class="badge ms-auto text-bg-success">{{ quant.quantity }}</span>
-                            </button>
+                            <ul class="nested">
+                                <li class=" border-start nest-card d-flex align-items-center bg-warning-subtle"
+                                    href="/inventory/move/create_move_from_map"
+                                    id="{{ quant.id }}">
+                                    <div class="d-flex flex-row col-12 text-start">
+                                        <div class="col-6 col-md-4 d-flex align-items-center  p-0 p-md-2 p-lg-2">
+                                            <img src="{{ url_for('static' ,path='images/products/product-1.jpg') }}"
+                                                 class="rounded img-fluid" style="max-height: 75px">
+                                        </div>
+                                        <div class="p-0 text-muted "style="margin-left: 5px">
+                                            <span>{{ quant.product_id.as_a() }}</span>
+                                            <h3 class="card-subtitle  mt-0 fs-4"><span
+                                                    data-key="{{ quant.quantity.data_key }}">{{ quant.quantity._field_name }}</span>: {{ quant.quantity }}
+                                            </h3>
+                                            <h3 class="card-subtitle  mt-0 fs-4"><span
+                                                    data-key="{{ quant.incoming_quantity.data_key }}">{{ quant.incoming_quantity._field_name }}</span>: {{ quant.incoming_quantity }}
+                                            </h3>
+                                            <h3 class="card-subtitle  mt-0 fs-4"><span
+                                                    data-key="{{ quant.reserved_quantity.data_key }}">{{ quant.reserved_quantity._field_name }}</span>: {{ quant.reserved_quantity }}
+                                            </h3>
+                                        </div>
+
+                                    </div>
+                                </li>
+                            </ul>
                         {% endfor %}
                     {% endif %}
+                    <ul class="nested"></ul>
                 </li>
             </ul>
         {% endfor %}
     {% endmacro %}
-    <div class="d-flex overflow-auto">
+    <div class="d-flex overflow-auto p-0">
         {% for parent in  location_tree %}
             <div class="col-12 col-md-6 col-lg-4 p-0 m-0 mb-0">
                 <ul class="nest" id="sortable-list">
                     <ul class="nested">
-                        <li class="nest-card bg-primary-subtle align-items-center position-relative"
+                        <li class="nest-card bg-primary-subtle align-items-center position-relative" draggable="false"
                             id="{{ parent.id }}"
                             href="/inventory/location/update_parent">
                             <a class="text-muted text-decoration-none d-flex collapsed position-absolute end-0 top-1"
                                data-bs-toggle="tooltip" data-bs-target="#store-anal" href="#" aria-expanded="false"
                                hx-put="/inventory/location/deep_tree?location_id={{ parent.id }}"
-                                hx-target="closest .nest" hx-swap="outerHTML"
-                                hx-select=".nest"
-                                data-key-description="t-deep_tree-description"
-                                data-key="t-deep_tree"
-                                title="Deep tree view"
+                               hx-target="closest .nest" hx-swap="outerHTML"
+                               hx-select=".nest"
+                               data-key-description="t-deep_tree-description"
+                               data-key="t-deep_tree"
+                               title="Deep tree view"
                             >
                                 <iconify-icon icon="line-md:download-loop" class="fs-6"></iconify-icon>
                             </a>
@@ -74,13 +101,34 @@
                             {% endif %}
                             {% if deep %}
                                 {% for quant in parent.quants_rel %}
-                                    <button type="button"
-                                            class="btn d-flex bg-success-subtle w-100 d-block text-success my-2">
-                                        {{ quant.product_id.as_a() }}
-                                        <span class="badge ms-auto text-bg-success">{{ quant.quantity }}</span>
-                                    </button>
+                                    <ul class="nested">
+                                        <li class=" border-start nest-card d-flex align-items-center bg-warning-subtle"
+                                            href="/inventory/move/create_move_from_map"
+                                            id="{{ quant.id }}">
+                                            <div class="d-flex flex-row col-12 text-start">
+                                                <div class="col-6 col-md-4 d-flex align-items-center p-0 p-md-2 p-lg-2">
+                                                    <img src="{{ url_for('static' ,path='images/products/product-1.jpg') }}"
+                                                         class="rounded img-fluid" style="max-height: 75px">
+                                                </div>
+                                                <div class="p-0 text-muted" style="margin-left: 5px">
+                                                    <span>{{ quant.product_id.as_a() }}</span>
+                                                    <h3 class="card-subtitle  mt-0 fs-4"><span
+                                                            data-key="{{ quant.quantity.data_key }}">{{ quant.quantity._field_name }}</span>: {{ quant.quantity }}
+                                                    </h3>
+                                                    <h3 class="card-subtitle   mt-0 fs-4"><span
+                                                            data-key="{{ quant.incoming_quantity.data_key }}">{{ quant.incoming_quantity._field_name }}</span>: {{ quant.incoming_quantity }}
+                                                    </h3>
+                                                    <h3 class="card-subtitle  mt-0 fs-4"><span
+                                                            data-key="{{ quant.reserved_quantity.data_key }}">{{ quant.reserved_quantity._field_name }}</span>: {{ quant.reserved_quantity }}
+                                                    </h3>
+                                                </div>
+
+                                            </div>
+                                        </li>
+                                    </ul>
                                 {% endfor %}
                             {% endif %}
+                            <ul class="nested"></ul>
                         </li>
                     </ul>
                 </ul>

@@ -16,6 +16,7 @@ class MoveErrors(str, Enum):
     CHANGE_LOCATION_ERROR: str = 'Change location error for move {move_id}'
     PRODUCT_STORAGE_TYPE_ERROR: str = 'The product {product} does not have a storage strategy'
     MOVE_ID_ERROR: str = 'Move ID error'
+    ORDER_EXIST_ERROR: str = 'ORDER_EXIST_ERROR'
     PACKAGE_ERROR: str = 'Package error'
 
 class OrderErrors(str, Enum):

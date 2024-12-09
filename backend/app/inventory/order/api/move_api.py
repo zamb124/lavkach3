@@ -51,7 +51,7 @@ async def move_delete(move_id: uuid.UUID, service: MoveService = Depends()):
 
 @move_router.post("/confirm")
 async def action_move_confirm(schema: MoveConfirmScheme, service: MoveService = Depends()):
-    return await service.confirm(moves=schema.ids)
+    return await service.confirm(service, move_ids=[schema.id], user_id=service.user.user_id)
 
 @move_router.post("/get_moves_by_barcode", response_model=list[MoveScheme])
 async def get_moves_by_barcode(schema: GetMovesByBarcode, service: MoveService = Depends()):

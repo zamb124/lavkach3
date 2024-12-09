@@ -11,7 +11,7 @@ from app.inventory.order.enums.order_enum import MoveStatus, MoveType
 from app.inventory.order.models import Move
 from app.inventory.order.schemas.suggest_schemas import SuggestScheme, SuggestCreateScheme, SuggestUpdateScheme
 from core.schemas import BaseFilter
-from core.schemas.basic_schemes import ActionBaseSchame, BasicModel
+from core.schemas.basic_schemes import ActionBaseSchame, BasicModel, bollean
 from core.schemas.basic_schemes import BasicField as Field
 from core.schemas.list_schema import GenericListSchema
 from core.schemas.timestamps import TimeStampScheme
@@ -30,7 +30,7 @@ class MoveBaseScheme(BasicModel):
     package_id: Optional[UUID4] = Field(default=None, title='Package', table=True, model='location', filter={'location_class__in': LocationClass.PACKAGE.value})
     # ONE OF Возможно либо location_id либо product_id
     product_id: Optional[UUID4] = Field(default=None, title='Product', table=True, model='product')
-    quantity: float = Field(title='Quantity', table=True)
+    quantity: float = Field(title='Quantity', table=True, gt=0.0)
     uom_id: Optional[UUID4] = Field(default=None, title='Uom', table=True, model='uom')
     quant_src_id: Optional[UUID4] = Field(default=None, title='Quant source', table=True, model='quant')
     quant_dest_id: Optional[UUID4] = Field(default=None, title='Quant dest', table=True, model='quant')
@@ -74,6 +74,7 @@ class MoveScheme(MoveCreateScheme, TimeStampScheme):
 class MoveFilter(BaseFilter):
     store_id__in: Optional[List[UUID4]] = Field(default=None, title='Store', model='store')
     order_id__in: Optional[List[UUID4]] = Field(default=None, title='Order', model='order')
+    order_id__isnull: Optional[bollean] = Field(default=None, title='Has Order')
     location_src_id__in: Optional[List[UUID4]] = Field(default=None, title='Location src', model='location')
     location_dest_id__in: Optional[List[UUID4]] = Field(default=None, title='Location dest', model='location')
     product_id__in: Optional[List[UUID4]] = Field(default=None, title='Product', model='product')

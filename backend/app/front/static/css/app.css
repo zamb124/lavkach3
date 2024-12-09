@@ -257,12 +257,12 @@ a.text-danger {
 
 .nest-card {
     border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 5px;
+    border-radius: 15px;
+    padding: 1px;
+    margin: 10px;
     background-color: #f9f9f9;
 }
 
 .nested {
-    margin-left: 20px;
+    margin-left: 5px;
 }

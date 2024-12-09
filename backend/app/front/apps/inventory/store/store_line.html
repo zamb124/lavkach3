@@ -11,7 +11,7 @@
     >
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             <input class="form-check-input fs-5" type="checkbox"
-                   name="{{ store.p.key ~ '--check' }}" value="">
+                   name="{{ store.p.key ~ '--check' }}" value="{{ store._id }}">
         </th>
         <th class="line-col text-center" style="padding-left: 2px; padding-right: 2px;">
             <a href="/inventory/store/detail?order_type_id={{ store._id }}"

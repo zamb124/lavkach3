@@ -235,6 +235,45 @@
                         <li class="sidebar-item">
                             <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
                                 <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
+                                <span class="hide-menu" data-key="t-sidebar-moves">Moves</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level">
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/move"
+                                       data-key="t-sidebar-moves"
+                                    >
+                                        <span class="icon-small"></span>
+                                        Moves
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                        data-key="t-sidebar-move-logs"
+                                       href="/inventory/move_log">
+                                        <span class="icon-small"></span>
+                                        Move Logs
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       data-key="t-sidebar-suggests"
+                                       href="/inventory/suggests">
+                                        <span class="icon-small"></span>
+                                        Suggests
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
                                 <span class="hide-menu">Stock Reports</span>
                             </a>
                             <ul aria-expanded="false" class="collapse first-level">
@@ -256,6 +295,7 @@
                                         Stock Moves
                                     </a>
                             </ul>
+                        </li>
                         <li class="sidebar-item">
                             <a href="/inventory/store_staff" hx-target="#htmx_content"
                                hx-swap="innerHTML transition:true"

@@ -1,0 +1,155 @@
+{% block content %}
+    <div class="card card-body py-3">
+        <div class="row align-items-center">
+            <div class="col-12">
+                <div class="d-sm-flex align-items-center justify-space-between">
+                    <h4 class="mb-4 mb-sm-0 card-title"><h4>Stock Moves-</h4>{{ store_user.store_id.as_card_title }}
+                    </h4>
+                    <nav aria-label="breadcrumb" class="ms-auto">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item d-flex align-items-center">
+                                <a class="text-muted text-decoration-none d-flex" type="button"
+                                   data-bs-toggle="offcanvas"
+                                   data-bs-target="#move-filters" aria-controls="move-filters">
+                                    <iconify-icon icon="solar:filter-bold-duotone" class="fs-7"></iconify-icon>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item d-flex align-items-center">
+                                <a class="text-muted text-decoration-none d-flex" href="../main/index.html">
+                                    <iconify-icon icon="solar:home-2-line-duotone" class="fs-7"></iconify-icon>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item" aria-current="page">
+                        <span class="badge fw-medium fs-2 bg-primary-subtle text-primary">
+                          Moves
+                        </span>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card position-relative overflow-hidden">
+        <div class="shop-part w-200">
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="move-filters"
+                 aria-labelledby="quant-filters-label">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="move-filters-label">Filters</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="list-group form-check form-switch">
+                        <h6 class="my-3 mx-4 fw-semibold">Has not Order</h6>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <div>
+                                {{ moves.order_id__isnull.as_update }}
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="list-group pt-2 border-bottom rounded-0">
+                        <h6 class="my-3 mx-4 fw-semibold">Locations</h6>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <div>
+                                {{ moves.location_src_id__in.as_update }}
+                            </div>
+                        </li>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <div>
+                                {{ moves.location_dest_id__in.as_update }}
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="list-group pt-2 border-bottom rounded-0">
+                        <h6 class="my-3 mx-4 fw-semibold">Order Type</h6>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <div>
+                                {{ moves.order_type_id__in.as_update }}
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="list-group pt-2 border-bottom rounded-0">
+                        <h6 class="my-3 mx-4 fw-semibold">Move Type</h6>
+                        <li class="list-group-item border-0 p-0 mx-4 mb-2">
+                            <div>
+                                <input type="checkbox" name="type__in"
+                                       value="product"
+                                       class="btn-check" id="type-product" autocomplete="off">
+                                <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
+                                       for="type-product">Product type</label>
+                                <input type="checkbox" name="type__in"
+                                       value="package"
+                                       class="btn-check" id="type-package" autocomplete="off">
+                                <label class="btn btn-outline-secondary w-100 text-start border-0 text-dark"
+                                       for="type-package">Package type</label>
+                            </div>
+                        </li>
+                    </ul>
+
+
+                </div>
+            </div>
+            <div class="card-body p-4 pb-0">
+                <div class="d-flex justify-content-between align-items-center gap-6 mb-4">
+                    <div class="d-flex align-items-center gap-6">
+                        <div class="position-relative">
+                            <input type="text" class="form-control search-chat py-2 ps-5" id="text-srh"
+                                   placeholder="Search Moves">
+                            <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn bg-info-subtle text-info dropdown-toggle"
+                                    data-key="t-move-action-button"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu animated flipInY">
+                                <li>
+                                    {% set action_confirm = moves.v.actions['action_move_confirm'] %}
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        hx-post="/inventory/move/confirm"
+                                        hx-include="#moves-table"
+                                        data-key="{{ action_confirm }}"
+                                        hx-ext="json-enc"
+                                    >{{ action_confirm.name }}</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0)">Another action</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0)">Something else here</a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0)">Separated link</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-6">
+                        <div class="position-relative">
+                            <button type="button"
+                                    class="btn mb-1 btn-secondary rounded-circle round-40 btn-sm d-inline-flex align-items-center justify-content-center"
+                                    hx-get="/inventory/move/detail?create=True" hx-target="#htmx_content"
+                                    hx-swap="afterend"
+                            >
+                                <i class="fs-5 ti ti-plus"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row" id="moves-table">
+                    {% with moves=moves %}
+                        {% include 'inventory/move/move_table.html' %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

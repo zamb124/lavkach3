@@ -207,6 +207,6 @@ class MoveLog(Base, AllMixin, CreatedEdited):
     lot_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("lot.id", ondelete="RESTRICT"), index=True)
     partner_id: Mapped[Optional[uuid.UUID]] = mapped_column(Uuid, index=True, nullable=True)
     uom_id: Mapped[uuid.UUID] = mapped_column(Uuid, index=True)  # ForeignKey("basic.uom.id")
-    quantity: Mapped[float]
+    quantity: Mapped[float] = mapped_column(CheckConstraint('quantity >= 0'), comment='Если перемещение упаковки, то всегда 0')
     reserved_quantity: Mapped[float]
     incoming_quantity: Mapped[float]

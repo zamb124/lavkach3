@@ -3,7 +3,7 @@
         <div class="modal-dialog modal-xl modal-dialog-right fadeInRight">
 
             <div class="modal-content slide-right small">
-                <div class="modal-header">
+                <div class="modal-header  modal-colored-header bg-primary text-white">
                     {% include 'components/loader.html'  %}
                     <div class="card-body">
                         <div class="row align-items-center">
@@ -56,15 +56,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="d-sm-flex align-items-center justify-space-between">
+
+                    </div>
+                </div>
+                <div class="modal-body was-validated">
+                <div class="d-sm-flex align-items-center justify-space-between">
                             <iconify-icon class="fs-8" icon="solar:info-circle-line-duotone"
                                           style="margin-right: 10px;"></iconify-icon>
                             Creating an order for goods, you need to specify either the types of locations from /to or
                             specific storage cells from / to, you also need to select goods
                         </div>
-                    </div>
-                </div>
-                <div class="modal-body was-validated">
                     <div class="row">
                         <div class="col-lg-8 ">
                             <div class="card">

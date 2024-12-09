@@ -7,7 +7,7 @@ from pydantic import BaseModel, model_validator, ValidationError
 from app.inventory.location.enums import LocationClass, PhysicalStoreLocationClass
 from app.inventory.order import MoveCreateScheme, OrderTypeScheme, MoveScheme
 from app.inventory.quant import QuantScheme
-from core.schemas.basic_schemes import BasicField as Field
+from core.schemas.basic_schemes import BasicField as Field, BasicModel
 
 
 class CreateMovementsError(ValueError):
@@ -20,9 +20,9 @@ class Quant(QuantScheme):
     location_dest_id: Optional[UUID] = Field(default=None, title='Destination Location', form=True, model='location')
 
 
-class Product(BaseModel):
+class Product(BasicModel):
     product_id: UUID = Field(title='Product', form=True, model='product')
-    quantity: float = Field(title='Quantity', form=True)
+    quantity: float = Field(title='Quantity', form=True, gt=0)
     avaliable_quantity: float = Field(default=0.0, title='Avaliable Quantity', form=True)
     lot_id: Optional[UUID] = Field(default=None, title='Lot', form=True, model='lot')
     uom_id: Optional[UUID] = Field(default=None, title='UOM', form=True, model='uom')
@@ -31,14 +31,14 @@ class Product(BaseModel):
     moves_created: Optional[list[MoveScheme]] = Field(default=[], title='Moves created', form=True, model='move')
 
 
-class Package(BaseModel):
+class Package(BasicModel):
     package_id: UUID = Field(title='Package', form=True, model='location',
                              filter={'location_class__in': LocationClass.PACKAGE.value})
     quants: Optional[list[Quant]] = Field(default=[], title='Quants', form=True)
     moves_to_create: Optional[list[MoveCreateScheme]] = Field(default=[], title='Moves', form=True, model='move')
     moves_created: Optional[list[MoveScheme]] = Field(default=[], title='Moves created', form=True, model='move')
 
-class CreateMovements(BaseModel):
+class CreateMovements(BasicModel):
     filled: bool = Field(default=False, title='Filled', form=False)
     commit: bool = Field(default=False, title='Commit', form=False)
     external_number: Optional[str] = Field(default=None, title='External ID', form=True)

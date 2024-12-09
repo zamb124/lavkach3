@@ -15,7 +15,7 @@
                     <div class="col-6">
                         <div class="form-check fs-5" style="display: inline-block;">
                             <input class="form-check-input" type="checkbox"
-                                   name="{{ line.p.key ~ '--check' }}" value="">
+                                   name="{{ line.p.key ~ '--check' }}" value="{{ line.p.id }}">
                         </div>
                     </div>
                     {% if not line.v.parent_field %} {# Если строчка встроена в другой обьект, то не даем изменять #}
@@ -97,7 +97,7 @@
                     <div class="col-6">
                         <div class="form-check fs-5" style="display: inline-block;">
                             <input class="form-check-input" type="checkbox"
-                                   name="{{ line.p.id ~ '--check' }}" value="">
+                                   name="{{ line.p.id ~ '--check' }}" value="{{ line.p.id }}">
                         </div>
                     </div>
                     {% if not line.v.parent_field %} {# Если строчка встроена в другой обьект, то не даем изменять #}
@@ -192,7 +192,7 @@
                     <div class="col-6">
                         <div class="form-check fs-5" style="display: inline-block;">
                             <input class="form-check-input" type="checkbox"
-                                   name="{{ line.p.key ~ '--check' }}" value="">
+                                   name="{{ line.p.key ~ '--check' }}" value="{{ line.p.id }}">
                         </div>
                     </div>
                     <div class="col-6">

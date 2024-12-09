@@ -223,8 +223,8 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
                     src_quant.location_rel = await location.service.get(
                         src_quant.location_id, joined=['location_type_rel']
                     )
-                location_type = await location_type.service.get(src_quant.location_rel.location_type_id)
-                if location_type.is_can_negative:
+                location_type_rel = await location_type.service.get(src_quant.location_rel.location_type_id)
+                if location_type_rel.is_can_negative:
                     qty_to_move += quantity
                     quantity = 0.0
                     quant_src_entity = src_quant
@@ -1131,7 +1131,7 @@ class MoveService(BaseService[Move, MoveCreateScheme, MoveUpdateScheme, MoveFilt
             await self.session.commit()
             task = await self.confirm.kiq(
                 'move',
-                move_ids = created_move_ids,
+                move_ids=created_move_ids,
                 user_id=self.user.user_id
             )
             if os.environ.get('ENV') == 'test':

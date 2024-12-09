@@ -829,7 +829,16 @@ class ClassView:
                     try:
                         model_name = c.Config.orm_model.__tablename__  # type: ignore
                     except Exception as ex:
-                        model_name = c.Config.__name__.lower()  # type: ignore
+                        model_name = c.__name__.lower()  # type: ignore
+                        res += 'rel'
+                        model = c
+                        submodel = ClassView(
+                            request=self._view.request,
+                            model=c,
+                            depp_sub=self._depp_sub + 1,
+                        )
+                        self._view.submodels.update({field_name: submodel})
+                        continue
                     res += 'rel'
                     model = self._view.env[model_name]
                     submodel = ClassView(

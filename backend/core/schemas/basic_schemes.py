@@ -17,6 +17,8 @@ def validate_bollean(x):
         else:
             return False
     if isinstance(x, str):
+        if x == 'True':
+            return True
         if x == 'on':
             return True
         else:
