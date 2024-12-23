@@ -60,7 +60,7 @@ input[type="date"] {
 
 .form-control.is-invalid, .was-validated .form-control:invalid {
     /*border-color: var(--bs-form-invalid-border-color);*/
-    border: var(--bs-border-width) solid #e0e6eb;
+    border: var(--bs-border-width) solid #313e54;
     background-position: right calc(2.375em + 5px) center;
     padding-right: calc(5.5em + 20px);
 }
@@ -147,8 +147,16 @@ html[data-boxed-layout=boxed] .container-fluid, html[data-boxed-layout=boxed] .c
     background-color: transparent !important;
 }
 
-.modal-xl {
-    max-width: 90%; /* Установите нужную ширину */
+@media (max-width: 768px) {
+    .modal-xl {
+        max-width: 99%; /* Установите нужную ширину для небольших экранов */
+    }
+}
+
+@media (min-width: 769px) {
+    .modal-xl {
+        max-width: 90%; /* Установите нужную ширину для больших экранов */
+    }
 }
 
 .form-control:disabled {
@@ -261,6 +269,9 @@ a.text-danger {
     padding: 1px;
     margin: 10px;
     background-color: #f9f9f9;
+}
+.modal-body {
+    border-radius: 15px;
 }
 
 .nested {

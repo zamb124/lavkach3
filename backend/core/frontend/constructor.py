@@ -794,8 +794,6 @@ class ClassView:
         """
             Преобразование поля из Pydantic(Field) в схему Field для HTMX
         """
-        if field_name == 'quants_rel':
-            a=1
         fielinfo: FieldInfo = fields_merged[field_name]
         res: str = ''
         model: Model | None | BaseModel = None

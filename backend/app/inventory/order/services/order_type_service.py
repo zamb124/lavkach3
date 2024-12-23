@@ -94,9 +94,10 @@ class OrderTypeService(BaseService[OrderType, OrderTypeCreateScheme, OrderTypeUp
 
             # Получаем допустимые зоны и типы локаций для товара
             if location_dest_id:
-                allowed_zones = await location_model.service.get_all_parent_zones(
+                allowed_zones_result = await location_model.service.get_all_parent_zones(
                     location_ids=[location_dest_id]
-                )[location_dest_id]
+                )
+                allowed_zones = allowed_zones_result.get(location_dest_id, [])
             elif zone_dest_id:
                 allowed_zones = list(
                     set([zone_dest_id]) & set([UUID(i['zone_id']) for i in pst.storage_type_rel.allowed_zones])

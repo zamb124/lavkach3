@@ -199,18 +199,19 @@
 
 .is-disabled .choices__list--multiple .choices__item {
     background-color: var(--bs-secondary);
-    background-color: var(--bs-secondary);
 }
 
 .choices__list--dropdown, .choices__list[aria-expanded] {
     display: none;
     position: absolute;
-    width: max-content;
+    min-width: 100%;
+    max-width: 100%;
     background-color: var(--bs-card-bg);
     color: var(--bs-heading-color);
     border-radius: 15px;
     top: 100%;
-    margin-top: -1px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     overflow: hidden;
     word-break: break-all;
     z-index: 9999;

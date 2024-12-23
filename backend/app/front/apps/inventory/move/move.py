@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse
 from mypy.dmypy.client import request
+from starlette.responses import JSONResponse
 
 from app.front.apps.inventory.common_depends import get_user_store
 from app.front.apps.inventory.views import MoveView, StoreStaffView, LocationView
@@ -18,7 +19,7 @@ move_router = APIRouter()
 async def move_list(moves: MoveView = Depends(), zones: LocationView = Depends(),
                     store_user: StoreStaffView = Depends(get_user_store)):
     # Отчет по остаткам
-    filter = {'location_class__in': list(LocationClass)}
+    filter = {'location_class__in': list(LocationClass), 'store_id__in': store_user.store_id.val}
     filter.update(moves.r.query_params)
     await moves.init(params=filter)
     await zones.init(params={'location_class__in': ['zone']})
@@ -31,6 +32,7 @@ async def move_list(moves: MoveView = Depends(), zones: LocationView = Depends()
             'store_user': store_user
         }
     )
+
 
 @move_router.get("/line", response_class=HTMLResponse)
 async def move_line(move_id: UUID, move_view: MoveView = Depends()):
@@ -48,12 +50,12 @@ async def move_detail(
         store_user: StoreStaffView = Depends(get_user_store),
 ):
     """Отдает лайну для монитора склада"""
-    filter = {'store_id__in': [store_user.store_id.val], 'id__in': [move_id]}
+    filter = {'id': move_id}
     filter.update(convert_query_params_to_dict(move.r.query_params))
     if not create:
         await move.init(params=filter)
     else:
-            move.store_id.val = store_user.store_id.val
+        move.store_id.val = store_user.store_id.val
     return render(
         move.r, 'inventory/move/move_detail.html',
         context={
@@ -65,11 +67,11 @@ async def move_detail(
     )
 
 
-
 @move_router.get("/lines", response_class=HTMLResponse)
 async def move_lines(moves: MoveView = Depends(), store_user: StoreStaffView = Depends(get_user_store)):
     # Отчет по остаткам
-    filter = (convert_query_params_to_dict(moves.r.query_params))
+    filter = {'store_id__in': store_user.store_id.val}
+    filter.update(convert_query_params_to_dict(moves.r.query_params))
     await moves.init(params=filter)
     return render(
         moves.r, 'inventory/move/move_lines.html',
@@ -79,6 +81,7 @@ async def move_lines(moves: MoveView = Depends(), store_user: StoreStaffView = D
         }
     )
 
+
 @move_router.post("/confirm", response_class=HTMLResponse)
 async def confirm(moves: MoveView = Depends(), store_user: StoreStaffView = Depends(get_user_store)):
     # Отчет по остаткам
@@ -86,7 +89,4 @@ async def confirm(moves: MoveView = Depends(), store_user: StoreStaffView = Depe
     func: Callable = getattr(moves.v.model.adapter, 'action_move_confirm')
     for move_id in data.values():
         await func(payload={'id': move_id})
-    return {
-        "status": "OK",
-        "detail": "Move is confirmed"
-    }
+    return moves.send_message(message=f'Action action_move_confirm done')

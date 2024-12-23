@@ -253,7 +253,7 @@
                                     <a class="sidebar-link"
                                        hx-swap="innerHTML transition:true"
                                        hx-target="#htmx_content"
-                                        data-key="t-sidebar-move-logs"
+                                       data-key="t-sidebar-move-logs"
                                        href="/inventory/move_log">
                                         <span class="icon-small"></span>
                                         Move Logs
@@ -296,6 +296,48 @@
                                     </a>
                             </ul>
                         </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
+                                <iconify-icon icon="solar:home-angle-line-duotone"></iconify-icon>
+                                <span class="hide-menu" data-key="t-locations-menu">Store Locations</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level">
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/location">
+                                        <span class="icon-small"></span>
+                                        All Locations
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-push-url="true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/location/zones?location_class__in=zone">
+                                        <span class="icon-small"></span>
+                                        Zones
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/location/places">
+                                        <span class="icon-small"></span>
+                                        Places
+                                    </a>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link"
+                                       hx-swap="innerHTML transition:true"
+                                       hx-target="#htmx_content"
+                                       href="/inventory/location_type">
+                                        <span class="icon-small"></span>
+                                        Location Types
+                                    </a>
+                            </ul>
                         <li class="sidebar-item">
                             <a href="/inventory/store_staff" hx-target="#htmx_content"
                                hx-swap="innerHTML transition:true"

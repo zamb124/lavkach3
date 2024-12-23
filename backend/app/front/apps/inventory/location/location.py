@@ -40,6 +40,26 @@ async def location_list(request: Request, store_user: StoreStaffView = Depends(g
     )
 
 
+@location_router.get("/zones", response_class=HTMLResponse)
+async def location_list_zones(request: Request, store_user: StoreStaffView = Depends(get_user_store)):
+    # Отчет по остаткам
+    locations = LocationView(request)
+    zones = LocationView(request)
+    filter = {'store_id__in': [store_user.store_id.val]}
+    filter.update(convert_query_params_to_dict(locations.r.query_params))
+    await locations.init(params=filter)
+    await zones.init(params={'location_class__in': ['zone'], 'store_id__in': [store_user.store_id.val]})
+    return render(
+        locations.r, 'inventory/location/location.html',
+        context={
+            'locations': locations,
+            'classes': LocationClass,
+            'zones': zones,
+            'store_user': store_user,
+            'scroll': True
+        }
+    )
+
 @location_router.get("/lines", response_class=HTMLResponse)
 async def location_lines(request: Request, store_user: StoreStaffView = Depends(get_user_store), scroll: bool = False):
     # Отчет по остаткам
@@ -56,6 +76,7 @@ async def location_lines(request: Request, store_user: StoreStaffView = Depends(
             'scroll': scroll
         }
     )
+
 
 @location_router.get("/detail", response_class=HTMLResponse)
 async def location_detail(
@@ -77,8 +98,8 @@ async def location_detail(
         async with location.v.model.adapter as a:
             location_tree = await a.get_location_tree({'location_ids': [location_id]})
     else:
-            location.store_id.val = store_user.store_id.val
-            location.location_class.val = LocationClass.PLACE
+        location.store_id.val = store_user.store_id.val
+        location.location_class.val = LocationClass.PLACE
     return render(
         location.r, 'inventory/location/location_detail.html',
         context={
@@ -91,10 +112,11 @@ async def location_detail(
         }
     )
 
+
 @location_router.post("/detail", response_class=HTMLResponse)  # type: ignore
 async def location_detail(
         request: Request,
-        location_id: Optional[UUID|int],
+        location_id: Optional[UUID | int],
         store_user: StoreStaffView = Depends(get_user_store),
 
 ):
@@ -121,6 +143,7 @@ async def location_detail(
             'location_tree': location_tree
         }
     )
+
 
 @location_router.post("/update_parent", response_class=HTMLResponse)  # type: ignore
 async def update_parent(
@@ -152,6 +175,8 @@ async def location_map(request: Request, store_user: StoreStaffView = Depends(ge
             'store_user': store_user,
         }
     )
+
+
 def flatten_location_tree(location_tree):
     location_dict = {}
 
@@ -164,6 +189,7 @@ def flatten_location_tree(location_tree):
         extract_locations(location)
 
     return location_dict
+
 
 @location_router.put("/deep_tree", response_class=HTMLResponse)
 async def location_deep_tree(request: Request, location_id: UUID, store_user: StoreStaffView = Depends(get_user_store)):
