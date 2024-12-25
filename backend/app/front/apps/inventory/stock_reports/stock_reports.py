@@ -23,7 +23,7 @@ async def quant_list(quants: QuantView = Depends(), zones: LocationView = Depend
     filter.update(quants.r.query_params)
     await quants.init(params=filter)
     await zones.init(params={'location_class__in': ['zone']})
-    return render(
+    return await render(
         quants.r, 'inventory/stock_reports/quant/quants.html',
         context={
             'quants': quants,
@@ -40,7 +40,7 @@ async def quant_lines(quants: QuantView = Depends(), store_user: StoreStaffView 
     filter = {'location_class__in': list(PhysicalLocationClass)}
     filter.update(convert_query_params_to_dict(quants.r.query_params))
     await quants.init(params=filter)
-    return render(
+    return await render(
         quants.r, 'inventory/stock_reports/quant/quant_lines.html',
         context={
             'quants': quants,
@@ -58,7 +58,7 @@ async def move_list(moves: MoveView = Depends(), zones: LocationView = Depends()
     filter.update(moves.r.query_params)
     await moves.init(params=filter)
     await zones.init(params={'location_class__in': ['zone']})
-    return render(
+    return await render(
         moves.r, 'inventory/move/move.html',
         context={
             'moves': moves,

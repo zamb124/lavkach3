@@ -3,8 +3,9 @@ from enum import Enum
 from typing import Optional, Any
 from typing import TYPE_CHECKING
 
-from jinja2_fragments import render_block
+from jinja2_fragments import render_block, render_block_async
 from pydantic.fields import FieldInfo
+from watchfiles import awatch
 
 from core.frontend.enviroment import environment
 from core.frontend.types import MethodType, ViewVars
@@ -97,7 +98,7 @@ class Field:
         self.__dict__.update(kwargs)
 
     @property
-    def enum(self):
+    async def enum(self):
         if isinstance(self.fieldinfo.annotation, Enum):
             return self.fieldinfo.annotation
         else:
@@ -106,7 +107,7 @@ class Field:
                     return type
 
     @property
-    def field_name(self):
+    async def field_name(self):
         if self.cls.v.parent_field:
             if isinstance(self.cls.v.parent_field, Field):
                 return f'{self.cls.v.parent_field._field_name}[{self.cls.p.lsn}][{self._field_name}]'
@@ -115,11 +116,11 @@ class Field:
         return self._field_name
 
     @property
-    def key(self) -> str:
+    async def key(self) -> str:
         """Отдает уникальный идентификатор для поля"""
         return f'{self.cls.p.key}--{self._field_name}'
 
-    def as_(self, method='get', button=False, model=None):
+    async def as_(self, method='get', button=False, model=None):
         """Отдает виджет поля в зависимости от метода"""
         widget = None
         match method:
@@ -129,8 +130,9 @@ class Field:
                 widget = self.as_update
             case 'create':
                 widget = self.as_create
+        bar = await self.as_update_link(method)
         if button:
-            return f"""<div id="{self.key}" style="display: flex; justify-content: center; align-items: center;">{widget}{self.as_update_link(method)}</div>"""
+            return f"""<div id="{self.key}" style="display: flex; justify-content: center; align-items: center;">{widget}{bar}</div>"""
         else:
             return widget
 
@@ -138,10 +140,10 @@ class Field:
     def description(self) -> str:
         return self.fieldinfo.description or self._field_name
 
-    def render(self, block_name: str, method: MethodType = MethodType.GET) -> str:
+    async def render(self, block_name: str, method: MethodType = MethodType.GET) -> str:
         """Метод рендера шаблона"""
         type = self.type or 'str'
-        rendered_html = render_block(
+        rendered_html = await render_block_async(
             environment=environment,
             template_name=f'field/{type}.html',
             block_name=block_name,
@@ -151,27 +153,27 @@ class Field:
         return rendered_html
 
     @property
-    def label(self) -> str:
+    async def label(self) -> str:
         """Отдать Label for шаблон для поля"""
-        return render_block(
+        return await render_block_async(  # type: ignore
             environment=environment,
             template_name=f'field/label.html',
             block_name='label',
             field=self,
         )
 
-    def as_update_link(self, method='get') -> str:
+    async def as_update_link(self, method='get') -> str:
         """Отдать кнопку для запросы формы as_update"""
-        return render_block(
+        return await render_block_async(
             environment=environment,
             template_name=f'field/as_update_link.html',
             block_name=method,
             field=self,
         )
 
-    def as_card(self, url=None, model=None):
+    async def as_card(self, url=None, model=None):
         """Отобразить как маленькую карточку"""
-        return render_block(
+        return await render_block_async(
             environment=environment,
             template_name=f'field/as_card.html',
             block_name='as_card',
@@ -180,9 +182,9 @@ class Field:
             movel=model
         )
 
-    def as_a(self, url=None, model=None):
+    async def as_a(self, url=None, model=None):
         """Отдать ссылку, только для uuid и rel"""
-        return render_block(
+        return await render_block_async(
             environment=environment,
             template_name=f'field/as_a.html',
             block_name='as_a',
@@ -192,38 +194,38 @@ class Field:
         )
 
     @property
-    def data_key(self) -> str:
+    async def data_key(self) -> str:
         """Отдать Label for шаблон для поля"""
         return f't-{self.cls.v.model.name}-{self._field_name}'
 
     @property
-    def data_key_description(self) -> str:
+    async def data_key_description(self) -> str:
         """Отдать Label for шаблон для поля"""
         return f't-{self.cls.v.model.name}-{self._field_name}-description'
 
     @property
-    def as_update(self) -> str:
+    async def as_update(self) -> str:
         """Отобразить поле с возможностью редактирования"""
-        return self.render(block_name='as_update', method=MethodType.UPDATE)
+        return await self.render(block_name='as_update', method=MethodType.UPDATE)
 
     @property
-    def as_create(self) -> str:
+    async def as_create(self) -> str:
         """Отобразить поле с возможностью редактирования"""
-        return self.render(block_name='as_create', method=MethodType.CREATE)
+        return await self.render(block_name='as_create', method=MethodType.CREATE)
 
     @property
-    def as_get(self) -> str:
+    async def as_get(self) -> str:
         """Отобразить поле только на чтение"""
-        return self.render(block_name='as_get')
+        return await self.render(block_name='as_get')
 
     @property
-    def as_card_title(self) -> str:
+    async def as_card_title(self) -> str:
         """Отобразить поле только на чтение"""
-        return self.render(block_name='as_card_title')
+        return await self.render(block_name='as_card_title')
 
     @property
-    def as_th_title(self):
-        return render_block(
+    async def as_th_title(self):
+        return await render_block_async(
             environment=environment,
             template_name=f'field/as_th_title.html',
             block_name='th_title',
@@ -231,11 +233,11 @@ class Field:
         )
 
     @property
-    def as_table_get(self) -> str:
+    async def as_table_get(self) -> str:
         """Отобразить поле как Таблицу (Если поле является list_rel)
             Нужно обязательно передавать какому обьекту принадлежит лайна
         """
-        return render_block(
+        return await render_block_async(
             environment=environment,
             template_name=f'cls/as_table.html',
             block_name='get',
@@ -245,12 +247,12 @@ class Field:
         )
 
     @property
-    def as_table_update(self) -> str:
+    async def as_table_update(self) -> str:
         """Отобразить поле как Таблицу на редактирование (Если поле является list_rel)
             Нужно обязательно передавать какому обьекту принадлежит лайна
         """
         block_name = 'get'
-        return render_block(
+        return await render_block_async(
             environment=environment,
             template_name=f'cls/as_table.html',
             block_name=block_name,
@@ -259,7 +261,7 @@ class Field:
             parent=self.cls.v.parent_field
         )
 
-    def filter_as_string(self) -> str:
+    async def filter_as_string(self) -> str:
         """Костыльная утилита, что бы в js передать фильтр"""
         return self.update.get('filter')
 

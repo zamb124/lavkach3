@@ -1,6 +1,6 @@
 import os
 from types import UnionType
-from typing import Annotated, Union
+from typing import Annotated, Union, Optional
 from typing import TYPE_CHECKING
 
 from jinja2 import Environment, FileSystemLoader
@@ -11,19 +11,17 @@ if TYPE_CHECKING:
 path = os.path.dirname(os.path.abspath(__file__))
 
 template_dirs = [
-    'app/front/templates',
     'core/frontend/templates',
-    'app/front/apps/',
 ]
 
 # Создайте загрузчик файловой системы с несколькими директориями
 loader = FileSystemLoader(template_dirs)
 
 # Создайте окружение Jinja2 с указанным загрузчиком
-environment = Environment(loader=loader)
+environment = Environment(loader=loader, enable_async=True, autoescape=False)
 
 
-def _crud_filter(fields: 'Fields', method: 'MethodType', display_view: str = None):
+def _crud_filter(fields: 'Fields', method: 'MethodType', display_view: Optional[str] = None):
     """
         Jinja2 флильтр, который фильтрует строки для типа отображений
         ВАЖНО: Если table и в схеме 'get' True, то поле будет отображаться в таблице в любом режиме

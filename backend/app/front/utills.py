@@ -1,7 +1,9 @@
+import asyncio
+
 from fastapi import Request
 
 from app.front.template_spec import templates
-
+from fastapi.responses import HTMLResponse
 
 class BasePermit:
     permits: list = []
@@ -17,10 +19,14 @@ class BaseClass:
         ...
 
 
-def render(request: Request, template: str, context: dict = {}):
+async def render(request: Request, template: str, context: dict = {}):
     if not request.scope['htmx'].hx_request:
         template = template.replace('.html', '-full.html')
-    return templates.TemplateResponse(request, template, context)
+    if not 'request' in context:
+        context['request'] = request
+    template_obj = templates.get_template(template)
+    rendered_template = await template_obj.render_async(context)
+    return HTMLResponse(content=rendered_template)
 
 
 def convert_query_params_to_dict(query_params):

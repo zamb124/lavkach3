@@ -19,6 +19,6 @@ async def suggest(cls: SuggestView = Depends()):
 async def suggest_line(suggest_id: UUID, suggest_view: SuggestView = Depends()):
     """Отдает лайну для монитора склада"""
     suggest = await suggest_view.get_lines(ids=[suggest_id])
-    return render(suggest_view.r, 'inventory/suggest/suggest_line.html', context={'suggest': suggest})
+    return await render(suggest_view.r, 'inventory/suggest/suggest_line.html', context={'suggest': suggest})
 
 

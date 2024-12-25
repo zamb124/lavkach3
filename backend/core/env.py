@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from httpx import AsyncClient
 from httpx import AsyncClient as asyncclient
 from pydantic import BaseModel
+from starlette.middleware import _MiddlewareClass
 from starlette.requests import HTTPConnection, Request
 from starlette.types import ASGIApp, Scope, Receive, Send
 from taskiq import AsyncBroker
@@ -207,7 +208,7 @@ async def env_context():
 env: Optional[Env] = None
 
 
-class EnvMidlleWare:
+class EnvMidlleWare(_MiddlewareClass):
     """
      ENV Middleware
     """

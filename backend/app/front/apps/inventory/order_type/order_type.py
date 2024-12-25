@@ -20,7 +20,7 @@ async def order_type_list(request: Request, store_user: StoreStaffView = Depends
     filter = {}
     filter.update(convert_query_params_to_dict(order_types.r.query_params))
     await order_types.init(params=filter)
-    return render(
+    return await render(
         order_types.r, 'inventory/order_type/order_type.html',
         context={
             'order_types': order_types,
@@ -38,7 +38,7 @@ async def order_type_lines(request: Request, store_user: StoreStaffView = Depend
     filter = {}
     filter.update(convert_query_params_to_dict(order_types.r.query_params))
     await order_types.init(params=filter)
-    return render(
+    return await render(
         order_types.r, 'inventory/order_type/order_type_lines.html',
         context={
             'order_types': order_types,
@@ -62,7 +62,7 @@ async def order_type_detail(
     await order_type.init(params=filter)
     await quants.init(params={'order_type_id__in': [order_type._id]})
 
-    return render(
+    return await render(
         order_type.r, 'inventory/order_type/order_type_detail.html',
         context={
             'order_type': order_type,
@@ -91,7 +91,7 @@ async def order_type_detail(
             updated_order_type = await a.update(order_type_id, origin_order_type)
     await order_type.init(params=filter, data=[updated_order_type])
     await quants.init(params={'order_type_id__in': [order_type._id]})
-    return render(
+    return await render(
         order_type.r, 'inventory/order_type/order_type_detail.html',
         context={
             'order_type': order_type,

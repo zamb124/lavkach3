@@ -23,7 +23,7 @@ async def move_list(moves: MoveView = Depends(), zones: LocationView = Depends()
     filter.update(moves.r.query_params)
     await moves.init(params=filter)
     await zones.init(params={'location_class__in': ['zone']})
-    return render(
+    return await render(
         moves.r, 'inventory/move/move.html',
         context={
             'moves': moves,
@@ -38,7 +38,7 @@ async def move_list(moves: MoveView = Depends(), zones: LocationView = Depends()
 async def move_line(move_id: UUID, move_view: MoveView = Depends()):
     """Отдает лайну для монитора склада"""
     move = await move_view.get_lines(ids=[move_id])
-    return render(move_view.r, 'inventory/move/move_line.html', context={'move': move})
+    return await render(move_view.r, 'inventory/move/move_line.html', context={'move': move})
 
 
 @move_router.get("/detail", response_class=HTMLResponse)
@@ -56,7 +56,7 @@ async def move_detail(
         await move.init(params=filter)
     else:
         move.store_id.val = store_user.store_id.val
-    return render(
+    return await render(
         move.r, 'inventory/move/move_detail.html',
         context={
             'move': move,
@@ -73,7 +73,7 @@ async def move_lines(moves: MoveView = Depends(), store_user: StoreStaffView = D
     filter = {'store_id__in': store_user.store_id.val}
     filter.update(convert_query_params_to_dict(moves.r.query_params))
     await moves.init(params=filter)
-    return render(
+    return await render(
         moves.r, 'inventory/move/move_lines.html',
         context={
             'moves': moves,

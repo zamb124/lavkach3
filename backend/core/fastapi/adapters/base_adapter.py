@@ -8,6 +8,7 @@ import redis.exceptions
 from fastapi import HTTPException
 from starlette.datastructures import QueryParams
 from starlette.requests import Request, HTTPConnection
+from starlette.types import ASGIApp
 
 from core.fastapi.adapters.action_decorator import actions
 from core.helpers.cache import Cache, CacheStrategy
@@ -93,6 +94,7 @@ class BaseAdapter:
     protocol: str
     host: str
     port: str
+    app: 'ASGIApp'
 
     def __init__(self, conn: HTTPConnection, domain: 'Domain', model: 'Model', env: 'Env'):
 

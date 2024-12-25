@@ -15,7 +15,7 @@ from starlette.types import ASGIApp, Scope, Receive, Send
 from app.basic import __domain__ as basic_domain
 from app.front.front_router import front_router
 from app.front.tkq import broker
-from app.inventory import __domain__ as inventory_domain
+from app.inventory import __inventory_manifest__ as inventory_domain
 from core.db_config import config
 from core.env import EnvMidlleWare, env
 from core.env_domains import domains

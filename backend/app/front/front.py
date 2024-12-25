@@ -10,8 +10,10 @@ from fastapi import Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
+from watchfiles import awatch
 
 from app.front.template_spec import templates
+from app.front.utills import render
 from core.frontend.enviroment import template_dirs
 
 
@@ -30,22 +32,38 @@ async def delete_mock(request: Request):
 
 @index_router.get("/front/topbar_vertical", response_class=HTMLResponse)
 async def topbar(request: Request):
-    return templates.TemplateResponse(request, 'partials/topbar_vertical.html', context={})
+    return await render(
+        request=request,
+        template='partials/topbar_vertical.html',
+        context={}
+    )
 
 
 @index_router.get("/front/topbar_horizontal", response_class=HTMLResponse)
 async def topbar(request: Request):
-    return templates.TemplateResponse(request, 'partials/topbar_horizontal.html', context={})
+    return await render(
+        request=request,
+        template='partials/topbar_horizontal.html',
+        context={}
+    )
 
 
 @index_router.get("/front/theme_editor", response_class=HTMLResponse)
 async def topbar(request: Request):
-    return templates.TemplateResponse(request, 'partials/theme_editor.html', context={})
+    return await render(
+        request=request,
+        template='partials/theme_editor.html',
+        context={}
+    )
 
 
 @index_router.get("/front/search_bar", response_class=HTMLResponse)
 async def topbar(request: Request):
-    return templates.TemplateResponse(request, 'partials/search_bar.html', context={})
+    return await render(
+        request=request,
+        template='partials/search_bar.html',
+        context={}
+    )
 
 
 @index_router.get("/front/sidebar_vertical", response_class=HTMLResponse)
@@ -62,43 +80,51 @@ async def sidebar(request: Request):
         admin_nav.update({
             domain_name: model_list
         })
-    return templates.TemplateResponse(request, 'partials/sidebar_vertical.html',
+    return await render(request, 'partials/sidebar_vertical.html',
                                       context={'nav': admin_nav})
 
 
 @index_router.get("/front/sidebar_horizontal", response_class=HTMLResponse)
-async def sidebar(request: Request):
+async def sidebar_horizontal(request: Request):
     """Строит левое меню Админки, на базе tags в роутах и пермишенах Пользователя"""
-    return templates.TemplateResponse(request, 'partials/sidebar_horizontal.html')
+    return await render(
+        request=request,
+        template='partials/sidebar_horizontal.html',
+        context={}
+    )
 
 
 @index_router.get("/front/sidebar", response_class=HTMLResponse)
 async def sidebar(request: Request):
     """Строит левое меню Админки, на базе tags в роутах и пермишенах Пользователя"""
-    return templates.TemplateResponse(request, 'partials/sidebar.html')
+    return await render(request, 'partials/sidebar.html')
 
 
 @index_router.get("/front/sidebar_scroll", response_class=HTMLResponse)
-async def sidebar(request: Request):
+async def sidebar_scroll(request: Request):
     """Строит левое меню Админки, на базе tags в роутах и пермишенах Пользователя"""
-    return templates.TemplateResponse(request, 'partials/sidebar_scroll.html')
+    return await render(request, 'partials/sidebar_scroll.html')
 
 
 @index_router.get("/front/search_bar", response_class=HTMLResponse)
-async def sidebar(request: Request):
+async def search_bar(request: Request):
     """Строит левое меню Админки, на базе tags в роутах и пермишенах Пользователя"""
-    return templates.TemplateResponse(request, 'partials/search_bar.html')
+    return await render(request, 'partials/search_bar.html')
 
 
 @index_router.get("/front/theme_editor", response_class=HTMLResponse)
-async def sidebar(request: Request):
+async def theme_editor(request: Request):
     """Строит левое меню Админки, на базе tags в роутах и пермишенах Пользователя"""
-    return templates.TemplateResponse(request, 'partials/theme_editor.html')
+    return await render(request, 'partials/theme_editor.html')
 
 
 @index_router.get("/", response_class=HTMLResponse)
 async def root_page(request: Request):
-    return templates.TemplateResponse(request, 'index-full.html')
+    return await render(
+        request=request,
+        template='index.html',
+        context={'next': next}
+    )
 
 
 async def get_user_companies(request: Request) -> dict:
@@ -116,7 +142,7 @@ async def get_user_companies(request: Request) -> dict:
 @index_router.get("/front/company_changer_widget", response_class=HTMLResponse)
 async def company_changer_widget(request: Request) -> dict:
     data = await get_user_companies(request)
-    return templates.TemplateResponse(request, 'widgets/widget_company_changer.html', context=data)
+    return await render(request, 'widgets/widget_company_changer.html', context=data)
 
 
 class CompanyId(BaseModel):
@@ -129,7 +155,7 @@ async def company_changer_widget(request: Request, schema: CompanyId) -> dict:
         data = await a.user_company_change(user_id=request.user.user_id,
                                            company_id=schema.company_id)
     data = await get_user_companies(request)
-    return templates.TemplateResponse(request, 'widgets/widget_company_changer.html', context=data)
+    return await render(request, 'widgets/widget_company_changer.html', context=data)
 
 
 # @index_router.get("/basic/dropdown-ids", response_class=HTMLResponse)
@@ -140,7 +166,7 @@ async def company_changer_widget(request: Request, schema: CompanyId) -> dict:
 #      _named означает, что так же будет отдат name для отрисовки на тайтле кнопки
 #     """
 #     data = await request.scope['env']['company'].adapter.dropdown_ids(model, id, itemlink, is_named)
-#     return templates.TemplateResponse(request, 'widgets/dropdown-ids-named-htmx.html', context=data)
+#     return await render(request, 'widgets/dropdown-ids-named-htmx.html', context=data)
 
 @index_router.get("/front/widget_locale_changer", response_class=HTMLResponse)
 async def company_changer_widget(request: Request, locale: str=None) -> dict:
@@ -155,7 +181,7 @@ async def company_changer_widget(request: Request, locale: str=None) -> dict:
     if locale and locale != request.user.locale:
         async with request.scope['env']['user'].adapter as a:
             await a.user_locale_change(user_id=request.user.user_id, locale=locale)
-    return templates.TemplateResponse(
+    return await render(
         request,
         'widgets/widget_locale_changer.html',
         context=locales
@@ -164,7 +190,7 @@ async def company_changer_widget(request: Request, locale: str=None) -> dict:
 
 @index_router.get("/front/widget_user_profile", response_class=HTMLResponse)
 async def widget_user_profile(request: Request) -> dict:
-    return templates.TemplateResponse(
+    return await render(
         request,
         'widgets/widget_user_profile.html'
     )

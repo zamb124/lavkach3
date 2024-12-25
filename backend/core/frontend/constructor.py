@@ -6,7 +6,7 @@ from datetime import datetime
 from functools import lru_cache
 from typing import Optional, Any
 
-from jinja2_fragments import render_block
+from jinja2_fragments import render_block, render_block_async
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo, ComputedFieldInfo
 from pydantic.v1.schema import schema
@@ -264,145 +264,145 @@ class H:
     def __init__(self):
         self.templates = default_templates.copy()
 
-    def as_tr(self, template: str = 'as_tr', block_name: str = 'get', method: MethodType = MethodType.GET,
+    async def as_tr(self, template: str = 'as_tr', block_name: str = 'get', method: MethodType = MethodType.GET,
               exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template, 'line/as_tr.html')
-        return self.cls.render_line(template, block_name=block_name, method=method)
+        return await self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def as_tr_get(self) -> str:
+    async def as_tr_get(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.as_tr()
+        return await self.as_tr()
 
     @property
-    def as_tr_header(self) -> str:
+    async def as_tr_header(self) -> str:
         """Отобразить обьект как строку заголовок таблицы"""
-        return self.as_tr(block_name='header')
+        return await self.as_tr(block_name='header')
 
     @property
-    def as_tr_placeholder(self) -> str:
+    async def as_tr_placeholder(self) -> str:
         """Отобразить обьект как строку заголовок таблицы"""
-        return self.as_tr(block_name='placeholder')
+        return await self.as_tr(block_name='placeholder')
 
     @property
-    def as_tr_update(self) -> str:
+    async def as_tr_update(self) -> str:
         """Отобразить обьект как строку таблицы на редактирование"""
-        return self.as_tr(block_name='update', method=MethodType.UPDATE)
+        return await self.as_tr(block_name='update', method=MethodType.UPDATE)
 
     @property
-    def as_tr_create(self) -> str:
+    async def as_tr_create(self) -> str:
         """Отобразить обьект как строку таблицы на создание"""
-        return self.as_tr(block_name='create', method=MethodType.CREATE)
+        return await self.as_tr(block_name='create', method=MethodType.CREATE)
 
-    def as_div(self, template: str = 'as_div', block_name: str = 'get', method: MethodType = MethodType.GET,
+    async def as_div(self, template: str = 'as_div', block_name: str = 'get', method: MethodType = MethodType.GET,
                exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template, 'line/as_div.html')
-        return self.cls.render_line(template, block_name=block_name, method=method)
+        return await self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def as_div_get(self) -> str:
+    async def as_div_get(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.as_div()
+        return await self.as_div()
 
     @property
-    def as_div_update(self) -> str:
+    async def as_div_update(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.as_div(block_name='update', method=MethodType.UPDATE)
+        return await self.as_div(block_name='update', method=MethodType.UPDATE)
 
     @property
-    def as_div_create(self) -> str:
+    async def as_div_create(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.as_div(block_name='create', method=MethodType.CREATE)
+        return await self.as_div(block_name='create', method=MethodType.CREATE)
 
-    def as_card(self, template: str = 'as_card', block_name: str = 'get', method: MethodType = MethodType.GET,
+    async def as_card(self, template: str = 'as_card', block_name: str = 'get', method: MethodType = MethodType.GET,
                 exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template, 'line/as_card.html')
-        return self.cls.render_line(template, block_name=block_name, method=method)
+        return await self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def as_card_get(self) -> str:
+    async def as_card_get(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.as_card()
+        return await self.as_card()
 
-    def as_modal(self, template: str = 'as_modal', block_name: str = 'get', method: MethodType = MethodType.GET,
+    async def as_modal(self, template: str = 'as_modal', block_name: str = 'get', method: MethodType = MethodType.GET,
                  exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template, 'line/as_modal.html')
-        return self.cls.render_line(template, block_name=block_name, method=method)
+        return await self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def as_modal_get(self) -> str:
+    async def as_modal_get(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.as_modal()
+        return await self.as_modal()
 
     @property
-    def as_modal_update(self) -> str:
+    async def as_modal_update(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.as_modal(block_name='update', method=MethodType.UPDATE)
+        return await self.as_modal(block_name='update', method=MethodType.UPDATE)
 
     @property
-    def as_modal_delete(self) -> str:
+    async def as_modal_delete(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.as_modal(block_name='delete', method=MethodType.DELETE)
+        return await self.as_modal(block_name='delete', method=MethodType.DELETE)
 
     @property
-    def as_modal_create(self) -> str:
+    async def as_modal_create(self) -> str:
         """Отобразить обьект как строку таблицы на просмотр"""
-        return self.as_modal(block_name='create', method=MethodType.CREATE)
+        return await self.as_modal(block_name='create', method=MethodType.CREATE)
 
-    def as_button(self, template: str = 'as_button', block_name: str = 'get', method: MethodType = MethodType.GET,
+    async def as_button(self, template: str = 'as_button', block_name: str = 'get', method: MethodType = MethodType.GET,
                   exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template, 'line/as_button.html')
-        return self.cls.render_line(template, block_name=block_name, method=method)
+        return await self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def as_button_get(self) -> str:
+    async def as_button_get(self) -> str:
         """Сгенерировать кнопку на просмотр обьекта"""
-        return self.as_button(block_name='get')
+        return await self.as_button(block_name='get')
 
     @property
-    def as_button_update(self) -> str:
+    async def as_button_update(self) -> str:
         """Сгенерировать кнопку на редактирование обьекта"""
-        return self.as_button(block_name='update')
+        return await self.as_button(block_name='update')
 
     @property
-    def as_button_create(self) -> str:
+    async def as_button_create(self) -> str:
         """Сгенерировать кнопку на создание обьекта"""
-        return self.as_button(block_name='create')
+        return await self.as_button(block_name='create')
 
     @property
-    def as_button_delete(self) -> str:
+    async def as_button_delete(self) -> str:
         """Сгенерировать кнопку на удаление обьекта"""
-        return self.as_button(block_name='delete')
+        return await self.as_button(block_name='delete')
 
     @property
-    def as_button_save(self) -> str:
+    async def as_button_save(self) -> str:
         """Кнопка сохранения обьекта"""
-        return self.as_button(block_name='save')
+        return await self.as_button(block_name='save')
 
     @property
-    def as_button_actions(self) -> str:
+    async def as_button_actions(self) -> str:
         """Сгенерировать кнопку на меню доступных методов обьекта"""
-        return self.as_button(block_name='actions')
+        return await self.as_button(block_name='actions')
 
-    def as_filter(self, template: str = 'as_filter', block_name: str = 'get', method: MethodType = MethodType.GET,
+    async def as_filter(self, template: str = 'as_filter', block_name: str = 'get', method: MethodType = MethodType.GET,
                   exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template, 'cls/as_filter.html')
-        return self.cls.render_line(template, block_name=block_name, method=method)
+        return await self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def as_filter_widget(self) -> str:
+    async def as_filter_widget(self) -> str:
         """
         Returns the filter widget as an HTML block
 
@@ -414,20 +414,20 @@ class H:
           Returns:
               str: The HTML string for the filter widget
         """
-        return self.as_filter(block_name='widget')
+        return await self.as_filter(block_name='widget')
 
     @property
-    def as_filter_get(self) -> str:
+    async def as_filter_get(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
-        return self.as_filter()
+        return await self.as_filter()
 
-    def as_action(self, action_name, block_name: str = 'button', label=True, css_class=False,
+    async def as_action(self, action_name, block_name: str = 'button', label=True, css_class=False,
                   icon: Optional[str] = None) -> str:
         """Отдаем кнопку действия"""
         if css_class is True:
             css_class = 'btn btn-primary'
         action = self.cls.v.actions[action_name]
-        return render_block(
+        return await render_block_async(
             environment=environment,
             template_name=f'cls/action.html',
             block_name=block_name,
@@ -438,32 +438,32 @@ class H:
             icon=icon or 'solar:double-alt-arrow-right-bold-duotone',
         )
 
-    def as_table(self, template: str = 'as_table', block_name: str = 'get', method: MethodType = MethodType.GET,
+    async def as_table(self, template: str = 'as_table', block_name: str = 'get', method: MethodType = MethodType.GET,
                  exclude: list = []) -> str:
         """Гибкий метод отдачи строки таблицы"""
         self.cls._exclude = exclude or self.cls._exclude
         template = self.templates.get(template, 'cls/as_table.html')
-        return self.cls.render_line(template, block_name=block_name, method=method)
+        return await self.cls.render_line(template, block_name=block_name, method=method)
 
     @property
-    def as_table_widget(self) -> str:
+    async def as_table_widget(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
-        return self.as_table(block_name='widget')
+        return await self.as_table(block_name='widget')
 
     @property
-    def as_table_get(self) -> str:
+    async def as_table_get(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
-        return self.as_table()
+        return await self.as_table()
 
     @property
-    def as_table_update(self) -> str:
+    async def as_table_update(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
-        return self.as_table(method=MethodType.UPDATE)
+        return await self.as_table(method=MethodType.UPDATE)
 
     @property
-    def as_header_widget(self) -> str:
+    async def as_header_widget(self) -> str:
         """Отдает виджет HTMX для построения заголовка страницы обьекта"""
-        return render_block(
+        return await render_block_async(
             environment=environment,
             template_name=f'cls/as_header.html',
             block_name='widget',
@@ -471,17 +471,17 @@ class H:
         )
 
     @property
-    def as_import(self) -> str:
+    async def as_import(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
-        return render_block(
+        return await render_block_async(
             environment=environment, template_name=f'cls/as_import.html',
             block_name='get', method=MethodType.GET, line=self.cls
         )
 
     @property
-    def as_import_errors(self) -> str:
+    async def as_import_errors(self) -> str:
         """Метод отдает фильтр , те столбцы с типами для HTMX шаблонов"""
-        return render_block(
+        return await render_block_async(
             environment=environment, template_name=f'cls/as_import.html',
             block_name='errors', method=MethodType.GET, line=self.cls
         )
@@ -884,7 +884,7 @@ class ClassView:
             submodel.v.parent_field = field
         return field
 
-    def _get_schema_fields(self) -> Fields:
+    def _get_schema_fields(self) -> None:
         """Переделывает Pydantic схему на Схему для рендеринга в HTMX и Jinja2 - а зачем?"""
         fields: list[tuple[str, Field]] = []
         n = 0
@@ -1022,9 +1022,9 @@ class ClassView:
         fields = [k for i, k in self.__dict__.items() if isinstance(k, Field) and k._field_name not in self._exclude]
         return _crud_filter(fields, method, display_view)
 
-    def render_line(self, template: str, block_name: str, method: MethodType = MethodType.GET) -> str:
+    async def render_line(self, template: str, block_name: str, method: MethodType = MethodType.GET) -> str:
         """Рендеринг подразумеваем 1 лайны из шаблона"""
-        return render_block(
+        return await render_block_async(
             environment=environment,
             template_name=template,
             block_name=block_name,

@@ -20,7 +20,7 @@ async def store_list(request: Request, store_user: StoreStaffView = Depends(get_
     filter = {}
     filter.update(convert_query_params_to_dict(stores.r.query_params))
     await stores.init(params=filter)
-    return render(
+    return await render(
         stores.r, 'inventory/store/store.html',
         context={
             'stores': stores,
@@ -38,7 +38,7 @@ async def store_lines(request: Request, store_user: StoreStaffView = Depends(get
     filter = {}
     filter.update(convert_query_params_to_dict(stores.r.query_params))
     await stores.init(params=filter)
-    return render(
+    return await render(
         stores.r, 'inventory/store/store_lines.html',
         context={
             'stores': stores,
@@ -62,7 +62,7 @@ async def store_detail(
     await store.init(params=filter)
     await quants.init(params={'store_id__in': [store._id]})
 
-    return render(
+    return await render(
         store.r, 'inventory/store/store_detail.html',
         context={
             'store': store,
@@ -91,7 +91,7 @@ async def store_detail(
             updated_store = await a.update(store_id, origin_store)
     await store.init(params=filter, data=[updated_store])
     await quants.init(params={'store_id__in': [store._id]})
-    return render(
+    return await render(
         store.r, 'inventory/store/store_detail.html',
         context={
             'store': store,

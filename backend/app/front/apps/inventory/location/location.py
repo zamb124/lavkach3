@@ -7,6 +7,7 @@ from fastapi import Request
 from fastapi.responses import HTMLResponse
 from mypy.checkexpr import defaultdict
 from starlette.responses import JSONResponse
+from watchfiles import awatch
 
 from app.front.apps.inventory.common_depends import get_user_store
 from app.front.apps.inventory.views import LocationView, StoreStaffView, QuantView, LocationTreeView
@@ -28,7 +29,7 @@ async def location_list(request: Request, store_user: StoreStaffView = Depends(g
     filter.update(convert_query_params_to_dict(locations.r.query_params))
     await locations.init(params=filter)
     await zones.init(params={'location_class__in': ['zone'], 'store_id__in': [store_user.store_id.val]})
-    return render(
+    return await render(
         locations.r, 'inventory/location/location.html',
         context={
             'locations': locations,
@@ -49,7 +50,7 @@ async def location_list_zones(request: Request, store_user: StoreStaffView = Dep
     filter.update(convert_query_params_to_dict(locations.r.query_params))
     await locations.init(params=filter)
     await zones.init(params={'location_class__in': ['zone'], 'store_id__in': [store_user.store_id.val]})
-    return render(
+    return await render(
         locations.r, 'inventory/location/location.html',
         context={
             'locations': locations,
@@ -68,7 +69,7 @@ async def location_lines(request: Request, store_user: StoreStaffView = Depends(
     filter = {'store_id__in': [store_user.store_id.val]}
     filter.update(convert_query_params_to_dict(locations.r.query_params))
     await locations.init(params=filter)
-    return render(
+    return await render(
         locations.r, 'inventory/location/location_lines.html',
         context={
             'locations': locations,
@@ -100,7 +101,7 @@ async def location_detail(
     else:
         location.store_id.val = store_user.store_id.val
         location.location_class.val = LocationClass.PLACE
-    return render(
+    return await render(
         location.r, 'inventory/location/location_detail.html',
         context={
             'location': location,
@@ -133,7 +134,7 @@ async def location_detail(
     location_tree = []
     async with location.v.model.adapter as a:
         location_tree = await a.get_location_tree({'location_ids': [location_id]})
-    return render(
+    return await render(
         location.r, 'inventory/location/location_detail.html',
         context={
             'location': location,
@@ -167,7 +168,7 @@ async def location_map(request: Request, store_user: StoreStaffView = Depends(ge
         })
     async with zones.v.model.adapter as a:
         locations = await a.get_location_tree({'location_ids': [i._id for i in zones]})
-    return render(
+    return await render(
         zones.r, 'inventory/location/map.html',
         context={
             'locations': locations,
@@ -202,7 +203,7 @@ async def location_deep_tree(request: Request, location_id: UUID, store_user: St
             'deep': True
         })
     await location.init(data=location_tree)
-    return render(
+    return await render(
         location.r, 'inventory/location/location_tree.html',
         context={
             'location_tree': location,

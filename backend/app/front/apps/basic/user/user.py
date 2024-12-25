@@ -9,7 +9,7 @@ from starlette.responses import Response
 
 from app.front.front import ExceptionResponseSchema
 from app.front.template_spec import templates
-from app.front.utills import BasePermit
+from app.front.utills import BasePermit, render
 
 user_router = APIRouter()
 
@@ -32,11 +32,15 @@ async def company_change(request: Request, company_id: uuid.UUID):
 @user_router.get("/login", responses={"404": {"model": ExceptionResponseSchema}}, )
 async def login(request: Request, response: Response):
     try:
-        referer = request.headers.get('referer').split('next=')[-1]
+        referer = request.headers.get('referer').split('next=')[-1]  # type: ignore
     except Exception:
         referer = None
     next = request.query_params.get('next') or referer
-    return templates.TemplateResponse(request, 'basic/login-full.html',context={'next': next})
+    return await render(
+        request=request,
+        template='basic/login.html',
+        context={'next': next}
+    )
 
 
 class LoginSchema(BaseModel):

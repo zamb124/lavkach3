@@ -29,6 +29,7 @@ class App {
         this.initSidebarMenu();
         this.AdminSettingsInit();
         this.setSsettings();
+        this.lastClickTime = 0;
 
         document.addEventListener("DOMContentLoaded", () => {
             this.onDocumentLoaded();
@@ -575,7 +576,7 @@ class App {
                     check_valid()
                 } else if (element.classList.contains('list-enum-get')) {
                     choicesMultiBadges(element, 'get');
-                }   else if (element.classList.contains('nest')) {
+                } else if (element.classList.contains('nest')) {
                     createSortable(element);
                 }
             });
@@ -1177,10 +1178,16 @@ class App {
 
         handleSidebarToggle();
 
+
         // Toggle Sidebar
         function handleSidebar() {
             document.querySelectorAll(".sidebartoggler").forEach((element) => {
                 element.addEventListener("click", function () {
+                    const currentTime = new Date().getTime();
+                    if (currentTime - this.lastClickTime < 1000) {
+                        return; // Если прошло меньше секунды с последнего клика, ничего не делать
+                    }
+                    this.lastClickTime = currentTime;
                     document.querySelectorAll(".sidebartoggler").forEach((el) => {
                         el.checked = true;
                     });
