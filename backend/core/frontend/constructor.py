@@ -951,13 +951,13 @@ class ClassView:
                     submodel = line_copied.v.submodels[col._field_name].copy()
                     submodel._lines = []
                     val = await submodel.fill_lines(data=val, join_related=False)
-                    submodel.v.key = col.key
+                    submodel.v.key = await col.key
                     submodel.v.parent_field = col
                 elif col.type.endswith('rel'):
                     submodel = line_copied.v.submodels[col._field_name].copy()
                     submodel._lines = []
                     val = await submodel.fill_lines(data=[val], join_related=False)
-                    submodel.v.key = col.key
+                    submodel.v.key = await col.key
                     submodel.v.parent_field = col
                 col.val = val
             line_copied._lines.append(line_copied)

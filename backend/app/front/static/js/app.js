@@ -965,6 +965,16 @@ class App {
 
     ManageDarkThemeLayout() {
         const setTheme = (theme, hideElements, showElements, hideElements2) => {
+            function updateLogo(theme) {
+                    const logoElements = document.querySelectorAll('img[alt="omnistore-logo"]');
+                    logoElements.forEach(img => {
+                        const src = img.getAttribute('src');
+                        const newSrc = theme === 'dark' ? src.replace(/\/[^\/]*$/, '/logo-dark.svg') : src.replace(/\/[^\/]*$/, '/logo.svg');
+                        img.setAttribute('src', newSrc);
+                    });
+                }
+
+                updateLogo(theme)
             document.documentElement.setAttribute("data-bs-theme", theme);
             const themeLayoutElement = document.getElementById(`${theme}-layout`);
             if (themeLayoutElement) {
@@ -981,6 +991,7 @@ class App {
                 document.querySelectorAll(`.${el}`).forEach((e) => (e.style.display = "none"))
             );
         };
+
 
         switch (this.userSettings.Theme) {
             case "light":
@@ -1111,7 +1122,19 @@ class App {
                     .forEach((el) => (el.style.display = "none"));
                 document.querySelectorAll(`.${moonDisplay}`)
                     .forEach((el) => (el.style.display = "flex"));
+
+                function updateLogo(theme) {
+                    const logoElements = document.querySelectorAll('img[alt="omnistore-logo"]');
+                    logoElements.forEach(img => {
+                        const src = img.getAttribute('src');
+                        const newSrc = theme === 'dark' ? src.replace(/\/[^\/]*$/, '/logo-dark.svg') : src.replace(/\/[^\/]*$/, '/logo.svg');
+                        img.setAttribute('src', newSrc);
+                    });
+                }
+
+                updateLogo(theme)
             }
+
 
             document.querySelectorAll(".dark-layout").forEach((element) => {
                 element.addEventListener("click", () =>

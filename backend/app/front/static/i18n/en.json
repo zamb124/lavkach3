@@ -1348,5 +1348,6 @@
   "t-Product-avaliable_quantity" : "Available",
   "t-order_type-allowed_zone_ids": "Allowed Zones",
   "t-order_type-allowed_location_type_ids": "Allowed Location Types",
-  "t-order_type-allowed_location_classes": "Allowed Location Classes"
+  "t-order_type-allowed_location_classes": "Allowed Location Classes",
+  "t-product-product_id": "Product"
 }

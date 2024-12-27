@@ -196,12 +196,12 @@ class Field:
     @property
     async def data_key(self) -> str:
         """Отдать Label for шаблон для поля"""
-        return f't-{self.cls.v.model.name}-{self._field_name}'
+        return f't-{self.cls.v.model.name}-{self._field_name}'.lower()
 
     @property
     async def data_key_description(self) -> str:
         """Отдать Label for шаблон для поля"""
-        return f't-{self.cls.v.model.name}-{self._field_name}-description'
+        return f't-{self.cls.v.model.name}-{self._field_name}-description'.lower()
 
     @property
     async def as_update(self) -> str:

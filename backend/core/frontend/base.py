@@ -37,7 +37,7 @@ async def _filter(request: Request, model: str):
         cls = ClassView(request, model)
     else:
         cls = cls_view(request)
-    return cls.h.as_filter_get
+    return await cls.h.as_filter_get
 
 
 @router.get("/search", response_class=JSONResponse)
@@ -88,7 +88,7 @@ async def table(request: Request, model: str, cls: ClassView = Depends(get_model
      Универсальный запрос, который отдает таблицу обьекта и связанные если нужно
     """
     await cls.init(params=dict(request.query_params))
-    return cls.h.as_table_get
+    return await cls.h.as_table_get
 
 
 @router.get("/line/{model}", response_class=HTMLResponse)
@@ -103,7 +103,7 @@ async def line(request: Request, model: str, parent_field: str = None):
         cls = cls_view(request)
         cls.v.parent_field = parent_field
     """Отдать обьект на создание, в зависимости от mode (tr/div)"""
-    return cls.h.as_tr_create
+    return await cls.h.as_tr_create
 
 
 @router.get("/line/{model}/{line_id}", response_class=HTMLResponse)  # type: ignore
@@ -120,21 +120,21 @@ async def line(request: Request, model: str, line_id: UUID, mode: str = 'tr', me
         case Method.UPDATE:
             """Отдать обьект на редактирование, в зависимости от mode (tr/div)"""
             line = await cls.get_lines(ids=[line_id], join_related=False)
-            return getattr(line.h, f'as_{mode}_update')
+            return await getattr(line.h, f'as_{mode}_update')
         case Method.GET:
             """Отдать обьект на чтение, в зависимости от mode (tr/div)"""
             line = await cls.get_lines(ids=[line_id], join_related=False)
-            return getattr(line.h, f'as_{mode}_get')
+            return await getattr(line.h, f'as_{mode}_get')
         case Method.CREATE:
             """Отдать обьект на создание, в зависимости от mode (tr/div)"""
-            return cls.h.as_tr_create
+            return await cls.h.as_tr_create
         case Method.DELETE:
             """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
             if isinstance(cls.v.schema.id, int):
                 """Если это временная запись, то просто удалить"""
                 return
             line = await cls.get_lines(ids=[line_id], join_related=False)
-            return line.h.as_modal_delete
+            return await line.h.as_modal_delete
         case Method.UPDATE_SAVE:
             """Сохранение записи при измененнии"""
             data = clean_filter(cls.v.schema.model_extra, cls.v.schema.key)
@@ -143,7 +143,7 @@ async def line(request: Request, model: str, line_id: UUID, mode: str = 'tr', me
             """Сохранение записи при создании"""
             data = clean_filter(cls.v.schema.model_extra, cls.v.schema.key)
             line = await cls.create_lines(data)
-            return line.h.as_div_update
+            return await line.h.as_div_update
         case Method.DELETE_SAVE:
             await cls.delete_lines(ids=[line_id])
             """Отдать обьект на удаление, в не зависимости от mode (tr/div)"""
@@ -162,7 +162,7 @@ async def line(request: Request, model: str):
     """Сохранение записи при создании"""
     data = await request.json()
     line = await cls.create_line(data)
-    return line.h.as_div_update
+    return await line.h.as_div_update
 
 
 @router.delete("/line/{model}/{line_id}", response_class=HTMLResponse)
@@ -207,15 +207,15 @@ async def modal(request: Request, model: str, line_id: Optional[str | UUID] = No
     match method:
         case Method.GET:
             line = await cls.get_lines(ids=[line_id])
-            return line.h.as_modal_get
+            return await line.h.as_modal_get
         case Method.UPDATE:
             line = await cls.get_lines(ids=[line_id])
-            return line.h.as_modal_update
+            return await line.h.as_modal_update
         case Method.DELETE:
             line = await cls.get_lines(ids=[line_id])
             return line.h.as_modal_delete
         case Method.CREATE:
-            return cls.h.as_modal_create
+            return await cls.h.as_modal_create
 
 
 @router.get("/field/{model}/{line_id}/{field_name}", response_class=HTMLResponse)
