@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.basic import __domain__ as basic_domain
 from app.basic.basic_router import basic_router
-from app.inventory import __domain__ as inventory_domain
+from app.inventory import __inventory_manifest__ as inventory_domain
 from core.env import EnvMidlleWare
 from core.env_domains import domains
 from core.exceptions import CustomException

@@ -38,7 +38,8 @@ services:
     env_file:
       - .env-docker
     container_name: base_app
-    command: /bin/sh -c "alembic upgrade head && gunicorn core.core_apps.base.base_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80"
+#    command: /bin/sh -c "alembic upgrade head && gunicorn core.core_apps.base.base_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80"
+    command: gunicorn core.core_apps.base.base_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
     ports:
       - 8888:80
     depends_on:

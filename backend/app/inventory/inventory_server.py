@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 #from fastapi_restful.timing import add_timing_middleware
 
 from app.basic import __domain__ as basic_domain
-from app.inventory import __domain__ as inventory_domain
+from app.inventory import __inventory_manifest__ as inventory_domain
 from app.inventory.inventory_router import router
 from core.db_config import config
 from core.env import EnvMidlleWare
