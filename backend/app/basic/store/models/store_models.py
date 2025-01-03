@@ -37,4 +37,4 @@ class Store(Base, AllMixin):
     external_number: Mapped[Optional[str]] = mapped_column(unique=True)
     address: Mapped[str]
     source: Mapped[str] = mapped_column(default=SourceType.INTERNAL)
-    type: Mapped[str] = mapped_column(default=Type.SIMPLE)
+    #type: Mapped[str] = mapped_column(default=Type.SIMPLE)
