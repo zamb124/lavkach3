@@ -6,6 +6,6 @@ from core.fastapi.dependencies import (
     IsAuthenticated,
 )
 
-router = APIRouter(prefix='/api/prescription')
-router.include_router(ps_router, prefix="/prescription", tags=["Prescription"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+router = APIRouter(prefix='/api/foodhub')
+router.include_router(ps_router, prefix="/foodhub", tags=["Foodhub"], dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 

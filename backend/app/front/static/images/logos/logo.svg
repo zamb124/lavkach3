@@ -8,5 +8,12 @@
     <path fill="url(#sw-gradient)"
           d="M26.1,-15.6C32.7,-3.7,36.2,9.6,31.3,19.4C26.4,29.1,13.2,35.3,0.1,35.3C-13.1,35.2,-26.1,28.9,-32,18.6C-37.9,8.3,-36.6,-6.1,-30.1,-18C-23.6,-29.9,-11.8,-39.3,-1,-38.7C9.8,-38.2,19.5,-27.5,26.1,-15.6Z"
           width="100%" height="100%" transform="translate(50 50)" stroke-width="0" style="transition: 0.3s;"></path>
-    <text x="60%" y="50%" font-size="35" text-anchor="middle" alignment-baseline="middle" fill="#" font-family="Manrope, sans-serif">Omnistore</text>
+
+    <!-- Прямоугольник для фона текста -->
+    <rect x="93" y="29" width="200" height="45" fill="black" rx="5" ry="5"></rect>
+
+    <!-- Текст Omnistore поверх прямоугольника -->
+    <text x="193" y="55" font-size="40" text-anchor="middle" alignment-baseline="middle" fill="#FFFFFF" font-family="Manrope, sans-serif">
+        Omnistore
+    </text>
 </svg>

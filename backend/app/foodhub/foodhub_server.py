@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Scope, Receive, Send
 
-from app.prescription import __domain__ as domains
+from app.foodhub import __domain__ as domains
 from app.foodhub.prescription_router import router
 from core.env import Env
 from core.exceptions import CustomException
@@ -109,8 +109,8 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
         description="Hide API",
         version="1.0.0",
-        # docs_url=None if config.ENV == "production" else "/api/prescription/docs",
-        # redoc_url=None if config.ENV == "production" else "/api/prescription/dredoc",
+        # docs_url=None if config.ENV == "production" else "/api/foodhub/docs",
+        # redoc_url=None if config.ENV == "production" else "/api/foodhub/dredoc",
         dependencies=[Depends(Logging)],
         middleware=make_middleware(),
     )

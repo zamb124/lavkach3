@@ -26,8 +26,16 @@ class ProductCategory(Base, AllMixin):
     product_category_ids: Mapped[Optional[ids]] = mapped_column(index=True)
 
 class ProductType(str, Enum):
+    """
+        Тип товара
+            - consumable: Товар, который храниться на уровне всего склада, он не имеет остатков, но для его перемещения
+            нужно сканирование (если склад не simple)
+            - storable: Хранимый товар
+            - service: Услуга
+    """
     CONSUMABLE: str = 'consumable'
     STORABLE: str = 'storable'
+    SEERVICE: str = 'service'
 
 
 class Product(Base, AllMixin):

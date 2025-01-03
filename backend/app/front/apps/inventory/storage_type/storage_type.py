@@ -13,8 +13,12 @@ storage_type_router = APIRouter()
 @storage_type_router.get("", response_class=HTMLResponse)
 async def product_storage_type(cls: StorageTypeView = Depends()):
     """Список перемещений"""
-    template = f'widgets/list{"" if cls.r.scope["htmx"].hx_request else "-full"}.html'
-    return templates.TemplateResponse(cls.r, template, context={'cls': cls})
+    template = f'widgets/list.html'
+    return await render(
+        cls.r,
+        template,
+        context={'cls': cls}
+    )
 
 
 @storage_type_router.get("/line", response_class=HTMLResponse)

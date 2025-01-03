@@ -9,9 +9,24 @@ from core.db import Base
 from core.db.mixins import AllMixin
 
 
-class StoreType(str, Enum):
+class SourceType(str, Enum):
+    """
+        Источник данных
+    """
     INTERNAL: str = 'internal'
     WMS: str = 'wms'
+
+
+class Type(str, Enum):
+    """
+        Тип скдада
+            - simple: Хранение ведется на уровне товара
+            - ZOME: Хранение ведется на уровне зон/помещений
+            - SHELF: Хранение ведется на уровне полок
+    """
+    SIMPLE: str = 'simple'
+    ZONE: str = 'zone'
+    SHELF: str = 'shelf'
 
 
 class Store(Base, AllMixin):
@@ -21,6 +36,5 @@ class Store(Base, AllMixin):
     title: Mapped[str] = mapped_column(index=True)
     external_number: Mapped[Optional[str]] = mapped_column(unique=True)
     address: Mapped[str]
-    source: Mapped[str] = mapped_column(default=StoreType.INTERNAL)
-
-
+    source: Mapped[str] = mapped_column(default=SourceType.INTERNAL)
+    type: Mapped[str] = mapped_column(default=Type.SIMPLE)

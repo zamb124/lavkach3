@@ -2,16 +2,16 @@ from typing import Any, Optional
 
 from starlette.requests import Request
 
-from app.foodhub.foodhub.models.prescription_models import Prescription
+from app.foodhub.foodhub.models.prescription_models import Foodhub
 from app.foodhub.foodhub.schemas.prescription_schemas import PrescriptionCreateScheme, \
     PrescriptionUpdateScheme, PrescriptionFilter
 from core.permissions import permit
 from core.service.base import BaseService, UpdateSchemaType, ModelType, FilterSchemaType, CreateSchemaType
 
 
-class PrescriptionService(BaseService[Prescription, PrescriptionCreateScheme, PrescriptionUpdateScheme, PrescriptionFilter]):
+class PrescriptionService(BaseService[Foodhub, PrescriptionCreateScheme, PrescriptionUpdateScheme, PrescriptionFilter]):
     def __init__(self, request:Request):
-        super(PrescriptionService, self).__init__(request, Prescription,PrescriptionCreateScheme, PrescriptionUpdateScheme)
+        super(PrescriptionService, self).__init__(request, Foodhub,PrescriptionCreateScheme, PrescriptionUpdateScheme)
 
     @permit('prescription_update')
     async def update(self, id: Any, obj: UpdateSchemaType) -> Optional[ModelType]:

@@ -1,0 +1,6 @@
+permits:
+  prescription_create: Может создавать рецепт
+  prescription_update: Может редактировать рецепт
+  prescription_list: Может получать список рецептов
+  prescription_delete: Может удалять рецепт
+  prescription_get: Может смотреть на рецепт

@@ -5,7 +5,7 @@ from pydantic import Field
 from pydantic.types import UUID
 
 from app.foodhub.foodhub.models.prescription_models import IdentificationType
-from app.foodhub.foodhub.models.prescription_models import Prescription
+from app.foodhub.foodhub.models.prescription_models import Foodhub
 from core.schemas import BaseFilter
 from core.schemas.basic_schemes import BasicModel
 from core.schemas.list_schema import GenericListSchema
@@ -21,7 +21,7 @@ class PrescriptionBaseScheme(BasicModel):
                                                table=True, form=True)
 
     class Config:
-        orm_model = Prescription
+        orm_model = Foodhub
 
 
 class PrescriptionUpdateScheme(PrescriptionBaseScheme):
@@ -48,7 +48,7 @@ class PrescriptionFilter(BaseFilter):
         populate_by_name = True
 
     class Constants(Filter.Constants):
-        model = Prescription
+        model = Foodhub
         ordering_field_name = "order_by"
         search_field_name = "search"
         search_model_fields = ["title", "external_number", "address"]
