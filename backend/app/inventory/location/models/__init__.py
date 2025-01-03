@@ -1,1 +1,1 @@
-from .location_models import  *
+from .location_models import *

@@ -7,7 +7,7 @@ from app.basic.product.models.product_models import Product, ProductCategory
 from app.basic.store.models.store_models import Store
 from app.basic.uom.models.uom_category_models import UomCategory
 from app.basic.uom.models.uom_models import Uom
-from app.front.apps.inventory.location.location_type import location_type
+
 from app.inventory.location.models import Location, LocationType
 from app.inventory.order.models import OrderType, Order
 from app.inventory.product_storage import StorageType
