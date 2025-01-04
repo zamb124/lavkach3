@@ -17,7 +17,7 @@
                         <div class="row align-items-center">
                             <div class="col-12">
                                 <div class="d-sm-flex align-items-center justify-space-between">
-                                    <h4 class="mb-4 mb-sm-0 card-title">Order
+                                    <h4 class="card-title">Order
                                         # {{ order.number.val }}-
                                     </h4>
                                     <th class="line-col text-center align-items-center "
@@ -61,7 +61,7 @@
                                                     {{ order.h.as_action('order_complete', 'as_a', css_class="btn btn-sm btn-secondary") }}
                                                 </li>
                                             {% endif %}
-                                            <li class="breadcrumb-item d-flex align-items-center">
+                                            <li class="breadcrumb-item d-flex align-items-center" style="order: 99;">
                                                 <a href="#" data-bs-dismiss="modal" class="d-flex align-items-center">
                                                     <iconify-icon icon="solar:close-circle-outline"
                                                                   class="fs-8"></iconify-icon>
