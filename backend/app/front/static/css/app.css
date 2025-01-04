@@ -277,3 +277,9 @@ a.text-danger {
 .nested {
     margin-left: 5px;
 }
+
+@media (max-width: 991.98px) {
+    .body-wrapper {
+        margin-top: 100px;
+    }
+}
