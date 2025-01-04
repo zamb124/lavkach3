@@ -281,5 +281,8 @@ a.text-danger {
 @media (max-width: 991.98px) {
     .body-wrapper {
         margin-top: 100px;
+              margin-right: 0px;
+        margin-left: 0px;
+
     }
 }
