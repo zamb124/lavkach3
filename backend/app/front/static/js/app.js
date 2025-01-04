@@ -495,7 +495,7 @@ class App {
             });
 
             const elmts = elt.querySelectorAll('.modal, .uuid-create, .uuid-update, .list-uuid-create, .list-uuid-update, .uuid-get, .list-uuid-get, .babel-create, .babel-update, .list-str, .list-enum-update, .list-enum-get, .list-enum-create, .list-rel, .nest');
-            if (elt.classList.contains('modal')) {
+            if (elt.classList.contains('modal') && (elt.id !== "exampleModal")) {
                 new ModalHandler(elt);
             }
             if (elt.classList.contains('nest')) {
