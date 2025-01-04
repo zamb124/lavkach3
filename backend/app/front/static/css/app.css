@@ -286,3 +286,8 @@ a.text-danger {
 
     }
 }
+
+.d-sm-flex {
+    display: flex;
+    flex-wrap: nowrap;
+}
