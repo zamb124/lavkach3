@@ -133,7 +133,7 @@ async def location_detail(
     await quants.init(params={'location_id__in': [location._id]})
     location_tree = []
     async with location.v.model.adapter as a:
-        location_tree = await a.get_location_tree({'location_ids': [location_id]})
+        location_tree = await a.get_location_tree({'location_ids': [location_id.p.id]})
     return await render(
         location.r, 'inventory/location/location_detail.html',
         context={

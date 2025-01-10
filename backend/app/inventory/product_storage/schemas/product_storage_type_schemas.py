@@ -11,7 +11,7 @@ from core.schemas.timestamps import TimeStampScheme
 
 
 class ProductStorageTypeBaseScheme(BasicModel):
-    product_id: UUID = Field(title='Product', form=True, model='product')
+    product_id: UUID = Field(title='Product', form=True, table=True, model='product')
     storage_uom_id: Optional[UUID] = Field(default=None)  # Единица измерения склада
     storage_image_url: Optional[str] = Field(default=None)  # Картинка для склада
     allowed_storage_uom_ids: Optional[List[UUID]] = Field(default=[])  # Разрешенные единицы измерения склада
@@ -37,7 +37,7 @@ class ProductStorageTypeScheme(ProductStorageTypeCreateScheme, TimeStampScheme):
 
 
 class ProductStorageTypeFilter(BaseFilter):
-    product_id__in: Optional[List[UUID]] = Field(default=False, title='Product', form=True, model='product')
+    product_id__in: Optional[List[UUID]] = Field(default=None, title='Product', form=True, model='product')
 
     class Constants(Filter.Constants):
         model = ProductStorageType

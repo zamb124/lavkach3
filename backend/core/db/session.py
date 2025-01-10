@@ -43,7 +43,7 @@ async_session_factory = sessionmaker(
     expire_on_commit=False if os.environ.get('ENV') == 'test' else True
 )
 session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
-    session_factory=async_session_factory,
+    session_factory=async_session_factory,  # type: ignore
     scopefunc=get_session_context,
 )
 

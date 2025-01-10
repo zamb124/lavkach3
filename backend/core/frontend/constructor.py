@@ -1036,9 +1036,9 @@ class ClassView:
     def v(self):
         return self._view
 
-    def send_message(self, message: str) -> str:
+    async def send_message(self, message: str) -> str:
         """Отправить пользователю сообщение """
-        return render_block(
+        return await render_block_async(
             environment=environment,
             template_name=f'components/message.html',
             block_name='success',
@@ -1094,7 +1094,7 @@ class ClassView:
             request=self.v.request,
             model=action['schema'],
         )
-        return render_block(
+        return await render_block_async(
             environment=environment,
             template_name=f'cls/action.html', line_id=line_id, model=self.v.model.name,
             block_name='action', cls=action_schema, action=action

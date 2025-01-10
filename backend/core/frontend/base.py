@@ -10,6 +10,7 @@ from fastapi.params import Depends
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
+from watchfiles import awatch
 
 from app.front.front_tasks import import_prepare_data, import_save
 from core.frontend.constructor import ClassView, Method, views, get_model
@@ -290,10 +291,10 @@ async def action(request: Request, model: str, action_name: str, line_id: UUID):
         obj = action_schema(**data)
         res = await func(schema=obj)
         result += res
-        return cls.send_message(message=f'Action {action_name} done')
+        return await cls.send_message(message=f'Action {action_name} done')
     else:
         await func(payload={'id': line_id})
-        return cls.send_message(message=f'Action {action_name} done')
+        return await cls.send_message(message=f'Action {action_name} done')
 
 
 class ImportSchema(BaseModel):

@@ -39,13 +39,16 @@
     </div>
 {% endblock %}
 {% block as_a %}
+    {% if icon %}
+    <iconify-icon style="color:#37c76c" icon="{{ icon }}" class="fs-8"></iconify-icon>
+{% endif %}
 <a
         data-bs-toggle="tooltip" data-bs-html="true" data-key-description="{{ action.tkey_doc }}" title="{{ action.doc }}"
         {% if label %}data-key="{{ action.tkey }}"{% endif %}
         hx-trigger="click"
         hx-target="#htmx_content"
-
-        {% if css_class %}class="{{ css_class }}"{% endif %}
+        href="#"
+        {% if css_class %}class="{{ css_class or "btn" }}"{% endif %}
         {% if not action.schema %}
             hx-swap="beforeend"
             hx-ext="json-enc"

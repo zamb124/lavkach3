@@ -16,12 +16,11 @@
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-12">
-                                <div class="d-sm-flex align-items-center justify-space-between">
-                                    <h4 class="card-title">Order
+                                <div class="d-sm-flex align-items-center justify-space-between ">
+                                    <h4 class="card-title mb-0">Order
                                         # {{ order.number.val }}-
                                     </h4>
-                                    <th class="line-col text-center align-items-center "
-                                        style="padding-left: 2px; padding-right: 2px;">
+                                    <th class="line-col text-center align-items-center">
                                         {% if order.status.val == 'created' %}
                                             <span class="mb-0 badge text-bg-light">{{ order.status.val }}</span>
                                         {% elif order.status.val == 'waiting' %}
@@ -40,34 +39,12 @@
                                     </th>
 
                                     <nav aria-label="breadcrumb" class="ms-auto">
-                                        <ol class="breadcrumb">
-                                            <li class="breadcrumb-item d-flex align-items-center">
-                                                {% if order.status.val in ('created', 'reservation_failed', 'confirming') %}
-                                                    {{ order.h.as_action('order_confirm', 'as_a', css_class="btn btn-sm btn-secondary") }}
-                                                    </li>
-                                                {% endif %}
-                                            {% if order.status.val in ('waiting', 'processing') %}
-                                                <li class="breadcrumb-item d-flex align-items-center">
-                                                    {{ order.h.as_action('order_assign', 'as_a', css_class="btn btn-sm btn-secondary") }}
-                                                </li>
-                                            {% endif %}
-                                            {% if order.status.val == 'confirmed' %}
-                                                <li class="breadcrumb-item d-flex align-items-center">
-                                                    {{ order.h.as_action('order_start', 'as_a', css_class="btn btn-sm btn-secondary") }}
-                                                </li>
-                                            {% endif %}
-                                            {% if order.status.val =='processing' %}
-                                                <li class="breadcrumb-item d-flex align-items-center">
-                                                    {{ order.h.as_action('order_complete', 'as_a', css_class="btn btn-sm btn-secondary") }}
-                                                </li>
-                                            {% endif %}
-                                            <li class="breadcrumb-item d-flex align-items-center" style="order: 99;">
-                                                <a href="#" data-bs-dismiss="modal" class="d-flex align-items-center">
-                                                    <iconify-icon icon="solar:close-circle-outline"
-                                                                  class="fs-8"></iconify-icon>
-                                                </a>
-                                            </li>
-                                        </ol>
+                                        <li class="breadcrumb-item d-flex align-items-center" style="order: 99;">
+                                            <a href="#" data-bs-dismiss="modal" class="d-flex align-items-center">
+                                                <iconify-icon icon="solar:close-circle-outline"
+                                                              class="fs-8"></iconify-icon>
+                                            </a>
+                                        </li>
                                     </nav>
                                 </div>
                             </div>
@@ -121,10 +98,24 @@
                                     <span>Actions</span>
                                 </a>
                                 <ul class="dropdown-menu" style="">
-                                    {% if order.status.val == 'created' %}
-
-                                        <li>
-
+                                    <li class="breadcrumb-item d-flex align-items-center">
+                                        {% if order.status.val in ('created', 'reservation_failed', 'confirming') %}
+                                            {{ order.h.as_action('order_confirm', 'as_a', css_class="") }}
+                                            </li>
+                                        {% endif %}
+                                    {% if order.status.val in ('waiting', 'processing') %}
+                                        <li class="breadcrumb-item d-flex align-items-center">
+                                            {{ order.h.as_action('order_assign', 'as_a', css_class="btn btn-sm btn-secondary") }}
+                                        </li>
+                                    {% endif %}
+                                    {% if order.status.val == 'confirmed' %}
+                                        <li class="breadcrumb-item d-flex align-items-center ">
+                                            {{ order.h.as_action('order_start', 'as_a', css_class="btn btn-sm btn-secondary") }}
+                                        </li>
+                                    {% endif %}
+                                    {% if order.status.val =='processing' %}
+                                        <li class="breadcrumb-item d-flex align-items-center">
+                                            {{ order.h.as_action('order_complete', 'as_a', css_class="btn btn-sm btn-secondary") }}
                                         </li>
                                     {% endif %}
 

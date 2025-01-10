@@ -44,7 +44,7 @@
                                         <label class="form-label text-end col-3"
                                                data-key="{{ location.title.data_key }}">{{ location.title._field_name }}</label>
                                         <div class="col-9">
-                                            {% if edit %}
+                                            {% if edit or create %}
                                                 {{ location.title.as_update }}
                                             {% else %}
                                                 <div class="form-label">{{ location.title }}</div>
@@ -79,7 +79,7 @@
                                         <label class="form-label text-end col-3"
                                                data-key="{{ location.location_type_id.data_key }}">{{ location.location_type_id._field_name }}</label>
                                         <div class="col-9">
-                                            {% if edit %}
+                                            {% if edit or create %}
                                                 {{ location.location_type_id.as_update }}
                                             {% else %}
                                                 <div class="form-label">{{ location.location_type_id.as_a() }}</div>
@@ -139,7 +139,7 @@
                                     <div class="col-md-6">
                                         <div class="row">
                                             <div class="col-md-offset-3 col-md-9 text-start">
-                                                {% if edit %}
+                                                {% if edit or create %}
                                                     <button type="submit"
                                                             class="btn btn-primary"
                                                             hx-post="/inventory/location/detail?location_id={{ location._id }}&edit=true"
