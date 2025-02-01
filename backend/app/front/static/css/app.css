@@ -291,3 +291,12 @@ a.text-danger {
     display: flex;
     flex-wrap: nowrap;
 }
+
+.icon-hover:hover {
+    outline: 1px solid var(--bs-primary);
+    outline-offset: 2px; /* Отступ от элемента */
+    border-radius: 5px; /* Радиус рамки */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Полутень снизу */
+    background-color: rgba(255, 255, 255, 0.1); /* Цвет фона, слегка отличающийся от контейнера */
+    padding: 3px; /* Увеличение размера площадки */
+}

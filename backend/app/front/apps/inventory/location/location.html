@@ -1,4 +1,5 @@
 {% block content %}
+
     <div class="card card-body py-3">
         <div class="row align-items-center">
             <div class="col-12">
@@ -8,18 +9,18 @@
                     <nav aria-label="breadcrumb" class="ms-auto">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item d-flex align-items-center">
-                                <a class="text-muted text-decoration-none d-flex" type="button"
+                                <a class="text-muted bg-hover-primary text-decoration-none d-flex" type="button"
                                    data-bs-toggle="offcanvas"
                                    data-bs-target="#location-filters" aria-controls="location-filters">
-                                    <iconify-icon icon="solar:filter-bold-duotone" class="fs-7"></iconify-icon>
+                                    <iconify-icon icon="solar:filter-bold-duotone" class="fs-7 icon-hover"></iconify-icon>
                                 </a>
                             </li>
                             <li class="breadcrumb-item d-flex align-items-center">
-                                <a class="text-muted text-decoration-none d-flex"
+                                <a class="text-muted text-decoration-none bg-hover-primary d-flex"
                                    hx-get="/inventory/location/map"
                                    hx-target="#htmx_content"
                                    href="#">
-                                    <iconify-icon icon="solar:map-broken" class="fs-7"></iconify-icon>
+                                    <iconify-icon icon="solar:map-broken" class="fs-7 icon-hover"></iconify-icon>
                                 </a>
                             </li>
                             <li class="breadcrumb-item" aria-current="page">

@@ -39,12 +39,12 @@ services:
       - .env-docker
     container_name: base_app
     command: /bin/sh -c "alembic upgrade head && gunicorn core.core_apps.base.base_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80"
-    # command: gunicorn core.core_apps.base.base_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
     ports:
       - 8888:80
     depends_on:
       - db
       - redis
+
   bus-app:
     build:
       context: .
@@ -70,7 +70,6 @@ services:
       - base-app
       - db
       - redis
-
 
   basic-app:
     build:
@@ -109,7 +108,7 @@ services:
     container_name: front_app
     command: gunicorn app.front.front_server:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:80
     ports:
-      - 80:80
+      - 8080:80
     depends_on:
       - basic-app
       - inventory-app
@@ -118,3 +117,23 @@ services:
       - bus-app
       - base-app
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot
+    depends_on:
+      - front-app
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot

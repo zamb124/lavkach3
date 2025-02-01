@@ -3,7 +3,7 @@ from fastapi import Request
 from fastapi.responses import HTMLResponse
 
 from app.front.template_spec import templates
-from app.front.utills import BasePermit
+from app.front.utills import BasePermit, render
 from core.frontend.constructor import ClassView
 
 store_router = APIRouter()
@@ -16,5 +16,5 @@ class StorePermit(BasePermit):
 @store_router.get("", response_class=HTMLResponse, dependencies=[Depends(StorePermit)])
 async def store(request: Request):
     cls = ClassView(request, 'store')
-    template = f'widgets/list{"" if request.scope["htmx"].hx_request else "-full"}.html'
-    return templates.TemplateResponse(request, template, context={'cls': cls})
+    template = f'widgets/list.html'
+    return await render(cls.r, template, context={'cls': cls})

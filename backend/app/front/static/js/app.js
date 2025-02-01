@@ -17,7 +17,7 @@ class App {
         };
         this.user = {};
         this.loaded = false;
-        this.userSettings = Object.assign({}, this.userSettings);
+        this.userSettings = { ...this.userSettings };
         this.locale = this.userSettings.locale;
         this.translations = {};
         Object.freeze(this.cache);
@@ -212,7 +212,7 @@ class App {
             duration: 3000,
             close: true,
             style: {
-                background: background,
+                background,
             },
         }).showToast();
     }
